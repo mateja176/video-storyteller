@@ -17,7 +17,7 @@ import {
 } from '@material-ui/icons';
 import { SpeedDial, SpeedDialAction } from '@material-ui/lab';
 import clsx from 'clsx';
-import { IconButton, Search, Tooltip } from 'components';
+import { IconButton, Tooltip } from 'components';
 import env from 'env';
 import { startCase } from 'lodash';
 import { CreateSimpleAction } from 'models';
@@ -119,7 +119,7 @@ const Header: FC<HeaderProps> = ({
             </Flex>
           )} */}
         </Flex>
-        <Search />
+        {/* <Search /> */}
         <div
           onClick={toggleActionsOpen}
           onKeyDown={toggleActionsOpen}
