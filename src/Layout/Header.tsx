@@ -119,7 +119,6 @@ const Header: FC<HeaderProps> = ({
             </Flex>
           )} */}
         </Flex>
-        {/* <Search /> */}
         <div
           onClick={toggleActionsOpen}
           onKeyDown={toggleActionsOpen}
