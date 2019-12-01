@@ -1,0 +1,12 @@
+/* eslint-disable */
+
+module.exports = {
+  plugins: [
+    '@semantic-release/commit-analyzer',
+    '@semantic-release/changelog',
+    '@semantic-release/release-notes-generator',
+    '@semantic-release/github',
+    '@semantic-release/npm',
+    '@semantic-release/git',
+  ],
+};

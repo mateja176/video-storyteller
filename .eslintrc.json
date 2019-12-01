@@ -1,0 +1,47 @@
+{
+  "extends": ["react-app", "airbnb"],
+  "plugins": ["immutable", "prefer-arrow", "prettier", "html", "cypress"],
+  "rules": {
+    "no-unused-vars": "off",
+    "no-nested-ternary": "off",
+    "arrow-parens": "off",
+    "object-curly-newline": "off",
+    "operator-linebreak": "off",
+    "linebreak-style": "off",
+    "no-else-return": "off",
+    "no-confusing-arrow": "off",
+    "implicit-arrow-linebreak": "off",
+    "function-paren-newline": "off",
+    "react/jsx-filename-extension": ["error", { "extensions": [".tsx"] }],
+    "react/jsx-wrap-multilines": "off",
+    "react/prop-types": "off",
+    "react/jsx-one-expression-per-line": "off",
+    "react/jsx-props-no-spreading": "off",
+    "jsx-a11y/anchor-is-valid": "off",
+    "import/no-extraneous-dependencies": "off",
+    "import/no-unresolved": "off",
+    "immutable/no-let": 2,
+    "immutable/no-this": 2,
+    "immutable/no-mutation": 2,
+    "prefer-arrow/prefer-arrow-functions": [
+      "warn",
+      {
+        "disallowPrototype": true,
+        "classPropertiesAllowed": false
+      }
+    ]
+  },
+  "env": {
+    "browser": true,
+    "jest": true,
+    "cypress/globals": true
+  },
+  "overrides": [
+    {
+      "files": ["**/*.ts"],
+      "rules": {
+        "import/prefer-default-export": "off"
+      }
+    }
+  ]
+}

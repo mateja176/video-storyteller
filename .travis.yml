@@ -1,0 +1,25 @@
+language: node_js
+node_js:
+  - lts/*
+# https://stackoverflow.com/questions/42521884/should-i-have-travis-cache-node-modules-or-home-npm
+cache:
+  directories:
+    - .npm
+jobs:
+  include:
+    - stage: ci
+      script:
+        - npm run ci
+        - commitlint-travis
+        - if [ "$TRAVIS_BRANCH" = "master" ]; then npm run semantic-release; fi
+deploy:
+  - provider: firebase
+    project: react-hot-starter
+    on:
+      branch: master
+    edge: true # opt in to dpl v2
+  - provider: firebase
+    project: react-hot-starter-dev
+    on:
+      branch: develop
+    edge: true # opt in to dpl v2
