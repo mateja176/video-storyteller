@@ -14,6 +14,7 @@ import {
 import { Title } from '@material-ui/icons';
 import { ContentState } from 'draft-js';
 import { Draggables, draggables, DropResult, DropTextAction } from 'models';
+import panzoom from 'panzoom';
 import React from 'react';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { Flex } from 'rebass';
@@ -108,16 +109,27 @@ const Canvas: React.FC<CanvasProps> = () => {
   const [open, setOpen] = React.useState(false);
 
   React.useEffect(() => {
-    if (isDragging) {
+    if (isDragging && open) {
       setOpen(false);
     }
-  }, [isDragging]);
+  }, [isDragging, open]);
 
   const textItemRef = React.useRef<HTMLDivElement>(null);
 
   const toggleOpen = () => setOpen(!open);
 
   const theme = useTheme();
+
+  React.useEffect(() => {
+    const instanceDiv = panzoom(canvasRef.current!, {
+      maxZoom: 20,
+      minZoom: 0.1,
+    });
+
+    return () => {
+      instanceDiv.dispose();
+    };
+  }, []);
 
   return (
     <Flex style={{ height: '100%' }}>
