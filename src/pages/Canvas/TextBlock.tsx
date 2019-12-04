@@ -1,21 +1,31 @@
-import { Card, CardContent } from '@material-ui/core';
+import { Card, CardContent, CardHeader } from '@material-ui/core';
 import { Editor } from 'components';
 import { isEqual } from 'lodash';
-import {
-  createDropText,
-  DropTextPayload,
-  EditorProps,
-  WithDropResult,
-} from 'models';
+import { createDropText, WithId, WithInitialContent } from 'models';
 import React from 'react';
 import { useDrag } from 'react-dnd';
 import { v4 } from 'uuid';
 
-interface TextBlockBaseProps extends DropTextPayload, WithDropResult {}
+export const TextCard = React.forwardRef<HTMLDivElement, WithInitialContent>(
+  ({ initialContent }, ref) => (
+    <Card
+      ref={ref}
+      style={{
+        cursor: 'grab',
+        display: 'inline-block',
+      }}
+    >
+      <CardHeader className="handle" style={{ height: 30 }} />
+      <CardContent style={{ paddingTop: 0 }}>
+        <Editor initialContent={initialContent} />
+      </CardContent>
+    </Card>
+  ),
+);
 
-const TextBlockBase: React.FC<TextBlockBaseProps & {
-  position: React.CSSProperties['position'];
-}> = ({ position, top, left, ...props }) => {
+interface TextBlockBaseProps extends WithInitialContent, WithId {}
+
+const TextBlockBase: React.FC<TextBlockBaseProps> = props => {
   const [stateProps, setStateProps] = React.useState(props);
 
   React.useEffect(() => {
@@ -28,35 +38,11 @@ const TextBlockBase: React.FC<TextBlockBaseProps & {
     item: createDropText({ ...stateProps }),
   });
 
-  const { initialContent } = props;
+  const { id: _, ...textCardProps } = props;
 
-  return (
-    <Card
-      ref={dragRef}
-      style={{
-        cursor: 'grab',
-        display: 'inline-block',
-        position,
-        top,
-        left,
-      }}
-    >
-      <CardContent>
-        <Editor initialContent={initialContent} />
-      </CardContent>
-    </Card>
-  );
+  return <TextCard {...textCardProps} ref={dragRef} />;
 };
 
-const TextBlock: React.FC<TextBlockBaseProps> = props => (
-  <TextBlockBase {...props} position="absolute" />
-);
-
-export default TextBlock;
-
-export const TextBlockTemplate: React.FC<Pick<
-  EditorProps,
-  'initialContent'
->> = props => (
-  <TextBlockBase {...props} position="static" top={0} left={0} id={v4()} />
+export const TextBlockTemplate: React.FC<WithInitialContent> = props => (
+  <TextBlockBase {...props} id={v4()} />
 );

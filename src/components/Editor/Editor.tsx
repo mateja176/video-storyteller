@@ -139,7 +139,7 @@ const Editor: React.FC<EditorProps> = ({ initialContent }) => {
     <div
       style={{
         background: theme.palette.background.paper,
-        padding: 15,
+        padding: '0px 15px 15px 15px',
         cursor: 'text',
       }}
     >

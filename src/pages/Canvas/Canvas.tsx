@@ -3,6 +3,7 @@
 import {
   Card,
   CardContent,
+  CardHeader,
   Drawer,
   List,
   ListItem,
@@ -12,13 +13,15 @@ import {
   useTheme,
 } from '@material-ui/core';
 import { Title } from '@material-ui/icons';
+import { Editor } from 'components';
 import { ContentState } from 'draft-js';
 import { Draggables, draggables, DropResult, DropTextAction } from 'models';
-import panzoom from 'panzoom';
+import panzoom, { PanZoom } from 'panzoom';
 import React from 'react';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
+import Draggable from 'react-draggable';
 import { Flex } from 'rebass';
-import TextBlock, { TextBlockTemplate } from './TextBlock';
+import { TextBlockTemplate } from './TextBlock';
 
 const collect = (monitor: DropTargetMonitor) => ({
   isOver: !!monitor.isOver(),
@@ -58,9 +61,19 @@ const Canvas: React.FC<CanvasProps> = () => {
   });
 
   React.useEffect(() => {
-    const { top, left } = canvasRef.current!.getBoundingClientRect();
+    const measureCanvas = () => {
+      const { top, left } = canvasRef.current!.getBoundingClientRect();
 
-    setOffset({ offsetX: left, offsetY: top });
+      setOffset({ offsetX: left, offsetY: top });
+    };
+
+    window.addEventListener('resize', measureCanvas);
+
+    measureCanvas();
+
+    return () => {
+      window.removeEventListener('resize', measureCanvas);
+    };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [{ isOver, canDrop, isDragging, props }, dropRef] = useDrop<
@@ -120,14 +133,27 @@ const Canvas: React.FC<CanvasProps> = () => {
 
   const theme = useTheme();
 
+  const [panzoomInstance, setPanzoomInstance] = React.useState<PanZoom | null>(
+    null,
+  );
+
+  const [scale, setScale] = React.useState(1);
+
   React.useEffect(() => {
-    const instanceDiv = panzoom(canvasRef.current!, {
+    const instance = panzoom(canvasRef.current!, {
       maxZoom: 20,
       minZoom: 0.1,
     });
 
+    setPanzoomInstance(instance);
+
+    instance.getTransform();
+    instance.on('zoom', () => {
+      setScale(instance.getTransform().scale);
+    });
+
     return () => {
-      instanceDiv.dispose();
+      instance.dispose();
     };
   }, []);
 
@@ -160,13 +186,9 @@ const Canvas: React.FC<CanvasProps> = () => {
               horizontal: 'left',
             }}
           >
-            <Card>
-              <CardContent>
-                <TextBlockTemplate
-                  initialContent={ContentState.createFromText('Hello World')}
-                />
-              </CardContent>
-            </Card>
+            <TextBlockTemplate
+              initialContent={ContentState.createFromText('Hello World')}
+            />
           </Popover>
         </List>
       </Drawer>
@@ -179,14 +201,41 @@ const Canvas: React.FC<CanvasProps> = () => {
               ? theme.colors.success.light
               : isOver
               ? theme.palette.error.light
-              : '#eee',
+              : 'linear-gradient(90deg, lightsteelblue, lightblue)',
           position: 'relative',
+          overflow: 'hidden',
         }}
       >
         {/* <Box bg={theme.palette.background.paper}>Controls</Box> */}
         <div ref={canvasRef}>
-          {dropResults.map(textBlockProps => (
-            <TextBlock key={textBlockProps.id} {...textBlockProps} />
+          {dropResults.map(({ id, top, left, initialContent }) => (
+            <Draggable
+              key={id}
+              defaultPosition={{ x: left, y: top }}
+              onMouseDown={() => {
+                if (panzoomInstance) {
+                  panzoomInstance.pause();
+                }
+              }}
+              onStop={() => {
+                if (panzoomInstance) {
+                  panzoomInstance.resume();
+                }
+              }}
+              scale={scale}
+            >
+              {/* inexplicably drops in position 0, 0 */}
+              {/* <TextCard initialContent={initialContent} /> */}
+              <Card style={{ display: 'inline-block' }}>
+                <CardHeader
+                  className="handle"
+                  style={{ height: 30, cursor: 'grab' }}
+                />
+                <CardContent style={{ paddingTop: 0 }}>
+                  <Editor initialContent={initialContent} />
+                </CardContent>
+              </Card>
+            </Draggable>
           ))}
         </div>
       </div>

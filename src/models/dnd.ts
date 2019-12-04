@@ -12,9 +12,9 @@ export type Draggable = typeof draggables[number];
 
 export const Draggables = toObject(draggables);
 
-export interface DropTextPayload
-  extends WithId,
-    Pick<EditorProps, 'initialContent'> {}
+export type WithInitialContent = Pick<EditorProps, 'initialContent'>;
+
+export interface DropTextPayload extends WithId, WithInitialContent {}
 
 export const createDropText = createAction(
   Draggables.Text,
