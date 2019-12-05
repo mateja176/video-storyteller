@@ -1,9 +1,6 @@
 /* eslint-disable indent */
 
 import {
-  Card,
-  CardContent,
-  CardHeader,
   Drawer,
   List,
   ListItem,
@@ -13,15 +10,14 @@ import {
   useTheme,
 } from '@material-ui/core';
 import { Title } from '@material-ui/icons';
-import { Editor } from 'components';
 import { ContentState } from 'draft-js';
 import { Draggables, draggables, DropResult, DropTextAction } from 'models';
 import panzoom, { PanZoom } from 'panzoom';
 import React from 'react';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
-import Draggable from 'react-draggable';
+import { Rnd } from 'react-rnd';
 import { Flex } from 'rebass';
-import { TextBlockTemplate } from './TextBlock';
+import { TextBlockTemplate, TextCard } from './TextBlock';
 
 const collect = (monitor: DropTargetMonitor) => ({
   isOver: !!monitor.isOver(),
@@ -157,6 +153,17 @@ const Canvas: React.FC<CanvasProps> = () => {
     };
   }, []);
 
+  const pause = () => {
+    if (panzoomInstance) {
+      panzoomInstance.pause();
+    }
+  };
+  const resume = () => {
+    if (panzoomInstance) {
+      panzoomInstance.resume();
+    }
+  };
+
   return (
     <Flex style={{ height: '100%' }}>
       <Drawer
@@ -209,30 +216,20 @@ const Canvas: React.FC<CanvasProps> = () => {
         {/* <Box bg={theme.palette.background.paper}>Controls</Box> */}
         <div ref={canvasRef}>
           {dropResults.map(({ id, top, left, initialContent }) => (
-            <Draggable
+            <Rnd
               key={id}
-              defaultPosition={{ x: left, y: top }}
-              onMouseDown={() => {
-                if (panzoomInstance) {
-                  panzoomInstance.pause();
-                }
-              }}
-              onStop={() => {
-                if (panzoomInstance) {
-                  panzoomInstance.resume();
-                }
-              }}
               scale={scale}
+              default={{ x: left, y: top, width: 'auto', height: 'auto' }}
+              onResizeStart={pause}
+              onDragStart={pause}
+              onResizeStop={resume}
+              onDragStop={resume}
+              style={{
+                overflow: 'hidden',
+              }}
             >
-              {/* inexplicably drops in position 0, 0 */}
-              {/* <TextCard initialContent={initialContent} /> */}
-              <Card style={{ display: 'inline-block' }}>
-                <CardHeader style={{ height: 30, cursor: 'grab' }} />
-                <CardContent style={{ paddingTop: 0 }}>
-                  <Editor initialContent={initialContent} />
-                </CardContent>
-              </Card>
-            </Draggable>
+              <TextCard initialContent={initialContent} />
+            </Rnd>
           ))}
         </div>
       </div>

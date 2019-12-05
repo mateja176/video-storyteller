@@ -13,6 +13,9 @@ export const TextCard = React.forwardRef<HTMLDivElement, WithInitialContent>(
       style={{
         cursor: 'grab',
         display: 'inline-block',
+        boxShadow: 'none',
+        width: '100%',
+        height: '100%',
       }}
     >
       <CardHeader style={{ height: 30 }} />
