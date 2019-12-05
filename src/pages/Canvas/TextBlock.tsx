@@ -15,7 +15,7 @@ export const TextCard = React.forwardRef<HTMLDivElement, WithInitialContent>(
         display: 'inline-block',
       }}
     >
-      <CardHeader className="handle" style={{ height: 30 }} />
+      <CardHeader style={{ height: 30 }} />
       <CardContent style={{ paddingTop: 0 }}>
         <Editor initialContent={initialContent} />
       </CardContent>

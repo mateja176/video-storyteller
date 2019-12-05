@@ -227,10 +227,7 @@ const Canvas: React.FC<CanvasProps> = () => {
               {/* inexplicably drops in position 0, 0 */}
               {/* <TextCard initialContent={initialContent} /> */}
               <Card style={{ display: 'inline-block' }}>
-                <CardHeader
-                  className="handle"
-                  style={{ height: 30, cursor: 'grab' }}
-                />
+                <CardHeader style={{ height: 30, cursor: 'grab' }} />
                 <CardContent style={{ paddingTop: 0 }}>
                   <Editor initialContent={initialContent} />
                 </CardContent>
