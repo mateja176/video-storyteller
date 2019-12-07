@@ -14,12 +14,12 @@ jobs:
         - if [ "$TRAVIS_BRANCH" = "master" ]; then npm run semantic-release; fi
 deploy:
   - provider: firebase
-    project: react-hot-starter
+    project: $REACT_APP_FIREBASE_CONFIG_PROJECT_ID
     on:
       branch: master
     edge: true # opt in to dpl v2
   - provider: firebase
-    project: react-hot-starter-dev
+    project: $REACT_APP_FIREBASE_CONFIG_PROJECT_ID
     on:
       branch: develop
     edge: true # opt in to dpl v2
