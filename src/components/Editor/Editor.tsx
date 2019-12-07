@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 
-import { Divider, makeStyles, useTheme } from '@material-ui/core';
+import { Divider, makeStyles } from '@material-ui/core';
 import {
   ContentBlock,
   ContentState,
@@ -131,15 +131,12 @@ const Editor: React.FC<EditorProps> = ({ initialContent }) => {
       .first()
       .getType() === 'unstyled';
 
-  const theme = useTheme();
-
   const classes = useStyles();
 
   return (
     <div
       style={{
-        background: theme.palette.background.paper,
-        padding: '0px 15px 15px 15px',
+        background: 'transparent',
         cursor: 'text',
       }}
     >
