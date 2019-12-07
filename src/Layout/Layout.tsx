@@ -31,7 +31,7 @@ const Layout: FC<LayoutProps> = ({ children, isSignedIn }) => {
     setOpen(previousOpen => !previousOpen);
   };
 
-  const [breadcrumbsOpen, setBreadcrumbsOpen] = React.useState(true);
+  const [breadcrumbsOpen, setBreadcrumbsOpen] = React.useState(false);
 
   // const isMediumScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
