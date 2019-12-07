@@ -97,7 +97,9 @@ const BlocType: React.FC<BlockTypeControlsProps> = ({
           <MenuItem style={{ height: '100%', minWidth: 105 }}>
             <Flex width="100%">
               {(activeType && activeType.label) || (
-                <Typography color="textSecondary" style={{ flexGrow: 1 }}>B</Typography>
+                <Typography color="textSecondary" style={{ flexGrow: 1 }}>
+                  Block type
+                </Typography>
               )}{' '}
               {<ArrowDropDown />}
             </Flex>

@@ -1,14 +1,18 @@
 /* eslint-disable indent */
 
 import {
+  Card,
+  CardContent,
+  CardHeader,
   Drawer,
   List,
   ListItem,
   ListItemIcon,
   makeStyles,
+  useTheme,
 } from '@material-ui/core';
 import { Title } from '@material-ui/icons';
-import { Tooltip } from 'components';
+import { Editor, Tooltip } from 'components';
 import { ContentState } from 'draft-js';
 import { BlockState } from 'models';
 import panzoom, { PanZoom } from 'panzoom';
@@ -16,7 +20,6 @@ import React from 'react';
 import { Rnd } from 'react-rnd';
 import { Flex } from 'rebass';
 import { v4 } from 'uuid';
-import TextCard from './TextBlock';
 
 const useStyles = makeStyles(theme => ({
   drawer: {
@@ -78,6 +81,8 @@ const Canvas: React.FC<CanvasProps> = () => {
     }
   };
 
+  const theme = useTheme();
+
   return (
     <Flex style={{ height: '100%' }}>
       <Drawer
@@ -119,7 +124,13 @@ const Canvas: React.FC<CanvasProps> = () => {
           overflow: 'hidden',
         }}
       >
-        {/* <Box bg={theme.palette.background.paper}>Controls</Box> */}
+        <Flex
+          alignItems="center"
+          height={50}
+          bg={theme.palette.background.paper}
+        >
+          Controls
+        </Flex>
         <div ref={canvasRef}>
           {blockStates.map(({ id, top, left, initialContent }) => (
             <Rnd
@@ -133,8 +144,24 @@ const Canvas: React.FC<CanvasProps> = () => {
               style={{
                 overflow: 'hidden',
               }}
+              onMouseDown={e => {
+                e.preventDefault();
+              }}
             >
-              <TextCard initialContent={initialContent} />
+              <Card
+                style={{
+                  cursor: 'grab',
+                  display: 'inline-block',
+                  boxShadow: 'none',
+                  width: '100%',
+                  height: '100%',
+                }}
+              >
+                <CardHeader />
+                <CardContent style={{ paddingTop: 0 }}>
+                  <Editor initialContent={initialContent} />
+                </CardContent>
+              </Card>
             </Rnd>
           ))}
         </div>
