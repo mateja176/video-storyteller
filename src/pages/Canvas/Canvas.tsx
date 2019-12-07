@@ -6,10 +6,10 @@ import {
   ListItem,
   ListItemIcon,
   makeStyles,
-  Popover,
   useTheme,
 } from '@material-ui/core';
 import { Title } from '@material-ui/icons';
+import { Tooltip } from 'components';
 import { ContentState } from 'draft-js';
 import { Draggables, draggables, DropResult, DropTextAction } from 'models';
 import panzoom, { PanZoom } from 'panzoom';
@@ -17,7 +17,8 @@ import React from 'react';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { Rnd } from 'react-rnd';
 import { Flex } from 'rebass';
-import { TextBlockTemplate, TextCard } from './TextBlock';
+import { v4 } from 'uuid';
+import TextCard from './TextBlock';
 
 const collect = (monitor: DropTargetMonitor) => ({
   isOver: !!monitor.isOver(),
@@ -72,7 +73,7 @@ const Canvas: React.FC<CanvasProps> = () => {
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const [{ isOver, canDrop, isDragging, props }, dropRef] = useDrop<
+  const [{ isOver, canDrop, props }, dropRef] = useDrop<
     DropTextAction,
     DropResult,
     ReturnType<typeof collect>
@@ -114,18 +115,6 @@ const Canvas: React.FC<CanvasProps> = () => {
   }, [props]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const classes = useStyles();
-
-  const [open, setOpen] = React.useState(false);
-
-  React.useEffect(() => {
-    if (isDragging && open) {
-      setOpen(false);
-    }
-  }, [isDragging, open]);
-
-  const textItemRef = React.useRef<HTMLDivElement>(null);
-
-  const toggleOpen = () => setOpen(!open);
 
   const theme = useTheme();
 
@@ -175,28 +164,26 @@ const Canvas: React.FC<CanvasProps> = () => {
         }}
       >
         <List>
-          <ListItem button ref={textItemRef} onClick={toggleOpen}>
-            <ListItemIcon>
-              <Title />
-            </ListItemIcon>
-          </ListItem>
-          <Popover
-            anchorEl={textItemRef.current}
-            open={open}
-            onClose={toggleOpen}
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'left',
+          <ListItem
+            button
+            onClick={() => {
+              const { x, y } = panzoomInstance!.getTransform();
+              setDropResults(
+                dropResults.concat({
+                  id: v4(),
+                  top: 0 - y / scale,
+                  left: 0 - x / scale,
+                  initialContent: ContentState.createFromText('Hello world'),
+                }),
+              );
             }}
           >
-            <TextBlockTemplate
-              initialContent={ContentState.createFromText('Hello World')}
-            />
-          </Popover>
+            <Tooltip title="Add text block">
+              <ListItemIcon>
+                <Title />
+              </ListItemIcon>
+            </Tooltip>
+          </ListItem>
         </List>
       </Drawer>
       <div
