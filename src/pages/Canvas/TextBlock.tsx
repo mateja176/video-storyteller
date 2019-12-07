@@ -15,7 +15,7 @@ const TextCard = React.forwardRef<HTMLDivElement, WithInitialContent>(
         height: '100%',
       }}
     >
-      <CardHeader style={{ height: 30 }} />
+      <CardHeader />
       <CardContent style={{ paddingTop: 0 }}>
         <Editor initialContent={initialContent} />
       </CardContent>
