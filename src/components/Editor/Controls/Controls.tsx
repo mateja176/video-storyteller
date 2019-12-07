@@ -1,5 +1,6 @@
 import { EditorState } from 'draft-js';
 import React from 'react';
+import { Flex } from 'rebass';
 import { BlockTypeControls, InlineStylesControls } from '.';
 import { BlockTypeControlsProps } from './BlockType';
 import { InlineStylesControlsProps } from './InlineStyles';
@@ -15,21 +16,13 @@ const Controls: React.FC<ControlsProps> = ({
   toggleBlockType,
   toggleInlineStyle,
 }) => (
-  <div
-    style={{
-      display: 'grid',
-      gridAutoFlow: 'column',
-      gridGap: 20,
-      alignItems: 'center',
-      justifyContent: 'left',
-    }}
-  >
+  <Flex alignItems="center">
     <BlockTypeControls editorState={editorState} onToggle={toggleBlockType} />
     <InlineStylesControls
       editorState={editorState}
       onToggle={toggleInlineStyle}
     />
-  </div>
+  </Flex>
 );
 
 export default Controls;
