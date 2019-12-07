@@ -30,4 +30,4 @@ export interface WithDropResult {
   left: number;
 }
 
-export interface DropResult extends DropTextPayload, WithDropResult {}
+export interface BlockState extends DropTextPayload, WithDropResult {}
