@@ -20,7 +20,7 @@ const useStyles = makeStyles({
   editor: {
     '& .public-DraftEditor-content': {
       minHeight: 100,
-      minWidth: 360,
+      minWidth: 200,
     },
 
     '& .RichEditor-blockquote': {
@@ -63,7 +63,12 @@ const getBlockStyle = (block: ContentBlock) => {
 
 export type EditorCommand = DraftEditorCommand | 'tab-indent';
 
-const Editor: React.FC<EditorProps> = ({ editorState, setEditorState }) => {
+const Editor: React.FC<EditorProps> = ({
+  editorState,
+  setEditorState,
+  onFocus,
+  onBlur,
+}) => {
   const editor = React.useRef<DraftEditor>(null);
 
   const focus = () => {
@@ -113,6 +118,7 @@ const Editor: React.FC<EditorProps> = ({ editorState, setEditorState }) => {
       style={{
         background: 'transparent',
         cursor: 'text',
+        border: '1px solid magenta',
       }}
       className={classes.editor}
       onClick={focus}
@@ -127,12 +133,8 @@ const Editor: React.FC<EditorProps> = ({ editorState, setEditorState }) => {
         customStyleMap={styleMap}
         handleKeyCommand={handleKeyCommand}
         keyBindingFn={mapKeyToEditorCommand}
-        onFocus={() => {
-          console.log('focus');
-        }}
-        onBlur={() => {
-          console.log('blur');
-        }}
+        onFocus={onFocus}
+        onBlur={onBlur}
       />
     </div>
   );

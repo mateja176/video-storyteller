@@ -1,9 +1,6 @@
 /* eslint-disable indent */
 
 import {
-  Card,
-  CardContent,
-  CardHeader,
   Drawer,
   List,
   ListItem,
@@ -176,56 +173,41 @@ const Canvas: React.FC<CanvasProps> = () => {
                 width: 'auto',
                 height: 'auto',
               }}
+              style={{
+                overflow: 'hidden',
+                border: '1px solid red',
+                display: 'inline-block',
+                padding: 15,
+              }}
               onResizeStart={pause}
               onDragStart={pause}
               onResizeStop={resume}
               onDragStop={resume}
-              style={{
-                overflow: 'hidden',
-              }}
-              onMouseDown={e => {
-                e.preventDefault();
-              }}
+              disableDragging={Boolean(focusedEditorId)}
             >
-              <Card
-                style={{
-                  cursor: 'grab',
-                  display: 'inline-block',
-                  boxShadow: 'none',
-                  width: '100%',
-                  height: '100%',
-                }}
-                onMouseDown={e => {
-                  e.preventDefault();
+              <Editor
+                editorState={editorState}
+                setEditorState={(newEditorState: EditorState) => {
+                  const index = blockStates.findIndex(block => block.id === id);
 
-                  if (focusedEditorId !== id) {
-                    setFocusedEditorId(id);
-                  }
+                  setBlockStates(
+                    update(
+                      index,
+                      {
+                        ...blockStates[index],
+                        editorState: newEditorState,
+                      },
+                      blockStates,
+                    ),
+                  );
                 }}
-              >
-                <CardHeader />
-                <CardContent style={{ paddingTop: 0 }}>
-                  <Editor
-                    editorState={editorState}
-                    setEditorState={(newEditorState: EditorState) => {
-                      const index = blockStates.findIndex(
-                        block => block.id === id,
-                      );
-
-                      setBlockStates(
-                        update(
-                          index,
-                          {
-                            ...blockStates[index],
-                            editorState: newEditorState,
-                          },
-                          blockStates,
-                        ),
-                      );
-                    }}
-                  />
-                </CardContent>
-              </Card>
+                onFocus={() => {
+                  setFocusedEditorId(id);
+                }}
+                onBlur={() => {
+                  setFocusedEditorId('');
+                }}
+              />
             </Rnd>
           ))}
         </div>

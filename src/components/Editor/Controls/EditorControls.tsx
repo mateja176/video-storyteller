@@ -8,7 +8,8 @@ import { EditorProps } from 'models';
 import React from 'react';
 import Controls from './Controls';
 
-export interface EditorControlsProps extends EditorProps {}
+export interface EditorControlsProps
+  extends Pick<EditorProps, 'editorState' | 'setEditorState'> {}
 
 const EditorControls: React.FC<EditorControlsProps> = ({
   editorState,
