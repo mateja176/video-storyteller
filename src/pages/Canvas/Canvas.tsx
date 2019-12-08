@@ -9,7 +9,7 @@ import {
   Paper,
   useTheme,
 } from '@material-ui/core';
-import { Title } from '@material-ui/icons';
+import { Build, Title } from '@material-ui/icons';
 import { Editor, EditorControls, Tooltip } from 'components';
 import { ContentState, EditorState } from 'draft-js';
 import { BlockState } from 'models';
@@ -17,8 +17,17 @@ import panzoom, { PanZoom } from 'panzoom';
 import { update } from 'ramda';
 import React from 'react';
 import { Rnd } from 'react-rnd';
-import { Flex } from 'rebass';
+import { Box, Flex } from 'rebass';
+import { createDevTools } from 'redux-devtools';
+import { ILogMonitorProps } from 'redux-devtools-log-monitor';
 import { v4 } from 'uuid';
+
+const StoryMonitor = (props: ILogMonitorProps) => {
+  console.log(props);
+  return <Box>Story Monitor</Box>;
+};
+
+const DevTools = createDevTools(<StoryMonitor />);
 
 const useStyles = makeStyles(theme => ({
   drawer: {
@@ -90,6 +99,12 @@ const Canvas: React.FC<CanvasProps> = () => {
     resume();
   }, [focusedEditorId]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const [storyMonitorOpen, setStoryMonitorOpen] = React.useState(false);
+
+  const toggleStoryMonitorOpen = () => {
+    setStoryMonitorOpen(!storyMonitorOpen);
+  };
+
   return (
     <Flex style={{ height: '100%' }}>
       <Drawer
@@ -123,9 +138,17 @@ const Canvas: React.FC<CanvasProps> = () => {
               </ListItemIcon>
             </Tooltip>
           </ListItem>
+          <ListItem button onClick={toggleStoryMonitorOpen}>
+            <Tooltip title="Toggle open Story Monitor">
+              <ListItemIcon>
+                <Build />
+              </ListItemIcon>
+            </Tooltip>
+          </ListItem>
         </List>
       </Drawer>
-      <div
+      <Flex
+        flexDirection="column"
         style={{
           flexGrow: 1,
           background: 'linear-gradient(90deg, lightsteelblue, lightblue)',
@@ -212,7 +235,17 @@ const Canvas: React.FC<CanvasProps> = () => {
             </Rnd>
           ))}
         </div>
-      </div>
+        <Paper
+          style={{
+            height: storyMonitorOpen ? 250 : 0,
+            transition: 'all 500ms ease-in-out',
+            overflow: 'hidden',
+            marginTop: 'auto',
+          }}
+        >
+          <DevTools />
+        </Paper>
+      </Flex>
       <Paper
         style={{
           alignSelf: 'right',
