@@ -14,7 +14,6 @@ import {
   getDefaultKeyBinding,
   Modifier,
   RichUtils,
-  SelectionState,
 } from 'draft-js';
 import 'draft-js/dist/Draft.css';
 import { EditorProps, Maybe } from 'models';
@@ -71,10 +70,6 @@ export type EditorCommand = DraftEditorCommand | 'tab-indent';
 const Editor: React.FC<EditorProps> = ({ editorState, setEditorState }) => {
   const editor = React.useRef<DraftEditor>(null);
 
-  const [selection, setSelection] = React.useState<SelectionState>(
-    SelectionState.createEmpty(''),
-  );
-
   const focus = () => {
     const { current } = editor;
 
@@ -105,7 +100,9 @@ const Editor: React.FC<EditorProps> = ({ editorState, setEditorState }) => {
 
   const toggleBlockType = (blockType: DraftBlockType) => {
     const newEditorState = RichUtils.toggleBlockType(editorState, blockType);
-    setEditorState(EditorState.acceptSelection(newEditorState, selection));
+    setEditorState(
+      EditorState.acceptSelection(newEditorState, editorState.getSelection()),
+    );
   };
 
   const toggleInlineStyle = (inlineStyle: DraftInlineStyleType) => {
@@ -155,10 +152,10 @@ const Editor: React.FC<EditorProps> = ({ editorState, setEditorState }) => {
           handleKeyCommand={handleKeyCommand}
           keyBindingFn={mapKeyToEditorCommand}
           onFocus={() => {
-            setSelection(selection);
+            console.log('focus');
           }}
           onBlur={() => {
-            setSelection(editorState.getSelection());
+            console.log('focus');
           }}
         />
       </div>
