@@ -119,6 +119,7 @@ const BlocType: React.FC<BlockTypeControlsProps> = ({
 
                       onToggle(value);
                     }}
+                    selected={activeType && activeType.value === value}
                   >
                     {label}
                   </MenuItem>
