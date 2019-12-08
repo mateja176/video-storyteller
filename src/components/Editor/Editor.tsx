@@ -131,7 +131,7 @@ const Editor: React.FC<EditorProps> = ({ editorState, setEditorState }) => {
           console.log('focus');
         }}
         onBlur={() => {
-          console.log('focus');
+          console.log('blur');
         }}
       />
     </div>
