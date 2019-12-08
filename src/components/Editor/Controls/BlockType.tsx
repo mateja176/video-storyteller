@@ -85,20 +85,19 @@ const BlocType: React.FC<BlockTypeControlsProps> = ({
         }
       }}
     >
-      <Box height="100%">
+      <Box>
         <Box
           ref={displayRef}
           onMouseDown={e => {
             e.preventDefault();
             toggleOpen();
           }}
-          height="100%"
         >
-          <MenuItem style={{ height: '100%', minWidth: 105 }}>
+          <MenuItem style={{ minHeight: 50, minWidth: 105 }}>
             <Flex width="100%" justifyContent="space-between">
-              {(activeType && activeType.label) || (
-                <Typography color="textSecondary">Block type</Typography>
-              )}{' '}
+              <Typography color="textSecondary">
+                {(activeType && activeType.label) || 'Block type'}
+              </Typography>{' '}
               {<ArrowDropDown />}
             </Flex>
           </MenuItem>
