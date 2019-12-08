@@ -56,7 +56,7 @@ const InlineStyles: React.FC<InlineStylesControlsProps> = ({
             <IconButton>
               <Icon
                 style={{
-                  color: active ? theme.palette.primary.light : 'inherit',
+                  color: active ? theme.palette.primary.dark : 'inherit',
                 }}
               />
             </IconButton>
