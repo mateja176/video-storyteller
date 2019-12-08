@@ -15,7 +15,7 @@ module.exports = JSON.parse(fs.readFileSync(path.join(__dirname, '../../package.
 export interface FooterProps {}
 
 const Footer: React.FC<FooterProps> = () => (
-  <Paper>
+  <Paper style={{ display: 'none' }}>
     <Flex my={2} mx={3} justifyContent="flex-end">
       Version: {version}
     </Flex>
