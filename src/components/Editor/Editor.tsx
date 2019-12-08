@@ -72,7 +72,7 @@ export type EditorCommand = DraftEditorCommand | 'tab-indent';
 const Editor: React.FC<EditorProps> = ({ initialContent }) => {
   const [editorState, setEditorState] = React.useState(
     EditorState.createWithContent(
-      initialContent || ContentState.createFromText(''),
+      ContentState.createFromText(initialContent || ''),
     ),
   );
 

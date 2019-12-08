@@ -13,7 +13,6 @@ import {
 } from '@material-ui/core';
 import { Title } from '@material-ui/icons';
 import { Editor, Tooltip } from 'components';
-import { ContentState } from 'draft-js';
 import { BlockState } from 'models';
 import panzoom, { PanZoom } from 'panzoom';
 import React from 'react';
@@ -103,7 +102,7 @@ const Canvas: React.FC<CanvasProps> = () => {
                   id: v4(),
                   top: 0 - y / scale,
                   left: 0 - x / scale,
-                  initialContent: ContentState.createFromText('Hello world'),
+                  initialContent: 'Hello world',
                 }),
               );
             }}
