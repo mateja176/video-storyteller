@@ -12,7 +12,7 @@ export type Draggable = typeof draggables[number];
 
 export const Draggables = toObject(draggables);
 
-export type WithInitialContent = Pick<EditorProps, 'initialContent'>;
+export type WithInitialContent = Pick<EditorProps, 'editorState'>;
 
 export interface DropTextPayload extends WithId, WithInitialContent {}
 
@@ -26,8 +26,8 @@ export type CreateDropText = typeof createDropText;
 export type DropTextAction = ReturnType<CreateDropText>;
 
 export interface WithDropResult {
-  top: number;
-  left: number;
+  initialTop: number;
+  initialLeft: number;
 }
 
 export interface BlockState extends DropTextPayload, WithDropResult {}

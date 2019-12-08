@@ -1,3 +1,6 @@
+import { EditorState } from 'draft-js';
+
 export interface EditorProps {
-  initialContent?: string;
+  editorState: EditorState;
+  setEditorState: (editorState: EditorState) => void;
 }

@@ -13,8 +13,10 @@ import {
 } from '@material-ui/core';
 import { Title } from '@material-ui/icons';
 import { Editor, Tooltip } from 'components';
+import { ContentState, EditorState } from 'draft-js';
 import { BlockState } from 'models';
 import panzoom, { PanZoom } from 'panzoom';
+import { update } from 'ramda';
 import React from 'react';
 import { Rnd } from 'react-rnd';
 import { Flex } from 'rebass';
@@ -100,9 +102,11 @@ const Canvas: React.FC<CanvasProps> = () => {
               setBlockStates(
                 blockStates.concat({
                   id: v4(),
-                  top: 0 - y / scale,
-                  left: 0 - x / scale,
-                  initialContent: 'Hello world',
+                  initialTop: 0 - y / scale,
+                  initialLeft: 0 - x / scale,
+                  editorState: EditorState.createWithContent(
+                    ContentState.createFromText('Hello World'),
+                  ),
                 }),
               );
             }}
@@ -134,11 +138,16 @@ const Canvas: React.FC<CanvasProps> = () => {
           Controls
         </Flex>
         <div ref={canvasRef}>
-          {blockStates.map(({ id, top, left, initialContent }) => (
+          {blockStates.map(({ id, initialTop, initialLeft, editorState }) => (
             <Rnd
               key={id}
               scale={scale}
-              default={{ x: left, y: top, width: 'auto', height: 'auto' }}
+              default={{
+                x: initialLeft,
+                y: initialTop,
+                width: 'auto',
+                height: 'auto',
+              }}
               onResizeStart={pause}
               onDragStart={pause}
               onResizeStop={resume}
@@ -161,7 +170,25 @@ const Canvas: React.FC<CanvasProps> = () => {
               >
                 <CardHeader />
                 <CardContent style={{ paddingTop: 0 }}>
-                  <Editor initialContent={initialContent} />
+                  <Editor
+                    editorState={editorState}
+                    setEditorState={(newEditorState: EditorState) => {
+                      const index = blockStates.findIndex(
+                        block => block.id === id,
+                      );
+
+                      setBlockStates(
+                        update(
+                          index,
+                          {
+                            ...blockStates[index],
+                            editorState: newEditorState,
+                          },
+                          blockStates,
+                        ),
+                      );
+                    }}
+                  />
                 </CardContent>
               </Card>
             </Rnd>

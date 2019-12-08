@@ -4,7 +4,6 @@
 import { Divider, makeStyles } from '@material-ui/core';
 import {
   ContentBlock,
-  ContentState,
   DraftBlockType,
   DraftEditorCommand,
   DraftHandleValue,
@@ -69,13 +68,7 @@ const getBlockStyle = (block: ContentBlock) => {
 
 export type EditorCommand = DraftEditorCommand | 'tab-indent';
 
-const Editor: React.FC<EditorProps> = ({ initialContent }) => {
-  const [editorState, setEditorState] = React.useState(
-    EditorState.createWithContent(
-      ContentState.createFromText(initialContent || ''),
-    ),
-  );
-
+const Editor: React.FC<EditorProps> = ({ editorState, setEditorState }) => {
   const editor = React.useRef<DraftEditor>(null);
 
   const [selection, setSelection] = React.useState<SelectionState>(
