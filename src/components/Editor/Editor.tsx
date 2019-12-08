@@ -18,11 +18,6 @@ import React, { KeyboardEvent } from 'react';
 
 const useStyles = makeStyles({
   editor: {
-    '& .public-DraftEditor-content': {
-      minHeight: 100,
-      minWidth: 200,
-    },
-
     '& .RichEditor-blockquote': {
       borderLeft: '5px solid #eee',
       color: 'grey',
