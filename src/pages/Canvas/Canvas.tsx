@@ -83,10 +83,14 @@ const Canvas: React.FC<CanvasProps> = () => {
     }
   };
   const resume = () => {
-    if (panzoomInstance && panzoomInstance.isPaused()) {
+    if (panzoomInstance && panzoomInstance.isPaused() && !focusedEditorId) {
       panzoomInstance.resume();
     }
   };
+
+  React.useEffect(() => {
+    resume();
+  }, [focusedEditorId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Flex style={{ height: '100%' }}>
