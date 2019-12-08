@@ -6,6 +6,7 @@ import {
   ListItem,
   ListItemIcon,
   makeStyles,
+  Paper,
   useTheme,
 } from '@material-ui/core';
 import { Title } from '@material-ui/icons';
@@ -212,6 +213,17 @@ const Canvas: React.FC<CanvasProps> = () => {
           ))}
         </div>
       </div>
+      <Paper
+        style={{
+          alignSelf: 'right',
+          transition: 'all 500ms ease-in-out',
+          overflow: 'hidden',
+          width: false ? 300 : 0, // eslint-disable-line no-constant-condition
+          whiteSpace: 'nowrap',
+        }}
+      >
+        Left side menu
+      </Paper>
     </Flex>
   );
 };
