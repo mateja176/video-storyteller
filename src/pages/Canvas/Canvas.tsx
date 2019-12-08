@@ -12,7 +12,7 @@ import {
   useTheme,
 } from '@material-ui/core';
 import { Title } from '@material-ui/icons';
-import { Editor, Tooltip } from 'components';
+import { Editor, EditorControls, Tooltip } from 'components';
 import { ContentState, EditorState } from 'draft-js';
 import { BlockState } from 'models';
 import panzoom, { PanZoom } from 'panzoom';
@@ -42,6 +42,10 @@ const Canvas: React.FC<CanvasProps> = () => {
   const theme = useTheme();
 
   const [blockStates, setBlockStates] = React.useState<BlockState[]>([]);
+
+  const [focusedEditorId, setFocusedEditorId] = React.useState('');
+
+  const focusedBlock = blockStates.find(({ id }) => id === focusedEditorId);
 
   const [panzoomInstance, setPanzoomInstance] = React.useState<PanZoom | null>(
     null,
@@ -135,7 +139,27 @@ const Canvas: React.FC<CanvasProps> = () => {
             e.preventDefault();
           }}
         >
-          Controls
+          {focusedBlock && (
+            <EditorControls
+              editorState={focusedBlock.editorState}
+              setEditorState={(newEditorState: EditorState) => {
+                const index = blockStates.findIndex(
+                  block => block.id === focusedEditorId,
+                );
+
+                setBlockStates(
+                  update(
+                    index,
+                    {
+                      ...blockStates[index],
+                      editorState: newEditorState,
+                    },
+                    blockStates,
+                  ),
+                );
+              }}
+            />
+          )}
         </Flex>
         <div ref={canvasRef}>
           {blockStates.map(({ id, initialTop, initialLeft, editorState }) => (
@@ -166,6 +190,13 @@ const Canvas: React.FC<CanvasProps> = () => {
                   boxShadow: 'none',
                   width: '100%',
                   height: '100%',
+                }}
+                onMouseDown={e => {
+                  e.preventDefault();
+
+                  if (focusedEditorId !== id) {
+                    setFocusedEditorId(id);
+                  }
                 }}
               >
                 <CardHeader />

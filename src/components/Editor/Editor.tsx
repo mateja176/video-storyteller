@@ -1,24 +1,20 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 
-import { Divider, makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import {
   ContentBlock,
-  DraftBlockType,
   DraftEditorCommand,
   DraftHandleValue,
-  DraftInlineStyleType,
   DraftStyleMap,
   Editor as DraftEditor,
   EditorState,
   getDefaultKeyBinding,
   Modifier,
-  RichUtils,
 } from 'draft-js';
 import 'draft-js/dist/Draft.css';
 import { EditorProps, Maybe } from 'models';
 import React, { KeyboardEvent } from 'react';
-import Controls from './Controls';
 
 const useStyles = makeStyles({
   editor: {
@@ -98,17 +94,6 @@ const Editor: React.FC<EditorProps> = ({ editorState, setEditorState }) => {
   const mapKeyToEditorCommand = (e: KeyboardEvent): Maybe<EditorCommand> =>
     e.key === 'Tab' ? 'tab-indent' : getDefaultKeyBinding(e);
 
-  const toggleBlockType = (blockType: DraftBlockType) => {
-    const newEditorState = RichUtils.toggleBlockType(editorState, blockType);
-    setEditorState(
-      EditorState.acceptSelection(newEditorState, editorState.getSelection()),
-    );
-  };
-
-  const toggleInlineStyle = (inlineStyle: DraftInlineStyleType) => {
-    setEditorState(RichUtils.toggleInlineStyle(editorState, inlineStyle));
-  };
-
   // If the user changes block type before entering any text, we can
   // either style the placeholder or hide it. Let's just hide it now.
   const contentState = editorState.getCurrentContent();
@@ -129,36 +114,26 @@ const Editor: React.FC<EditorProps> = ({ editorState, setEditorState }) => {
         background: 'transparent',
         cursor: 'text',
       }}
+      className={classes.editor}
+      onClick={focus}
     >
-      <>
-        <Controls
-          editorState={editorState}
-          toggleBlockType={toggleBlockType}
-          toggleInlineStyle={toggleInlineStyle}
-        />
-        <br />
-        <Divider />
-        <br />
-      </>
-      <div className={classes.editor} onClick={focus}>
-        <DraftEditor
-          ref={editor}
-          editorState={editorState}
-          onChange={setEditorState}
-          spellCheck
-          placeholder={!hasText && isUnstyled ? 'Tell a story...' : ''}
-          blockStyleFn={getBlockStyle}
-          customStyleMap={styleMap}
-          handleKeyCommand={handleKeyCommand}
-          keyBindingFn={mapKeyToEditorCommand}
-          onFocus={() => {
-            console.log('focus');
-          }}
-          onBlur={() => {
-            console.log('focus');
-          }}
-        />
-      </div>
+      <DraftEditor
+        ref={editor}
+        editorState={editorState}
+        onChange={setEditorState}
+        spellCheck
+        placeholder={!hasText && isUnstyled ? 'Tell a story...' : ''}
+        blockStyleFn={getBlockStyle}
+        customStyleMap={styleMap}
+        handleKeyCommand={handleKeyCommand}
+        keyBindingFn={mapKeyToEditorCommand}
+        onFocus={() => {
+          console.log('focus');
+        }}
+        onBlur={() => {
+          console.log('focus');
+        }}
+      />
     </div>
   );
 };
