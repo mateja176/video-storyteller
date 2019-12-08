@@ -38,6 +38,8 @@ const Canvas: React.FC<CanvasProps> = () => {
 
   const classes = useStyles();
 
+  const theme = useTheme();
+
   const [blockStates, setBlockStates] = React.useState<BlockState[]>([]);
 
   const [panzoomInstance, setPanzoomInstance] = React.useState<PanZoom | null>(
@@ -80,8 +82,6 @@ const Canvas: React.FC<CanvasProps> = () => {
       panzoomInstance.resume();
     }
   };
-
-  const theme = useTheme();
 
   return (
     <Flex style={{ height: '100%' }}>
@@ -128,6 +128,9 @@ const Canvas: React.FC<CanvasProps> = () => {
           alignItems="center"
           height={50}
           bg={theme.palette.background.paper}
+          onMouseDown={e => {
+            e.preventDefault();
+          }}
         >
           Controls
         </Flex>
