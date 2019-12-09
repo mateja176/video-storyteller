@@ -1,6 +1,9 @@
 import { Action, ActionCreator } from 'redux';
+import { PayloadAction } from 'typesafe-actions';
 
 export type SimpleAction = Action<string>;
+
+export type SimplePayloadAction<P> = PayloadAction<string, P>;
 
 export type CreateSimpleAction = ActionCreator<SimpleAction>;
 

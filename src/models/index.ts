@@ -7,6 +7,8 @@ export * from './actions';
 export * from './components';
 export * from './dnd';
 
+export type ToObject<A extends readonly any[]> = { [a in A[number]]: a };
+
 export type Module = NodeModule & {
   hot: {
     accept(path: string, callback: () => void): void;

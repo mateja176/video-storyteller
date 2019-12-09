@@ -12,22 +12,15 @@ import {
 import { Build, Title } from '@material-ui/icons';
 import { Editor, EditorControls, Tooltip } from 'components';
 import { ContentState, EditorState } from 'draft-js';
-import { BlockState } from 'models';
+import { BlockStates } from 'models';
 import panzoom, { PanZoom } from 'panzoom';
 import { update } from 'ramda';
 import React from 'react';
 import { Rnd } from 'react-rnd';
-import { Box, Flex } from 'rebass';
-import { createDevTools } from 'redux-devtools';
-import { ILogMonitorProps } from 'redux-devtools-log-monitor';
+import { Flex } from 'rebass';
 import { v4 } from 'uuid';
-
-const StoryMonitor = (props: ILogMonitorProps) => {
-  console.log(props);
-  return <Box>Story Monitor</Box>;
-};
-
-const DevTools = createDevTools(<StoryMonitor />);
+import DevTools from './DevTools';
+import store from './store';
 
 const useStyles = makeStyles(theme => ({
   drawer: {
@@ -48,7 +41,7 @@ const Canvas: React.FC<CanvasProps> = () => {
 
   const theme = useTheme();
 
-  const [blockStates, setBlockStates] = React.useState<BlockState[]>([]);
+  const [blockStates, setBlockStates] = React.useState<BlockStates>([]);
 
   const [focusedEditorId, setFocusedEditorId] = React.useState('');
 
@@ -243,7 +236,7 @@ const Canvas: React.FC<CanvasProps> = () => {
             marginTop: 'auto',
           }}
         >
-          <DevTools />
+          <DevTools store={store} />
         </Paper>
       </Flex>
       <Paper

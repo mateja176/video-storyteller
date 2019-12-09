@@ -31,3 +31,4 @@ export interface WithDropResult {
 }
 
 export interface BlockState extends DropTextPayload, WithDropResult {}
+export type BlockStates = BlockState[];
