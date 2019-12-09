@@ -26,8 +26,8 @@ export type CreateDropText = typeof createDropText;
 export type DropTextAction = ReturnType<CreateDropText>;
 
 export interface WithDropResult {
-  initialTop: number;
-  initialLeft: number;
+  top: number;
+  left: number;
 }
 
 export interface BlockState extends DropTextPayload, WithDropResult {}

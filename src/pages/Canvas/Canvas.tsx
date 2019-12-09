@@ -116,8 +116,8 @@ const Canvas: React.FC<CanvasProps> = () => {
               setBlockStates(
                 blockStates.concat({
                   id: v4(),
-                  initialTop: 0 - y / scale,
-                  initialLeft: 0 - x / scale,
+                  top: 0 - y / scale,
+                  left: 0 - x / scale,
                   editorState: EditorState.createWithContent(
                     ContentState.createFromText('Hello World'),
                   ),
@@ -180,13 +180,13 @@ const Canvas: React.FC<CanvasProps> = () => {
           )}
         </Flex>
         <div ref={canvasRef}>
-          {blockStates.map(({ id, initialTop, initialLeft, editorState }) => (
+          {blockStates.map(({ id, top, left, editorState }) => (
             <Rnd
               key={id}
               scale={scale}
               default={{
-                x: initialLeft,
-                y: initialTop,
+                x: left,
+                y: top,
                 width: 'auto',
                 height: 'auto',
               }}
