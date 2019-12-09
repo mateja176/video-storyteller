@@ -1,31 +1,40 @@
-import { BlockState, BlockStates, ToObject } from 'models';
+import { BlockState, BlockStates } from 'models';
 import { update } from 'ramda';
-import { PayloadAction } from 'typesafe-actions';
+import { createAction } from 'typesafe-actions';
 import { Required } from 'utility-types';
-import { createReducer } from 'utils';
+import { createReducer, toObject } from 'utils';
+import { v4 } from 'uuid';
 
 export const initialState: BlockStates = [];
 
-export type CfudActionTypes = ['create', 'focus', 'update', 'delete'];
+export const cfudActionTypes = ['create', 'focus', 'update', 'delete'] as const;
+export const cfudActionType = toObject(cfudActionTypes);
+export type CfudActionType = typeof cfudActionType;
 
-export type CfudActionType = ToObject<CfudActionTypes>;
+export const createCreateAction = createAction(
+  cfudActionType.create,
+  action => (payload: Omit<BlockState, 'id'>) =>
+    action({ ...payload, id: v4() }),
+);
+export type CreateAction = ReturnType<typeof createCreateAction>;
 
-export type CreateAction = PayloadAction<CfudActionType['create'], BlockState>;
+export const createFocusAction = createAction(
+  cfudActionType.focus,
+  action => (payload: BlockState['id']) => action(payload),
+);
+export type FocusAction = ReturnType<typeof createFocusAction>;
 
-export type FocusAction = PayloadAction<
-  CfudActionType['focus'],
-  Pick<BlockState, 'id'>
->;
+export const createUpdateAction = createAction(
+  cfudActionType.update,
+  action => (payload: Required<Partial<BlockState>, 'id'>) => action(payload),
+);
+export type UpdateAction = ReturnType<typeof createUpdateAction>;
 
-export type UpdateAction = PayloadAction<
-  CfudActionType['update'],
-  Required<Partial<BlockState>, 'id'>
->;
-
-export type DeleteAction = PayloadAction<
-  CfudActionType['delete'],
-  Pick<BlockState, 'id'>
->;
+export const createDeleteAction = createAction(
+  cfudActionType.delete,
+  action => (payload: BlockState['id']) => action(payload),
+);
+export type DeleteAction = ReturnType<typeof createDeleteAction>;
 
 export type CudAction = CreateAction | UpdateAction | DeleteAction;
 
@@ -38,6 +47,5 @@ export default createReducer(initialState)<CudAction>({
       ? update(blockIndex, { ...state[blockIndex], ...payload }, state)
       : state;
   },
-  delete: (state, { payload: { id } }) =>
-    state.filter(block => block.id === id),
+  delete: (state, { payload }) => state.filter(({ id }) => id === payload),
 });
