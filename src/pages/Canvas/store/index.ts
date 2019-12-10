@@ -1,3 +1,5 @@
+import { convertFromRaw, EditorState } from 'draft-js';
+import { BlockState } from 'models';
 import { equals } from 'ramda';
 import { useEffect, useState } from 'react';
 import {
@@ -8,7 +10,7 @@ import {
 } from 'redux';
 import { configureStore } from 'redux-starter-kit';
 import { Selector } from 'reselect';
-import blockStates, { BlockStatesAction } from './blockStates';
+import blockStates, { BlockStatesAction, RawBlockState } from './blockStates';
 import scale, { ScaleAction } from './scale';
 
 const actionReducerMap = {
@@ -33,7 +35,16 @@ const store = configureStore({
 
 export default store;
 
-export const selectBlockStates = (state: State) => state.blockStates;
+export const convertFromRawBlockState = ({
+  editorState,
+  ...block
+}: RawBlockState): BlockState => ({
+  ...block,
+  editorState: EditorState.createWithContent(convertFromRaw(editorState)),
+});
+
+export const selectBlockStates = (state: State) =>
+  state.blockStates.map<BlockState>(convertFromRawBlockState);
 export const selectScale = (state: State) => state.scale;
 
 export const useSelector = <R>(selector: Selector<State, R>) => {

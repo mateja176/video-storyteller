@@ -1,3 +1,6 @@
+/* eslint-disable indent */
+
+import { convertToRaw, RawDraftContentState } from 'draft-js';
 import { BlockState, BlockStates } from 'models';
 import { update } from 'ramda';
 import { createAction } from 'typesafe-actions';
@@ -5,7 +8,20 @@ import { Required } from 'utility-types';
 import { createReducer, toObject } from 'utils';
 import { v4 } from 'uuid';
 
-export const initialState: BlockStates = [];
+export type RawBlockState = Omit<BlockState, 'editorState'> & {
+  editorState: RawDraftContentState;
+};
+export type RawBlockStates = RawBlockState[];
+
+export const convertToRawBlockState = ({
+  editorState,
+  ...block
+}: BlockState): RawBlockState => ({
+  ...block,
+  editorState: convertToRaw(editorState.getCurrentContent()),
+});
+
+export const initialState: RawBlockStates = [];
 
 export const cfudActionTypes = ['create', 'focus', 'update', 'delete'] as const;
 export const cfudActionType = toObject(cfudActionTypes);
@@ -13,8 +29,12 @@ export type CfudActionType = typeof cfudActionType;
 
 export const createCreateAction = createAction(
   cfudActionType.create,
-  action => (payload: Omit<BlockState, 'id'>) =>
-    action({ ...payload, id: v4() }),
+  action => ({ editorState, ...payload }: Omit<BlockState, 'id'>) =>
+    action({
+      ...payload,
+      id: v4(),
+      editorState: convertToRaw(editorState.getCurrentContent()),
+    }),
 );
 export type CreateAction = ReturnType<typeof createCreateAction>;
 
@@ -26,7 +46,20 @@ export type FocusAction = ReturnType<typeof createFocusAction>;
 
 export const createUpdateAction = createAction(
   cfudActionType.update,
-  action => (payload: Required<Partial<BlockState>, 'id'>) => action(payload),
+  action => (payload: Required<Partial<BlockState>, 'id'>) => {
+    const { editorState, ...rest } = payload;
+
+    return editorState
+      ? // eslint-disable-next-line max-len
+        // * <K extends Optional<keyof BlockState>>({ editorState, ...block }: Pick<RawBlockState, 'editorState'> & Pick<BlockState, K>): Pick<RawBlockState, 'editorState'> & Pick<RawBlockState, K>
+        action(
+          convertToRawBlockState({
+            editorState,
+            ...rest,
+          } as BlockState),
+        )
+      : action(payload as RawBlockState);
+  },
 );
 export type UpdateAction = ReturnType<typeof createUpdateAction>;
 
@@ -38,7 +71,8 @@ export type DeleteAction = ReturnType<typeof createDeleteAction>;
 
 export const createSetBlockStates = createAction(
   'blockStates/set',
-  action => (payload: BlockStates) => action(payload),
+  action => (payload: BlockStates) =>
+    action(payload.map(convertToRawBlockState)),
 );
 export type SetBlockStatesAction = ReturnType<typeof createSetBlockStates>;
 
@@ -53,9 +87,13 @@ export default createReducer(initialState)<BlockStatesAction>({
   update: (state, { payload }) => {
     const blockIndex = state.findIndex(block => block.id === payload.id);
 
-    return blockIndex
-      ? update(blockIndex, { ...state[blockIndex], ...payload }, state)
-      : state;
+    const updatedBlocks = update(
+      blockIndex,
+      { ...state[blockIndex], ...payload },
+      state,
+    );
+
+    return blockIndex ? updatedBlocks : state;
   },
   delete: (state, { payload }) => state.filter(({ id }) => id === payload),
   'blockStates/set': (_, { payload }) => payload,

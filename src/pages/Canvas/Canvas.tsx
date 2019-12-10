@@ -13,7 +13,6 @@ import { Build, Title } from '@material-ui/icons';
 import { Editor, EditorControls, Tooltip } from 'components';
 import { ContentState, EditorState } from 'draft-js';
 import panzoom, { PanZoom } from 'panzoom';
-import { update } from 'ramda';
 import React from 'react';
 import { Rnd } from 'react-rnd';
 import { Flex } from 'rebass';
@@ -25,7 +24,7 @@ import store, {
   useActions,
   useSelector,
 } from './store';
-import { createSetBlockStates } from './store/blockStates';
+import { createCreateAction, createUpdateAction } from './store/blockStates';
 import { createSetScale } from './store/scale';
 
 const useStyles = makeStyles(theme => ({
@@ -47,9 +46,10 @@ const Canvas: React.FC<CanvasProps> = () => {
 
   const theme = useTheme();
 
-  const { setScale, setBlockStates } = useActions({
+  const { setScale, createBlockState, updateBlockState } = useActions({
     setScale: createSetScale,
-    setBlockStates: createSetBlockStates,
+    createBlockState: createCreateAction,
+    updateBlockState: createUpdateAction,
   });
 
   const blockStates = useSelector(selectBlockStates);
@@ -124,16 +124,14 @@ const Canvas: React.FC<CanvasProps> = () => {
             button
             onClick={() => {
               const { x, y } = panzoomInstance!.getTransform();
-              setBlockStates(
-                blockStates.concat({
-                  id: v4(),
-                  top: 0 - y / scale,
-                  left: 0 - x / scale,
-                  editorState: EditorState.createWithContent(
-                    ContentState.createFromText('Hello World'),
-                  ),
-                }),
-              );
+              createBlockState({
+                id: v4(),
+                top: 0 - y / scale,
+                left: 0 - x / scale,
+                editorState: EditorState.createWithContent(
+                  ContentState.createFromText('Hello World'),
+                ),
+              });
             }}
           >
             <Tooltip title="Add text block">
@@ -172,20 +170,10 @@ const Canvas: React.FC<CanvasProps> = () => {
             <EditorControls
               editorState={focusedBlock.editorState}
               setEditorState={(newEditorState: EditorState) => {
-                const index = blockStates.findIndex(
-                  block => block.id === focusedEditorId,
-                );
-
-                setBlockStates(
-                  update(
-                    index,
-                    {
-                      ...blockStates[index],
-                      editorState: newEditorState,
-                    },
-                    blockStates,
-                  ),
-                );
+                updateBlockState({
+                  id: focusedBlock.id,
+                  editorState: newEditorState,
+                });
               }}
             />
           )}
@@ -215,19 +203,8 @@ const Canvas: React.FC<CanvasProps> = () => {
             >
               <Editor
                 editorState={editorState}
-                setEditorState={(newEditorState: EditorState) => {
-                  const index = blockStates.findIndex(block => block.id === id);
-
-                  setBlockStates(
-                    update(
-                      index,
-                      {
-                        ...blockStates[index],
-                        editorState: newEditorState,
-                      },
-                      blockStates,
-                    ),
-                  );
+                setEditorState={newEditorState => {
+                  updateBlockState({ id, editorState: newEditorState });
                 }}
                 onFocus={() => {
                   setFocusedEditorId(id);
