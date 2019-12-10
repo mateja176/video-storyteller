@@ -12,7 +12,6 @@ import {
 import { Build, Title } from '@material-ui/icons';
 import { Editor, EditorControls, Tooltip } from 'components';
 import { ContentState, EditorState } from 'draft-js';
-import { BlockStates } from 'models';
 import panzoom, { PanZoom } from 'panzoom';
 import { update } from 'ramda';
 import React from 'react';
@@ -20,7 +19,13 @@ import { Rnd } from 'react-rnd';
 import { Flex } from 'rebass';
 import { v4 } from 'uuid';
 import DevTools from './DevTools';
-import store, { selectScale, useActions, useSelector } from './store';
+import store, {
+  selectBlockStates,
+  selectScale,
+  useActions,
+  useSelector,
+} from './store';
+import { createSetBlockStates } from './store/blockStates';
 import { createSetScale } from './store/scale';
 
 const useStyles = makeStyles(theme => ({
@@ -42,9 +47,12 @@ const Canvas: React.FC<CanvasProps> = () => {
 
   const theme = useTheme();
 
-  const { setScale } = useActions({ setScale: createSetScale });
+  const { setScale, setBlockStates } = useActions({
+    setScale: createSetScale,
+    setBlockStates: createSetBlockStates,
+  });
 
-  const [blockStates, setBlockStates] = React.useState<BlockStates>([]);
+  const blockStates = useSelector(selectBlockStates);
 
   const [focusedEditorId, setFocusedEditorId] = React.useState('');
 
@@ -78,7 +86,7 @@ const Canvas: React.FC<CanvasProps> = () => {
     return () => {
       instance.dispose();
     };
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const pause = () => {
     if (panzoomInstance && !panzoomInstance.isPaused()) {

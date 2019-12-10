@@ -36,9 +36,19 @@ export const createDeleteAction = createAction(
 );
 export type DeleteAction = ReturnType<typeof createDeleteAction>;
 
-export type CudAction = CreateAction | UpdateAction | DeleteAction;
+export const createSetBlockStates = createAction(
+  'blockStates/set',
+  action => (payload: BlockStates) => action(payload),
+);
+export type SetBlockStatesAction = ReturnType<typeof createSetBlockStates>;
 
-export default createReducer(initialState)<CudAction>({
+export type BlockStatesAction =
+  | CreateAction
+  | UpdateAction
+  | DeleteAction
+  | SetBlockStatesAction;
+
+export default createReducer(initialState)<BlockStatesAction>({
   create: (state, { payload }) => state.concat(payload),
   update: (state, { payload }) => {
     const blockIndex = state.findIndex(block => block.id === payload.id);
@@ -48,4 +58,5 @@ export default createReducer(initialState)<CudAction>({
       : state;
   },
   delete: (state, { payload }) => state.filter(({ id }) => id === payload),
+  'blockStates/set': (_, { payload }) => payload,
 });

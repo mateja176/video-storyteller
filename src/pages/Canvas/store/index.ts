@@ -8,7 +8,7 @@ import {
 } from 'redux';
 import { configureStore } from 'redux-starter-kit';
 import { Selector } from 'reselect';
-import blockStates, { CudAction } from './blockStates';
+import blockStates, { BlockStatesAction } from './blockStates';
 import scale, { ScaleAction } from './scale';
 
 const actionReducerMap = {
@@ -22,7 +22,7 @@ export type State = {
   [key in keyof ActionReducerMap]: ReturnType<ActionReducerMap[key]>;
 };
 
-export type Action = CudAction | ScaleAction;
+export type Action = BlockStatesAction | ScaleAction;
 
 const reducer: Reducer<State, Action> = combineReducers(actionReducerMap);
 
