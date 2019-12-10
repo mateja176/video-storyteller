@@ -5,14 +5,14 @@ export const initialState = 1;
 
 export type Scale = typeof initialState;
 
-export const createUpdateScale = createAction(
-  'scale/update',
+export const createSetScale = createAction(
+  'scale/set',
   action => (payload: Scale) => action(payload),
 );
-export type UpdateScaleAction = ReturnType<typeof createUpdateScale>;
+export type SetScaleAction = ReturnType<typeof createSetScale>;
 
-export type ScaleAction = UpdateScaleAction;
+export type ScaleAction = SetScaleAction;
 
 export default createReducer(initialState)<ScaleAction>({
-  'scale/update': (state, { payload }) => payload,
+  'scale/set': (state, { payload }) => payload,
 });

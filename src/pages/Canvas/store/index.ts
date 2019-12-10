@@ -1,7 +1,11 @@
-import { useEffect } from '@storybook/addons';
 import { equals } from 'ramda';
-import { useState } from 'react';
-import { combineReducers, Reducer } from 'redux';
+import { useEffect, useState } from 'react';
+import {
+  ActionCreatorsMapObject,
+  bindActionCreators,
+  combineReducers,
+  Reducer,
+} from 'redux';
 import { configureStore } from 'redux-starter-kit';
 import { Selector } from 'reselect';
 import blockStates, { CudAction } from './blockStates';
@@ -47,3 +51,6 @@ export const useSelector = <R>(selector: Selector<State, R>) => {
 
   return result;
 };
+
+export const useActions = (actionCreator: ActionCreatorsMapObject<Action>) =>
+  bindActionCreators(actionCreator, store.dispatch);

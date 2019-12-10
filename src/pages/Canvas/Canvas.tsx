@@ -20,7 +20,8 @@ import { Rnd } from 'react-rnd';
 import { Flex } from 'rebass';
 import { v4 } from 'uuid';
 import DevTools from './DevTools';
-import store from './store';
+import store, { selectScale, useActions, useSelector } from './store';
+import { createSetScale } from './store/scale';
 
 const useStyles = makeStyles(theme => ({
   drawer: {
@@ -41,6 +42,8 @@ const Canvas: React.FC<CanvasProps> = () => {
 
   const theme = useTheme();
 
+  const { setScale } = useActions({ setScale: createSetScale });
+
   const [blockStates, setBlockStates] = React.useState<BlockStates>([]);
 
   const [focusedEditorId, setFocusedEditorId] = React.useState('');
@@ -51,7 +54,7 @@ const Canvas: React.FC<CanvasProps> = () => {
     null,
   );
 
-  const [scale, setScale] = React.useState(1);
+  const scale = useSelector(selectScale);
 
   React.useEffect(() => {
     const instance = panzoom(canvasRef.current!, {
