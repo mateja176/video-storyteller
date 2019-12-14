@@ -8,7 +8,7 @@ import { debounce } from 'lodash';
 import panzoom, { PanZoom } from 'panzoom';
 import React from 'react';
 import { Rnd } from 'react-rnd';
-import { Flex } from 'rebass';
+import { Flex, Box } from 'rebass';
 import DevTools from './DevTools';
 import store, { selectBlockStates, selectScale, useActions, useSelector } from './store';
 import { createCreateAction, createUpdateAction } from './store/blockStates';
@@ -172,66 +172,68 @@ const Canvas: React.FC<CanvasProps> = () => {
             />
           )}
         </Flex>
-        <div ref={canvasRef}>
-          {blockStates.map(({ id, top, left, editorState }) => (
-            <Rnd
-              key={id}
-              scale={scale}
-              default={{
-                x: left,
-                y: top,
-                width: 'auto',
-                height: 'auto',
-              }}
-              style={{
-                overflow: 'hidden',
-                border: '1px solid red',
-                display: 'inline-block',
-                padding: 15,
-              }}
-              onResizeStart={pause}
-              onDragStart={pause}
-              onResizeStop={resume}
-              onDragStop={(e, dragStopEvent) => {
-                const { x, y } = panzoomInstance!.getTransform();
-
-                const newTop = dragStopEvent.y + y / scale; // - controlsHeight / scale;
-                const newLeft = dragStopEvent.x + x / scale;
-
-                updateBlockState({
-                  id,
-                  top: newTop,
-                  left: newLeft,
-                });
-
-                resume();
-              }}
-              disableDragging={focusedEditorId === id || disableDragging}
-            >
-              <Editor
-                editorState={focusedEditorId === id ? focusedEditorState : editorState}
-                setEditorState={setFocusedEditorState}
-                onFocus={() => {
-                  setFocusedEditorId(id);
-
-                  const selected = blockStates.find(block => block.id === id)!.editorState;
-                  setFocusedEditorState(selected);
+        <Box height="100%" style={{ overflow: 'hidden' }}>
+          <div ref={canvasRef}>
+            {blockStates.map(({ id, top, left, editorState }) => (
+              <Rnd
+                key={id}
+                scale={scale}
+                default={{
+                  x: left,
+                  y: top,
+                  width: 'auto',
+                  height: 'auto',
                 }}
-                onBlur={() => {
-                  setFocusedEditorId('');
+                style={{
+                  overflow: 'hidden',
+                  border: '1px solid red',
+                  display: 'inline-block',
+                  padding: 15,
+                }}
+                onResizeStart={pause}
+                onDragStart={pause}
+                onResizeStop={resume}
+                onDragStop={(e, dragStopEvent) => {
+                  const { x, y } = panzoomInstance!.getTransform();
 
-                  updateBlockState({ id, editorState: focusedEditorState });
+                  const newTop = dragStopEvent.y + y / scale; // - controlsHeight / scale;
+                  const newLeft = dragStopEvent.x + x / scale;
+
+                  updateBlockState({
+                    id,
+                    top: newTop,
+                    left: newLeft,
+                  });
+
+                  resume();
                 }}
-                onMouseEnter={() => {
-                  setDisableDragging(true);
-                }}
-                onMouseLeave={() => {
-                  setDisableDragging(false);
-                }}
-              />
-            </Rnd>
-          ))}
-        </div>
+                disableDragging={focusedEditorId === id || disableDragging}
+              >
+                <Editor
+                  editorState={focusedEditorId === id ? focusedEditorState : editorState}
+                  setEditorState={setFocusedEditorState}
+                  onFocus={() => {
+                    setFocusedEditorId(id);
+
+                    const selected = blockStates.find(block => block.id === id)!.editorState;
+                    setFocusedEditorState(selected);
+                  }}
+                  onBlur={() => {
+                    setFocusedEditorId('');
+
+                    updateBlockState({ id, editorState: focusedEditorState });
+                  }}
+                  onMouseEnter={() => {
+                    setDisableDragging(true);
+                  }}
+                  onMouseLeave={() => {
+                    setDisableDragging(false);
+                  }}
+                />
+              </Rnd>
+            ))}
+          </div>
+        </Box>
         <Paper
           style={{
             height: storyMonitorOpen ? 250 : 0,
