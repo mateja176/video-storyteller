@@ -14,6 +14,8 @@ import store, { selectBlockStates, selectScale, useActions, useSelector } from '
 import { createCreateAction, createUpdateAction } from './store/blockStates';
 import { createSetScale } from './store/scale';
 
+const controlsHeight = 50;
+
 const useStyles = makeStyles(theme => ({
   drawer: {
     width: theme.spacing(7),
@@ -157,7 +159,7 @@ const Canvas: React.FC<CanvasProps> = () => {
       >
         <Flex
           alignItems="center"
-          height={50}
+          height={controlsHeight}
           bg={theme.palette.background.paper}
           onMouseDown={e => {
             e.preventDefault();
@@ -190,7 +192,20 @@ const Canvas: React.FC<CanvasProps> = () => {
               onResizeStart={pause}
               onDragStart={pause}
               onResizeStop={resume}
-              onDragStop={resume}
+              onDragStop={(e, dragStopEvent) => {
+                const { x, y } = panzoomInstance!.getTransform();
+
+                const newTop = dragStopEvent.y + y / scale; // - controlsHeight / scale;
+                const newLeft = dragStopEvent.x + x / scale;
+
+                updateBlockState({
+                  id,
+                  top: newTop,
+                  left: newLeft,
+                });
+
+                resume();
+              }}
               disableDragging={focusedEditorId === id || disableDragging}
             >
               <Editor
