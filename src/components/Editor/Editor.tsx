@@ -2,16 +2,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 
 import { makeStyles } from '@material-ui/core';
-import {
-  ContentBlock,
-  DraftEditorCommand,
-  DraftHandleValue,
-  DraftStyleMap,
-  Editor as DraftEditor,
-  EditorState,
-  getDefaultKeyBinding,
-  Modifier,
-} from 'draft-js';
+import { ContentBlock, DraftEditorCommand, DraftHandleValue, DraftStyleMap, Editor as DraftEditor, EditorState, getDefaultKeyBinding, Modifier } from 'draft-js';
 import 'draft-js/dist/Draft.css';
 import { EditorProps, Maybe } from 'models';
 import React, { KeyboardEvent } from 'react';
@@ -58,11 +49,13 @@ const getBlockStyle = (block: ContentBlock) => {
 
 export type EditorCommand = DraftEditorCommand | 'tab-indent';
 
-const Editor: React.FC<EditorProps> = ({
+const Editor: React.FC<EditorProps & Pick<React.HTMLProps<HTMLDivElement>, 'onMouseEnter' | 'onMouseLeave'>> = ({
   editorState,
   setEditorState,
   onFocus,
   onBlur,
+  onMouseEnter,
+  onMouseLeave,
 }) => {
   const editor = React.useRef<DraftEditor>(null);
 
@@ -117,6 +110,8 @@ const Editor: React.FC<EditorProps> = ({
       }}
       className={classes.editor}
       onClick={focus}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
     >
       <DraftEditor
         ref={editor}

@@ -79,20 +79,28 @@ const Canvas: React.FC<CanvasProps> = () => {
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const [disableDragging, setDisableDragging] = React.useState(false);
+
   const pause = () => {
     if (panzoomInstance && !panzoomInstance.isPaused()) {
       panzoomInstance.pause();
     }
   };
   const resume = () => {
-    if (panzoomInstance && panzoomInstance.isPaused() && !focusedEditorId) {
+    if (panzoomInstance && panzoomInstance.isPaused() && !focusedEditorId && !disableDragging) {
       panzoomInstance.resume();
     }
   };
 
   React.useEffect(() => {
+    if (disableDragging) {
+      pause();
+    }
+  }, [disableDragging]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  React.useEffect(() => {
     resume();
-  }, [focusedEditorId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [focusedEditorId, disableDragging]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [storyMonitorOpen, setStoryMonitorOpen] = React.useState(false);
 
@@ -185,7 +193,7 @@ const Canvas: React.FC<CanvasProps> = () => {
               onDragStart={pause}
               onResizeStop={resume}
               onDragStop={resume}
-              disableDragging={Boolean(focusedEditorId)}
+              disableDragging={focusedEditorId === id || disableDragging}
             >
               <Editor
                 editorState={focusedEditorId === id ? focusedEditorState : editorState}
@@ -200,6 +208,12 @@ const Canvas: React.FC<CanvasProps> = () => {
                   setFocusedEditorId('');
 
                   updateBlockState({ id, editorState: focusedEditorState });
+                }}
+                onMouseEnter={() => {
+                  setDisableDragging(true);
+                }}
+                onMouseLeave={() => {
+                  setDisableDragging(false);
                 }}
               />
             </Rnd>
