@@ -3,13 +3,12 @@
 import { Drawer, List, ListItem, ListItemIcon, makeStyles, Paper, useTheme } from '@material-ui/core';
 import { Build, Title } from '@material-ui/icons';
 import { Editor, EditorControls, Tooltip } from 'components';
-import { ContentState, EditorState } from 'draft-js';
+import { EditorState } from 'draft-js';
 import { debounce } from 'lodash';
 import panzoom, { PanZoom } from 'panzoom';
 import React from 'react';
 import { Rnd } from 'react-rnd';
 import { Flex } from 'rebass';
-import { v4 } from 'uuid';
 import DevTools from './DevTools';
 import store, { selectBlockStates, selectScale, useActions, useSelector } from './store';
 import { createCreateAction, createUpdateAction } from './store/blockStates';
@@ -128,9 +127,7 @@ const Canvas: React.FC<CanvasProps> = () => {
               createBlockState({
                 top: 0 - y / scale,
                 left: 0 - x / scale,
-                editorState: EditorState.createWithContent(
-                  ContentState.createFromText('Hello World'),
-                ),
+                editorState: 'Hello World',
               });
             }}
           >

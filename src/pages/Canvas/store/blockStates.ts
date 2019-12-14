@@ -1,6 +1,6 @@
 /* eslint-disable indent */
 
-import { convertToRaw, RawDraftContentState } from 'draft-js';
+import { ContentState, convertToRaw, RawDraftContentState } from 'draft-js';
 import { BlockState, BlockStates } from 'models';
 import { update } from 'ramda';
 import { createAction } from 'typesafe-actions';
@@ -29,11 +29,11 @@ export type CfudActionType = typeof cfudActionType;
 
 export const createCreateAction = createAction(
   cfudActionType.create,
-  action => ({ editorState, ...payload }: Omit<BlockState, 'id'>) =>
+  action => ({ editorState, ...payload }: Omit<BlockState, 'id' | 'editorState'> & { editorState: string }) =>
     action({
       ...payload,
       id: v4(),
-      editorState: convertToRaw(editorState.getCurrentContent()),
+      editorState: convertToRaw(ContentState.createFromText(editorState)),
     }),
 );
 export type CreateAction = ReturnType<typeof createCreateAction>;
