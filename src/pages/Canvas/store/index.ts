@@ -35,6 +35,7 @@ export const convertFromRawBlockState = ({
   ...block
 }: RawBlockState): BlockState => ({
   ...block,
+  // eslint-disable-next-line max-len
   editorState: EditorState.moveSelectionToEnd(EditorState.createWithContent(convertFromRaw(editorState))),
 });
 

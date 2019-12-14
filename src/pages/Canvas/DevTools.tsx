@@ -8,7 +8,7 @@ import { createDevTools } from 'redux-devtools';
 import { ActionCreators as InstrumentActionCreators } from 'redux-devtools-instrument';
 import { toObject } from 'utils';
 
-export interface MonitorState {}
+export interface MonitorState { }
 
 export type ActionId = number;
 
@@ -72,21 +72,21 @@ export interface IActionCreators {
   ):
     | never
     | {
-        type: ActionType['PERFORM_ACTION'];
-        action: ActionById;
-        timestamp: string;
-        stack: ActionsById;
-      };
+      type: ActionType['PERFORM_ACTION'];
+      action: ActionById;
+      timestamp: string;
+      stack: ActionsById;
+    };
 
-  reset(): { type: ActionType['RESET']; timestamp: string };
+  reset(): { type: ActionType['RESET']; timestamp: string; };
 
-  rollback(): { type: ActionType['ROLLBACK']; timestamp: string };
+  rollback(): { type: ActionType['ROLLBACK']; timestamp: string; };
 
-  commit(): { type: ActionType['COMMIT']; timestamp: string };
+  commit(): { type: ActionType['COMMIT']; timestamp: string; };
 
-  sweep(): { type: ActionType['SWEEP'] };
+  sweep(): { type: ActionType['SWEEP']; };
 
-  toggleAction(id: number): { type: ActionType['TOGGLE_ACTION']; id: number };
+  toggleAction(id: number): { type: ActionType['TOGGLE_ACTION']; id: number; };
 
   setActionsActive(
     start: number,
@@ -110,11 +110,11 @@ export interface IActionCreators {
 
   jumpToState(
     index: number,
-  ): { type: ActionType['JUMP_TO_STATE']; index: number };
+  ): { type: ActionType['JUMP_TO_STATE']; index: number; };
 
   jumpToAction(
     actionId: ActionId,
-  ): { type: ActionType['JUMP_TO_ACTION']; actionId: ActionId };
+  ): { type: ActionType['JUMP_TO_ACTION']; actionId: ActionId; };
 
   importState(
     nextLiftedState: MonitorProps['monitorState'],
@@ -127,16 +127,16 @@ export interface IActionCreators {
 
   lockChanges(
     status: boolean,
-  ): { type: ActionType['LOCK_CHANGES']; status: boolean };
+  ): { type: ActionType['LOCK_CHANGES']; status: boolean; };
 
   pauseRecording(
     status: boolean,
-  ): { type: ActionType['PAUSE_RECORDING']; status: boolean };
+  ): { type: ActionType['PAUSE_RECORDING']; status: boolean; };
 }
 
 const StoryMonitor = (props: MonitorProps) => {
   const { dispatch } = props;
-  console.log(props);
+  console.log(props); // eslint-disable-line no-console
   return (
     <Box>
       <Button
