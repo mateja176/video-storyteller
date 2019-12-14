@@ -126,7 +126,6 @@ const Canvas: React.FC<CanvasProps> = () => {
             onClick={() => {
               const { x, y } = panzoomInstance!.getTransform();
               createBlockState({
-                id: v4(),
                 top: 0 - y / scale,
                 left: 0 - x / scale,
                 editorState: EditorState.createWithContent(

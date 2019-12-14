@@ -59,5 +59,6 @@ export const useSelector = <R>(selector: Selector<State, R>) => {
   return result;
 };
 
-export const useActions = (actionCreator: ActionCreatorsMapObject<Action>) =>
+// eslint-disable-next-line max-len
+export const useActions = <MapObject extends ActionCreatorsMapObject<Action>>(actionCreator: MapObject) =>
   bindActionCreators(actionCreator, store.dispatch);

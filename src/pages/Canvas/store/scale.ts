@@ -1,9 +1,9 @@
 import { createAction } from 'typesafe-actions';
 import { createReducer } from 'utils';
 
-export const initialState = 1;
+export type Scale = number;
 
-export type Scale = typeof initialState;
+export const initialState: Scale = 1;
 
 export const createSetScale = createAction(
   'scale/set',
