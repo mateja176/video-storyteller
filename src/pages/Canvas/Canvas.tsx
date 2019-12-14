@@ -44,9 +44,10 @@ const Canvas: React.FC<CanvasProps> = () => {
 
   const blockStates = useSelector(selectBlockStates);
 
-  const [focusedEditorId, setFocusedEditorId] = React.useState('');
+  // eslint-disable-next-line max-len
+  const [focusedEditorState, setFocusedEditorState] = React.useState<EditorState>(EditorState.createEmpty());
 
-  const focusedBlock = blockStates.find(({ id }) => id === focusedEditorId);
+  const [focusedEditorId, setFocusedEditorId] = React.useState('');
 
   const [panzoomInstance, setPanzoomInstance] = React.useState<PanZoom | null>(
     null,
@@ -156,15 +157,10 @@ const Canvas: React.FC<CanvasProps> = () => {
             e.preventDefault();
           }}
         >
-          {focusedBlock && (
+          {focusedEditorId && (
             <EditorControls
-              editorState={focusedBlock.editorState}
-              setEditorState={(newEditorState: EditorState) => {
-                updateBlockState({
-                  id: focusedBlock.id,
-                  editorState: newEditorState,
-                });
-              }}
+              editorState={focusedEditorState}
+              setEditorState={setFocusedEditorState}
             />
           )}
         </Flex>
@@ -192,15 +188,18 @@ const Canvas: React.FC<CanvasProps> = () => {
               disableDragging={Boolean(focusedEditorId)}
             >
               <Editor
-                editorState={editorState}
-                setEditorState={newEditorState => {
-                  updateBlockState({ id, editorState: newEditorState });
-                }}
+                editorState={focusedEditorId === id ? focusedEditorState : editorState}
+                setEditorState={setFocusedEditorState}
                 onFocus={() => {
                   setFocusedEditorId(id);
+
+                  const selected = blockStates.find(block => block.id === id)!.editorState;
+                  setFocusedEditorState(selected);
                 }}
                 onBlur={() => {
                   setFocusedEditorId('');
+
+                  updateBlockState({ id, editorState: focusedEditorState });
                 }}
               />
             </Rnd>
