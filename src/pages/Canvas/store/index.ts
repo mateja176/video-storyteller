@@ -2,12 +2,7 @@ import { convertFromRaw, EditorState } from 'draft-js';
 import { BlockState } from 'models';
 import { equals } from 'ramda';
 import { useEffect, useState } from 'react';
-import {
-  ActionCreatorsMapObject,
-  bindActionCreators,
-  combineReducers,
-  Reducer,
-} from 'redux';
+import { ActionCreatorsMapObject, bindActionCreators, combineReducers, Reducer } from 'redux';
 import { configureStore } from 'redux-starter-kit';
 import { Selector } from 'reselect';
 import blockStates, { BlockStatesAction, RawBlockState } from './blockStates';
@@ -40,7 +35,7 @@ export const convertFromRawBlockState = ({
   ...block
 }: RawBlockState): BlockState => ({
   ...block,
-  editorState: EditorState.createWithContent(convertFromRaw(editorState)),
+  editorState: EditorState.moveSelectionToEnd(EditorState.createWithContent(convertFromRaw(editorState))),
 });
 
 export const selectBlockStates = (state: State) =>
