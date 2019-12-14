@@ -87,13 +87,15 @@ export default createReducer(initialState)<BlockStatesAction>({
   update: (state, { payload }) => {
     const blockIndex = state.findIndex(block => block.id === payload.id);
 
+    const updatedBlock = { ...state[blockIndex], ...payload };
+
     const updatedBlocks = update(
       blockIndex,
-      { ...state[blockIndex], ...payload },
+      updatedBlock,
       state,
     );
 
-    return blockIndex ? updatedBlocks : state;
+    return updatedBlocks;
   },
   delete: (state, { payload }) => state.filter(({ id }) => id === payload),
   'blockStates/set': (_, { payload }) => payload,
