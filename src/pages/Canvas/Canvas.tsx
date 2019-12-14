@@ -67,6 +67,8 @@ const Canvas: React.FC<CanvasProps> = () => {
       },
     });
 
+    instance.zoomAbs(0, 0, scale);
+
     setPanzoomInstance(instance);
 
     instance.getTransform();
