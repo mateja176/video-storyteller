@@ -54,7 +54,7 @@ export const useSelector = <R>(selector: Selector<State, R>) => {
       }
     });
     return unsubscribe;
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [result]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return result;
 };
