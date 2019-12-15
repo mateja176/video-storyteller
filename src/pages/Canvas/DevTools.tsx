@@ -185,17 +185,17 @@ const StoryMonitor = (props: MonitorProps) => {
           Reset
         </Button>
       </Flex>
-      <Flex style={{ overflowX: 'scroll' }} width="100%" height="100%">
+      <Flex style={{ overflowX: 'auto' }} width="100%" height="100%">
         {Object
           .values(actionsById)
           .filter(isEditableActionById)
           .map(({ timestamp, action }) => (
             <Box
               key={timestamp}
-              mt={2}
-              mb={2}
-              mr={2}
-              height="100%"
+              mt={10}
+              mb={10}
+              mr={10}
+              height="calc(100% - 20px)"
             >
               <Card
                 style={{
@@ -205,16 +205,17 @@ const StoryMonitor = (props: MonitorProps) => {
                 }}
 
               >
-                {isCfudAction(action as EditableAction) && (
-                  <CardContent>
-                    <Typography>
-                      Type: {action.type}
-                    </Typography>
+
+                <CardContent>
+                  <Typography>
+                    Type: {action.type}
+                  </Typography>
+                  {isCfudAction(action as EditableAction) && (
                     <Typography>
                       Id: {(action as CfudAction).payload.id}
                     </Typography>
-                  </CardContent>
-                )}
+                  )}
+                </CardContent>
               </Card>
             </Box>
           ))}
