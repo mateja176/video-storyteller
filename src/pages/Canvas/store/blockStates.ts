@@ -39,9 +39,10 @@ export const createCreateAction = createAction(
 );
 export type CreateAction = ReturnType<typeof createCreateAction>;
 
+type WithId = Pick<BlockState, 'id'>;
 export const createFocusAction = createAction(
   cfudActionType.focus,
-  action => (payload: BlockState['id']) => action(payload),
+  action => (payload: WithId) => action(payload),
 );
 export type FocusAction = ReturnType<typeof createFocusAction>;
 
@@ -66,7 +67,7 @@ export type UpdateAction = ReturnType<typeof createUpdateAction>;
 
 export const createDeleteAction = createAction(
   cfudActionType.delete,
-  action => (payload: BlockState['id']) => action(payload),
+  action => (payload: WithId) => action(payload),
 );
 export type DeleteAction = ReturnType<typeof createDeleteAction>;
 
@@ -102,6 +103,6 @@ export default createReducer(initialState)<BlockStatesReducerAction>({
 
     return updatedBlocks;
   },
-  delete: (state, { payload }) => state.filter(({ id }) => id === payload),
+  delete: (state, { payload }) => state.filter(({ id }) => id === payload.id),
   'blockStates/set': (_, { payload }) => payload,
 });

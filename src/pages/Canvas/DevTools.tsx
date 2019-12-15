@@ -1,28 +1,51 @@
-import { Divider } from '@material-ui/core';
+import { Card, CardContent, CardHeader, Typography } from '@material-ui/core';
 import color from 'color';
 import { Button } from 'components';
 import { BlockStates } from 'models';
 import React from 'react';
 import { Box, Flex } from 'rebass';
-import { Action, Dispatch } from 'redux';
+import { Dispatch } from 'redux';
 import { createDevTools } from 'redux-devtools';
 // @ts-ignore
 import { ActionCreators as InstrumentActionCreators } from 'redux-devtools-instrument';
+import { Tuple } from 'ts-toolbelt';
+import { PayloadAction } from 'typesafe-actions';
 import { toObject } from 'utils';
-import { CfudActionType, cfudActionTypes } from './store/blockStates';
+import { Action } from './store';
+import { CfudAction, CfudActionType, cfudActionTypes, CfudActionTypes } from './store/blockStates';
+import { ScaleAction, scaleActionTypes, ScaleActionTypes } from './store/scale';
+
+type EditableActionTypes = Tuple.Concat<CfudActionTypes, ScaleActionTypes>;
+type EditableActionType = EditableActionTypes[number];
+const editableActionTypes = [...cfudActionTypes, ...scaleActionTypes] as EditableActionTypes;
+const isEditableActionType = (type: string): type is EditableActionType =>
+  editableActionTypes.includes(type as EditableActionType);
+
+type EditableAction = CfudAction | ScaleAction;
+type EditableActionPayload = EditableAction['payload'];
+
+type EditableActionById = GenericActionById<EditableActionType, EditableActionPayload>;
+
+const isEditableActionById = (action: ActionById): action is EditableActionById =>
+  isEditableActionType(action.action.type);
 
 const isCfudActionType = (type: string): type is CfudActionType =>
   cfudActionTypes.includes(type as CfudActionType);
+
+const isCfudAction = (action: EditableAction): action is CfudAction =>
+  isCfudActionType(action.type);
 
 export interface MonitorState { }
 
 export type ActionId = number;
 
-export interface ActionById {
+export interface GenericActionById<Type extends string, Payload extends any> {
   type: string;
-  action: Action;
+  action: PayloadAction<Type, Payload>;
   timestamp: number;
 }
+
+export type ActionById = GenericActionById<Action['type'], Action['payload']>;
 
 export type ActionsById = Record<number, ActionById>;
 
@@ -145,15 +168,15 @@ const StoryMonitor = (props: MonitorProps) => {
   console.log(props); // eslint-disable-line no-console
 
   const cfudTypeBackgroundColorMap: Record<CfudActionType, React.CSSProperties['background']> = {
-    create: 'lightgreen',
-    focus: 'lightblue',
-    update: 'gold',
-    delete: 'lightcoral',
+    create: 'green',
+    focus: 'blue',
+    update: 'yellow',
+    delete: 'red',
   };
 
   return (
-    <Flex>
-      <Flex flexDirection="column">
+    <Flex height="100%">
+      <Flex flexDirection="column" style={{ borderRight: '1px solid #ccc' }} mr={2} pr={2}>
         <Button
           onClick={() => {
             dispatch(ActionCreators.reset());
@@ -162,18 +185,34 @@ const StoryMonitor = (props: MonitorProps) => {
           Reset
         </Button>
       </Flex>
-      <Divider orientation="vertical" />
-      <Flex>
+      <Flex style={{ overflowY: 'scroll' }}>
         {Object
           .values(actionsById)
-          .map(({ timestamp, action, type }) => (
+          .filter(isEditableActionById)
+          .map(({ timestamp, action }) => (
             <Box
               key={timestamp}
-              style={{
-                background: isCfudActionType(action.type) ? color(cfudTypeBackgroundColorMap[action.type]).alpha(0.5).toString() : 'inherit',
-              }}
+              mt={2}
+              mb={2}
+              mr={2}
             >
-              <pre>{JSON.stringify(action, null, 2)}</pre>
+              <Card
+                style={{
+                  background: isCfudActionType(action.type) ? color(cfudTypeBackgroundColorMap[action.type]).alpha(0.2).toString() : 'inherit',
+                }}
+
+              >
+                <CardHeader>
+                  <Typography>
+                    Type: {action.type}
+                  </Typography>
+                </CardHeader>
+                {isCfudAction(action as EditableAction) && (
+                  <CardContent>
+                    Id: {(action as CfudAction).payload.id}
+                  </CardContent>
+                )}
+              </Card>
             </Box>
           ))}
       </Flex>
