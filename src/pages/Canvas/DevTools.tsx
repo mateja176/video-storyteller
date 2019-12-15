@@ -174,6 +174,8 @@ const StoryMonitor = (props: MonitorProps) => {
     delete: 'red',
   };
 
+  const actionsByIdArray = Object.values(actionsById);
+
   return (
     <Flex height="100%">
       <Flex flexDirection="column" style={{ borderRight: '1px solid #ccc' }} mr={2} pr={2}>
@@ -186,8 +188,7 @@ const StoryMonitor = (props: MonitorProps) => {
         </Button>
       </Flex>
       <Flex style={{ overflowX: 'auto' }} width="100%" height="100%">
-        {Object
-          .values(actionsById)
+        {actionsByIdArray
           .filter(isEditableActionById)
           .map(({ timestamp, action }) => (
             <Box
