@@ -8,7 +8,7 @@ import { debounce } from 'lodash';
 import panzoom, { PanZoom } from 'panzoom';
 import React from 'react';
 import { Rnd } from 'react-rnd';
-import { Flex, Box } from 'rebass';
+import { Box, Flex } from 'rebass';
 import DevTools from './DevTools';
 import store, { selectBlockStates, selectScale, useActions, useSelector } from './store';
 import { createCreateAction, createUpdateAction } from './store/blockStates';
@@ -105,7 +105,7 @@ const Canvas: React.FC<CanvasProps> = () => {
     resume();
   }, [focusedEditorId, disableDragging]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const [storyMonitorOpen, setStoryMonitorOpen] = React.useState(false);
+  const [storyMonitorOpen, setStoryMonitorOpen] = React.useState(true);
 
   const toggleStoryMonitorOpen = () => {
     setStoryMonitorOpen(!storyMonitorOpen);
@@ -236,8 +236,9 @@ const Canvas: React.FC<CanvasProps> = () => {
         </Box>
         <Paper
           style={{
-            height: storyMonitorOpen ? 250 : 0,
-            transition: 'all 500ms ease-in-out',
+            height: storyMonitorOpen ? 300 : 0,
+            width: 'calc(100vw - 56px)',
+            transition: 'height 500ms ease-in-out',
             overflow: 'hidden',
             marginTop: 'auto',
           }}
