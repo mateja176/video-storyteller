@@ -199,6 +199,8 @@ const StoryMonitor = (props: MonitorProps) => {
               .findIndex(actionById => actionById.timestamp === timestamp);
             const isCurrentAction = currentStateIndex === currentActionIndex;
 
+            const isCfud = isCfudAction(action as EditableAction);
+
             return (
               <Box
                 key={timestamp}
@@ -212,15 +214,15 @@ const StoryMonitor = (props: MonitorProps) => {
                     background: isCfudActionType(action.type) ? color(cfudTypeBackgroundColorMap[action.type]).alpha(isCurrentAction ? 0.5 : 0.2).toString() : 'inherit',
                     width: 300 - 2 * 10,
                     height: '100%',
-                    border: isCfudAction(action as EditableAction) && (action as CfudAction).payload.id === hoveredActionId ? `1px solid ${theme.palette.primary.dark}` : 'none',
+                    border: isCfud && (action as CfudAction).payload.id === hoveredActionId ? `1px solid ${theme.palette.primary.dark}` : 'none',
                   }}
                   onMouseEnter={() => {
-                    if (isCfudAction(action as EditableAction)) {
+                    if (isCfud) {
                       setHoveredActionId((action as CfudAction).payload.id);
                     }
                   }}
                   onMouseLeave={() => {
-                    if (isCfudAction(action as EditableAction)) {
+                    if (isCfud) {
                       setHoveredActionId('');
                     }
                   }}
