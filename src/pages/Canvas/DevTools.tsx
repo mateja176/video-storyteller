@@ -1,6 +1,7 @@
 import { Card, CardContent, Typography, useTheme } from '@material-ui/core';
+import { Delete } from '@material-ui/icons';
 import color from 'color';
-import { Button } from 'components';
+import { Button, IconButton } from 'components';
 import { BlockStates } from 'models';
 import React from 'react';
 import { Box, Flex } from 'rebass';
@@ -163,6 +164,8 @@ export interface IActionCreators {
   ): { type: ActionType['PAUSE_RECORDING']; status: boolean; };
 }
 
+const initialHoveredCardId: number = 0;
+
 const StoryMonitor = (props: MonitorProps) => {
   const { dispatch, actionsById, stagedActionIds, currentStateIndex, computedStates } = props;
   console.log(props); // eslint-disable-line no-console
@@ -174,24 +177,32 @@ const StoryMonitor = (props: MonitorProps) => {
     delete: 'red',
   };
 
-  const actionsByIdArray = Object.values(actionsById);
+  const stagedActions = stagedActionIds.map<ActionById & { id: number; }>(id => ({ ...actionsById[id], id }));
+
+  const editableActions = stagedActions
+    .filter(isEditableActionById);
 
   const [hoveredActionId, setHoveredActionId] = React.useState('');
 
   const theme = useTheme();
 
-  const [actionsCount, setActionsCount] = React.useState(actionsByIdArray.length);
+  const [actionsCount, setActionsCount] = React.useState(editableActions.length);
 
   React.useEffect(() => {
     const lastStateIndex = computedStates.length - 1;
 
-    if (actionsCount < actionsByIdArray.length) {
+    if (actionsCount < editableActions.length) {
       setActionsCount(actionsCount + 1);
-      if (currentStateIndex !== lastStateIndex) {
+      if (currentStateIndex < lastStateIndex) {
         dispatch(ActionCreators.jumpToState(lastStateIndex));
       }
     }
-  }, [dispatch, actionsCount, currentStateIndex, computedStates, actionsByIdArray]);
+    if (actionsCount < editableActions.length) {
+      setActionsCount(actionsCount + 1);
+    }
+  }, [dispatch, actionsCount, currentStateIndex, computedStates, editableActions]);
+
+  const [hoveredCardId, setHoveredCardId] = React.useState(initialHoveredCardId);
 
   return (
     <Flex height="100%">
@@ -205,12 +216,9 @@ const StoryMonitor = (props: MonitorProps) => {
         </Button>
       </Flex>
       <Flex style={{ overflowX: 'auto' }} width="100%" height="100%">
-        {actionsByIdArray
-          .filter(isEditableActionById)
-          .map(({ timestamp, action }, i) => {
-            const currentActionIndex = actionsByIdArray
-              .findIndex(actionById => actionById.timestamp === timestamp);
-            const isCurrentAction = currentStateIndex === currentActionIndex;
+        {editableActions
+          .map(({ timestamp, action, id }, i) => {
+            const isCurrentAction = currentStateIndex === (i + 1);
 
             const isCfud = isCfudAction(action as EditableAction);
 
@@ -228,20 +236,22 @@ const StoryMonitor = (props: MonitorProps) => {
                     width: 300 - 2 * 10,
                     height: '100%',
                     border: isCfud && (action as CfudAction).payload.id === hoveredActionId ? `1px solid ${theme.palette.primary.dark}` : 'none',
+                    position: 'relative',
                   }}
                   onMouseEnter={() => {
                     if (isCfud) {
                       setHoveredActionId((action as CfudAction).payload.id);
                     }
+                    setHoveredCardId(timestamp);
                   }}
                   onMouseLeave={() => {
                     if (isCfud) {
                       setHoveredActionId('');
                     }
+                    setHoveredCardId(initialHoveredCardId);
                   }}
                   onClick={() => {
-                    const currentActionId = stagedActionIds[currentActionIndex];
-                    dispatch(ActionCreators.jumpToAction(currentActionId));
+                    dispatch(ActionCreators.jumpToAction(id));
                   }}
                 >
 
@@ -255,6 +265,21 @@ const StoryMonitor = (props: MonitorProps) => {
                       </Typography>
                     )}
                   </CardContent>
+                  {timestamp === hoveredCardId && (
+                    <IconButton
+                      style={{
+                        position: 'absolute',
+                        right: 5,
+                        top: 5,
+                      }}
+                      onClick={() => {
+                        dispatch(ActionCreators.toggleAction(id));
+                        dispatch(ActionCreators.sweep());
+                      }}
+                    >
+                      <Delete />
+                    </IconButton>
+                  )}
                 </Card>
               </Box>
             );
