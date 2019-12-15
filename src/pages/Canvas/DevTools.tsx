@@ -13,7 +13,7 @@ import { Tuple } from 'ts-toolbelt';
 import { PayloadAction } from 'typesafe-actions';
 import { toObject } from 'utils';
 import { Action } from './store';
-import { CfudAction, CfudActionType, cfudActionTypes, CfudActionTypes } from './store/blockStates';
+import { CfudAction, CfudActionType, cfudActionType, cfudActionTypes, CfudActionTypes } from './store/blockStates';
 import { ScaleAction, scaleActionTypes, ScaleActionTypes } from './store/scale';
 
 type EditableActionTypes = Tuple.Concat<CfudActionTypes, ScaleActionTypes>;
@@ -33,6 +33,9 @@ const isEditableActionById = (action: ActionById): action is EditableActionById 
 const isCfudActionType = (type: string): type is CfudActionType =>
   cfudActionTypes.includes(type as CfudActionType);
 
+// ? 'CfudAction' is assignable to the constraint of type 'A',
+// ? but 'A' could be instantiated with a different subtype of constraint 'EditableAction'
+// const isCfudAction = <A extends EditableAction>(action: A): action is CfudAction =>
 const isCfudAction = (action: EditableAction): action is CfudAction =>
   isCfudActionType(action.type);
 
@@ -177,7 +180,8 @@ const StoryMonitor = (props: MonitorProps) => {
     delete: 'red',
   };
 
-  const stagedActions = stagedActionIds.map<ActionById & { id: number; }>(id => ({ ...actionsById[id], id }));
+  const stagedActions = stagedActionIds.map<ActionById & { id: number; }>(id =>
+    ({ ...actionsById[id], id }));
 
   const editableActions = stagedActions
     .filter(isEditableActionById);
@@ -203,6 +207,11 @@ const StoryMonitor = (props: MonitorProps) => {
   }, [dispatch, actionsCount, currentStateIndex, computedStates, editableActions]);
 
   const [hoveredCardId, setHoveredCardId] = React.useState(initialHoveredCardId);
+
+  const deleteAction = (id: Parameters<typeof ActionCreators.toggleAction>[0]) => {
+    dispatch(ActionCreators.toggleAction(id));
+    dispatch(ActionCreators.sweep());
+  };
 
   return (
     <Flex height="100%">
@@ -273,8 +282,19 @@ const StoryMonitor = (props: MonitorProps) => {
                         top: 5,
                       }}
                       onClick={() => {
-                        dispatch(ActionCreators.toggleAction(id));
-                        dispatch(ActionCreators.sweep());
+                        if (action.type === cfudActionType.create) {
+                          const actionsToDelete = editableActions
+                            .filter((actionById) =>
+                              (actionById.action as CfudAction).payload.id === hoveredActionId)
+                            .map(actionById => actionById.id);
+
+                          actionsToDelete.slice().reverse().forEach(actionId => {
+                            dispatch(ActionCreators.toggleAction(actionId));
+                          });
+                          dispatch(ActionCreators.sweep());
+                        } else {
+                          deleteAction(id);
+                        }
                       }}
                     >
                       <Delete />
