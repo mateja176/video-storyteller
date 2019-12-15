@@ -236,7 +236,7 @@ const Canvas: React.FC<CanvasProps> = () => {
         </Box>
         <Paper
           style={{
-            height: storyMonitorOpen ? 300 : 0,
+            height: storyMonitorOpen ? 485 : 0, // * 485 maps to ~300 as of reasons unknown
             width: 'calc(100vw - 56px)',
             transition: 'height 500ms ease-in-out',
             overflow: 'hidden',
