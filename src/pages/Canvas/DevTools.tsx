@@ -164,7 +164,7 @@ export interface IActionCreators {
 }
 
 const StoryMonitor = (props: MonitorProps) => {
-  const { dispatch, actionsById } = props;
+  const { dispatch, actionsById, stagedActionIds, currentStateIndex } = props;
   console.log(props); // eslint-disable-line no-console
 
   const cfudTypeBackgroundColorMap: Record<CfudActionType, React.CSSProperties['background']> = {
@@ -194,46 +194,56 @@ const StoryMonitor = (props: MonitorProps) => {
       <Flex style={{ overflowX: 'auto' }} width="100%" height="100%">
         {actionsByIdArray
           .filter(isEditableActionById)
-          .map(({ timestamp, action }) => (
-            <Box
-              key={timestamp}
-              mt={10}
-              mb={10}
-              mr={10}
-              height="calc(100% - 20px)"
-            >
-              <Card
-                style={{
-                  background: isCfudActionType(action.type) ? color(cfudTypeBackgroundColorMap[action.type]).alpha(0.2).toString() : 'inherit',
-                  width: 300 - 2 * 10,
-                  height: '100%',
-                  border: isCfudAction(action as EditableAction) && (action as CfudAction).payload.id === hoveredActionId ? `1px solid ${theme.palette.primary.dark}` : 'none',
-                }}
-                onMouseEnter={() => {
-                  if (isCfudAction(action as EditableAction)) {
-                    setHoveredActionId((action as CfudAction).payload.id);
-                  }
-                }}
-                onMouseLeave={() => {
-                  if (isCfudAction(action as EditableAction)) {
-                    setHoveredActionId('');
-                  }
-                }}
-              >
+          .map(({ timestamp, action }, i) => {
+            const currentActionIndex = actionsByIdArray
+              .findIndex(actionById => actionById.timestamp === timestamp);
+            const isCurrentAction = currentStateIndex === currentActionIndex;
 
-                <CardContent>
-                  <Typography>
-                    Type: {action.type}
-                  </Typography>
-                  {isCfudAction(action as EditableAction) && (
+            return (
+              <Box
+                key={timestamp}
+                mt={10}
+                mb={10}
+                mr={10}
+                height="calc(100% - 20px)"
+              >
+                <Card
+                  style={{
+                    background: isCfudActionType(action.type) ? color(cfudTypeBackgroundColorMap[action.type]).alpha(isCurrentAction ? 0.5 : 0.2).toString() : 'inherit',
+                    width: 300 - 2 * 10,
+                    height: '100%',
+                    border: isCfudAction(action as EditableAction) && (action as CfudAction).payload.id === hoveredActionId ? `1px solid ${theme.palette.primary.dark}` : 'none',
+                  }}
+                  onMouseEnter={() => {
+                    if (isCfudAction(action as EditableAction)) {
+                      setHoveredActionId((action as CfudAction).payload.id);
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    if (isCfudAction(action as EditableAction)) {
+                      setHoveredActionId('');
+                    }
+                  }}
+                  onClick={() => {
+                    const currentActionId = stagedActionIds[currentActionIndex];
+                    dispatch(ActionCreators.jumpToAction(currentActionId));
+                  }}
+                >
+
+                  <CardContent>
                     <Typography>
-                      Id: {(action as CfudAction).payload.id}
+                      Type: {action.type}
                     </Typography>
-                  )}
-                </CardContent>
-              </Card>
-            </Box>
-          ))}
+                    {isCfudAction(action as EditableAction) && (
+                      <Typography>
+                        Id: {(action as CfudAction).payload.id}
+                      </Typography>
+                    )}
+                  </CardContent>
+                </Card>
+              </Box>
+            );
+          })}
       </Flex>
     </Flex>
   );
