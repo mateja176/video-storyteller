@@ -25,7 +25,7 @@ export const initialState: RawBlockStates = [];
 
 export const cfudActionTypes = ['create', 'focus', 'update', 'delete'] as const;
 export const cfudActionType = toObject(cfudActionTypes);
-export type CfudActionType = typeof cfudActionType;
+export type CfudActionType = typeof cfudActionTypes[number];
 
 export const createCreateAction = createAction(
   cfudActionType.create,

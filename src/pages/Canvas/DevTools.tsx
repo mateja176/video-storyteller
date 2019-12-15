@@ -1,12 +1,18 @@
+import { Divider } from '@material-ui/core';
+import color from 'color';
 import { Button } from 'components';
 import { BlockStates } from 'models';
 import React from 'react';
-import { Box } from 'rebass';
+import { Box, Flex } from 'rebass';
 import { Action, Dispatch } from 'redux';
 import { createDevTools } from 'redux-devtools';
 // @ts-ignore
 import { ActionCreators as InstrumentActionCreators } from 'redux-devtools-instrument';
 import { toObject } from 'utils';
+import { CfudActionType, cfudActionTypes } from './store/blockStates';
+
+const isCfudActionType = (type: string): type is CfudActionType =>
+  cfudActionTypes.includes(type as CfudActionType);
 
 export interface MonitorState { }
 
@@ -18,7 +24,7 @@ export interface ActionById {
   timestamp: number;
 }
 
-export type ActionsById = ActionById[];
+export type ActionsById = Record<number, ActionById>;
 
 export interface State {
   blockStates: BlockStates;
@@ -135,18 +141,43 @@ export interface IActionCreators {
 }
 
 const StoryMonitor = (props: MonitorProps) => {
-  const { dispatch } = props;
+  const { dispatch, actionsById } = props;
   console.log(props); // eslint-disable-line no-console
+
+  const cfudTypeBackgroundColorMap: Record<CfudActionType, React.CSSProperties['background']> = {
+    create: 'lightgreen',
+    focus: 'lightblue',
+    update: 'gold',
+    delete: 'lightcoral',
+  };
+
   return (
-    <Box>
-      <Button
-        onClick={() => {
-          dispatch(ActionCreators.reset());
-        }}
-      >
-        Reset
-      </Button>
-    </Box>
+    <Flex>
+      <Flex flexDirection="column">
+        <Button
+          onClick={() => {
+            dispatch(ActionCreators.reset());
+          }}
+        >
+          Reset
+        </Button>
+      </Flex>
+      <Divider orientation="vertical" />
+      <Flex>
+        {Object
+          .values(actionsById)
+          .map(({ timestamp, action, type }) => (
+            <Box
+              key={timestamp}
+              style={{
+                background: isCfudActionType(action.type) ? color(cfudTypeBackgroundColorMap[action.type]).alpha(0.5).toString() : 'inherit',
+              }}
+            >
+              <pre>{JSON.stringify(action, null, 2)}</pre>
+            </Box>
+          ))}
+      </Flex>
+    </Flex>
   );
 };
 
