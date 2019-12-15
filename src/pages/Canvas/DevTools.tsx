@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, Typography } from '@material-ui/core';
+import { Card, CardContent, Typography } from '@material-ui/core';
 import color from 'color';
 import { Button } from 'components';
 import { BlockStates } from 'models';
@@ -185,7 +185,7 @@ const StoryMonitor = (props: MonitorProps) => {
           Reset
         </Button>
       </Flex>
-      <Flex style={{ overflowY: 'scroll' }}>
+      <Flex style={{ overflowX: 'scroll' }} width="100%" height="100%">
         {Object
           .values(actionsById)
           .filter(isEditableActionById)
@@ -195,21 +195,24 @@ const StoryMonitor = (props: MonitorProps) => {
               mt={2}
               mb={2}
               mr={2}
+              height="100%"
             >
               <Card
                 style={{
                   background: isCfudActionType(action.type) ? color(cfudTypeBackgroundColorMap[action.type]).alpha(0.2).toString() : 'inherit',
+                  width: 300,
+                  height: '100%',
                 }}
 
               >
-                <CardHeader>
-                  <Typography>
-                    Type: {action.type}
-                  </Typography>
-                </CardHeader>
                 {isCfudAction(action as EditableAction) && (
                   <CardContent>
-                    Id: {(action as CfudAction).payload.id}
+                    <Typography>
+                      Type: {action.type}
+                    </Typography>
+                    <Typography>
+                      Id: {(action as CfudAction).payload.id}
+                    </Typography>
                   </CardContent>
                 )}
               </Card>
