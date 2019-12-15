@@ -1,4 +1,4 @@
-import { Card, CardContent, Typography } from '@material-ui/core';
+import { Card, CardContent, Typography, useTheme } from '@material-ui/core';
 import color from 'color';
 import { Button } from 'components';
 import { BlockStates } from 'models';
@@ -176,6 +176,10 @@ const StoryMonitor = (props: MonitorProps) => {
 
   const actionsByIdArray = Object.values(actionsById);
 
+  const [hoveredActionId, setHoveredActionId] = React.useState('');
+
+  const theme = useTheme();
+
   return (
     <Flex height="100%">
       <Flex flexDirection="column" style={{ borderRight: '1px solid #ccc' }} mr={2} pr={2}>
@@ -203,8 +207,18 @@ const StoryMonitor = (props: MonitorProps) => {
                   background: isCfudActionType(action.type) ? color(cfudTypeBackgroundColorMap[action.type]).alpha(0.2).toString() : 'inherit',
                   width: 300 - 2 * 10,
                   height: '100%',
+                  border: isCfudAction(action as EditableAction) && (action as CfudAction).payload.id === hoveredActionId ? `1px solid ${theme.palette.primary.dark}` : 'none',
                 }}
-
+                onMouseEnter={() => {
+                  if (isCfudAction(action as EditableAction)) {
+                    setHoveredActionId((action as CfudAction).payload.id);
+                  }
+                }}
+                onMouseLeave={() => {
+                  if (isCfudAction(action as EditableAction)) {
+                    setHoveredActionId('');
+                  }
+                }}
               >
 
                 <CardContent>
