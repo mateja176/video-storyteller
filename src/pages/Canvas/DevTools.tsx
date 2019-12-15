@@ -164,7 +164,7 @@ export interface IActionCreators {
 }
 
 const StoryMonitor = (props: MonitorProps) => {
-  const { dispatch, actionsById, stagedActionIds, currentStateIndex } = props;
+  const { dispatch, actionsById, stagedActionIds, currentStateIndex, computedStates } = props;
   console.log(props); // eslint-disable-line no-console
 
   const cfudTypeBackgroundColorMap: Record<CfudActionType, React.CSSProperties['background']> = {
@@ -179,6 +179,19 @@ const StoryMonitor = (props: MonitorProps) => {
   const [hoveredActionId, setHoveredActionId] = React.useState('');
 
   const theme = useTheme();
+
+  const [actionsCount, setActionsCount] = React.useState(actionsByIdArray.length);
+
+  React.useEffect(() => {
+    const lastStateIndex = computedStates.length - 1;
+
+    if (actionsCount < actionsByIdArray.length) {
+      setActionsCount(actionsCount + 1);
+      if (currentStateIndex !== lastStateIndex) {
+        dispatch(ActionCreators.jumpToState(lastStateIndex));
+      }
+    }
+  }, [dispatch, actionsCount, currentStateIndex, computedStates, actionsByIdArray]);
 
   return (
     <Flex height="100%">
