@@ -206,7 +206,7 @@ const StoryMonitor = (props: MonitorProps) => {
 
   return (
     <Flex height="100%">
-      <Flex flexDirection="column" style={{ borderRight: '1px solid #ccc' }} mr={2} pr={2}>
+      <Flex flexDirection="column" style={{ borderRight: '1px solid #ccc' }} mr={2} p={2}>
         <Button
           onClick={() => {
             dispatch(ActionCreators.reset());
