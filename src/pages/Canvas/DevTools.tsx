@@ -201,7 +201,7 @@ const StoryMonitor = (props: MonitorProps) => {
               <Card
                 style={{
                   background: isCfudActionType(action.type) ? color(cfudTypeBackgroundColorMap[action.type]).alpha(0.2).toString() : 'inherit',
-                  width: 300,
+                  width: 300 - 2 * 10,
                   height: '100%',
                 }}
 
