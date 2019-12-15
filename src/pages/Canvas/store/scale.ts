@@ -5,8 +5,9 @@ export type Scale = number;
 
 export const initialState: Scale = 1;
 
+export const scaleSetType = 'scale/set';
 export const createSetScale = createAction(
-  'scale/set',
+  scaleSetType,
   action => (payload: Scale) => action(payload),
 );
 export type SetScaleAction = ReturnType<typeof createSetScale>;
@@ -14,5 +15,9 @@ export type SetScaleAction = ReturnType<typeof createSetScale>;
 export type ScaleAction = SetScaleAction;
 
 export default createReducer(initialState)<ScaleAction>({
-  'scale/set': (state, { payload }) => payload,
+  [scaleSetType]: (state, { payload }) => payload,
 });
+
+export const scaleActionTypes = [scaleSetType] as const;
+export type ScaleActionTypes = typeof scaleActionTypes;
+export type ScaleActionType = ScaleActionTypes[number];
