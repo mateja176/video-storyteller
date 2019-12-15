@@ -25,11 +25,12 @@ export const initialState: RawBlockStates = [];
 
 export const cfudActionTypes = ['create', 'focus', 'update', 'delete'] as const;
 export const cfudActionType = toObject(cfudActionTypes);
-export type CfudActionType = typeof cfudActionTypes[number];
+export type CfudActionTypes = typeof cfudActionTypes;
+export type CfudActionType = CfudActionTypes[number];
 
 export const createCreateAction = createAction(
   cfudActionType.create,
-  action => ({ editorState, ...payload }: Omit<BlockState, 'id' | 'editorState'> & { editorState: string }) =>
+  action => ({ editorState, ...payload }: Omit<BlockState, 'id' | 'editorState'> & { editorState: string; }) =>
     action({
       ...payload,
       id: v4(),
@@ -51,13 +52,13 @@ export const createUpdateAction = createAction(
 
     return editorState
       ? // eslint-disable-next-line max-len
-        // * <K extends Optional<keyof BlockState>>({ editorState, ...block }: Pick<RawBlockState, 'editorState'> & Pick<BlockState, K>): Pick<RawBlockState, 'editorState'> & Pick<RawBlockState, K>
-        action(
-          convertToRawBlockState({
-            editorState,
-            ...rest,
-          } as BlockState),
-        )
+      // * <K extends Optional<keyof BlockState>>({ editorState, ...block }: Pick<RawBlockState, 'editorState'> & Pick<BlockState, K>): Pick<RawBlockState, 'editorState'> & Pick<RawBlockState, K>
+      action(
+        convertToRawBlockState({
+          editorState,
+          ...rest,
+        } as BlockState),
+      )
       : action(payload as RawBlockState);
   },
 );
@@ -69,6 +70,8 @@ export const createDeleteAction = createAction(
 );
 export type DeleteAction = ReturnType<typeof createDeleteAction>;
 
+export type CfudAction = CreateAction | FocusAction | UpdateAction | DeleteAction;
+
 export const createSetBlockStates = createAction(
   'blockStates/set',
   action => (payload: BlockStates) =>
@@ -76,13 +79,15 @@ export const createSetBlockStates = createAction(
 );
 export type SetBlockStatesAction = ReturnType<typeof createSetBlockStates>;
 
-export type BlockStatesAction =
+export type BlockStatesReducerAction =
   | CreateAction
   | UpdateAction
   | DeleteAction
   | SetBlockStatesAction;
 
-export default createReducer(initialState)<BlockStatesAction>({
+export type BlockStatesAction = BlockStatesReducerAction | FocusAction;
+
+export default createReducer(initialState)<BlockStatesReducerAction>({
   create: (state, { payload }) => state.concat(payload),
   update: (state, { payload }) => {
     const blockIndex = state.findIndex(block => block.id === payload.id);
