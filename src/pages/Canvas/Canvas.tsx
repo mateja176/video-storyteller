@@ -178,11 +178,9 @@ const Canvas: React.FC<CanvasProps> = () => {
               <Rnd
                 key={id}
                 scale={scale}
-                default={{
+                position={{
                   x: left,
                   y: top,
-                  width: 'auto',
-                  height: 'auto',
                 }}
                 style={{
                   overflow: 'hidden',
