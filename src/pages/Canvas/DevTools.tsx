@@ -1,4 +1,13 @@
-import { Card, CardContent, Divider, Typography, useTheme } from '@material-ui/core';
+/* eslint-disable indent */
+
+
+import {
+  Card,
+  CardContent,
+  Divider,
+  Typography,
+  useTheme,
+} from '@material-ui/core';
 import { Delete } from '@material-ui/icons';
 import color from 'color';
 import { Button, IconButton } from 'components';
@@ -13,22 +22,35 @@ import { Tuple } from 'ts-toolbelt';
 import { PayloadAction } from 'typesafe-actions';
 import { toObject } from 'utils';
 import { Action } from './store';
-import { CfudAction, CfudActionType, cfudActionType, cfudActionTypes, CfudActionTypes } from './store/blockStates';
+import {
+  CfudAction,
+  CfudActionType,
+  cfudActionType,
+  cfudActionTypes,
+  CfudActionTypes,
+} from './store/blockStates';
 import { ScaleAction, scaleActionTypes, ScaleActionTypes } from './store/scale';
 
 type EditableActionTypes = Tuple.Concat<CfudActionTypes, ScaleActionTypes>;
 type EditableActionType = EditableActionTypes[number];
-const editableActionTypes = [...cfudActionTypes, ...scaleActionTypes] as EditableActionTypes;
+const editableActionTypes = [
+  ...cfudActionTypes,
+  ...scaleActionTypes,
+] as EditableActionTypes;
 const isEditableActionType = (type: string): type is EditableActionType =>
   editableActionTypes.includes(type as EditableActionType);
 
 type EditableAction = CfudAction | ScaleAction;
 type EditableActionPayload = EditableAction['payload'];
 
-type EditableActionById = GenericActionById<EditableActionType, EditableActionPayload>;
+type EditableActionById = GenericActionById<
+  EditableActionType,
+  EditableActionPayload
+>;
 
-const isEditableActionById = (action: ActionById): action is EditableActionById =>
-  isEditableActionType(action.action.type);
+const isEditableActionById = (
+  action: ActionById,
+): action is EditableActionById => isEditableActionType(action.action.type);
 
 const isCfudActionType = (type: string): type is CfudActionType =>
   cfudActionTypes.includes(type as CfudActionType);
@@ -39,7 +61,7 @@ const isCfudActionType = (type: string): type is CfudActionType =>
 const isCfudAction = (action: EditableAction): action is CfudAction =>
   isCfudActionType(action.type);
 
-export interface MonitorState { }
+export interface MonitorState {}
 
 export type ActionId = number;
 
@@ -105,21 +127,21 @@ export interface IActionCreators {
   ):
     | never
     | {
-      type: ActionType['PERFORM_ACTION'];
-      action: ActionById;
-      timestamp: string;
-      stack: ActionsById;
-    };
+        type: ActionType['PERFORM_ACTION'];
+        action: ActionById;
+        timestamp: string;
+        stack: ActionsById;
+      };
 
-  reset(): { type: ActionType['RESET']; timestamp: string; };
+  reset(): { type: ActionType['RESET']; timestamp: string };
 
-  rollback(): { type: ActionType['ROLLBACK']; timestamp: string; };
+  rollback(): { type: ActionType['ROLLBACK']; timestamp: string };
 
-  commit(): { type: ActionType['COMMIT']; timestamp: string; };
+  commit(): { type: ActionType['COMMIT']; timestamp: string };
 
-  sweep(): { type: ActionType['SWEEP']; };
+  sweep(): { type: ActionType['SWEEP'] };
 
-  toggleAction(id: number): { type: ActionType['TOGGLE_ACTION']; id: number; };
+  toggleAction(id: number): { type: ActionType['TOGGLE_ACTION']; id: number };
 
   setActionsActive(
     start: number,
@@ -143,11 +165,11 @@ export interface IActionCreators {
 
   jumpToState(
     index: number,
-  ): { type: ActionType['JUMP_TO_STATE']; index: number; };
+  ): { type: ActionType['JUMP_TO_STATE']; index: number };
 
   jumpToAction(
     actionId: ActionId,
-  ): { type: ActionType['JUMP_TO_ACTION']; actionId: ActionId; };
+  ): { type: ActionType['JUMP_TO_ACTION']; actionId: ActionId };
 
   importState(
     nextLiftedState: MonitorProps['monitorState'],
@@ -160,37 +182,48 @@ export interface IActionCreators {
 
   lockChanges(
     status: boolean,
-  ): { type: ActionType['LOCK_CHANGES']; status: boolean; };
+  ): { type: ActionType['LOCK_CHANGES']; status: boolean };
 
   pauseRecording(
     status: boolean,
-  ): { type: ActionType['PAUSE_RECORDING']; status: boolean; };
+  ): { type: ActionType['PAUSE_RECORDING']; status: boolean };
 }
 
 const initialHoveredCardId: number = 0;
 
 const StoryMonitor = (props: MonitorProps) => {
-  const { dispatch, actionsById, stagedActionIds, currentStateIndex, computedStates } = props;
+  const {
+    dispatch,
+    actionsById,
+    stagedActionIds,
+    currentStateIndex,
+    computedStates,
+  } = props;
   console.log(props); // eslint-disable-line no-console
 
-  const cfudTypeBackgroundColorMap: Record<CfudActionType, React.CSSProperties['background']> = {
+  const cfudTypeBackgroundColorMap: Record<
+    CfudActionType,
+    React.CSSProperties['background']
+  > = {
     create: 'green',
     focus: 'blue',
     update: 'yellow',
     delete: 'red',
   };
 
-  const stagedActions = stagedActionIds.map<ActionById & { id: number; }>(id =>
-    ({ ...actionsById[id], id }));
+  const stagedActions = stagedActionIds.map<ActionById & { id: number }>(
+    id => ({ ...actionsById[id], id }),
+  );
 
-  const editableActions = stagedActions
-    .filter(isEditableActionById);
+  const editableActions = stagedActions.filter(isEditableActionById);
 
   const [hoveredActionId, setHoveredActionId] = React.useState('');
 
   const theme = useTheme();
 
-  const [actionsCount, setActionsCount] = React.useState(editableActions.length);
+  const [actionsCount, setActionsCount] = React.useState(
+    editableActions.length,
+  );
 
   React.useEffect(() => {
     const lastStateIndex = computedStates.length - 1;
@@ -204,11 +237,21 @@ const StoryMonitor = (props: MonitorProps) => {
     if (actionsCount < editableActions.length) {
       setActionsCount(actionsCount + 1);
     }
-  }, [dispatch, actionsCount, currentStateIndex, computedStates, editableActions]);
+  }, [
+    dispatch,
+    actionsCount,
+    currentStateIndex,
+    computedStates,
+    editableActions,
+  ]);
 
-  const [hoveredCardId, setHoveredCardId] = React.useState(initialHoveredCardId);
+  const [hoveredCardId, setHoveredCardId] = React.useState(
+    initialHoveredCardId,
+  );
 
-  const deleteAction = (id: Parameters<typeof ActionCreators.toggleAction>[0]) => {
+  const deleteAction = (
+    id: Parameters<typeof ActionCreators.toggleAction>[0],
+  ) => {
     dispatch(ActionCreators.toggleAction(id));
     dispatch(ActionCreators.sweep());
   };
@@ -226,83 +269,89 @@ const StoryMonitor = (props: MonitorProps) => {
       </Flex>
       <Divider orientation="vertical" />
       <Flex style={{ overflowX: 'auto' }} width="100%" height="100%" p={10}>
-        {editableActions
-          .map(({ timestamp, action, id }, i) => {
-            const isCurrentAction = currentStateIndex === (i + 1);
+        {editableActions.map(({ timestamp, action, id }, i) => {
+          const isCurrentAction = currentStateIndex === i + 1;
 
-            const isCfud = isCfudAction(action as EditableAction);
+          const isCfud = isCfudAction(action as EditableAction);
 
-            return (
-              <Box
-                key={timestamp}
-                mr={10}
-                height="100%"
+          return (
+            <Box key={timestamp} mr={10} height="100%">
+              <Card
+                style={{
+                  background: isCfudActionType(action.type)
+                    ? color(cfudTypeBackgroundColorMap[action.type])
+                        .alpha(isCurrentAction ? 0.5 : 0.2)
+                        .toString()
+                    : 'inherit',
+                  width: 300 - 2 * 10,
+                  height: '100%',
+                  border:
+                    isCfud &&
+                    (action as CfudAction).payload.id === hoveredActionId
+                      ? `1px solid ${theme.palette.primary.dark}`
+                      : 'none',
+                  position: 'relative',
+                }}
+                onMouseEnter={() => {
+                  if (isCfud) {
+                    setHoveredActionId((action as CfudAction).payload.id);
+                  }
+                  setHoveredCardId(timestamp);
+                }}
+                onMouseLeave={() => {
+                  if (isCfud) {
+                    setHoveredActionId('');
+                  }
+                  setHoveredCardId(initialHoveredCardId);
+                }}
+                onClick={() => {
+                  dispatch(ActionCreators.jumpToAction(id));
+                }}
               >
-                <Card
-                  style={{
-                    background: isCfudActionType(action.type) ? color(cfudTypeBackgroundColorMap[action.type]).alpha(isCurrentAction ? 0.5 : 0.2).toString() : 'inherit',
-                    width: 300 - 2 * 10,
-                    height: '100%',
-                    border: isCfud && (action as CfudAction).payload.id === hoveredActionId ? `1px solid ${theme.palette.primary.dark}` : 'none',
-                    position: 'relative',
-                  }}
-                  onMouseEnter={() => {
-                    if (isCfud) {
-                      setHoveredActionId((action as CfudAction).payload.id);
-                    }
-                    setHoveredCardId(timestamp);
-                  }}
-                  onMouseLeave={() => {
-                    if (isCfud) {
-                      setHoveredActionId('');
-                    }
-                    setHoveredCardId(initialHoveredCardId);
-                  }}
-                  onClick={() => {
-                    dispatch(ActionCreators.jumpToAction(id));
-                  }}
-                >
-
-                  <CardContent>
+                <CardContent>
+                  <Typography>Type: {action.type}</Typography>
+                  {isCfudAction(action as EditableAction) && (
                     <Typography>
-                      Type: {action.type}
+                      Id: {(action as CfudAction).payload.id}
                     </Typography>
-                    {isCfudAction(action as EditableAction) && (
-                      <Typography>
-                        Id: {(action as CfudAction).payload.id}
-                      </Typography>
-                    )}
-                  </CardContent>
-                  {timestamp === hoveredCardId && (
-                    <IconButton
-                      style={{
-                        position: 'absolute',
-                        right: 5,
-                        top: 5,
-                      }}
-                      onClick={() => {
-                        if (action.type === cfudActionType.create) {
-                          const actionsToDelete = editableActions
-                            .filter((actionById) =>
-                              (actionById.action as CfudAction).payload.id === hoveredActionId)
-                            .map(actionById => actionById.id);
+                  )}
+                </CardContent>
+                {timestamp === hoveredCardId && (
+                  <IconButton
+                    style={{
+                      position: 'absolute',
+                      right: 5,
+                      top: 5,
+                    }}
+                    onClick={() => {
+                      if (action.type === cfudActionType.create) {
+                        const actionsToDelete = editableActions
+                          .filter(
+                            actionById =>
+                              (actionById.action as CfudAction).payload.id ===
+                              hoveredActionId,
+                          )
+                          .map(actionById => actionById.id);
 
-                          actionsToDelete.slice().reverse().forEach(actionId => {
+                        actionsToDelete
+                          .slice()
+                          .reverse()
+                          .forEach(actionId => {
                             dispatch(ActionCreators.toggleAction(actionId));
                           });
-                          dispatch(ActionCreators.sweep());
-                        } else {
-                          deleteAction(id);
-                        }
-                      }}
-                    >
-                      <Delete />
-                    </IconButton>
-                  )}
-                </Card>
-              </Box>
-            );
-          })}
+                        dispatch(ActionCreators.sweep());
+                      } else {
+                        deleteAction(id);
+                      }
+                    }}
+                  >
+                    <Delete />
+                  </IconButton>
+                )}
+              </Card>
+            </Box>
+          );
+        })}
         <Box pl="1px" />
       </Flex>
     </Flex>

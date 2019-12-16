@@ -1,6 +1,6 @@
 /* eslint-disable indent */
 
-import { Drawer, List, ListItem, ListItemIcon, makeStyles, Paper, useTheme, Divider } from '@material-ui/core';
+import { Divider, Drawer, List, ListItem, ListItemIcon, makeStyles, Paper, useTheme } from '@material-ui/core';
 import { Build, Title } from '@material-ui/icons';
 import { Editor, EditorControls, Tooltip } from 'components';
 import { EditorState } from 'draft-js';
@@ -26,7 +26,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export interface CanvasProps { }
+export interface CanvasProps {}
 
 const Canvas: React.FC<CanvasProps> = () => {
   const canvasRef = React.useRef<HTMLDivElement>(null);
@@ -35,7 +35,11 @@ const Canvas: React.FC<CanvasProps> = () => {
 
   const theme = useTheme();
 
-  const { setScale: _setScale, createBlockState, updateBlockState } = useActions({
+  const {
+    setScale: _setScale,
+    createBlockState,
+    updateBlockState,
+  } = useActions({
     setScale: createSetScale,
     createBlockState: createCreateAction,
     updateBlockState: createUpdateAction,
@@ -46,7 +50,9 @@ const Canvas: React.FC<CanvasProps> = () => {
   const blockStates = useSelector(selectBlockStates);
 
   // eslint-disable-next-line max-len
-  const [focusedEditorState, setFocusedEditorState] = React.useState<EditorState>(EditorState.createEmpty());
+  const [focusedEditorState, setFocusedEditorState] = React.useState<
+    EditorState
+  >(EditorState.createEmpty());
 
   const [focusedEditorId, setFocusedEditorId] = React.useState('');
 
@@ -90,7 +96,12 @@ const Canvas: React.FC<CanvasProps> = () => {
     }
   };
   const resume = () => {
-    if (panzoomInstance && panzoomInstance.isPaused() && !focusedEditorId && !disableDragging) {
+    if (
+      panzoomInstance &&
+      panzoomInstance.isPaused() &&
+      !focusedEditorId &&
+      !disableDragging
+    ) {
       panzoomInstance.resume();
     }
   };
@@ -209,12 +220,15 @@ const Canvas: React.FC<CanvasProps> = () => {
                 disableDragging={focusedEditorId === id || disableDragging}
               >
                 <Editor
-                  editorState={focusedEditorId === id ? focusedEditorState : editorState}
+                  editorState={
+                    focusedEditorId === id ? focusedEditorState : editorState
+                  }
                   setEditorState={setFocusedEditorState}
                   onFocus={() => {
                     setFocusedEditorId(id);
 
-                    const selected = blockStates.find(block => block.id === id)!.editorState;
+                    const selected = blockStates.find(block => block.id === id)!
+                      .editorState;
                     setFocusedEditorState(selected);
                   }}
                   onBlur={() => {
