@@ -1,6 +1,12 @@
 /* eslint-disable indent */
 
-import { Card, CardContent, Divider, Typography, useTheme } from '@material-ui/core';
+import {
+  Card,
+  CardContent,
+  Divider,
+  Typography,
+  useTheme,
+} from '@material-ui/core';
 import { Delete } from '@material-ui/icons';
 import color from 'color';
 import { Button, IconButton } from 'components';
@@ -14,8 +20,15 @@ import { ActionCreators as InstrumentActionCreators } from 'redux-devtools-instr
 import { Tuple } from 'ts-toolbelt';
 import { PayloadAction } from 'typesafe-actions';
 import { toObject } from 'utils';
+import { CanvasContext, initialHoveredBlockId } from './CanvasContext';
 import { Action } from './store';
-import { CfudAction, CfudActionType, cfudActionType, cfudActionTypes, CfudActionTypes } from './store/blockStates';
+import {
+  CfudAction,
+  CfudActionType,
+  cfudActionType,
+  cfudActionTypes,
+  CfudActionTypes,
+} from './store/blockStates';
 import { ScaleAction, scaleActionTypes, ScaleActionTypes } from './store/scale';
 
 type EditableActionTypes = Tuple.Concat<CfudActionTypes, ScaleActionTypes>;
@@ -264,13 +277,15 @@ const StoryMonitor = (props: MonitorProps) => {
           const isCfud = isCfudAction(action as EditableAction);
 
           const toggleDeleteHovered = () => {
-            if (
-              hoveredCardId === id &&
-              action.type === cfudActionType.create
-            ) {
+            if (hoveredCardId === id && action.type === cfudActionType.create) {
               setDeleteHovered(!deleteHovered);
             }
           };
+
+          // eslint-disable-next-line react-hooks/rules-of-hooks
+          const { hoveredBlockId, setHoveredBlockId } = React.useContext(
+            CanvasContext,
+          );
 
           return (
             <Box key={timestamp} mr={10} height="100%">
@@ -284,8 +299,9 @@ const StoryMonitor = (props: MonitorProps) => {
                   width: 300 - 2 * 10,
                   height: '100%',
                   border:
-                    isCfud &&
-                    (action as CfudAction).payload.id === hoveredActionId
+                    (isCfud &&
+                      (action as CfudAction).payload.id === hoveredActionId) ||
+                    (action as CfudAction).payload.id === hoveredBlockId
                       ? `1px solid ${
                           deleteHovered
                             ? theme.palette.secondary.light
@@ -296,13 +312,16 @@ const StoryMonitor = (props: MonitorProps) => {
                 }}
                 onMouseEnter={() => {
                   if (isCfud) {
-                    setHoveredActionId((action as CfudAction).payload.id);
+                    const actionId = (action as CfudAction).payload.id;
+                    setHoveredActionId(actionId);
+                    setHoveredBlockId(actionId);
                   }
                   setHoveredCardId(id);
                 }}
                 onMouseLeave={() => {
                   if (isCfud) {
                     setHoveredActionId('');
+                    setHoveredBlockId(initialHoveredBlockId);
                   }
                   setHoveredCardId(initialHoveredCardId);
                 }}

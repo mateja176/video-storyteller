@@ -1,6 +1,15 @@
 /* eslint-disable indent */
 
-import { Divider, Drawer, List, ListItem, ListItemIcon, makeStyles, Paper, useTheme } from '@material-ui/core';
+import {
+  Divider,
+  Drawer,
+  List,
+  ListItem,
+  ListItemIcon,
+  makeStyles,
+  Paper,
+  useTheme,
+} from '@material-ui/core';
 import { Build, Title } from '@material-ui/icons';
 import { Editor, EditorControls, Tooltip } from 'components';
 import { EditorState } from 'draft-js';
@@ -9,8 +18,14 @@ import panzoom, { PanZoom } from 'panzoom';
 import React from 'react';
 import { Rnd } from 'react-rnd';
 import { Box, Flex } from 'rebass';
+import { CanvasContext, initialHoveredBlockId } from './CanvasContext';
 import DevTools from './DevTools';
-import store, { selectBlockStates, selectScale, useActions, useSelector } from './store';
+import store, {
+  selectBlockStates,
+  selectScale,
+  useActions,
+  useSelector,
+} from './store';
 import { createCreateAction, createUpdateAction } from './store/blockStates';
 import { createSetScale } from './store/scale';
 
@@ -122,6 +137,10 @@ const Canvas: React.FC<CanvasProps> = () => {
     setStoryMonitorOpen(!storyMonitorOpen);
   };
 
+  const [hoveredBlockId, setHoveredBlockId] = React.useState(
+    initialHoveredBlockId,
+  );
+
   return (
     <Flex style={{ height: '100%' }}>
       <Drawer
@@ -196,7 +215,10 @@ const Canvas: React.FC<CanvasProps> = () => {
                 }}
                 style={{
                   overflow: 'hidden',
-                  border: '1px solid red',
+                  border:
+                    hoveredBlockId === id
+                      ? `1px solid ${theme.palette.primary.dark}`
+                      : 'none',
                   display: 'inline-block',
                   padding: 15,
                 }}
@@ -237,9 +259,11 @@ const Canvas: React.FC<CanvasProps> = () => {
                     updateBlockState({ id, editorState: focusedEditorState });
                   }}
                   onMouseEnter={() => {
+                    setHoveredBlockId(id);
                     setDisableDragging(true);
                   }}
                   onMouseLeave={() => {
+                    setHoveredBlockId(initialHoveredBlockId);
                     setDisableDragging(false);
                   }}
                 />
@@ -258,7 +282,11 @@ const Canvas: React.FC<CanvasProps> = () => {
               marginTop: 'auto',
             }}
           >
-            <DevTools store={store} />
+            <CanvasContext.Provider
+              value={{ hoveredBlockId, setHoveredBlockId }}
+            >
+              <DevTools store={store} />
+            </CanvasContext.Provider>
           </Paper>
         </Box>
       </Flex>
