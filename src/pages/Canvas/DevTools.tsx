@@ -11,6 +11,7 @@ import { Delete } from '@material-ui/icons';
 import color from 'color';
 import { Button, IconButton } from 'components';
 import { BlockStates } from 'models';
+import { last } from 'ramda';
 import React from 'react';
 import { Box, Flex } from 'rebass';
 import { Dispatch } from 'redux';
@@ -191,6 +192,8 @@ export interface IActionCreators {
 
 const initialHoveredCardId: number = -1;
 
+const initialJumpedToAction = -1;
+
 const StoryMonitor = (props: MonitorProps) => {
   const {
     dispatch,
@@ -225,11 +228,16 @@ const StoryMonitor = (props: MonitorProps) => {
     editableActions.length,
   );
 
+  const [lastJumpedToActionId, setLastJumpedToActionId] = React.useState(
+    initialJumpedToAction,
+  );
+
   React.useEffect(() => {
     const lastStateIndex = computedStates.length - 1;
 
     if (actionsCount < editableActions.length) {
       setActionsCount(actionsCount + 1);
+      setLastJumpedToActionId(initialJumpedToAction);
       if (currentStateIndex < lastStateIndex) {
         dispatch(ActionCreators.jumpToState(lastStateIndex));
       }
@@ -311,6 +319,7 @@ const StoryMonitor = (props: MonitorProps) => {
                   position: 'relative',
                 }}
                 onMouseEnter={() => {
+                  dispatch(ActionCreators.jumpToAction(id));
                   if (isCfud) {
                     const actionId = (action as CfudAction).payload.id;
                     setHoveredActionId(actionId);
@@ -319,6 +328,13 @@ const StoryMonitor = (props: MonitorProps) => {
                   setHoveredCardId(id);
                 }}
                 onMouseLeave={() => {
+                  dispatch(
+                    ActionCreators.jumpToAction(
+                      lastJumpedToActionId === initialJumpedToAction
+                        ? last(editableActions)!.id
+                        : lastJumpedToActionId,
+                    ),
+                  );
                   if (isCfud) {
                     setHoveredActionId('');
                     setHoveredBlockId(initialHoveredBlockId);
@@ -327,6 +343,7 @@ const StoryMonitor = (props: MonitorProps) => {
                 }}
                 onClick={() => {
                   dispatch(ActionCreators.jumpToAction(id));
+                  setLastJumpedToActionId(id);
                 }}
               >
                 <CardContent>
