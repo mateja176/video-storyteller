@@ -1,6 +1,6 @@
 /* eslint-disable indent */
 
-import { Drawer, List, ListItem, ListItemIcon, makeStyles, Paper, useTheme } from '@material-ui/core';
+import { Drawer, List, ListItem, ListItemIcon, makeStyles, Paper, useTheme, Divider } from '@material-ui/core';
 import { Build, Title } from '@material-ui/icons';
 import { Editor, EditorControls, Tooltip } from 'components';
 import { EditorState } from 'draft-js';
@@ -152,26 +152,27 @@ const Canvas: React.FC<CanvasProps> = () => {
         flexDirection="column"
         style={{
           flexGrow: 1,
-          background: 'linear-gradient(90deg, lightsteelblue, lightblue)',
+          background: theme.palette.background.paper,
           position: 'relative',
           overflow: 'hidden',
         }}
       >
-        <Flex
-          alignItems="center"
-          height={controlsHeight}
+        <Box
           bg={theme.palette.background.paper}
           onMouseDown={e => {
             e.preventDefault();
           }}
         >
-          {focusedEditorId && (
-            <EditorControls
-              editorState={focusedEditorState}
-              setEditorState={setFocusedEditorState}
-            />
-          )}
-        </Flex>
+          <Flex height={controlsHeight}>
+            {focusedEditorId && (
+              <EditorControls
+                editorState={focusedEditorState}
+                setEditorState={setFocusedEditorState}
+              />
+            )}
+          </Flex>
+          <Divider />
+        </Box>
         <Box height="100%" style={{ overflow: 'hidden' }}>
           <div ref={canvasRef}>
             {blockStates.map(({ id, top, left, editorState }) => (
@@ -232,17 +233,20 @@ const Canvas: React.FC<CanvasProps> = () => {
             ))}
           </div>
         </Box>
-        <Paper
-          style={{
-            height: storyMonitorOpen ? 485 : 0, // * 485 maps to ~300 as of reasons unknown
-            width: 'calc(100vw - 56px)',
-            transition: 'height 500ms ease-in-out',
-            overflow: 'hidden',
-            marginTop: 'auto',
-          }}
-        >
-          <DevTools store={store} />
-        </Paper>
+        <Box>
+          <Divider />
+          <Paper
+            style={{
+              height: storyMonitorOpen ? 300 : 0, // * 485 maps to ~300 as of reasons unknown
+              width: 'calc(100vw - 56px)',
+              transition: 'height 500ms ease-in-out',
+              overflow: 'hidden',
+              marginTop: 'auto',
+            }}
+          >
+            <DevTools store={store} />
+          </Paper>
+        </Box>
       </Flex>
       <Paper
         style={{
