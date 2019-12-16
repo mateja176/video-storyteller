@@ -1,13 +1,6 @@
 /* eslint-disable indent */
 
-
-import {
-  Card,
-  CardContent,
-  Divider,
-  Typography,
-  useTheme,
-} from '@material-ui/core';
+import { Card, CardContent, Divider, Typography, useTheme } from '@material-ui/core';
 import { Delete } from '@material-ui/icons';
 import color from 'color';
 import { Button, IconButton } from 'components';
@@ -22,13 +15,7 @@ import { Tuple } from 'ts-toolbelt';
 import { PayloadAction } from 'typesafe-actions';
 import { toObject } from 'utils';
 import { Action } from './store';
-import {
-  CfudAction,
-  CfudActionType,
-  cfudActionType,
-  cfudActionTypes,
-  CfudActionTypes,
-} from './store/blockStates';
+import { CfudAction, CfudActionType, cfudActionType, cfudActionTypes, CfudActionTypes } from './store/blockStates';
 import { ScaleAction, scaleActionTypes, ScaleActionTypes } from './store/scale';
 
 type EditableActionTypes = Tuple.Concat<CfudActionTypes, ScaleActionTypes>;
@@ -189,7 +176,7 @@ export interface IActionCreators {
   ): { type: ActionType['PAUSE_RECORDING']; status: boolean };
 }
 
-const initialHoveredCardId: number = 0;
+const initialHoveredCardId: number = -1;
 
 const StoryMonitor = (props: MonitorProps) => {
   const {
@@ -256,6 +243,8 @@ const StoryMonitor = (props: MonitorProps) => {
     dispatch(ActionCreators.sweep());
   };
 
+  const [deleteHovered, setDeleteHovered] = React.useState(false);
+
   return (
     <Flex height="100%">
       <Flex flexDirection="column" p={2}>
@@ -274,6 +263,15 @@ const StoryMonitor = (props: MonitorProps) => {
 
           const isCfud = isCfudAction(action as EditableAction);
 
+          const toggleDeleteHovered = () => {
+            if (
+              hoveredCardId === id &&
+              action.type === cfudActionType.create
+            ) {
+              setDeleteHovered(!deleteHovered);
+            }
+          };
+
           return (
             <Box key={timestamp} mr={10} height="100%">
               <Card
@@ -288,7 +286,11 @@ const StoryMonitor = (props: MonitorProps) => {
                   border:
                     isCfud &&
                     (action as CfudAction).payload.id === hoveredActionId
-                      ? `1px solid ${theme.palette.primary.dark}`
+                      ? `1px solid ${
+                          deleteHovered
+                            ? theme.palette.secondary.light
+                            : theme.palette.primary.dark
+                        }`
                       : 'none',
                   position: 'relative',
                 }}
@@ -296,7 +298,7 @@ const StoryMonitor = (props: MonitorProps) => {
                   if (isCfud) {
                     setHoveredActionId((action as CfudAction).payload.id);
                   }
-                  setHoveredCardId(timestamp);
+                  setHoveredCardId(id);
                 }}
                 onMouseLeave={() => {
                   if (isCfud) {
@@ -316,7 +318,7 @@ const StoryMonitor = (props: MonitorProps) => {
                     </Typography>
                   )}
                 </CardContent>
-                {timestamp === hoveredCardId && (
+                {id === hoveredCardId && (
                   <IconButton
                     style={{
                       position: 'absolute',
@@ -344,6 +346,8 @@ const StoryMonitor = (props: MonitorProps) => {
                         deleteAction(id);
                       }
                     }}
+                    onMouseEnter={toggleDeleteHovered}
+                    onMouseLeave={toggleDeleteHovered}
                   >
                     <Delete />
                   </IconButton>
