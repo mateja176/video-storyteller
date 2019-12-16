@@ -2,7 +2,12 @@ import { convertFromRaw, EditorState } from 'draft-js';
 import { BlockState } from 'models';
 import { equals } from 'ramda';
 import { useEffect, useState } from 'react';
-import { ActionCreatorsMapObject, bindActionCreators, combineReducers, Reducer } from 'redux';
+import {
+  ActionCreatorsMapObject,
+  bindActionCreators,
+  combineReducers,
+  Reducer,
+} from 'redux';
 import { configureStore } from 'redux-starter-kit';
 import { Selector } from 'reselect';
 import blockStates, { BlockStatesAction, RawBlockState } from './blockStates';
@@ -36,7 +41,9 @@ export const convertFromRawBlockState = ({
 }: RawBlockState): BlockState => ({
   ...block,
   // eslint-disable-next-line max-len
-  editorState: EditorState.moveSelectionToEnd(EditorState.createWithContent(convertFromRaw(editorState))),
+  editorState: EditorState.moveSelectionToEnd(
+    EditorState.createWithContent(convertFromRaw(editorState)),
+  ),
 });
 
 export const selectBlockStates = (state: State) =>
@@ -60,5 +67,6 @@ export const useSelector = <R>(selector: Selector<State, R>) => {
 };
 
 // eslint-disable-next-line max-len
-export const useActions = <MapObject extends ActionCreatorsMapObject<Action>>(actionCreator: MapObject) =>
-  bindActionCreators(actionCreator, store.dispatch);
+export const useActions = <MapObject extends ActionCreatorsMapObject<Action>>(
+  actionCreator: MapObject,
+) => bindActionCreators(actionCreator, store.dispatch);
