@@ -1,4 +1,4 @@
-import { Card, CardContent, Typography, useTheme } from '@material-ui/core';
+import { Card, CardContent, Divider, Typography, useTheme } from '@material-ui/core';
 import { Delete } from '@material-ui/icons';
 import color from 'color';
 import { Button, IconButton } from 'components';
@@ -215,7 +215,7 @@ const StoryMonitor = (props: MonitorProps) => {
 
   return (
     <Flex height="100%">
-      <Flex flexDirection="column" style={{ borderRight: '1px solid #ccc' }} mr={2} p={2}>
+      <Flex flexDirection="column" p={2}>
         <Button
           onClick={() => {
             dispatch(ActionCreators.reset());
@@ -224,7 +224,8 @@ const StoryMonitor = (props: MonitorProps) => {
           Reset
         </Button>
       </Flex>
-      <Flex style={{ overflowX: 'auto' }} width="100%" height="100%">
+      <Divider orientation="vertical" />
+      <Flex style={{ overflowX: 'auto' }} width="100%" height="100%" p={10}>
         {editableActions
           .map(({ timestamp, action, id }, i) => {
             const isCurrentAction = currentStateIndex === (i + 1);
@@ -234,10 +235,8 @@ const StoryMonitor = (props: MonitorProps) => {
             return (
               <Box
                 key={timestamp}
-                mt={10}
-                mb={10}
                 mr={10}
-                height="calc(100% - 20px)"
+                height="100%"
               >
                 <Card
                   style={{
@@ -304,6 +303,7 @@ const StoryMonitor = (props: MonitorProps) => {
               </Box>
             );
           })}
+        <Box pl="1px" />
       </Flex>
     </Flex>
   );
