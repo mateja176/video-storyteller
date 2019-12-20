@@ -354,8 +354,12 @@ const StoryMonitor = (props: MonitorProps) => {
                 <Flex
                   style={{
                     position: 'absolute',
+                    top: 0,
+                    width: '100%',
                   }}
                   justifyContent="flex-end"
+                  pt={1}
+                  pr={1}
                 >
                   {id === hoveredCardId && (
                     <IconButton
