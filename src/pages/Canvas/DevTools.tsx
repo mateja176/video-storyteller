@@ -305,8 +305,17 @@ const StoryMonitor = (props: MonitorProps) => {
           cols={editableActions.length}
           maxRows={1}
           compactType="horizontal"
+          onDragStop={(layout, oldItem, newItem) => {
+            const beforeAction = editableActions.find(
+              (action, i) => newItem.x === i,
+            )!;
+
+            dispatch(
+              ActionCreators.reorderAction(Number(newItem.i), beforeAction.id),
+            );
+          }}
         >
-          {editableActions.map(({ action, id }, i) => {
+          {editableActions.map(({ action, id, timestamp }, i) => {
             const isCurrentAction = currentStateIndex === i + 1;
 
             const isCfud = isCfudAction(action as EditableAction);
@@ -379,6 +388,7 @@ const StoryMonitor = (props: MonitorProps) => {
                         : 'none',
                     }}
                   >
+                    <Typography>Timestamp: {timestamp}</Typography>
                     <Typography>Type: {action.type}</Typography>
                     {isCfudAction(action as EditableAction) && (
                       <Typography>
@@ -441,7 +451,6 @@ const StoryMonitor = (props: MonitorProps) => {
               </Box>
             );
           })}
-          <Box pl="1px" />
         </GridLayout>
       </Flex>
     </Flex>
