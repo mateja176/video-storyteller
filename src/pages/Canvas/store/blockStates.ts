@@ -30,7 +30,10 @@ export type CfudActionType = CfudActionTypes[number];
 
 export const createCreateAction = createAction(
   cfudActionType.create,
-  action => ({ editorState, ...payload }: Omit<BlockState, 'id' | 'editorState'> & { editorState: string; }) =>
+  action => ({
+    editorState,
+    ...payload
+  }: Omit<BlockState, 'id' | 'editorState'> & { editorState: string }) =>
     action({
       ...payload,
       id: v4(),
@@ -53,13 +56,13 @@ export const createUpdateAction = createAction(
 
     return editorState
       ? // eslint-disable-next-line max-len
-      // * <K extends Optional<keyof BlockState>>({ editorState, ...block }: Pick<RawBlockState, 'editorState'> & Pick<BlockState, K>): Pick<RawBlockState, 'editorState'> & Pick<RawBlockState, K>
-      action(
-        convertToRawBlockState({
-          editorState,
-          ...rest,
-        } as BlockState),
-      )
+        // * <K extends Optional<keyof BlockState>>({ editorState, ...block }: Pick<RawBlockState, 'editorState'> & Pick<BlockState, K>): Pick<RawBlockState, 'editorState'> & Pick<RawBlockState, K>
+        action(
+          convertToRawBlockState({
+            editorState,
+            ...rest,
+          } as BlockState),
+        )
       : action(payload as RawBlockState);
   },
 );
@@ -71,7 +74,11 @@ export const createDeleteAction = createAction(
 );
 export type DeleteAction = ReturnType<typeof createDeleteAction>;
 
-export type CfudAction = CreateAction | FocusAction | UpdateAction | DeleteAction;
+export type CfudAction =
+  | CreateAction
+  | FocusAction
+  | UpdateAction
+  | DeleteAction;
 
 export const createSetBlockStates = createAction(
   'blockStates/set',
@@ -95,11 +102,7 @@ export default createReducer(initialState)<BlockStatesReducerAction>({
 
     const updatedBlock = { ...state[blockIndex], ...payload };
 
-    const updatedBlocks = update(
-      blockIndex,
-      updatedBlock,
-      state,
-    );
+    const updatedBlocks = update(blockIndex, updatedBlock, state);
 
     return updatedBlocks;
   },
