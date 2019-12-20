@@ -204,6 +204,8 @@ const StoryMonitor = (props: MonitorProps) => {
   } = props;
   console.log(props); // eslint-disable-line no-console
 
+  const { hoveredBlockId, setHoveredBlockId } = React.useContext(CanvasContext);
+
   const cfudTypeBackgroundColorMap: Record<
     CfudActionType,
     React.CSSProperties['background']
@@ -290,11 +292,6 @@ const StoryMonitor = (props: MonitorProps) => {
             }
           };
 
-          // eslint-disable-next-line react-hooks/rules-of-hooks
-          const { hoveredBlockId, setHoveredBlockId } = React.useContext(
-            CanvasContext,
-          );
-
           return (
             <Box key={timestamp} mr={10} height="100%">
               <Card
@@ -354,40 +351,42 @@ const StoryMonitor = (props: MonitorProps) => {
                     </Typography>
                   )}
                 </CardContent>
-                {id === hoveredCardId && (
-                  <IconButton
-                    style={{
-                      position: 'absolute',
-                      right: 5,
-                      top: 5,
-                    }}
-                    onClick={() => {
-                      if (action.type === cfudActionType.create) {
-                        const actionsToDelete = editableActions
-                          .filter(
-                            actionById =>
-                              (actionById.action as CfudAction).payload.id ===
-                              hoveredActionId,
-                          )
-                          .map(actionById => actionById.id);
+                <Flex
+                  style={{
+                    position: 'absolute',
+                  }}
+                  justifyContent="flex-end"
+                >
+                  {id === hoveredCardId && (
+                    <IconButton
+                      onClick={() => {
+                        if (action.type === cfudActionType.create) {
+                          const actionsToDelete = editableActions
+                            .filter(
+                              actionById =>
+                                (actionById.action as CfudAction).payload.id ===
+                                hoveredActionId,
+                            )
+                            .map(actionById => actionById.id);
 
-                        actionsToDelete
-                          .slice()
-                          .reverse()
-                          .forEach(actionId => {
-                            dispatch(ActionCreators.toggleAction(actionId));
-                          });
-                        dispatch(ActionCreators.sweep());
-                      } else {
-                        deleteAction(id);
-                      }
-                    }}
-                    onMouseEnter={toggleDeleteHovered}
-                    onMouseLeave={toggleDeleteHovered}
-                  >
-                    <Delete />
-                  </IconButton>
-                )}
+                          actionsToDelete
+                            .slice()
+                            .reverse()
+                            .forEach(actionId => {
+                              dispatch(ActionCreators.toggleAction(actionId));
+                            });
+                          dispatch(ActionCreators.sweep());
+                        } else {
+                          deleteAction(id);
+                        }
+                      }}
+                      onMouseEnter={toggleDeleteHovered}
+                      onMouseLeave={toggleDeleteHovered}
+                    >
+                      <Delete />
+                    </IconButton>
+                  )}
+                </Flex>
               </Card>
             </Box>
           );
