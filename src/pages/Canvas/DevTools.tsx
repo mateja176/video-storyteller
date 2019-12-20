@@ -13,6 +13,8 @@ import { Button, IconButton } from 'components';
 import { BlockStates } from 'models';
 import { last } from 'ramda';
 import React from 'react';
+import GridLayout from 'react-grid-layout';
+import 'react-grid-layout/css/styles.css';
 import { Box, Flex } from 'rebass';
 import { Dispatch } from 'redux';
 import { createDevTools } from 'redux-devtools';
@@ -194,6 +196,8 @@ const initialHoveredCardId: number = -1;
 
 const initialJumpedToAction = -1;
 
+const cardWidth = 300 - 2 * 10;
+
 const StoryMonitor = (props: MonitorProps) => {
   const {
     dispatch,
@@ -281,139 +285,164 @@ const StoryMonitor = (props: MonitorProps) => {
         </Button>
       </Flex>
       <Divider orientation="vertical" />
-      <Flex style={{ overflowX: 'auto' }} width="100%" height="100%" p={10}>
-        {editableActions.map(({ timestamp, action, id }, i) => {
-          const isCurrentAction = currentStateIndex === i + 1;
+      <Flex style={{ overflowX: 'auto' }} width="100%" height="100%">
+        <GridLayout
+          style={{ height: '100%', width: '100%' }}
+          isResizable={false}
+          width={
+            cardWidth * editableActions.length +
+            20 +
+            (editableActions.length - 1) * 10
+          }
+          rowHeight={cardWidth}
+          layout={editableActions.map(({ id }, i) => ({
+            i: id.toString(),
+            y: 0,
+            x: i,
+            w: 1,
+            h: 1,
+          }))}
+          cols={editableActions.length}
+          maxRows={1}
+          compactType="horizontal"
+        >
+          {editableActions.map(({ action, id }, i) => {
+            const isCurrentAction = currentStateIndex === i + 1;
 
-          const isCfud = isCfudAction(action as EditableAction);
+            const isCfud = isCfudAction(action as EditableAction);
 
-          const toggleDeleteHovered = () => {
-            if (hoveredCardId === id && action.type === cfudActionType.create) {
-              setDeleteHovered(!deleteHovered);
-            }
-          };
+            const toggleDeleteHovered = () => {
+              if (
+                hoveredCardId === id &&
+                action.type === cfudActionType.create
+              ) {
+                setDeleteHovered(!deleteHovered);
+              }
+            };
 
-          return (
-            <Box key={id} mr={10} height="100%">
-              <Card
-                style={{
-                  background: isCfudActionType(action.type)
-                    ? color(cfudTypeBackgroundColorMap[action.type])
-                        .alpha(isCurrentAction ? 0.5 : 0.2)
-                        .toString()
-                    : 'inherit',
-                  width: 300 - 2 * 10,
-                  height: '100%',
-                  border:
-                    (isCfud &&
-                      (action as CfudAction).payload.id === hoveredActionId) ||
-                    (action as CfudAction).payload.id === hoveredBlockId
-                      ? `1px solid ${
-                          deleteHovered
-                            ? theme.palette.secondary.light
-                            : theme.palette.primary.dark
-                        }`
-                      : 'none',
-                  position: 'relative',
-                }}
-                onMouseEnter={() => {
-                  dispatch(ActionCreators.jumpToAction(id));
-                  if (isCfud) {
-                    const actionId = (action as CfudAction).payload.id;
-                    setHoveredActionId(actionId);
-                    setHoveredBlockId(actionId);
-                  }
-                  setHoveredCardId(id);
-                }}
-                onMouseLeave={() => {
-                  dispatch(
-                    ActionCreators.jumpToAction(
-                      lastJumpedToActionId === initialJumpedToAction
-                        ? last(editableActions)!.id
-                        : lastJumpedToActionId,
-                    ),
-                  );
-                  if (isCfud) {
-                    setHoveredActionId('');
-                    setHoveredBlockId(initialHoveredBlockId);
-                  }
-                  setHoveredCardId(initialHoveredCardId);
-                }}
-                onClick={() => {
-                  dispatch(ActionCreators.jumpToAction(id));
-                  setLastJumpedToActionId(id);
-                }}
-              >
-                <CardContent
+            return (
+              <Box key={id} mr={10} height="100%">
+                <Card
                   style={{
-                    filter: skippedActionIds.includes(id)
-                      ? 'blur(1px)'
-                      : 'none',
+                    background: isCfudActionType(action.type)
+                      ? color(cfudTypeBackgroundColorMap[action.type])
+                          .alpha(isCurrentAction ? 0.5 : 0.2)
+                          .toString()
+                      : 'inherit',
+                    width: cardWidth,
+                    height: '100%',
+                    border:
+                      (isCfud &&
+                        (action as CfudAction).payload.id ===
+                          hoveredActionId) ||
+                      (action as CfudAction).payload.id === hoveredBlockId
+                        ? `1px solid ${
+                            deleteHovered
+                              ? theme.palette.secondary.light
+                              : theme.palette.primary.dark
+                          }`
+                        : 'none',
+                    position: 'relative',
+                  }}
+                  onMouseEnter={() => {
+                    dispatch(ActionCreators.jumpToAction(id));
+                    if (isCfud) {
+                      const actionId = (action as CfudAction).payload.id;
+                      setHoveredActionId(actionId);
+                      setHoveredBlockId(actionId);
+                    }
+                    setHoveredCardId(id);
+                  }}
+                  onMouseLeave={() => {
+                    dispatch(
+                      ActionCreators.jumpToAction(
+                        lastJumpedToActionId === initialJumpedToAction
+                          ? last(editableActions)!.id
+                          : lastJumpedToActionId,
+                      ),
+                    );
+                    if (isCfud) {
+                      setHoveredActionId('');
+                      setHoveredBlockId(initialHoveredBlockId);
+                    }
+                    setHoveredCardId(initialHoveredCardId);
+                  }}
+                  onClick={() => {
+                    dispatch(ActionCreators.jumpToAction(id));
+                    setLastJumpedToActionId(id);
                   }}
                 >
-                  <Typography>Type: {action.type}</Typography>
-                  {isCfudAction(action as EditableAction) && (
-                    <Typography>
-                      Id: {(action as CfudAction).payload.id}
-                    </Typography>
-                  )}
-                </CardContent>
-                {id === hoveredCardId && (
-                  <Flex
+                  <CardContent
                     style={{
-                      position: 'absolute',
-                      top: 0,
-                      width: '100%',
+                      filter: skippedActionIds.includes(id)
+                        ? 'blur(1px)'
+                        : 'none',
                     }}
-                    justifyContent="flex-end"
-                    pt={1}
-                    pr={1}
                   >
-                    <IconButton
-                      onClick={() => {
-                        dispatch(ActionCreators.toggleAction(id));
+                    <Typography>Type: {action.type}</Typography>
+                    {isCfudAction(action as EditableAction) && (
+                      <Typography>
+                        Id: {(action as CfudAction).payload.id}
+                      </Typography>
+                    )}
+                  </CardContent>
+                  {id === hoveredCardId && (
+                    <Flex
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        width: '100%',
                       }}
+                      justifyContent="flex-end"
+                      pt={1}
+                      pr={1}
                     >
-                      {skippedActionIds.includes(id) ? (
-                        <Visibility />
-                      ) : (
-                        <VisibilityOff />
-                      )}
-                    </IconButton>
-                    <IconButton
-                      onClick={() => {
-                        if (action.type === cfudActionType.create) {
-                          const actionsToDelete = editableActions
-                            .filter(
-                              actionById =>
-                                (actionById.action as CfudAction).payload.id ===
-                                hoveredActionId,
-                            )
-                            .map(actionById => actionById.id);
+                      <IconButton
+                        onClick={() => {
+                          dispatch(ActionCreators.toggleAction(id));
+                        }}
+                      >
+                        {skippedActionIds.includes(id) ? (
+                          <Visibility />
+                        ) : (
+                          <VisibilityOff />
+                        )}
+                      </IconButton>
+                      <IconButton
+                        onClick={() => {
+                          if (action.type === cfudActionType.create) {
+                            const actionsToDelete = editableActions
+                              .filter(
+                                actionById =>
+                                  (actionById.action as CfudAction).payload
+                                    .id === hoveredActionId,
+                              )
+                              .map(actionById => actionById.id);
 
-                          actionsToDelete
-                            .slice()
-                            .reverse()
-                            .forEach(actionId => {
-                              dispatch(ActionCreators.toggleAction(actionId));
-                            });
-                          dispatch(ActionCreators.sweep());
-                        } else {
-                          deleteAction(id);
-                        }
-                      }}
-                      onMouseEnter={toggleDeleteHovered}
-                      onMouseLeave={toggleDeleteHovered}
-                    >
-                      <Delete />
-                    </IconButton>
-                  </Flex>
-                )}
-              </Card>
-            </Box>
-          );
-        })}
-        <Box pl="1px" />
+                            actionsToDelete
+                              .slice()
+                              .reverse()
+                              .forEach(actionId => {
+                                dispatch(ActionCreators.toggleAction(actionId));
+                              });
+                            dispatch(ActionCreators.sweep());
+                          } else {
+                            deleteAction(id);
+                          }
+                        }}
+                        onMouseEnter={toggleDeleteHovered}
+                        onMouseLeave={toggleDeleteHovered}
+                      >
+                        <Delete />
+                      </IconButton>
+                    </Flex>
+                  )}
+                </Card>
+              </Box>
+            );
+          })}
+          <Box pl="1px" />
+        </GridLayout>
       </Flex>
     </Flex>
   );
