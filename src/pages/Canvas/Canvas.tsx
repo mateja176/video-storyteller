@@ -275,7 +275,7 @@ const Canvas: React.FC<CanvasProps> = () => {
           <Divider />
           <Paper
             style={{
-              height: storyMonitorOpen ? 300 : 0, // * 485 maps to ~300 as of reasons unknown
+              height: storyMonitorOpen ? 300 : 0,
               width: 'calc(100vw - 56px)',
               transition: 'height 500ms ease-in-out',
               overflow: 'hidden',
