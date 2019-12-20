@@ -13,10 +13,12 @@ export type RawBlockState = Omit<BlockState, 'editorState'> & {
 };
 export type RawBlockStates = RawBlockState[];
 
-export const convertToRawBlockState = ({
+export const convertToRawBlockState = <
+  T extends Pick<BlockState, 'editorState'>
+>({
   editorState,
   ...block
-}: BlockState): RawBlockState => ({
+}: T) => ({
   ...block,
   editorState: convertToRaw(editorState.getCurrentContent()),
 });
@@ -51,20 +53,15 @@ export type FocusAction = ReturnType<typeof createFocusAction>;
 
 export const createUpdateAction = createAction(
   cfudActionType.update,
-  action => (payload: Required<Partial<BlockState>, 'id'>) => {
-    const { editorState, ...rest } = payload;
-
-    return editorState
-      ? // eslint-disable-next-line max-len
-        // * <K extends Optional<keyof BlockState>>({ editorState, ...block }: Pick<RawBlockState, 'editorState'> & Pick<BlockState, K>): Pick<RawBlockState, 'editorState'> & Pick<RawBlockState, K>
-        action(
+  action => ({ editorState, ...rest }: Required<Partial<BlockState>, 'id'>) =>
+    editorState
+      ? action(
           convertToRawBlockState({
-            editorState,
             ...rest,
-          } as BlockState),
+            editorState,
+          }),
         )
-      : action(payload as RawBlockState);
-  },
+      : action(rest),
 );
 export type UpdateAction = ReturnType<typeof createUpdateAction>;
 
