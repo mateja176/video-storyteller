@@ -294,7 +294,7 @@ const StoryMonitor = (props: MonitorProps) => {
           };
 
           return (
-            <Box key={timestamp} mr={10} height="100%">
+            <Box key={id} mr={10} height="100%">
               <Card
                 style={{
                   background: isCfudActionType(action.type)
