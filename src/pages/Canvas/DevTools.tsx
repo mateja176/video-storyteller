@@ -7,7 +7,7 @@ import {
   Typography,
   useTheme,
 } from '@material-ui/core';
-import { Delete } from '@material-ui/icons';
+import { Delete, Visibility, VisibilityOff } from '@material-ui/icons';
 import color from 'color';
 import { Button, IconButton } from 'components';
 import { BlockStates } from 'models';
@@ -201,6 +201,7 @@ const StoryMonitor = (props: MonitorProps) => {
     stagedActionIds,
     currentStateIndex,
     computedStates,
+    skippedActionIds,
   } = props;
   console.log(props); // eslint-disable-line no-console
 
@@ -343,7 +344,13 @@ const StoryMonitor = (props: MonitorProps) => {
                   setLastJumpedToActionId(id);
                 }}
               >
-                <CardContent>
+                <CardContent
+                  style={{
+                    filter: skippedActionIds.includes(id)
+                      ? 'blur(1px)'
+                      : 'none',
+                  }}
+                >
                   <Typography>Type: {action.type}</Typography>
                   {isCfudAction(action as EditableAction) && (
                     <Typography>
@@ -351,17 +358,28 @@ const StoryMonitor = (props: MonitorProps) => {
                     </Typography>
                   )}
                 </CardContent>
-                <Flex
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    width: '100%',
-                  }}
-                  justifyContent="flex-end"
-                  pt={1}
-                  pr={1}
-                >
-                  {id === hoveredCardId && (
+                {id === hoveredCardId && (
+                  <Flex
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      width: '100%',
+                    }}
+                    justifyContent="flex-end"
+                    pt={1}
+                    pr={1}
+                  >
+                    <IconButton
+                      onClick={() => {
+                        dispatch(ActionCreators.toggleAction(id));
+                      }}
+                    >
+                      {skippedActionIds.includes(id) ? (
+                        <Visibility />
+                      ) : (
+                        <VisibilityOff />
+                      )}
+                    </IconButton>
                     <IconButton
                       onClick={() => {
                         if (action.type === cfudActionType.create) {
@@ -389,8 +407,8 @@ const StoryMonitor = (props: MonitorProps) => {
                     >
                       <Delete />
                     </IconButton>
-                  )}
-                </Flex>
+                  </Flex>
+                )}
               </Card>
             </Box>
           );
