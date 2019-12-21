@@ -17,7 +17,7 @@ import {
   VisibilityOff,
 } from '@material-ui/icons';
 import color from 'color';
-import { IconButton, Tooltip } from 'components';
+import { IconButton } from 'components';
 import { BlockStates } from 'models';
 import { last } from 'ramda';
 import React from 'react';
@@ -319,30 +319,8 @@ const StoryMonitor = (props: MonitorProps) => {
   return (
     <Flex height="100%">
       <Flex flexDirection="column" p={2} alignItems="center">
-        <IconButton
-          disabled={areThereNoEditableActions || !nextAction}
-          onClick={() => {
-            setIsPlaying(true);
-
-            play();
-          }}
-        >
-          <PlayArrow />
-        </IconButton>
-        <Tooltip
-          title={
-            nextAction && timeElapsed
-              ? `${(
-                  (nextAction.timestamp -
-                    currentAction.timestamp -
-                    timeElapsed) /
-                  1000
-                ).toFixed(2)}s until next`
-              : 'You can pause while playing'
-          }
-        >
+        {isPlaying ? (
           <IconButton
-            disabled={!isPlaying}
             onClick={() => {
               setTimeElapsed(timeElapsed + Date.now() - timeoutStart);
 
@@ -353,7 +331,18 @@ const StoryMonitor = (props: MonitorProps) => {
           >
             <Pause />
           </IconButton>
-        </Tooltip>
+        ) : (
+          <IconButton
+            disabled={areThereNoEditableActions || !nextAction}
+            onClick={() => {
+              setIsPlaying(true);
+
+              play();
+            }}
+          >
+            <PlayArrow />
+          </IconButton>
+        )}
         <IconButton
           disabled={areThereNoEditableActions || (!isPlaying && !timeElapsed)}
           onClick={() => {
