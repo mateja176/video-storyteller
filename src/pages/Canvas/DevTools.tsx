@@ -267,6 +267,8 @@ const StoryMonitor = (props: MonitorProps) => {
 
     if (!nextAction && isPlaying) {
       setIsPlaying(false);
+
+      setTimeElapsed(0);
     }
   }, [nextAction, isPlaying]); // eslint-disable-line react-hooks/exhaustive-deps
 
