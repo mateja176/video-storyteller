@@ -77,6 +77,8 @@ export type CfudAction =
   | UpdateAction
   | DeleteAction;
 
+export type CfudActions = CfudAction[];
+
 export const createSetBlockStates = createAction(
   'blockStates/set',
   action => (payload: BlockStates) =>
