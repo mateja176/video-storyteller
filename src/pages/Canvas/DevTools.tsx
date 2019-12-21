@@ -2,8 +2,8 @@
 
 import {
   Card,
-  CardContent,
   Divider,
+  LinearProgress,
   Typography,
   useTheme,
 } from '@material-ui/core';
@@ -462,7 +462,9 @@ const StoryMonitor = (props: MonitorProps) => {
                     setLastJumpedToActionId(id);
                   }}
                 >
-                  <CardContent
+                  <Flex
+                    flexDirection="column"
+                    height="100%"
                     style={{
                       filter: skippedActionIds.includes(id)
                         ? 'blur(1px)'
@@ -476,7 +478,20 @@ const StoryMonitor = (props: MonitorProps) => {
                         Id: {(action as CfudAction).payload.id}
                       </Typography>
                     )}
-                  </CardContent>
+                    <Box mt="auto">
+                      <LinearProgress
+                        variant="determinate"
+                        value={
+                          id === currentActionId && nextAction
+                            ? (nextAction.timestamp -
+                                currentAction.timestamp -
+                                timeElapsed) /
+                              100
+                            : 0
+                        }
+                      />
+                    </Box>
+                  </Flex>
                   {id === hoveredCardId && (
                     <Flex
                       style={{
