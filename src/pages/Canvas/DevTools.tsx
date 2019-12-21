@@ -7,9 +7,17 @@ import {
   Typography,
   useTheme,
 } from '@material-ui/core';
-import { Delete, Visibility, VisibilityOff } from '@material-ui/icons';
+import {
+  Delete,
+  DeleteSweep,
+  Pause,
+  PlayArrow,
+  Stop,
+  Visibility,
+  VisibilityOff,
+} from '@material-ui/icons';
 import color from 'color';
-import { Button, IconButton } from 'components';
+import { IconButton } from 'components';
 import { BlockStates } from 'models';
 import { last } from 'ramda';
 import React from 'react';
@@ -275,14 +283,36 @@ const StoryMonitor = (props: MonitorProps) => {
 
   return (
     <Flex height="100%">
-      <Flex flexDirection="column" p={2}>
-        <Button
+      <Flex flexDirection="column" p={2} alignItems="center">
+        <IconButton
+          onClick={() => {
+            console.log('play'); // eslint-disable-line no-console
+          }}
+        >
+          <PlayArrow />
+        </IconButton>
+        <IconButton
+          onClick={() => {
+            console.log('pause'); // eslint-disable-line no-console
+          }}
+        >
+          <Pause />
+        </IconButton>
+        <IconButton
+          onClick={() => {
+            console.log('stop'); // eslint-disable-line no-console
+          }}
+        >
+          <Stop />
+        </IconButton>
+        <IconButton
           onClick={() => {
             dispatch(ActionCreators.reset());
           }}
+          color="secondary"
         >
-          Reset
-        </Button>
+          <DeleteSweep />
+        </IconButton>
       </Flex>
       <Divider orientation="vertical" />
       <Flex style={{ overflowX: 'auto' }} width="100%" height="100%">
