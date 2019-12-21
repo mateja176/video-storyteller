@@ -17,7 +17,7 @@ import {
   VisibilityOff,
 } from '@material-ui/icons';
 import color from 'color';
-import { IconButton } from 'components';
+import { IconButton, Progress } from 'components';
 import { BlockStates } from 'models';
 import { last } from 'ramda';
 import React from 'react';
@@ -479,17 +479,13 @@ const StoryMonitor = (props: MonitorProps) => {
                       </Typography>
                     )}
                     <Box mt="auto">
-                      <LinearProgress
-                        variant="determinate"
-                        value={
-                          id === currentActionId && nextAction
-                            ? (nextAction.timestamp -
-                                currentAction.timestamp -
-                                timeElapsed) /
-                              100
-                            : 0
-                        }
-                      />
+                      {id === currentActionId && nextAction && (
+                        <Progress
+                          timeInMs={
+                            nextAction.timestamp - currentAction.timestamp
+                          }
+                        />
+                      )}
                     </Box>
                   </Flex>
                   {id === hoveredCardId && (

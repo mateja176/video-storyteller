@@ -16,6 +16,8 @@ export * from './NotFound';
 export { default as NotFound } from './NotFound';
 export * from './PageRoute';
 export { default as PageRoute } from './PageRoute';
+export * from './Progress';
+export { default as Progress } from './Progress';
 export * from './SearchSelect';
 export { default as SearchSelect } from './SearchSelect';
 export * from './Snackbar';
