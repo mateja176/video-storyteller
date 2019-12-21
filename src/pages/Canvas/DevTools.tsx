@@ -465,6 +465,7 @@ const StoryMonitor = (props: MonitorProps) => {
                         position: 'absolute',
                         top: 0,
                         width: '100%',
+                        opacity: 0.8,
                       }}
                       justifyContent="flex-end"
                       pt={1}
