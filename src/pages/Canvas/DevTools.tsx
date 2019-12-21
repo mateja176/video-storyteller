@@ -281,12 +281,43 @@ const StoryMonitor = (props: MonitorProps) => {
 
   const [deleteHovered, setDeleteHovered] = React.useState(false);
 
+  const [playTimeout, setPlayTimeout] = React.useState(-1);
+  const [isPlaying, setIsPlaying] = React.useState(false);
+
+  const nextActionId = stagedActionIds[currentStateIndex + 1];
+  const nextAction = actionsById[nextActionId];
+
+  const currentActionId = stagedActionIds[currentStateIndex];
+  const currentAction = actionsById[currentActionId];
+
+  const play = React.useCallback(() => {
+    if (nextAction && isPlaying) {
+      const timeDiff = nextAction.timestamp - currentAction.timestamp;
+
+      const timeout = setTimeout(() => {
+        dispatch(ActionCreators.jumpToAction(nextActionId));
+      }, timeDiff);
+
+      setPlayTimeout(timeout);
+    }
+
+    if (!nextAction && isPlaying) {
+      setIsPlaying(false);
+    }
+  }, [nextAction, isPlaying]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  React.useEffect(() => {
+    play();
+  }, [play]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <Flex height="100%">
       <Flex flexDirection="column" p={2} alignItems="center">
         <IconButton
           onClick={() => {
-            console.log('play'); // eslint-disable-line no-console
+            setIsPlaying(true);
+
+            play();
           }}
         >
           <PlayArrow />
@@ -300,7 +331,9 @@ const StoryMonitor = (props: MonitorProps) => {
         </IconButton>
         <IconButton
           onClick={() => {
-            console.log('stop'); // eslint-disable-line no-console
+            setIsPlaying(false);
+
+            clearTimeout(playTimeout);
           }}
         >
           <Stop />
@@ -345,8 +378,8 @@ const StoryMonitor = (props: MonitorProps) => {
             );
           }}
         >
-          {editableActions.map(({ action, id, timestamp }, i) => {
-            const isCurrentAction = currentStateIndex === i + 1;
+          {editableActions.map(({ action, id, timestamp }) => {
+            const isCurrentAction = id === currentActionId;
 
             const isCfud = isCfudAction(action as EditableAction);
 
