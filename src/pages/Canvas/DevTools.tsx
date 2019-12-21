@@ -487,6 +487,7 @@ const StoryMonitor = (props: MonitorProps) => {
                             nextAction.timestamp - currentAction.timestamp
                           }
                           paused={!isPlaying}
+                          stopped={!isPlaying && !timeElapsed}
                         />
                       )}
                     </Box>

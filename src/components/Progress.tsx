@@ -1,4 +1,4 @@
-import { LinearProgress, Box } from '@material-ui/core';
+import { Box, LinearProgress } from '@material-ui/core';
 import React from 'react';
 
 export interface ProgressProps {
@@ -6,16 +6,18 @@ export interface ProgressProps {
   timeInMs?: number;
   updateInterval?: number;
   paused?: boolean;
+  stopped?: boolean;
 }
 
 const Progress: React.FC<ProgressProps> = ({
-  initialPercentage: initialValue = 0,
+  initialPercentage = 0,
   timeInMs = 1000,
   updateInterval = 100,
   paused = false,
+  stopped = false,
 }) => {
-  const [percentage, setPercentage] = React.useState(initialValue);
-  const [valueTimeout, setValueTimeout] = React.useState(-1);
+  const [percentage, setPercentage] = React.useState(initialPercentage);
+  const [percentageTimeout, setPercentageTimeout] = React.useState(-1);
 
   const step = (100 * updateInterval) / timeInMs;
 
@@ -26,17 +28,24 @@ const Progress: React.FC<ProgressProps> = ({
         setPercentage(increment > 100 ? 100 : increment);
       }, updateInterval);
 
-      setValueTimeout(timeout);
+      setPercentageTimeout(timeout);
     }
   }, [updateInterval, percentage, paused]); // eslint-disable-line react-hooks/exhaustive-deps
 
   React.useEffect(() => {
     if (paused) {
-      clearTimeout(valueTimeout);
+      clearTimeout(percentageTimeout);
     } else {
-      setTimeout(percentage);
+      setPercentageTimeout(percentage);
     }
   }, [paused]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  React.useEffect(() => {
+    if (stopped) {
+      clearTimeout(percentageTimeout);
+      setPercentage(initialPercentage);
+    }
+  }, [stopped]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Box>
