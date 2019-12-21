@@ -17,7 +17,7 @@ import {
   VisibilityOff,
 } from '@material-ui/icons';
 import color from 'color';
-import { IconButton } from 'components';
+import { IconButton, Tooltip } from 'components';
 import { BlockStates } from 'models';
 import { last } from 'ramda';
 import React from 'react';
@@ -282,6 +282,8 @@ const StoryMonitor = (props: MonitorProps) => {
   const [deleteHovered, setDeleteHovered] = React.useState(false);
 
   const [playTimeout, setPlayTimeout] = React.useState(-1);
+  const [timeoutStart, setTimeoutStart] = React.useState(0);
+  const [timeElapsed, setTimeElapsed] = React.useState(0);
   const [isPlaying, setIsPlaying] = React.useState(false);
 
   const nextActionId = stagedActionIds[currentStateIndex + 1];
@@ -296,7 +298,9 @@ const StoryMonitor = (props: MonitorProps) => {
 
       const timeout = setTimeout(() => {
         dispatch(ActionCreators.jumpToAction(nextActionId));
-      }, timeDiff);
+      }, timeDiff - timeElapsed);
+
+      setTimeoutStart(Date.now());
 
       setPlayTimeout(timeout);
     }
@@ -308,12 +312,19 @@ const StoryMonitor = (props: MonitorProps) => {
 
   React.useEffect(() => {
     play();
+
+    if (isPlaying && timeElapsed) {
+      setTimeElapsed(0);
+    }
   }, [play]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const areThereNoEditableActions = !editableActions.length;
 
   return (
     <Flex height="100%">
       <Flex flexDirection="column" p={2} alignItems="center">
         <IconButton
+          disabled={areThereNoEditableActions || !nextAction}
           onClick={() => {
             setIsPlaying(true);
 
@@ -322,16 +333,37 @@ const StoryMonitor = (props: MonitorProps) => {
         >
           <PlayArrow />
         </IconButton>
-        <IconButton
-          onClick={() => {
-            console.log('pause'); // eslint-disable-line no-console
-          }}
+        <Tooltip
+          title={
+            nextAction && timeElapsed
+              ? `${(
+                  (nextAction.timestamp -
+                    currentAction.timestamp -
+                    timeElapsed) /
+                  1000
+                ).toFixed(2)}s until next`
+              : 'You can pause while playing'
+          }
         >
-          <Pause />
-        </IconButton>
+          <IconButton
+            disabled={!isPlaying}
+            onClick={() => {
+              setTimeElapsed(timeElapsed + Date.now() - timeoutStart);
+
+              setIsPlaying(false);
+
+              clearTimeout(playTimeout);
+            }}
+          >
+            <Pause />
+          </IconButton>
+        </Tooltip>
         <IconButton
+          disabled={areThereNoEditableActions || (!isPlaying && !timeElapsed)}
           onClick={() => {
             setIsPlaying(false);
+
+            setTimeElapsed(0);
 
             clearTimeout(playTimeout);
           }}
@@ -339,6 +371,7 @@ const StoryMonitor = (props: MonitorProps) => {
           <Stop />
         </IconButton>
         <IconButton
+          disabled={areThereNoEditableActions}
           onClick={() => {
             dispatch(ActionCreators.reset());
           }}
