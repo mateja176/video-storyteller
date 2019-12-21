@@ -294,7 +294,6 @@ const StoryMonitor = (props: MonitorProps) => {
     }
     if (actionsCount < editableActions.length) {
       setActionsCount(actionsCount + 1);
-      setTimeElapsed(0);
     }
   }, [
     dispatch,
