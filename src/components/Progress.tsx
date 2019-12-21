@@ -1,5 +1,5 @@
+import { LinearProgress, Box } from '@material-ui/core';
 import React from 'react';
-import { LinearProgress } from '@material-ui/core';
 
 export interface ProgressProps {
   initialPercentage?: number;
@@ -15,19 +15,35 @@ const Progress: React.FC<ProgressProps> = ({
   paused = false,
 }) => {
   const [percentage, setPercentage] = React.useState(initialValue);
+  const [valueTimeout, setValueTimeout] = React.useState(-1);
 
-  const step = timeInMs / updateInterval;
+  const step = (100 * updateInterval) / timeInMs;
 
   React.useEffect(() => {
-    if (percentage < 100) {
+    if (percentage < 100 && !paused) {
       const increment = percentage + step;
-      setTimeout(() => {
+      const timeout = setTimeout(() => {
         setPercentage(increment > 100 ? 100 : increment);
       }, updateInterval);
-    }
-  }, [updateInterval, percentage]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return <LinearProgress variant="determinate" value={percentage} />;
+      setValueTimeout(timeout);
+    }
+  }, [updateInterval, percentage, paused]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  React.useEffect(() => {
+    if (paused) {
+      clearTimeout(valueTimeout);
+    } else {
+      setTimeout(percentage);
+    }
+  }, [paused]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  return (
+    <Box>
+      step: {step}
+      <LinearProgress variant="determinate" value={percentage} />
+    </Box>
+  );
 };
 
 export default Progress;

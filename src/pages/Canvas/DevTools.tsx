@@ -1,12 +1,6 @@
 /* eslint-disable indent */
 
-import {
-  Card,
-  Divider,
-  LinearProgress,
-  Typography,
-  useTheme,
-} from '@material-ui/core';
+import { Card, Divider, Typography, useTheme } from '@material-ui/core';
 import {
   Delete,
   DeleteSweep,
@@ -396,7 +390,7 @@ const StoryMonitor = (props: MonitorProps) => {
             );
           }}
         >
-          {editableActions.map(({ action, id, timestamp }) => {
+          {editableActions.map(({ action, id, timestamp }, i) => {
             const isCurrentAction = id === currentActionId;
 
             const isCfud = isCfudAction(action as EditableAction);
@@ -409,6 +403,8 @@ const StoryMonitor = (props: MonitorProps) => {
                 setDeleteHovered(!deleteHovered);
               }
             };
+
+            const followingAction = editableActions[i + 1];
 
             return (
               <Box key={id} mr={10} height="100%">
@@ -472,6 +468,12 @@ const StoryMonitor = (props: MonitorProps) => {
                     }}
                   >
                     <Typography>Timestamp: {timestamp}</Typography>
+                    <Typography>
+                      Time diff:{' '}
+                      {followingAction
+                        ? followingAction.timestamp - timestamp
+                        : 0}
+                    </Typography>
                     <Typography>Type: {action.type}</Typography>
                     {isCfudAction(action as EditableAction) && (
                       <Typography>
@@ -484,6 +486,7 @@ const StoryMonitor = (props: MonitorProps) => {
                           timeInMs={
                             nextAction.timestamp - currentAction.timestamp
                           }
+                          paused={!isPlaying}
                         />
                       )}
                     </Box>
