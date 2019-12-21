@@ -247,43 +247,9 @@ const StoryMonitor = (props: MonitorProps) => {
     initialJumpedToAction,
   );
 
-  React.useEffect(() => {
-    const lastStateIndex = computedStates.length - 1;
-
-    if (actionsCount < editableActions.length) {
-      setActionsCount(actionsCount + 1);
-      setLastJumpedToActionId(initialJumpedToAction);
-      if (currentStateIndex < lastStateIndex) {
-        dispatch(ActionCreators.jumpToState(lastStateIndex));
-      }
-    }
-    if (actionsCount < editableActions.length) {
-      setActionsCount(actionsCount + 1);
-    }
-  }, [
-    dispatch,
-    actionsCount,
-    currentStateIndex,
-    computedStates,
-    editableActions,
-  ]);
-
-  const [hoveredCardId, setHoveredCardId] = React.useState(
-    initialHoveredCardId,
-  );
-
-  const deleteAction = (
-    id: Parameters<typeof ActionCreators.toggleAction>[0],
-  ) => {
-    dispatch(ActionCreators.toggleAction(id));
-    dispatch(ActionCreators.sweep());
-  };
-
-  const [deleteHovered, setDeleteHovered] = React.useState(false);
-
+  const [timeElapsed, setTimeElapsed] = React.useState(0);
   const [playTimeout, setPlayTimeout] = React.useState(-1);
   const [timeoutStart, setTimeoutStart] = React.useState(0);
-  const [timeElapsed, setTimeElapsed] = React.useState(0);
   const [isPlaying, setIsPlaying] = React.useState(false);
 
   const nextActionId = stagedActionIds[currentStateIndex + 1];
@@ -319,6 +285,41 @@ const StoryMonitor = (props: MonitorProps) => {
   }, [play]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const areThereNoEditableActions = !editableActions.length;
+
+  React.useEffect(() => {
+    const lastStateIndex = computedStates.length - 1;
+
+    if (actionsCount < editableActions.length) {
+      setActionsCount(actionsCount + 1);
+      setLastJumpedToActionId(initialJumpedToAction);
+      if (currentStateIndex < lastStateIndex) {
+        dispatch(ActionCreators.jumpToState(lastStateIndex));
+      }
+    }
+    if (actionsCount < editableActions.length) {
+      setActionsCount(actionsCount + 1);
+      setTimeElapsed(0);
+    }
+  }, [
+    dispatch,
+    actionsCount,
+    currentStateIndex,
+    computedStates,
+    editableActions,
+  ]);
+
+  const [hoveredCardId, setHoveredCardId] = React.useState(
+    initialHoveredCardId,
+  );
+
+  const deleteAction = (
+    id: Parameters<typeof ActionCreators.toggleAction>[0],
+  ) => {
+    dispatch(ActionCreators.toggleAction(id));
+    dispatch(ActionCreators.sweep());
+  };
+
+  const [deleteHovered, setDeleteHovered] = React.useState(false);
 
   return (
     <Flex height="100%">
