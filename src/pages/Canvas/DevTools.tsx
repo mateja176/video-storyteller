@@ -278,10 +278,6 @@ const StoryMonitor = (props: MonitorProps) => {
 
   React.useEffect(() => {
     play();
-
-    if (isPlaying && timeElapsed) {
-      setTimeElapsed(0);
-    }
   }, [play]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const areThereNoEditableActions = !editableActions.length;
