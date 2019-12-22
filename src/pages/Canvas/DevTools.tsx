@@ -252,28 +252,31 @@ const StoryMonitor = (props: MonitorProps) => {
   const currentActionId = stagedActionIds[currentStateIndex];
   const currentAction = actionsById[currentActionId];
 
-  const play = React.useCallback(() => {
-    if (nextAction && isPlaying) {
-      const timeDiff = nextAction.timestamp - currentAction.timestamp;
+  const play = React.useCallback(
+    (elapsed: number) => {
+      if (nextAction && isPlaying) {
+        const timeDiff = nextAction.timestamp - currentAction.timestamp;
 
-      const timeout = setTimeout(() => {
-        dispatch(ActionCreators.jumpToAction(nextActionId));
-      }, timeDiff - elapsedTime);
+        const timeout = setTimeout(() => {
+          dispatch(ActionCreators.jumpToAction(nextActionId));
+        }, timeDiff - elapsed);
 
-      setTimeoutStart(Date.now());
+        setTimeoutStart(Date.now());
 
-      setPlayTimeout(timeout);
-    }
+        setPlayTimeout(timeout);
+      }
 
-    if (!nextAction && isPlaying) {
-      setIsPlaying(false);
+      if (!nextAction && isPlaying) {
+        setIsPlaying(false);
 
-      setElapsedTime(0);
-    }
-  }, [nextAction, isPlaying]); // eslint-disable-line react-hooks/exhaustive-deps
+        setElapsedTime(0);
+      }
+    },
+    [nextAction, isPlaying], // eslint-disable-line react-hooks/exhaustive-deps
+  );
 
   React.useEffect(() => {
-    play();
+    play(0);
   }, [play]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const areThereNoEditableActions = !editableActions.length;
@@ -312,8 +315,6 @@ const StoryMonitor = (props: MonitorProps) => {
 
   const [deleteHovered, setDeleteHovered] = React.useState(false);
 
-  console.log('timeElapsed', elapsedTime);
-
   return (
     <Flex height="100%">
       <Flex flexDirection="column" p={2} alignItems="center">
@@ -335,7 +336,7 @@ const StoryMonitor = (props: MonitorProps) => {
             onClick={() => {
               setIsPlaying(true);
 
-              play();
+              play(elapsedTime);
             }}
           >
             <PlayArrow />
