@@ -414,6 +414,7 @@ const StoryMonitor = (props: MonitorProps) => {
               }
             };
 
+            const precedingAction = editableActions[i - 1];
             const followingAction = editableActions[i + 1];
 
             return (
@@ -520,7 +521,9 @@ const StoryMonitor = (props: MonitorProps) => {
                       pr={1}
                     >
                       <IconButton
-                        onClick={() => {
+                        onClick={e => {
+                          e.preventDefault();
+
                           dispatch(ActionCreators.toggleAction(id));
                         }}
                       >
@@ -531,7 +534,9 @@ const StoryMonitor = (props: MonitorProps) => {
                         )}
                       </IconButton>
                       <IconButton
-                        onClick={() => {
+                        onClick={e => {
+                          e.stopPropagation();
+
                           if (action.type === cfudActionType.create) {
                             const actionsToDelete = editableActions
                               .filter(
@@ -549,6 +554,15 @@ const StoryMonitor = (props: MonitorProps) => {
                               });
                             dispatch(ActionCreators.sweep());
                           } else {
+                            if (id === currentActionId) {
+                              setLastJumpedToActionId(
+                                followingAction
+                                  ? followingAction.id
+                                  : precedingAction
+                                  ? precedingAction.id
+                                  : -1,
+                              );
+                            }
                             deleteAction(id);
                           }
                         }}
