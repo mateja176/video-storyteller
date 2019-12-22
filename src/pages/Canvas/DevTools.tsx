@@ -293,8 +293,9 @@ const StoryMonitor = (props: MonitorProps) => {
         dispatch(ActionCreators.jumpToState(lastStateIndex));
       }
     }
-    if (actionsCount < editableActions.length) {
-      setActionsCount(actionsCount + 1);
+    if (actionsCount > editableActions.length) {
+      setActionsCount(actionsCount - 1);
+      setLastJumpedToActionId(initialJumpedToAction);
     }
   }, [
     dispatch,
