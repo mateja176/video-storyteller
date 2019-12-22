@@ -360,6 +360,7 @@ const StoryMonitor = (props: MonitorProps) => {
         <IconButton
           disabled={areThereNoEditableActions}
           onClick={() => {
+            setLastJumpedToActionId(-1);
             dispatch(ActionCreators.reset());
           }}
           color="secondary"
