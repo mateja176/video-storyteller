@@ -270,6 +270,8 @@ const StoryMonitor = (props: MonitorProps) => {
         setIsPlaying(false);
 
         setElapsedTime(0);
+
+        setLastJumpedToActionId(-1);
       }
     },
     [nextAction, isPlaying], // eslint-disable-line react-hooks/exhaustive-deps
