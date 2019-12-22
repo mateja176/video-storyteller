@@ -196,8 +196,6 @@ export interface IActionCreators {
 
 const initialHoveredCardId: number = -1;
 
-const initialJumpedToAction = -1;
-
 const cardWidth = 300 - 2 * 10;
 
 const StoryMonitor = (props: MonitorProps) => {
@@ -237,8 +235,11 @@ const StoryMonitor = (props: MonitorProps) => {
     editableActions.length,
   );
 
+  const lastEditableAction = last(editableActions);
+  const lastEditableActionId = lastEditableAction ? lastEditableAction.id : -1;
+
   const [lastJumpedToActionId, setLastJumpedToActionId] = React.useState(
-    initialJumpedToAction,
+    lastEditableActionId,
   );
 
   const [elapsedTime, setElapsedTime] = React.useState(0);
@@ -271,7 +272,7 @@ const StoryMonitor = (props: MonitorProps) => {
 
         setElapsedTime(0);
 
-        setLastJumpedToActionId(-1);
+        setLastJumpedToActionId(lastEditableActionId);
       }
     },
     [nextAction, isPlaying], // eslint-disable-line react-hooks/exhaustive-deps
@@ -288,14 +289,13 @@ const StoryMonitor = (props: MonitorProps) => {
 
     if (actionsCount < editableActions.length) {
       setActionsCount(actionsCount + 1);
-      setLastJumpedToActionId(initialJumpedToAction);
+      setLastJumpedToActionId(lastEditableActionId);
       if (currentStateIndex < lastStateIndex) {
         dispatch(ActionCreators.jumpToState(lastStateIndex));
       }
     }
     if (actionsCount > editableActions.length) {
       setActionsCount(actionsCount - 1);
-      setLastJumpedToActionId(initialJumpedToAction);
     }
   }, [
     dispatch,
@@ -303,6 +303,7 @@ const StoryMonitor = (props: MonitorProps) => {
     currentStateIndex,
     computedStates,
     editableActions,
+    lastEditableActionId,
   ]);
 
   const [hoveredCardId, setHoveredCardId] = React.useState(
@@ -360,7 +361,7 @@ const StoryMonitor = (props: MonitorProps) => {
         <IconButton
           disabled={areThereNoEditableActions}
           onClick={() => {
-            setLastJumpedToActionId(-1);
+            setLastJumpedToActionId(lastEditableActionId);
             dispatch(ActionCreators.reset());
           }}
           color="secondary"
@@ -422,7 +423,7 @@ const StoryMonitor = (props: MonitorProps) => {
                 height="100%"
                 style={{
                   boxShadow:
-                    lastJumpedToActionId === id
+                    lastJumpedToActionId === id && !isPlaying
                       ? `2px 0px ${theme.palette.secondary.light}`
                       : 'none',
                 }}
@@ -459,13 +460,7 @@ const StoryMonitor = (props: MonitorProps) => {
                     setHoveredCardId(id);
                   }}
                   onMouseLeave={() => {
-                    dispatch(
-                      ActionCreators.jumpToAction(
-                        lastJumpedToActionId === initialJumpedToAction
-                          ? last(editableActions)!.id
-                          : lastJumpedToActionId,
-                      ),
-                    );
+                    dispatch(ActionCreators.jumpToAction(lastJumpedToActionId));
                     if (isCfud) {
                       setHoveredActionId('');
                       setHoveredBlockId(initialHoveredBlockId);
