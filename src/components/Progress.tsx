@@ -1,4 +1,4 @@
-import { Box, LinearProgress } from '@material-ui/core';
+import { LinearProgress } from '@material-ui/core';
 import React from 'react';
 
 export interface ProgressProps {
@@ -47,12 +47,7 @@ const Progress: React.FC<ProgressProps> = ({
     }
   }, [stopped]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return (
-    <Box>
-      step: {step}
-      <LinearProgress variant="determinate" value={percentage} />
-    </Box>
-  );
+  return <LinearProgress variant="determinate" value={percentage} />;
 };
 
 export default Progress;
