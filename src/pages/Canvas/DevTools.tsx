@@ -481,6 +481,7 @@ const StoryMonitor = (props: MonitorProps) => {
                         : 'none',
                     }}
                   >
+                    <Typography>Id: {id}</Typography>
                     <Typography>Timestamp: {timestamp}</Typography>
                     <Typography>
                       Time diff:{' '}
