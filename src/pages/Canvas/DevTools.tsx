@@ -412,7 +412,17 @@ const StoryMonitor = (props: MonitorProps) => {
             const followingAction = editableActions[i + 1];
 
             return (
-              <Box key={id} mr={10} height="100%">
+              <Flex
+                key={id}
+                mr={10}
+                height="100%"
+                style={{
+                  boxShadow:
+                    lastJumpedToActionId === id
+                      ? `2px 0px ${theme.palette.secondary.light}`
+                      : 'none',
+                }}
+              >
                 <Card
                   style={{
                     background: isCfudActionType(action.type)
@@ -550,7 +560,15 @@ const StoryMonitor = (props: MonitorProps) => {
                     </Flex>
                   )}
                 </Card>
-              </Box>
+                {/* {lastJumpedToActionId === id && (
+                  <Divider
+                    orientation="vertical"
+                    style={{
+                      background: theme.palette.secondary.light,
+                    }}
+                  />
+                )} */}
+              </Flex>
             );
           })}
         </GridLayout>
