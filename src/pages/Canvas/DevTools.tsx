@@ -241,7 +241,7 @@ const StoryMonitor = (props: MonitorProps) => {
     initialJumpedToAction,
   );
 
-  const [timeElapsed, setTimeElapsed] = React.useState(0);
+  const [elapsedTime, setElapsedTime] = React.useState(0);
   const [playTimeout, setPlayTimeout] = React.useState(-1);
   const [timeoutStart, setTimeoutStart] = React.useState(0);
   const [isPlaying, setIsPlaying] = React.useState(false);
@@ -258,7 +258,7 @@ const StoryMonitor = (props: MonitorProps) => {
 
       const timeout = setTimeout(() => {
         dispatch(ActionCreators.jumpToAction(nextActionId));
-      }, timeDiff - timeElapsed);
+      }, timeDiff - elapsedTime);
 
       setTimeoutStart(Date.now());
 
@@ -268,7 +268,7 @@ const StoryMonitor = (props: MonitorProps) => {
     if (!nextAction && isPlaying) {
       setIsPlaying(false);
 
-      setTimeElapsed(0);
+      setElapsedTime(0);
     }
   }, [nextAction, isPlaying]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -312,13 +312,15 @@ const StoryMonitor = (props: MonitorProps) => {
 
   const [deleteHovered, setDeleteHovered] = React.useState(false);
 
+  console.log('timeElapsed', elapsedTime);
+
   return (
     <Flex height="100%">
       <Flex flexDirection="column" p={2} alignItems="center">
         {isPlaying ? (
           <IconButton
             onClick={() => {
-              setTimeElapsed(timeElapsed + Date.now() - timeoutStart);
+              setElapsedTime(elapsedTime + Date.now() - timeoutStart);
 
               setIsPlaying(false);
 
@@ -340,11 +342,11 @@ const StoryMonitor = (props: MonitorProps) => {
           </IconButton>
         )}
         <IconButton
-          disabled={areThereNoEditableActions || (!isPlaying && !timeElapsed)}
+          disabled={areThereNoEditableActions || (!isPlaying && !elapsedTime)}
           onClick={() => {
             setIsPlaying(false);
 
-            setTimeElapsed(0);
+            setElapsedTime(0);
 
             clearTimeout(playTimeout);
           }}
@@ -489,7 +491,7 @@ const StoryMonitor = (props: MonitorProps) => {
                             nextAction.timestamp - currentAction.timestamp
                           }
                           paused={!isPlaying}
-                          stopped={!isPlaying && !timeElapsed}
+                          stopped={!isPlaying && !elapsedTime}
                         />
                       )}
                     </Box>
