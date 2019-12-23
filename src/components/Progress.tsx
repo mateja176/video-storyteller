@@ -26,17 +26,15 @@ interface TimerProps {
 const Timer: React.FC<TimerProps> = ReactTimer;
 
 export interface ProgressProps {
+  timeInMs: number;
   initialPercentage?: number;
-  timeInMs?: number;
-  updateInterval?: number;
   paused?: boolean;
   stopped?: boolean;
 }
 
 const Progress: React.FC<ProgressProps> = ({
+  timeInMs,
   initialPercentage = 0,
-  timeInMs = 1000,
-  updateInterval = 100,
   paused = false,
   stopped = false,
 }) => {
@@ -46,7 +44,7 @@ const Progress: React.FC<ProgressProps> = ({
 
   return (
     <Timer
-      active={!paused}
+      active={!paused && !stopped}
       onTimeUpdate={e => {
         const { progress } = e;
         setPercentage(progress * 100);
