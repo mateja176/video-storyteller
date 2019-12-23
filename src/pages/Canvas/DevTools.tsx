@@ -292,6 +292,9 @@ const StoryMonitor = (props: MonitorProps) => {
       setLastJumpedToActionId(lastEditableActionId);
       if (currentStateIndex < lastStateIndex) {
         dispatch(ActionCreators.jumpToState(lastStateIndex));
+        dispatch(
+          ActionCreators.reorderAction(lastEditableActionId, nextActionId),
+        );
       }
     }
     if (actionsCount > editableActions.length) {
@@ -304,6 +307,7 @@ const StoryMonitor = (props: MonitorProps) => {
     computedStates,
     editableActions,
     lastEditableActionId,
+    nextActionId,
   ]);
 
   const [hoveredCardId, setHoveredCardId] = React.useState(
