@@ -83,6 +83,7 @@
     "react-spring": "^8.0.23",
     "react-stripe-elements": "^5.1.0",
     "react-tether": "^2.0.3",
+    "react-timer-wrapper": "^0.3.7",
     "react-transition-group": "^4.2.1",
     "react-virtualized": "^9.21.1",
     "rebass": "^3.1.1",
