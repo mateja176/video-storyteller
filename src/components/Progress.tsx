@@ -1,5 +1,29 @@
-import { LinearProgress } from '@material-ui/core';
+import { useTheme } from '@material-ui/core';
 import React from 'react';
+// @ts-ignore
+import ReactTimer from 'react-timer-wrapper';
+import { Box } from 'rebass';
+
+interface TimerEvent {
+  duration: number;
+  progress: number;
+  time: number;
+}
+
+type TimerEventHandler = (e: TimerEvent) => void;
+
+interface TimerProps {
+  active?: boolean;
+  component?: string | React.ReactElement;
+  duration?: number;
+  loop?: boolean;
+  time?: number;
+  onFinish?: TimerEventHandler;
+  onStart?: TimerEventHandler;
+  onStop?: TimerEventHandler;
+  onTimeUpdate: TimerEventHandler;
+}
+const Timer: React.FC<TimerProps> = ReactTimer;
 
 export interface ProgressProps {
   initialPercentage?: number;
@@ -17,37 +41,39 @@ const Progress: React.FC<ProgressProps> = ({
   stopped = false,
 }) => {
   const [percentage, setPercentage] = React.useState(initialPercentage);
-  const [percentageTimeout, setPercentageTimeout] = React.useState(-1);
 
-  const step = (100 * updateInterval) / timeInMs;
+  const theme = useTheme();
 
-  React.useEffect(() => {
-    if (percentage < 100 && !paused) {
-      const increment = percentage + step;
-      const timeout = setTimeout(() => {
-        setPercentage(increment > 100 ? 100 : increment);
-      }, updateInterval);
-
-      setPercentageTimeout(timeout);
-    }
-  }, [updateInterval, percentage, paused]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  React.useEffect(() => {
-    if (paused) {
-      clearTimeout(percentageTimeout);
-    } else {
-      setPercentageTimeout(percentage);
-    }
-  }, [paused]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  React.useEffect(() => {
-    if (stopped) {
-      clearTimeout(percentageTimeout);
-      setPercentage(initialPercentage);
-    }
-  }, [stopped]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  return <LinearProgress variant="determinate" value={percentage} />;
+  return (
+    <Timer
+      active={!paused}
+      onTimeUpdate={e => {
+        const { progress } = e;
+        setPercentage(progress * 100);
+      }}
+      duration={timeInMs}
+    >
+      {/* <LinearProgress variant="determinate" value={percentage} /> */}
+      <Box
+        style={{
+          height: 5,
+          position: 'relative',
+          background: theme.palette.primary.light,
+        }}
+      >
+        <Box
+          style={{
+            height: '100%',
+            width: `${percentage}%`,
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            background: theme.palette.primary.dark,
+          }}
+        />
+      </Box>
+    </Timer>
+  );
 };
 
 export default Progress;
