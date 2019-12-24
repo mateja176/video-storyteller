@@ -21,7 +21,7 @@ import { Button, IconButton, Progress } from 'components';
 import { Form, Formik } from 'formik';
 import { capitalize } from 'lodash';
 import { BlockStates } from 'models';
-import { last } from 'ramda';
+import { last, equals } from 'ramda';
 import React from 'react';
 import GridLayout from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
@@ -436,6 +436,10 @@ const StoryMonitor = (props: MonitorProps) => {
               ? followingAction.timestamp - timestamp
               : 0;
 
+            const initialValues = {
+              timeDiff,
+            };
+
             return (
               <Flex
                 key={id}
@@ -501,13 +505,11 @@ const StoryMonitor = (props: MonitorProps) => {
                     }}
                   >
                     <Formik
-                      initialValues={{
-                        timeDiff,
-                      }}
+                      initialValues={initialValues}
                       onSubmit={console.log} // eslint-disable-line no-console
                       isInitialValid={false}
                       validate={values => {
-                        const isEqual = values.timeDiff === timeDiff;
+                        const isEqual = !equals(initialValues, values);
                         return isEqual ? {} : undefined;
                       }}
                       enableReinitialize
@@ -523,15 +525,18 @@ const StoryMonitor = (props: MonitorProps) => {
                             <TextField
                               label="Action Id"
                               value={id}
-                              variant="outlined"
+                              variant="standard"
                               disabled
                               style={{ marginRight: 5 }}
+                              margin="dense"
+                              type="number"
                             />
                             <TextField
                               label="Action Type"
                               value={capitalize(action.type)}
-                              variant="outlined"
+                              variant="standard"
                               disabled
+                              margin="dense"
                             />
                           </Flex>
                           <Form
