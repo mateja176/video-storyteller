@@ -525,7 +525,7 @@ const StoryMonitor = (props: MonitorProps) => {
                             <TextField
                               label="Action Id"
                               value={id}
-                              variant="standard"
+                              variant="outlined"
                               disabled
                               style={{ marginRight: 5 }}
                               margin="dense"
@@ -534,7 +534,7 @@ const StoryMonitor = (props: MonitorProps) => {
                             <TextField
                               label="Action Type"
                               value={capitalize(action.type)}
-                              variant="standard"
+                              variant="outlined"
                               disabled
                               margin="dense"
                             />
