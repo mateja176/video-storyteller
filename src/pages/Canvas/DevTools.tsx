@@ -537,14 +537,27 @@ const StoryMonitor = (props: MonitorProps) => {
                       }}
                       isInitialValid={false}
                       validate={values => {
-                        const isEqual = !equals(initialValues, values);
-                        return isEqual && values.timeDiff <= timeDiff
-                          ? {}
-                          : undefined;
+                        const isEqual = equals(initialValues, values);
+
+                        if (isEqual) {
+                          return {};
+                        } else if (values.timeDiff < 0) {
+                          return {
+                            timeDiff: 'Difference must be greater than 0',
+                          };
+                        } else {
+                          return undefined;
+                        }
                       }}
                       enableReinitialize
                     >
-                      {({ isValid, handleChange, handleBlur, values }) => (
+                      {({
+                        isValid,
+                        handleChange,
+                        handleBlur,
+                        values,
+                        errors,
+                      }) => (
                         <Flex
                           flexDirection="column"
                           p={10}
@@ -597,6 +610,8 @@ const StoryMonitor = (props: MonitorProps) => {
                                   </InputAdornment>
                                 ),
                               }}
+                              error={Boolean(errors.timeDiff)}
+                              helperText={errors.timeDiff}
                             />
                             {/* {isCfudAction(action as EditableAction) && (
                               <Typography>
