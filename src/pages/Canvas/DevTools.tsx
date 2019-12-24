@@ -240,6 +240,17 @@ const StoryMonitor = (props: MonitorProps) => {
 
   const theme = useTheme();
 
+  const [timestamps, setTimestamps] = React.useState<
+    Record<ActionId, ActionById['timestamp']>
+  >(
+    Object.fromEntries(
+      editableActions.map(editableAction => [
+        editableAction.id,
+        editableAction.timestamp,
+      ]),
+    ),
+  );
+
   const [actionsCount, setActionsCount] = React.useState(
     editableActions.length,
   );
@@ -260,12 +271,11 @@ const StoryMonitor = (props: MonitorProps) => {
   const nextAction = actionsById[nextActionId];
 
   const currentActionId = stagedActionIds[currentStateIndex];
-  const currentAction = actionsById[currentActionId];
 
   const play = React.useCallback(
     (elapsed: number) => {
       if (nextAction && isPlaying) {
-        const timeDiff = nextAction.timestamp - currentAction.timestamp;
+        const timeDiff = timestamps[nextActionId] - timestamps[currentActionId];
 
         const timeout = setTimeout(() => {
           dispatch(ActionCreators.jumpToAction(nextActionId));
@@ -299,6 +309,12 @@ const StoryMonitor = (props: MonitorProps) => {
     if (actionsCount < editableActions.length) {
       setActionsCount(actionsCount + 1);
       setLastJumpedToActionId(lastEditableActionId);
+      setTimestamps({
+        ...timestamps,
+        [lastEditableActionId]: editableActions.find(
+          ({ id }) => lastEditableActionId === id,
+        )!.timestamp,
+      });
       if (currentStateIndex < lastStateIndex) {
         dispatch(ActionCreators.jumpToState(lastStateIndex));
         dispatch(
@@ -317,6 +333,7 @@ const StoryMonitor = (props: MonitorProps) => {
     editableActions,
     lastEditableActionId,
     nextActionId,
+    timestamps,
   ]);
 
   const [hoveredCardId, setHoveredCardId] = React.useState(
@@ -416,7 +433,8 @@ const StoryMonitor = (props: MonitorProps) => {
           }}
           isDraggable={!isEditing}
         >
-          {editableActions.map(({ action, id, timestamp }, i) => {
+          {editableActions.map(({ action, id }, i) => {
+            const timestamp = timestamps[id];
             const isCurrentAction = id === currentActionId;
 
             const isCfud = isCfudAction(action as EditableAction);
@@ -434,7 +452,7 @@ const StoryMonitor = (props: MonitorProps) => {
             const followingAction = editableActions[i + 1];
 
             const timeDiff = followingAction
-              ? followingAction.timestamp - timestamp
+              ? timestamps[followingAction.id] - timestamp
               : 0;
 
             const initialValues = {
@@ -507,11 +525,22 @@ const StoryMonitor = (props: MonitorProps) => {
                   >
                     <Formik
                       initialValues={initialValues}
-                      onSubmit={console.log} // eslint-disable-line no-console
+                      onSubmit={values => {
+                        const newTimestamp =
+                          timeDiff - values.timeDiff + timestamp;
+
+                        const newTimestamps = {
+                          ...timestamps,
+                          [id]: newTimestamp,
+                        };
+                        setTimestamps(newTimestamps);
+                      }}
                       isInitialValid={false}
                       validate={values => {
                         const isEqual = !equals(initialValues, values);
-                        return isEqual ? {} : undefined;
+                        return isEqual && values.timeDiff <= timeDiff
+                          ? {}
+                          : undefined;
                       }}
                       enableReinitialize
                     >
@@ -590,7 +619,8 @@ const StoryMonitor = (props: MonitorProps) => {
                       {id === currentActionId && nextAction && (
                         <Progress
                           timeInMs={
-                            nextAction.timestamp - currentAction.timestamp
+                            timestamps[nextActionId] -
+                            timestamps[currentActionId]
                           }
                           paused={!isPlaying}
                           stopped={!isPlaying && !elapsedTime}
