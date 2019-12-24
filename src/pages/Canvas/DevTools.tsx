@@ -214,6 +214,7 @@ const StoryMonitor = (props: MonitorProps) => {
     currentStateIndex,
     computedStates,
     skippedActionIds,
+    // nextActionId,
   } = props;
   console.log(props); // eslint-disable-line no-console
 
