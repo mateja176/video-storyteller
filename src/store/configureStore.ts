@@ -2,7 +2,6 @@ import * as mobilenet from '@tensorflow-models/mobilenet';
 import LogRocket from 'logrocket';
 import { Module } from 'models';
 import { Middleware } from 'redux';
-import logger from 'redux-logger';
 import { createEpicMiddleware } from 'redux-observable';
 import { configureStore } from 'redux-starter-kit';
 import { from } from 'rxjs';
@@ -30,7 +29,7 @@ export default () => {
   if (process.env.NODE_ENV === 'development') {
     const store = configureStore({
       reducer,
-      middleware: middleware.concat(logger),
+      middleware,
     });
 
     epicMiddleware.run(epic);
