@@ -1,6 +1,12 @@
 /* eslint-disable indent */
 
-import { Card, Divider, Typography, useTheme } from '@material-ui/core';
+import {
+  Card,
+  Divider,
+  InputAdornment,
+  TextField,
+  useTheme,
+} from '@material-ui/core';
 import {
   Delete,
   DeleteSweep,
@@ -11,7 +17,9 @@ import {
   VisibilityOff,
 } from '@material-ui/icons';
 import color from 'color';
-import { IconButton, Progress } from 'components';
+import { Button, IconButton, Progress } from 'components';
+import { Form, Formik } from 'formik';
+import { capitalize } from 'lodash';
 import { BlockStates } from 'models';
 import { last } from 'ramda';
 import React from 'react';
@@ -323,6 +331,8 @@ const StoryMonitor = (props: MonitorProps) => {
 
   const [deleteHovered, setDeleteHovered] = React.useState(false);
 
+  const [isEditing, setIsEditing] = React.useState(false);
+
   return (
     <Flex height="100%">
       <Flex flexDirection="column" p={2} alignItems="center">
@@ -403,6 +413,7 @@ const StoryMonitor = (props: MonitorProps) => {
               ActionCreators.reorderAction(Number(newItem.i), beforeAction.id),
             );
           }}
+          isDraggable={!isEditing}
         >
           {editableActions.map(({ action, id, timestamp }, i) => {
             const isCurrentAction = id === currentActionId;
@@ -420,6 +431,10 @@ const StoryMonitor = (props: MonitorProps) => {
 
             const precedingAction = editableActions[i - 1];
             const followingAction = editableActions[i + 1];
+
+            const timeDiff = followingAction
+              ? followingAction.timestamp - timestamp
+              : 0;
 
             return (
               <Flex
@@ -477,8 +492,7 @@ const StoryMonitor = (props: MonitorProps) => {
                     setLastJumpedToActionId(id);
                   }}
                 >
-                  <Flex
-                    flexDirection="column"
+                  <Box
                     height="100%"
                     style={{
                       filter: skippedActionIds.includes(id)
@@ -486,21 +500,87 @@ const StoryMonitor = (props: MonitorProps) => {
                         : 'none',
                     }}
                   >
-                    <Typography>Id: {id}</Typography>
-                    <Typography>Timestamp: {timestamp}</Typography>
-                    <Typography>
-                      Time diff:{' '}
-                      {followingAction
-                        ? followingAction.timestamp - timestamp
-                        : 0}
-                    </Typography>
-                    <Typography>Type: {action.type}</Typography>
-                    {isCfudAction(action as EditableAction) && (
-                      <Typography>
-                        Id: {(action as CfudAction).payload.id}
-                      </Typography>
-                    )}
-                    <Box mt="auto">
+                    <Formik
+                      initialValues={{
+                        timeDiff,
+                      }}
+                      onSubmit={console.log} // eslint-disable-line no-console
+                      isInitialValid={false}
+                      validate={values => {
+                        const isEqual = values.timeDiff === timeDiff;
+                        return isEqual ? {} : undefined;
+                      }}
+                      enableReinitialize
+                    >
+                      {({ isValid, handleChange, handleBlur, values }) => (
+                        <Flex
+                          flexDirection="column"
+                          p={10}
+                          pt={3}
+                          height="100%"
+                        >
+                          <Flex mb={3}>
+                            <TextField
+                              label="Action Id"
+                              value={id}
+                              variant="outlined"
+                              disabled
+                              style={{ marginRight: 5 }}
+                            />
+                            <TextField
+                              label="Action Type"
+                              value={capitalize(action.type)}
+                              variant="outlined"
+                              disabled
+                            />
+                          </Flex>
+                          <Form
+                            onMouseEnter={() => {
+                              setIsEditing(true);
+                            }}
+                            onMouseLeave={() => {
+                              setIsEditing(false);
+                            }}
+                            style={{
+                              flexGrow: 1,
+                              display: 'flex',
+                              flexDirection: 'column',
+                            }}
+                          >
+                            <TextField
+                              name="timeDiff"
+                              onBlur={handleBlur}
+                              onChange={handleChange}
+                              label="Time diff"
+                              type="number"
+                              variant="outlined"
+                              value={values.timeDiff}
+                              InputProps={{
+                                endAdornment: (
+                                  <InputAdornment position="end">
+                                    ms
+                                  </InputAdornment>
+                                ),
+                              }}
+                            />
+                            {/* {isCfudAction(action as EditableAction) && (
+                              <Typography>
+                                Id: {(action as CfudAction).payload.id}
+                              </Typography>
+                            )} */}
+                            <Flex mt="auto">
+                              <Button type="submit" disabled={!isValid}>
+                                Save edit
+                              </Button>
+                              <Button style={{ marginLeft: 'auto' }}>
+                                See more
+                              </Button>
+                            </Flex>
+                          </Form>
+                        </Flex>
+                      )}
+                    </Formik>
+                    <Box>
                       {id === currentActionId && nextAction && (
                         <Progress
                           timeInMs={
@@ -511,7 +591,7 @@ const StoryMonitor = (props: MonitorProps) => {
                         />
                       )}
                     </Box>
-                  </Flex>
+                  </Box>
                   {id === hoveredCardId && (
                     <Flex
                       style={{
