@@ -66,7 +66,7 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
     isInitialValid
   >
     {({ isValid, handleChange, handleBlur, values, errors }) => (
-      <Flex flexDirection="column" p={10} pt={3} height="100%">
+      <Flex flexDirection="column" px={2} pt={2} pb={1} flex={1}>
         <Flex mb={3}>
           <TextField
             label="Action Id"

@@ -30,6 +30,7 @@ export interface ProgressProps {
   initialPercentage?: number;
   paused?: boolean;
   stopped?: boolean;
+  isVisible?: boolean;
 }
 
 const Progress: React.FC<ProgressProps> = ({
@@ -37,6 +38,7 @@ const Progress: React.FC<ProgressProps> = ({
   initialPercentage = 0,
   paused = false,
   stopped = false,
+  isVisible = true,
 }) => {
   const [percentage, setPercentage] = React.useState(initialPercentage);
 
@@ -53,20 +55,21 @@ const Progress: React.FC<ProgressProps> = ({
     >
       {/* <LinearProgress variant="determinate" value={percentage} /> */}
       <Box
+        height={5}
+        bg={theme.palette.primary.light}
         style={{
-          height: 5,
           position: 'relative',
-          background: theme.palette.primary.light,
+          visibility: isVisible ? 'visible' : 'hidden',
         }}
       >
         <Box
+          height="100%"
+          width={`${percentage}%`}
+          bg={theme.palette.primary.dark}
           style={{
-            height: '100%',
-            width: `${percentage}%`,
             position: 'absolute',
             top: 0,
             left: 0,
-            background: theme.palette.primary.dark,
           }}
         />
       </Box>

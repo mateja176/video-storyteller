@@ -16,7 +16,7 @@ import { last } from 'ramda';
 import React from 'react';
 import GridLayout from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
-import { Box, Flex } from 'rebass';
+import { Flex } from 'rebass';
 import { createDevTools } from 'redux-devtools';
 import ActionCardForm from './ActionCardForm';
 import { CanvasContext, initialHoveredBlockId } from './CanvasContext';
@@ -351,7 +351,8 @@ const StoryMonitor = (props: MonitorProps) => {
                     setLastJumpedToActionId(id);
                   }}
                 >
-                  <Box
+                  <Flex
+                    flexDirection="column"
                     height="100%"
                     style={{
                       filter: skippedActionIds.includes(id)
@@ -370,19 +371,17 @@ const StoryMonitor = (props: MonitorProps) => {
                       initialValues={initialValues}
                       timeDiff={timeDiff}
                     />
-                    <Box>
-                      {id === currentActionId && nextAction && (
-                        <Progress
-                          timeInMs={
-                            getTimestamp(nextActionId) -
-                            getTimestamp(currentActionId)
-                          }
-                          paused={!isPlaying}
-                          stopped={!isPlaying && !elapsedTime}
-                        />
-                      )}
-                    </Box>
-                  </Box>
+
+                    <Progress
+                      timeInMs={
+                        getTimestamp(nextActionId) -
+                        getTimestamp(currentActionId)
+                      }
+                      paused={!isPlaying}
+                      stopped={!isPlaying && !elapsedTime}
+                      isVisible={Boolean(id === currentActionId && nextAction)}
+                    />
+                  </Flex>
                   {id === hoveredCardId && (
                     <Flex
                       style={{
