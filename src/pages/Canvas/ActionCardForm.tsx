@@ -38,20 +38,17 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
     onSubmit={values => {
       const delta = values.timeDiff - timeDiff;
 
-      console.log('delta', delta);
-
       const newTimestamps = editableActions
         .slice(i + 1)
         .reduce((currentTimestamps, editableAction) => {
-          const newTimestamp = delta + editableAction.timestamp;
+          const newTimestamp = delta + timestamps[editableAction.id];
 
-          console.log('editableAction.timestamp', editableAction.timestamp);
-          console.log('newTimestamp', newTimestamp);
-
-          return {
+          const updatedTimestamps = {
             ...currentTimestamps,
             [editableAction.id]: newTimestamp,
           };
+
+          return updatedTimestamps;
         }, timestamps);
 
       setTimestamps(newTimestamps);
