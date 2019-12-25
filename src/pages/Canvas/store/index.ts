@@ -9,13 +9,13 @@ import {
   Reducer,
 } from 'redux';
 import { configureStore } from 'redux-starter-kit';
-import { Selector } from 'reselect';
+import { createSelector, Selector } from 'reselect';
 import blockStates, { BlockStatesAction, RawBlockState } from './blockStates';
-import scale, { ScaleAction } from './scale';
+import transform, { TransformAction } from './transform';
 
 const actionReducerMap = {
   blockStates,
-  scale,
+  transform,
 };
 
 type ActionReducerMap = typeof actionReducerMap;
@@ -24,7 +24,7 @@ export type State = {
   [key in keyof ActionReducerMap]: ReturnType<ActionReducerMap[key]>;
 };
 
-export type Action = BlockStatesAction | ScaleAction;
+export type Action = BlockStatesAction | TransformAction;
 
 const reducer: Reducer<State, Action> = combineReducers(actionReducerMap);
 
@@ -48,7 +48,11 @@ export const convertFromRawBlockState = ({
 
 export const selectBlockStates = (state: State) =>
   state.blockStates.map<BlockState>(convertFromRawBlockState);
-export const selectScale = (state: State) => state.scale;
+export const selectTransform = (state: State) => state.transform;
+export const selectScale = createSelector(
+  selectTransform,
+  ({ scale }) => scale,
+);
 
 export const useSelector = <R>(selector: Selector<State, R>) => {
   const [result, setResult] = useState(selector(store.getState()));

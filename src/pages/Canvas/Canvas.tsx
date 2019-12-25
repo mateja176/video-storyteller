@@ -27,7 +27,7 @@ import store, {
   useSelector,
 } from './store';
 import { createCreateAction, createUpdateAction } from './store/blockStates';
-import { createSetScale } from './store/scale';
+import { createSetPosition, createSetScale } from './store/transform';
 
 const controlsHeight = 50;
 
@@ -52,15 +52,20 @@ const Canvas: React.FC<CanvasProps> = () => {
 
   const {
     setScale: _setScale,
+    setPosition: _setPosition,
     createBlockState,
     updateBlockState,
   } = useActions({
     setScale: createSetScale,
+    setPosition: createSetPosition,
     createBlockState: createCreateAction,
     updateBlockState: createUpdateAction,
   });
 
-  const setScale = debounce(_setScale, 1000);
+  const setScale = React.useMemo(() => debounce(_setScale, 1000), [_setScale]);
+  const setPosition = React.useMemo(() => debounce(_setPosition, 1000), [
+    _setPosition,
+  ]);
 
   const blockStates = useSelector(selectBlockStates);
 
@@ -87,15 +92,20 @@ const Canvas: React.FC<CanvasProps> = () => {
         e.preventDefault();
         return false;
       },
+      filterKey: () => true,
     });
 
     instance.zoomAbs(0, 0, scale);
 
     setPanzoomInstance(instance);
 
-    instance.getTransform();
     instance.on('zoom', () => {
       setScale(instance.getTransform().scale);
+    });
+
+    instance.on('panend', () => {
+      const { x, y } = instance.getTransform();
+      setPosition({ x, y });
     });
 
     return () => {
@@ -140,6 +150,8 @@ const Canvas: React.FC<CanvasProps> = () => {
   const [hoveredBlockId, setHoveredBlockId] = React.useState(
     initialHoveredBlockId,
   );
+
+  React.useEffect(() => {}, []);
 
   return (
     <Flex style={{ height: '100%' }}>

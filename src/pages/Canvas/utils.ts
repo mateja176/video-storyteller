@@ -12,23 +12,27 @@ import {
   CfudActionTypes,
   cfudActionTypes,
 } from './store/blockStates';
-import { ScaleAction, ScaleActionTypes, scaleActionTypes } from './store/scale';
+import {
+  TransformAction,
+  TransformActionTypes,
+  transformActionTypes,
+} from './store/transform';
 
 export type EditableActionTypes = Tuple.Concat<
   CfudActionTypes,
-  ScaleActionTypes
+  TransformActionTypes
 >;
 export type EditableActionType = EditableActionTypes[number];
 export const editableActionTypes = [
   ...cfudActionTypes,
-  ...scaleActionTypes,
+  ...transformActionTypes,
 ] as EditableActionTypes;
 export const isEditableActionType = (
   type: string,
 ): type is EditableActionType =>
   editableActionTypes.includes(type as EditableActionType);
 
-export type EditableAction = CfudAction | ScaleAction;
+export type EditableAction = CfudAction | TransformAction;
 export type EditableActionPayload = EditableAction['payload'];
 
 export type EditableActionById = GenericActionById<
