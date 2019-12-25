@@ -1,12 +1,6 @@
 /* eslint-disable indent */
 
-import {
-  Card,
-  Divider,
-  InputAdornment,
-  TextField,
-  useTheme,
-} from '@material-ui/core';
+import { Card, Divider, useTheme } from '@material-ui/core';
 import {
   Delete,
   DeleteSweep,
@@ -17,190 +11,30 @@ import {
   VisibilityOff,
 } from '@material-ui/icons';
 import color from 'color';
-import { Button, IconButton, Progress } from 'components';
-import { Form, Formik } from 'formik';
-import { capitalize } from 'lodash';
-import { BlockStates } from 'models';
-import { last, equals } from 'ramda';
+import { IconButton, Progress } from 'components';
+import { last } from 'ramda';
 import React from 'react';
 import GridLayout from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import { Box, Flex } from 'rebass';
-import { Dispatch } from 'redux';
 import { createDevTools } from 'redux-devtools';
-// @ts-ignore
-import { ActionCreators as InstrumentActionCreators } from 'redux-devtools-instrument';
-import { Tuple } from 'ts-toolbelt';
-import { PayloadAction } from 'typesafe-actions';
-import { toObject } from 'utils';
+import ActionCardForm from './ActionCardForm';
 import { CanvasContext, initialHoveredBlockId } from './CanvasContext';
-import { Action } from './store';
 import {
   CfudAction,
   CfudActionType,
   cfudActionType,
-  cfudActionTypes,
-  CfudActionTypes,
 } from './store/blockStates';
-import { ScaleAction, scaleActionTypes, ScaleActionTypes } from './store/scale';
-
-type EditableActionTypes = Tuple.Concat<CfudActionTypes, ScaleActionTypes>;
-type EditableActionType = EditableActionTypes[number];
-const editableActionTypes = [
-  ...cfudActionTypes,
-  ...scaleActionTypes,
-] as EditableActionTypes;
-const isEditableActionType = (type: string): type is EditableActionType =>
-  editableActionTypes.includes(type as EditableActionType);
-
-type EditableAction = CfudAction | ScaleAction;
-type EditableActionPayload = EditableAction['payload'];
-
-type EditableActionById = GenericActionById<
-  EditableActionType,
-  EditableActionPayload
->;
-
-const isEditableActionById = (
-  action: ActionById,
-): action is EditableActionById => isEditableActionType(action.action.type);
-
-const isCfudActionType = (type: string): type is CfudActionType =>
-  cfudActionTypes.includes(type as CfudActionType);
-
-// ? 'CfudAction' is assignable to the constraint of type 'A',
-// ? but 'A' could be instantiated with a different subtype of constraint 'EditableAction'
-// const isCfudAction = <A extends EditableAction>(action: A): action is CfudAction =>
-const isCfudAction = (action: EditableAction): action is CfudAction =>
-  isCfudActionType(action.type);
-
-export interface MonitorState {}
-
-export type ActionId = number;
-
-export interface GenericActionById<Type extends string, Payload extends any> {
-  type: string;
-  action: PayloadAction<Type, Payload>;
-  timestamp: number;
-}
-
-export type ActionById = GenericActionById<Action['type'], Action['payload']>;
-
-export type ActionsById = Record<number, ActionById>;
-
-export interface State {
-  blockStates: BlockStates;
-}
-
-export interface ComputedState {
-  state: State;
-}
-
-export interface MonitorProps {
-  monitorState: MonitorState;
-  actionsById: ActionsById;
-  nextActionId: ActionId;
-  stagedActionIds: ActionId[];
-  skippedActionIds: ActionId[];
-  currentStateIndex: number;
-  computedStates: ComputedState[];
-  isLocked: boolean;
-  isPaused: boolean;
-  dispatch: Dispatch;
-}
-
-export const ActionCreators: IActionCreators = InstrumentActionCreators;
-
-export const actionTypes = [
-  'PERFORM_ACTION',
-  'RESET',
-  'ROLLBACK',
-  'COMMIT',
-  'SWEEP',
-  'TOGGLE_ACTION',
-  'SET_ACTIONS_ACTIVE',
-  'JUMP_TO_STATE',
-  'JUMP_TO_ACTION',
-  'REORDER_ACTION',
-  'IMPORT_STATE',
-  'LOCK_CHANGES',
-  'PAUSE_RECORDING',
-] as const;
-
-export const actionType = toObject(actionTypes);
-
-export type ActionType = typeof actionType;
-
-export interface IActionCreators {
-  performAction(
-    action: ActionById,
-    trace: ((action: ActionById) => ActionsById) | undefined,
-    traceLimit: number,
-    toExcludeFromTrace: () => void,
-  ):
-    | never
-    | {
-        type: ActionType['PERFORM_ACTION'];
-        action: ActionById;
-        timestamp: string;
-        stack: ActionsById;
-      };
-
-  reset(): { type: ActionType['RESET']; timestamp: string };
-
-  rollback(): { type: ActionType['ROLLBACK']; timestamp: string };
-
-  commit(): { type: ActionType['COMMIT']; timestamp: string };
-
-  sweep(): { type: ActionType['SWEEP'] };
-
-  toggleAction(id: number): { type: ActionType['TOGGLE_ACTION']; id: number };
-
-  setActionsActive(
-    start: number,
-    end: number,
-    active: boolean,
-  ): {
-    type: ActionType['SET_ACTIONS_ACTIVE'];
-    start: number;
-    end: number;
-    active: boolean;
-  };
-
-  reorderAction(
-    actionId: ActionId,
-    beforeActionId: ActionId,
-  ): {
-    type: ActionType['REORDER_ACTION'];
-    actionId: ActionId;
-    beforeActionId: ActionId;
-  };
-
-  jumpToState(
-    index: number,
-  ): { type: ActionType['JUMP_TO_STATE']; index: number };
-
-  jumpToAction(
-    actionId: ActionId,
-  ): { type: ActionType['JUMP_TO_ACTION']; actionId: ActionId };
-
-  importState(
-    nextLiftedState: MonitorProps['monitorState'],
-    noRecompute: boolean,
-  ): {
-    type: ActionType['IMPORT_STATE'];
-    nextLiftedState: MonitorProps['monitorState'];
-    noRecompute: boolean;
-  };
-
-  lockChanges(
-    status: boolean,
-  ): { type: ActionType['LOCK_CHANGES']; status: boolean };
-
-  pauseRecording(
-    status: boolean,
-  ): { type: ActionType['PAUSE_RECORDING']; status: boolean };
-}
+import {
+  ActionById,
+  ActionCreators,
+  ActionId,
+  EditableAction,
+  isCfudAction,
+  isCfudActionType,
+  isEditableActionById,
+  MonitorProps,
+} from './utils';
 
 const initialHoveredCardId: number = -1;
 
@@ -216,7 +50,6 @@ const StoryMonitor = (props: MonitorProps) => {
     skippedActionIds,
     // nextActionId,
   } = props;
-  console.log(props); // eslint-disable-line no-console
 
   const { hoveredBlockId, setHoveredBlockId } = React.useContext(CanvasContext);
 
@@ -250,6 +83,7 @@ const StoryMonitor = (props: MonitorProps) => {
       ]),
     ),
   );
+  const getTimestamp = (id: keyof typeof timestamps) => timestamps[id] || 0;
 
   const [actionsCount, setActionsCount] = React.useState(
     editableActions.length,
@@ -275,7 +109,8 @@ const StoryMonitor = (props: MonitorProps) => {
   const play = React.useCallback(
     (elapsed: number) => {
       if (nextAction && isPlaying) {
-        const timeDiff = timestamps[nextActionId] - timestamps[currentActionId];
+        const timeDiff =
+          getTimestamp(nextActionId) - getTimestamp(currentActionId);
 
         const timeout = setTimeout(() => {
           dispatch(ActionCreators.jumpToAction(nextActionId));
@@ -395,6 +230,7 @@ const StoryMonitor = (props: MonitorProps) => {
           onClick={() => {
             setLastJumpedToActionId(lastEditableActionId);
             dispatch(ActionCreators.reset());
+            setTimestamps({});
           }}
           color="secondary"
         >
@@ -434,7 +270,7 @@ const StoryMonitor = (props: MonitorProps) => {
           isDraggable={!isEditing}
         >
           {editableActions.map(({ action, id }, i) => {
-            const timestamp = timestamps[id];
+            const timestamp = getTimestamp(id);
             const isCurrentAction = id === currentActionId;
 
             const isCfud = isCfudAction(action as EditableAction);
@@ -452,7 +288,7 @@ const StoryMonitor = (props: MonitorProps) => {
             const followingAction = editableActions[i + 1];
 
             const timeDiff = followingAction
-              ? timestamps[followingAction.id] - timestamp
+              ? getTimestamp(followingAction.id) - timestamp
               : 0;
 
             const initialValues = {
@@ -523,119 +359,23 @@ const StoryMonitor = (props: MonitorProps) => {
                         : 'none',
                     }}
                   >
-                    <Formik
+                    <ActionCardForm
+                      i={i}
+                      id={id}
+                      action={action as EditableAction}
+                      timestamps={timestamps}
+                      setTimestamps={setTimestamps}
+                      editableActions={editableActions}
+                      setIsEditing={setIsEditing}
                       initialValues={initialValues}
-                      onSubmit={values => {
-                        const newTimestamp =
-                          timeDiff - values.timeDiff + timestamp;
-
-                        const newTimestamps = {
-                          ...timestamps,
-                          [id]: newTimestamp,
-                        };
-                        setTimestamps(newTimestamps);
-                      }}
-                      isInitialValid={false}
-                      validate={values => {
-                        const isEqual = equals(initialValues, values);
-
-                        if (isEqual) {
-                          return {};
-                        } else if (values.timeDiff < 0) {
-                          return {
-                            timeDiff: 'Difference must be greater than 0',
-                          };
-                        } else {
-                          return undefined;
-                        }
-                      }}
-                      enableReinitialize
-                    >
-                      {({
-                        isValid,
-                        handleChange,
-                        handleBlur,
-                        values,
-                        errors,
-                      }) => (
-                        <Flex
-                          flexDirection="column"
-                          p={10}
-                          pt={3}
-                          height="100%"
-                        >
-                          <Flex mb={3}>
-                            <TextField
-                              label="Action Id"
-                              value={id}
-                              variant="outlined"
-                              disabled
-                              style={{ marginRight: 5 }}
-                              margin="dense"
-                              type="number"
-                            />
-                            <TextField
-                              label="Action Type"
-                              value={capitalize(action.type)}
-                              variant="outlined"
-                              disabled
-                              margin="dense"
-                            />
-                          </Flex>
-                          <Form
-                            onMouseEnter={() => {
-                              setIsEditing(true);
-                            }}
-                            onMouseLeave={() => {
-                              setIsEditing(false);
-                            }}
-                            style={{
-                              flexGrow: 1,
-                              display: 'flex',
-                              flexDirection: 'column',
-                            }}
-                          >
-                            <TextField
-                              name="timeDiff"
-                              onBlur={handleBlur}
-                              onChange={handleChange}
-                              label="Time diff"
-                              type="number"
-                              variant="outlined"
-                              value={values.timeDiff}
-                              InputProps={{
-                                endAdornment: (
-                                  <InputAdornment position="end">
-                                    ms
-                                  </InputAdornment>
-                                ),
-                              }}
-                              error={Boolean(errors.timeDiff)}
-                              helperText={errors.timeDiff}
-                            />
-                            {/* {isCfudAction(action as EditableAction) && (
-                              <Typography>
-                                Id: {(action as CfudAction).payload.id}
-                              </Typography>
-                            )} */}
-                            <Flex mt="auto">
-                              <Button type="submit" disabled={!isValid}>
-                                Save edit
-                              </Button>
-                              <Button style={{ marginLeft: 'auto' }}>
-                                See more
-                              </Button>
-                            </Flex>
-                          </Form>
-                        </Flex>
-                      )}
-                    </Formik>
+                      timeDiff={timeDiff}
+                    />
                     <Box>
                       {id === currentActionId && nextAction && (
                         <Progress
                           timeInMs={
-                            timestamps[nextActionId] -
-                            timestamps[currentActionId]
+                            getTimestamp(nextActionId) -
+                            getTimestamp(currentActionId)
                           }
                           paused={!isPlaying}
                           stopped={!isPlaying && !elapsedTime}
