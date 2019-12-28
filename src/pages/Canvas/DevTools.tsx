@@ -16,22 +16,18 @@ import { last } from 'ramda';
 import React from 'react';
 import GridLayout from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
-import { Flex, Box } from 'rebass';
+import { Box, Flex } from 'rebass';
 import { createDevTools } from 'redux-devtools';
 import ActionCardForm from './ActionCardForm';
 import { CanvasContext, initialHoveredBlockId } from './CanvasContext';
-import {
-  CfudAction,
-  CfudActionType,
-  cfudActionType,
-} from './store/blockStates';
+import { CfudAction, cfudActionType } from './store/blockStates';
 import {
   ActionById,
   ActionCreators,
   ActionId,
   EditableAction,
+  EditableActionType,
   isCfudAction,
-  isCfudActionType,
   isEditableActionById,
   MonitorProps,
 } from './utils';
@@ -54,13 +50,15 @@ const StoryMonitor = (props: MonitorProps) => {
   const { hoveredBlockId, setHoveredBlockId } = React.useContext(CanvasContext);
 
   const cfudTypeBackgroundColorMap: Record<
-    CfudActionType,
+    EditableActionType,
     React.CSSProperties['background']
   > = {
     create: 'green',
     focus: 'blue',
     update: 'yellow',
     delete: 'red',
+    'transform/scale/set': 'gray',
+    'transform/position/set': 'gray',
   };
 
   const stagedActions = stagedActionIds.map<ActionById & { id: number }>(
@@ -309,11 +307,13 @@ const StoryMonitor = (props: MonitorProps) => {
               >
                 <Card
                   style={{
-                    background: isCfudActionType(action.type)
-                      ? color(cfudTypeBackgroundColorMap[action.type])
-                          .alpha(isCurrentAction ? 0.5 : 0.2)
-                          .toString()
-                      : 'inherit',
+                    background: color(
+                      cfudTypeBackgroundColorMap[
+                        (action as EditableAction).type
+                      ],
+                    )
+                      .alpha(isCurrentAction ? 0.5 : 0.2)
+                      .toString(),
                     width: cardWidth,
                     height: '100%',
                     border:
