@@ -416,15 +416,29 @@ const StoryMonitor = (props: MonitorProps) => {
                     }}
                   >
                     <ActionCardForm
-                      i={i}
                       id={id}
                       action={action as EditableAction}
-                      timestamps={timestamps}
-                      setTimestamps={setTimestamps}
-                      editableActions={editableActions}
                       setIsEditing={setIsEditing}
                       initialValues={initialValues}
-                      timeDiff={timeDiff}
+                      handleSubmit={values => {
+                        const delta = values.timeDiff - timeDiff;
+
+                        const newTimestamps = editableActions
+                          .slice(i + 1)
+                          .reduce((currentTimestamps, editableAction) => {
+                            const newTimestamp =
+                              delta + timestamps[editableAction.id];
+
+                            const updatedTimestamps = {
+                              ...currentTimestamps,
+                              [editableAction.id]: newTimestamp,
+                            };
+
+                            return updatedTimestamps;
+                          }, timestamps);
+
+                        setTimestamps(newTimestamps);
+                      }}
                     />
 
                     <Box height={progressHeight}>

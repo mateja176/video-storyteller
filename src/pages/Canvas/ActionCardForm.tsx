@@ -4,12 +4,8 @@ import { Form, Formik } from 'formik';
 import { startCase } from 'lodash';
 import React from 'react';
 import { Flex } from 'rebass';
-import {
-  ActionWithId,
-  EditableAction,
-  isScaleAction,
-  isPositionAction,
-} from './utils';
+import { TransformState } from './store/transform';
+import { EditableAction, isPositionAction, isScaleAction } from './utils';
 
 const textFieldProps = {
   variant: 'outlined',
@@ -18,51 +14,32 @@ const textFieldProps = {
 
 type Timestamps = Record<number, number>;
 
-export interface ActionCardFormProps {
-  id: number;
-  initialValues: {
-    timeDiff: number;
-  };
+interface InitialValues {
   timeDiff: number;
-  setTimestamps: (timestamps: Timestamps) => void;
-  timestamps: Timestamps;
-  editableActions: ActionWithId[];
+  scale?: TransformState['scale'];
+  x?: TransformState['x'];
+  y?: TransformState['y'];
+}
+type Values = Required<InitialValues>;
+
+export interface ActionCardFormProps {
+  handleSubmit: (values: Values) => void;
+  id: number;
+  initialValues: InitialValues;
   setIsEditing: (editing: boolean) => void;
-  i: number;
   action: EditableAction;
 }
 
 const ActionCardForm: React.FC<ActionCardFormProps> = ({
+  handleSubmit,
   initialValues,
-  timeDiff,
-  setTimestamps,
-  timestamps,
-  editableActions,
   setIsEditing,
   id,
-  i,
   action,
 }) => (
   <Formik
-    initialValues={initialValues}
-    onSubmit={values => {
-      const delta = values.timeDiff - timeDiff;
-
-      const newTimestamps = editableActions
-        .slice(i + 1)
-        .reduce((currentTimestamps, editableAction) => {
-          const newTimestamp = delta + timestamps[editableAction.id];
-
-          const updatedTimestamps = {
-            ...currentTimestamps,
-            [editableAction.id]: newTimestamp,
-          };
-
-          return updatedTimestamps;
-        }, timestamps);
-
-      setTimestamps(newTimestamps);
-    }}
+    initialValues={{ ...initialValues, scale: 1, x: 0, y: 0 }}
+    onSubmit={handleSubmit}
     validate={values => {
       if (values.timeDiff < 0) {
         return {
