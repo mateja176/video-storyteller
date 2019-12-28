@@ -4,11 +4,14 @@ import { equals } from 'ramda';
 import { useEffect, useState } from 'react';
 import {
   ActionCreatorsMapObject,
+  AnyAction,
   bindActionCreators,
   combineReducers,
+  createStore,
+  Dispatch,
   Reducer,
 } from 'redux';
-import { configureStore } from 'redux-starter-kit';
+import { composeWithDevTools } from 'redux-devtools-extension';
 import { createSelector, Selector } from 'reselect';
 import blockStates, { BlockStatesAction, RawBlockState } from './blockStates';
 import transform, { TransformAction } from './transform';
@@ -28,10 +31,9 @@ export type Action = BlockStatesAction | TransformAction;
 
 const reducer: Reducer<State, Action> = combineReducers(actionReducerMap);
 
-const store = configureStore({
-  reducer,
-  devTools: true,
-});
+const composeEnhancers = composeWithDevTools({ name: 'Canvas Store' });
+
+const store = createStore(reducer, /* preloaded state */ composeEnhancers());
 
 export default store;
 
@@ -73,4 +75,4 @@ export const useSelector = <R>(selector: Selector<State, R>) => {
 // eslint-disable-next-line max-len
 export const useActions = <MapObject extends ActionCreatorsMapObject<Action>>(
   actionCreator: MapObject,
-) => bindActionCreators(actionCreator, store.dispatch);
+) => bindActionCreators(actionCreator, store.dispatch as Dispatch<AnyAction>);
