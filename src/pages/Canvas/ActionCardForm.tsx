@@ -4,7 +4,17 @@ import { Form, Formik } from 'formik';
 import { startCase } from 'lodash';
 import React from 'react';
 import { Flex } from 'rebass';
-import { ActionWithId, EditableAction } from './utils';
+import {
+  ActionWithId,
+  EditableAction,
+  isScaleAction,
+  isPositionAction,
+} from './utils';
+
+const textFieldProps = {
+  variant: 'outlined',
+  margin: 'dense',
+} as const;
 
 type Timestamps = Record<number, number>;
 
@@ -72,21 +82,27 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
         <Flex flexDirection="column" px={2} pb={1} flex={1}>
           <Flex mb={2}>
             <TextField
+              {...textFieldProps}
               label="Action Id"
               value={id}
-              variant="outlined"
               disabled
               style={{ marginRight: 5, width: 90 }}
-              margin="dense"
               type="number"
               title={id.toString()}
             />
             <TextField
+              {...textFieldProps}
               label="Action Type"
+              style={{
+                textOverflow: 'ellipsis',
+              }}
+              inputProps={{
+                style: {
+                  textOverflow: 'ellipsis',
+                },
+              }}
               value={formattedActionType}
-              variant="outlined"
               disabled
-              margin="dense"
               title={formattedActionType}
             />
           </Flex>
@@ -104,12 +120,12 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
             }}
           >
             <TextField
+              {...textFieldProps}
               name="timeDiff"
               onBlur={handleBlur}
               onChange={handleChange}
               label="Time diff"
               type="number"
-              variant="outlined"
               value={values.timeDiff}
               InputProps={{
                 endAdornment: (
@@ -118,13 +134,37 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
               }}
               error={Boolean(errors.timeDiff)}
               helperText={errors.timeDiff}
-              margin="dense"
             />
-            {/* {isCfudAction(action as EditableAction) && (
-          <Typography>
-            Id: {(action as CfudAction).payload.id}
-          </Typography>
-        )} */}
+            {isScaleAction(action) && (
+              <TextField
+                {...textFieldProps}
+                name="scale"
+                label="Zoom"
+                value={(action.payload * 100).toFixed(0)}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">%</InputAdornment>
+                  ),
+                }}
+              />
+            )}
+            {isPositionAction(action) && (
+              <Flex>
+                <TextField
+                  {...textFieldProps}
+                  name="positionX"
+                  label="X Coordinate"
+                  value={action.payload.x.toFixed(0)}
+                  style={{ marginRight: 5 }}
+                />
+                <TextField
+                  {...textFieldProps}
+                  name="positionY"
+                  label="Y Coordinate"
+                  value={action.payload.y.toFixed(0)}
+                />
+              </Flex>
+            )}
             <Flex mt="auto">
               <Button type="submit" disabled={!isValid}>
                 Save edit

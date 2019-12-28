@@ -16,6 +16,11 @@ import {
   TransformAction,
   TransformActionTypes,
   transformActionTypes,
+  TransformActionType,
+  ScaleAction,
+  scaleTypes,
+  PositionAction,
+  positionTypes,
 } from './store/transform';
 
 export type EditableActionTypes = Tuple.Concat<
@@ -52,6 +57,23 @@ export const isCfudActionType = (type: string): type is CfudActionType =>
 // const isCfudAction = <A extends EditableAction>(action: A): action is CfudAction =>
 export const isCfudAction = (action: EditableAction): action is CfudAction =>
   isCfudActionType(action.type);
+
+export const isTransformActionType = (
+  type: string,
+): type is TransformActionType =>
+  transformActionTypes.includes(type as TransformActionType);
+
+export const isTransformAction = (
+  action: EditableAction,
+): action is TransformAction => isTransformActionType(action.type);
+
+export const isScaleAction = (action: EditableAction): action is ScaleAction =>
+  scaleTypes.includes(action.type as ScaleAction['type']);
+
+export const isPositionAction = (
+  action: EditableAction,
+): action is PositionAction =>
+  positionTypes.includes(action.type as PositionAction['type']);
 
 export interface MonitorState {}
 
