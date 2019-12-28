@@ -4,6 +4,8 @@ import React from 'react';
 import ReactTimer from 'react-timer-wrapper';
 import { Box } from 'rebass';
 
+export const progressHeight = 5;
+
 interface TimerEvent {
   duration: number;
   progress: number;
@@ -30,7 +32,6 @@ export interface ProgressProps {
   initialPercentage?: number;
   paused?: boolean;
   stopped?: boolean;
-  isVisible?: boolean;
 }
 
 const Progress: React.FC<ProgressProps> = ({
@@ -38,7 +39,6 @@ const Progress: React.FC<ProgressProps> = ({
   initialPercentage = 0,
   paused = false,
   stopped = false,
-  isVisible = true,
 }) => {
   const [percentage, setPercentage] = React.useState(initialPercentage);
 
@@ -55,11 +55,10 @@ const Progress: React.FC<ProgressProps> = ({
     >
       {/* <LinearProgress variant="determinate" value={percentage} /> */}
       <Box
-        height={5}
+        height={progressHeight}
         bg={theme.palette.primary.light}
         style={{
           position: 'relative',
-          visibility: isVisible ? 'visible' : 'hidden',
         }}
       >
         <Box

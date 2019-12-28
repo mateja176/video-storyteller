@@ -11,12 +11,12 @@ import {
   VisibilityOff,
 } from '@material-ui/icons';
 import color from 'color';
-import { IconButton, Progress } from 'components';
+import { IconButton, Progress, progressHeight } from 'components';
 import { last } from 'ramda';
 import React from 'react';
 import GridLayout from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
-import { Flex } from 'rebass';
+import { Flex, Box } from 'rebass';
 import { createDevTools } from 'redux-devtools';
 import ActionCardForm from './ActionCardForm';
 import { CanvasContext, initialHoveredBlockId } from './CanvasContext';
@@ -372,15 +372,18 @@ const StoryMonitor = (props: MonitorProps) => {
                       timeDiff={timeDiff}
                     />
 
-                    <Progress
-                      timeInMs={
-                        getTimestamp(nextActionId) -
-                        getTimestamp(currentActionId)
-                      }
-                      paused={!isPlaying}
-                      stopped={!isPlaying && !elapsedTime}
-                      isVisible={Boolean(id === currentActionId && nextAction)}
-                    />
+                    <Box height={progressHeight}>
+                      {id === currentActionId && nextAction && (
+                        <Progress
+                          timeInMs={
+                            getTimestamp(nextActionId) -
+                            getTimestamp(currentActionId)
+                          }
+                          paused={!isPlaying}
+                          stopped={!isPlaying && !elapsedTime}
+                        />
+                      )}
+                    </Box>
                   </Flex>
                   {id === hoveredCardId && (
                     <Flex
