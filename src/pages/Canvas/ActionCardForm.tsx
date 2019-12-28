@@ -70,7 +70,7 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
 
       return (
         <Flex flexDirection="column" px={2} pb={1} flex={1}>
-          <Flex mb={3}>
+          <Flex mb={2}>
             <TextField
               label="Action Id"
               value={id}
