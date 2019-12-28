@@ -328,6 +328,8 @@ const StoryMonitor = (props: MonitorProps) => {
                           }`
                         : 'none',
                     position: 'relative',
+                    display: 'flex',
+                    flexDirection: 'column',
                   }}
                   onMouseEnter={() => {
                     dispatch(ActionCreators.jumpToAction(id));
@@ -351,9 +353,62 @@ const StoryMonitor = (props: MonitorProps) => {
                     setLastJumpedToActionId(id);
                   }}
                 >
+                  <Flex justifyContent="flex-end" pt={1} pr={1}>
+                    <IconButton
+                      onClick={e => {
+                        e.preventDefault();
+
+                        dispatch(ActionCreators.toggleAction(id));
+                      }}
+                    >
+                      {skippedActionIds.includes(id) ? (
+                        <Visibility />
+                      ) : (
+                        <VisibilityOff />
+                      )}
+                    </IconButton>
+                    <IconButton
+                      onClick={e => {
+                        e.stopPropagation();
+
+                        if (action.type === cfudActionType.create) {
+                          const actionsToDelete = editableActions
+                            .filter(
+                              actionById =>
+                                (actionById.action as CfudAction).payload.id ===
+                                hoveredActionId,
+                            )
+                            .map(actionById => actionById.id);
+
+                          actionsToDelete
+                            .slice()
+                            .reverse()
+                            .forEach(actionId => {
+                              dispatch(ActionCreators.toggleAction(actionId));
+                            });
+                          dispatch(ActionCreators.sweep());
+                        } else {
+                          if (id === currentActionId) {
+                            setLastJumpedToActionId(
+                              followingAction
+                                ? followingAction.id
+                                : precedingAction
+                                ? precedingAction.id
+                                : -1,
+                            );
+                          }
+                          deleteAction(id);
+                        }
+                      }}
+                      onMouseEnter={toggleDeleteHovered}
+                      onMouseLeave={toggleDeleteHovered}
+                    >
+                      <Delete />
+                    </IconButton>
+                  </Flex>
                   <Flex
                     flexDirection="column"
-                    height="100%"
+                    flex={1}
                     style={{
                       filter: skippedActionIds.includes(id)
                         ? 'blur(1px)'
@@ -385,71 +440,6 @@ const StoryMonitor = (props: MonitorProps) => {
                       )}
                     </Box>
                   </Flex>
-                  {id === hoveredCardId && (
-                    <Flex
-                      style={{
-                        position: 'absolute',
-                        top: 0,
-                        width: '100%',
-                        opacity: 0.8,
-                      }}
-                      justifyContent="flex-end"
-                      pt={1}
-                      pr={1}
-                    >
-                      <IconButton
-                        onClick={e => {
-                          e.preventDefault();
-
-                          dispatch(ActionCreators.toggleAction(id));
-                        }}
-                      >
-                        {skippedActionIds.includes(id) ? (
-                          <Visibility />
-                        ) : (
-                          <VisibilityOff />
-                        )}
-                      </IconButton>
-                      <IconButton
-                        onClick={e => {
-                          e.stopPropagation();
-
-                          if (action.type === cfudActionType.create) {
-                            const actionsToDelete = editableActions
-                              .filter(
-                                actionById =>
-                                  (actionById.action as CfudAction).payload
-                                    .id === hoveredActionId,
-                              )
-                              .map(actionById => actionById.id);
-
-                            actionsToDelete
-                              .slice()
-                              .reverse()
-                              .forEach(actionId => {
-                                dispatch(ActionCreators.toggleAction(actionId));
-                              });
-                            dispatch(ActionCreators.sweep());
-                          } else {
-                            if (id === currentActionId) {
-                              setLastJumpedToActionId(
-                                followingAction
-                                  ? followingAction.id
-                                  : precedingAction
-                                  ? precedingAction.id
-                                  : -1,
-                              );
-                            }
-                            deleteAction(id);
-                          }
-                        }}
-                        onMouseEnter={toggleDeleteHovered}
-                        onMouseLeave={toggleDeleteHovered}
-                      >
-                        <Delete />
-                      </IconButton>
-                    </Flex>
-                  )}
                 </Card>
                 {/* {lastJumpedToActionId === id && (
                   <Divider
