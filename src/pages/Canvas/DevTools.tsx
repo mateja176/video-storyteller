@@ -12,7 +12,7 @@ import {
 } from '@material-ui/icons';
 import color from 'color';
 import { IconButton, Progress, progressHeight } from 'components';
-import { last } from 'ramda';
+import { equals, last } from 'ramda';
 import React from 'react';
 import GridLayout from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
@@ -20,6 +20,7 @@ import { Box, Flex } from 'rebass';
 import { createDevTools } from 'redux-devtools';
 import ActionCardForm from './ActionCardForm';
 import { CanvasContext, initialHoveredBlockId } from './CanvasContext';
+import store, { Action } from './store';
 import { CfudAction, cfudActionType } from './store/blockStates';
 import {
   ActionById,
@@ -29,6 +30,8 @@ import {
   EditableActionType,
   isCfudAction,
   isEditableActionById,
+  isPositionAction,
+  isScaleAction,
   MonitorProps,
 } from './utils';
 
@@ -420,24 +423,56 @@ const StoryMonitor = (props: MonitorProps) => {
                       action={action as EditableAction}
                       setIsEditing={setIsEditing}
                       initialValues={initialValues}
-                      handleSubmit={values => {
-                        const delta = values.timeDiff - timeDiff;
+                      handleSubmit={({
+                        timeDiff: newTimeDiff,
+                        ...transform
+                      }) => {
+                        const delta = newTimeDiff - timeDiff;
 
-                        const newTimestamps = editableActions
-                          .slice(i + 1)
-                          .reduce((currentTimestamps, editableAction) => {
-                            const newTimestamp =
-                              delta + timestamps[editableAction.id];
+                        if (delta) {
+                          const newTimestamps = editableActions
+                            .slice(i + 1)
+                            .reduce((currentTimestamps, editableAction) => {
+                              const newTimestamp =
+                                delta + timestamps[editableAction.id];
 
-                            const updatedTimestamps = {
-                              ...currentTimestamps,
-                              [editableAction.id]: newTimestamp,
-                            };
+                              const updatedTimestamps = {
+                                ...currentTimestamps,
+                                [editableAction.id]: newTimestamp,
+                              };
 
-                            return updatedTimestamps;
-                          }, timestamps);
+                              return updatedTimestamps;
+                            }, timestamps);
 
-                        setTimestamps(newTimestamps);
+                          setTimestamps(newTimestamps);
+                        }
+
+                        const { scale: zoom, ...position } = transform;
+                        const scale = zoom / 100;
+
+                        if (
+                          isScaleAction(action as EditableAction) &&
+                          scale !== action.payload
+                        ) {
+                          store.dispatch({
+                            ...action,
+                            payload: scale,
+                          } as Action);
+                          dispatch(ActionCreators.toggleAction(id));
+                          dispatch(ActionCreators.sweep());
+                        }
+
+                        if (
+                          isPositionAction(action as EditableAction) &&
+                          !equals(position, action.payload)
+                        ) {
+                          store.dispatch({
+                            ...action,
+                            payload: position,
+                          } as Action);
+                          dispatch(ActionCreators.toggleAction(id));
+                          dispatch(ActionCreators.sweep());
+                        }
                       }}
                     />
 

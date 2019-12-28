@@ -4,7 +4,10 @@ import { Form, Formik } from 'formik';
 import { startCase } from 'lodash';
 import React from 'react';
 import { Flex } from 'rebass';
-import { TransformState } from './store/transform';
+import {
+  initialState as initialTransformState,
+  TransformState,
+} from './store/transform';
 import { EditableAction, isPositionAction, isScaleAction } from './utils';
 
 const textFieldProps = {
@@ -38,7 +41,18 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
   action,
 }) => (
   <Formik
-    initialValues={{ ...initialValues, scale: 1, x: 0, y: 0 }}
+    initialValues={{
+      ...initialValues,
+      scale: isScaleAction(action)
+        ? Number((action.payload * 100).toFixed(0))
+        : initialTransformState.scale,
+      x: isPositionAction(action)
+        ? Number(action.payload.x.toFixed(0))
+        : initialTransformState.x,
+      y: isPositionAction(action)
+        ? Number(action.payload.y.toFixed(0))
+        : initialTransformState.y,
+    }}
     onSubmit={handleSubmit}
     validate={values => {
       if (values.timeDiff < 0) {
@@ -99,11 +113,11 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
             <TextField
               {...textFieldProps}
               name="timeDiff"
+              value={values.timeDiff}
               onBlur={handleBlur}
               onChange={handleChange}
               label="Time diff"
               type="number"
-              value={values.timeDiff}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">ms</InputAdornment>
@@ -115,9 +129,12 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
             {isScaleAction(action) && (
               <TextField
                 {...textFieldProps}
+                type="number"
                 name="scale"
                 label="Zoom"
-                value={(action.payload * 100).toFixed(0)}
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.scale}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">%</InputAdornment>
@@ -129,16 +146,22 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
               <Flex>
                 <TextField
                   {...textFieldProps}
-                  name="positionX"
+                  type="number"
+                  name="x"
                   label="X Coordinate"
-                  value={action.payload.x.toFixed(0)}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.x}
                   style={{ marginRight: 5 }}
                 />
                 <TextField
                   {...textFieldProps}
-                  name="positionY"
+                  type="number"
+                  name="y"
                   label="Y Coordinate"
-                  value={action.payload.y.toFixed(0)}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.y}
                 />
               </Flex>
             )}
