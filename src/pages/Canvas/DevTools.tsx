@@ -442,7 +442,7 @@ const StoryMonitor = (props: MonitorProps) => {
                     />
 
                     <Box height={progressHeight}>
-                      {id === currentActionId && nextAction && (
+                      {id === currentActionId && nextAction && isPlaying && (
                         <Progress
                           timeInMs={
                             getTimestamp(nextActionId) -
