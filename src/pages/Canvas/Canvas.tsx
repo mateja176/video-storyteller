@@ -12,7 +12,13 @@ import {
   Typography,
   useTheme,
 } from '@material-ui/core';
-import { ArrowDownward, Audiotrack, Build, Title } from '@material-ui/icons';
+import {
+  ArrowDownward,
+  Audiotrack,
+  Build,
+  Fullscreen,
+  Title,
+} from '@material-ui/icons';
 import { Button, Editor, EditorControls, Tooltip } from 'components';
 import { EditorState } from 'draft-js';
 import { debounce } from 'lodash';
@@ -206,6 +212,25 @@ const Canvas: React.FC<CanvasProps> = () => {
             <Tooltip title="Toggle open audio upload">
               <ListItemIcon>
                 <Audiotrack />
+              </ListItemIcon>
+            </Tooltip>
+          </ListItem>
+          <ListItem
+            button
+            onClick={() => {
+              if (document.fullscreenElement) {
+                document.exitFullscreen();
+              } else {
+                document.documentElement.requestFullscreen();
+              }
+            }}
+          >
+            <Tooltip title="Toggle full screen">
+              <ListItemIcon>
+                <Box>
+                  {/* {isFullscreen ? <FullscreenExit /> : <Fullscreen />} // * not working */}
+                  <Fullscreen />
+                </Box>
               </ListItemIcon>
             </Tooltip>
           </ListItem>
