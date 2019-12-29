@@ -16,11 +16,17 @@ import { ArrowDownward, Audiotrack, Build, Title } from '@material-ui/icons';
 import { Button, Editor, EditorControls, Tooltip } from 'components';
 import { EditorState } from 'draft-js';
 import { debounce } from 'lodash';
+import firebase from 'my-firebase';
 import panzoom, { PanZoom } from 'panzoom';
 import React from 'react';
 import Dropzone from 'react-dropzone';
+import { useSelector as useStoreSelector } from 'react-redux';
 import { Rnd } from 'react-rnd';
 import { Box, Flex } from 'rebass';
+import { putString } from 'rxfire/storage';
+import { selectUid } from 'store';
+import urlJoin from 'url-join';
+import { v4 } from 'uuid';
 import { CanvasContext, initialHoveredBlockId } from './CanvasContext';
 import DevTools from './DevTools';
 import store, {
@@ -156,6 +162,11 @@ const Canvas: React.FC<CanvasProps> = () => {
 
   const [audioUploadOpen, setAudioUploadOpen] = React.useState(false);
 
+  const uid = useStoreSelector(selectUid);
+
+  const [uploadPercentage, setUploadPercentage] = React.useState(-1);
+  const uploading = uploadPercentage !== -1;
+
   return (
     <Flex style={{ height: '100%' }}>
       <Drawer
@@ -224,8 +235,33 @@ const Canvas: React.FC<CanvasProps> = () => {
             )}
             {audioUploadOpen && (
               <Dropzone
-                onDrop={acceptedFiles => console.log(acceptedFiles)}
+                onDrop={([audioFile]) => {
+                  const { name } = audioFile;
+                  const id = v4();
+                  const reader = new FileReader();
+                  reader.readAsDataURL(audioFile);
+                  // eslint-disable-next-line
+                  reader.onload = () => {
+                    putString(
+                      firebase.storage().ref(urlJoin('audio', uid, id)),
+                      String(reader.result),
+                      'data_url',
+                      { customMetadata: { name, id } },
+                    ).subscribe(({ bytesTransferred, totalBytes }) => {
+                      const percentage = Number(
+                        ((bytesTransferred / totalBytes) * 100).toFixed(0),
+                      );
+
+                      setUploadPercentage(percentage);
+
+                      if (percentage === 100) {
+                        setUploadPercentage(-1);
+                      }
+                    });
+                  };
+                }}
                 accept={['audio/*']}
+                disabled={uploading}
               >
                 {({ getRootProps, getInputProps }) => {
                   const rootProps = getRootProps();
@@ -239,15 +275,21 @@ const Canvas: React.FC<CanvasProps> = () => {
                     >
                       <input {...getInputProps()} />
                       <Flex alignItems="center">
-                        <Icon style={{ marginRight: 10 }}>
-                          <ArrowDownward />
-                        </Icon>
+                        <Box mr={10}>
+                          {uploading ? (
+                            `${uploadPercentage} %`
+                          ) : (
+                            <Icon>
+                              <ArrowDownward />
+                            </Icon>
+                          )}
+                        </Box>
                         <Typography
                           style={{ display: 'inline-block', marginRight: 5 }}
                         >
                           Drop audio track here or
                         </Typography>
-                        <Button>click to select</Button>
+                        <Button disabled={uploading}>click to select</Button>
                       </Flex>
                     </Flex>
                   );
