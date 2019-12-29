@@ -3,19 +3,22 @@
 import {
   Divider,
   Drawer,
+  Icon,
   List,
   ListItem,
   ListItemIcon,
   makeStyles,
   Paper,
+  Typography,
   useTheme,
 } from '@material-ui/core';
-import { Build, Title } from '@material-ui/icons';
-import { Editor, EditorControls, Tooltip } from 'components';
+import { ArrowDownward, Audiotrack, Build, Title } from '@material-ui/icons';
+import { Button, Editor, EditorControls, Tooltip } from 'components';
 import { EditorState } from 'draft-js';
 import { debounce } from 'lodash';
 import panzoom, { PanZoom } from 'panzoom';
 import React from 'react';
+import Dropzone from 'react-dropzone';
 import { Rnd } from 'react-rnd';
 import { Box, Flex } from 'rebass';
 import { CanvasContext, initialHoveredBlockId } from './CanvasContext';
@@ -151,7 +154,7 @@ const Canvas: React.FC<CanvasProps> = () => {
     initialHoveredBlockId,
   );
 
-  React.useEffect(() => {}, []);
+  const [audioUploadOpen, setAudioUploadOpen] = React.useState(false);
 
   return (
     <Flex style={{ height: '100%' }}>
@@ -188,6 +191,13 @@ const Canvas: React.FC<CanvasProps> = () => {
               </ListItemIcon>
             </Tooltip>
           </ListItem>
+          <ListItem button onClick={() => setAudioUploadOpen(!audioUploadOpen)}>
+            <Tooltip title="Toggle open audio upload">
+              <ListItemIcon>
+                <Audiotrack />
+              </ListItemIcon>
+            </Tooltip>
+          </ListItem>
         </List>
       </Drawer>
       <Flex
@@ -205,12 +215,44 @@ const Canvas: React.FC<CanvasProps> = () => {
             e.preventDefault();
           }}
         >
-          <Flex height={controlsHeight}>
+          <Flex style={{ minHeight: controlsHeight }}>
             {focusedEditorId && (
               <EditorControls
                 editorState={focusedEditorState}
                 setEditorState={setFocusedEditorState}
               />
+            )}
+            {audioUploadOpen && (
+              <Dropzone
+                onDrop={acceptedFiles => console.log(acceptedFiles)}
+                accept={['audio/*']}
+              >
+                {({ getRootProps, getInputProps }) => {
+                  const rootProps = getRootProps();
+                  return (
+                    <Flex
+                      {...(rootProps as any)}
+                      width="100%"
+                      height={100}
+                      justifyContent="center"
+                      alignItems="center"
+                    >
+                      <input {...getInputProps()} />
+                      <Flex alignItems="center">
+                        <Icon style={{ marginRight: 10 }}>
+                          <ArrowDownward />
+                        </Icon>
+                        <Typography
+                          style={{ display: 'inline-block', marginRight: 5 }}
+                        >
+                          Drop audio track here or
+                        </Typography>
+                        <Button>click to select</Button>
+                      </Flex>
+                    </Flex>
+                  );
+                }}
+              </Dropzone>
             )}
           </Flex>
           <Divider />
