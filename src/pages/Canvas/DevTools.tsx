@@ -9,6 +9,7 @@ import {
   Stop,
   Visibility,
   VisibilityOff,
+  DeleteForever,
 } from '@material-ui/icons';
 import color from 'color';
 import { IconButton, Progress, progressHeight } from 'components';
@@ -227,6 +228,14 @@ const StoryMonitor = (props: MonitorProps) => {
           <Stop />
         </IconButton>
         <IconButton
+          disabled={!skippedActionIds.length}
+          onClick={() => {
+            dispatch(ActionCreators.sweep());
+          }}
+        >
+          <DeleteSweep />
+        </IconButton>
+        <IconButton
           disabled={areThereNoEditableActions}
           onClick={() => {
             setLastJumpedToActionId(lastEditableActionId);
@@ -235,7 +244,7 @@ const StoryMonitor = (props: MonitorProps) => {
           }}
           color="secondary"
         >
-          <DeleteSweep />
+          <DeleteForever />
         </IconButton>
       </Flex>
       <Divider orientation="vertical" />
