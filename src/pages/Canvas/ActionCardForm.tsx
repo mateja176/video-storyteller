@@ -9,6 +9,7 @@ import {
   TransformState,
 } from './store/transform';
 import { EditableAction, isPositionAction, isScaleAction } from './utils';
+import { equals } from 'ramda';
 
 const textFieldProps = {
   variant: 'outlined',
@@ -39,143 +40,150 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
   setIsEditing,
   id,
   action,
-}) => (
-  <Formik
-    initialValues={{
-      ...initialValues,
-      scale: isScaleAction(action)
-        ? Number((action.payload * 100).toFixed(0))
-        : initialTransformState.scale,
-      x: isPositionAction(action)
-        ? Number(action.payload.x.toFixed(0))
-        : initialTransformState.x,
-      y: isPositionAction(action)
-        ? Number(action.payload.y.toFixed(0))
-        : initialTransformState.y,
-    }}
-    onSubmit={handleSubmit}
-    validate={values => {
-      if (values.timeDiff < 0) {
-        return {
-          timeDiff: 'Difference must be greater than 0',
-        };
-      } else {
-        return undefined;
-      }
-    }}
-    enableReinitialize
-    isInitialValid
-  >
-    {({ isValid, handleChange, handleBlur, values, errors }) => {
-      const formattedActionType = startCase(action.type);
+}) => {
+  const formatedInitialValues = {
+    ...initialValues,
+    scale: isScaleAction(action)
+      ? Number((action.payload * 100).toFixed(0))
+      : initialTransformState.scale,
+    x: isPositionAction(action)
+      ? Number(action.payload.x.toFixed(0))
+      : initialTransformState.x,
+    y: isPositionAction(action)
+      ? Number(action.payload.y.toFixed(0))
+      : initialTransformState.y,
+  };
 
-      return (
-        <Flex flexDirection="column" px={2} pb={1} flex={1}>
-          <Flex mb={2}>
-            <TextField
-              {...textFieldProps}
-              label="Action Id"
-              value={id}
-              disabled
-              style={{ marginRight: 5, width: 90 }}
-              type="number"
-              title={id.toString()}
-            />
-            <TextField
-              {...textFieldProps}
-              label="Action Type"
-              style={{
-                textOverflow: 'ellipsis',
-              }}
-              inputProps={{
-                style: {
-                  textOverflow: 'ellipsis',
-                },
-              }}
-              value={formattedActionType}
-              disabled
-              title={formattedActionType}
-            />
-          </Flex>
-          <Form
-            onMouseEnter={() => {
-              setIsEditing(true);
-            }}
-            onMouseLeave={() => {
-              setIsEditing(false);
-            }}
-            style={{
-              flexGrow: 1,
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
-            <TextField
-              {...textFieldProps}
-              name="timeDiff"
-              value={values.timeDiff}
-              onBlur={handleBlur}
-              onChange={handleChange}
-              label="Time diff"
-              type="number"
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">ms</InputAdornment>
-                ),
-              }}
-              error={Boolean(errors.timeDiff)}
-              helperText={errors.timeDiff}
-            />
-            {isScaleAction(action) && (
+  return (
+    <Formik
+      initialValues={formatedInitialValues}
+      onSubmit={handleSubmit}
+      validate={values => {
+        if (values.timeDiff < 0) {
+          return {
+            timeDiff: 'Difference must be greater than 0',
+          };
+        } else {
+          return undefined;
+        }
+      }}
+      enableReinitialize
+      isInitialValid
+    >
+      {({ isValid, handleChange, handleBlur, values, errors }) => {
+        const formattedActionType = startCase(action.type);
+
+        return (
+          <Flex flexDirection="column" px={2} pb={1} flex={1}>
+            <Flex mb={2}>
               <TextField
                 {...textFieldProps}
+                label="Action Id"
+                value={id}
+                disabled
+                style={{ marginRight: 5, width: 90 }}
                 type="number"
-                name="scale"
-                label="Zoom"
+                title={id.toString()}
+              />
+              <TextField
+                {...textFieldProps}
+                label="Action Type"
+                style={{
+                  textOverflow: 'ellipsis',
+                }}
+                inputProps={{
+                  style: {
+                    textOverflow: 'ellipsis',
+                  },
+                }}
+                value={formattedActionType}
+                disabled
+                title={formattedActionType}
+              />
+            </Flex>
+            <Form
+              onMouseEnter={() => {
+                setIsEditing(true);
+              }}
+              onMouseLeave={() => {
+                setIsEditing(false);
+              }}
+              style={{
+                flexGrow: 1,
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <TextField
+                {...textFieldProps}
+                name="timeDiff"
+                value={values.timeDiff}
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.scale}
+                label="Time diff"
+                type="number"
                 InputProps={{
                   endAdornment: (
-                    <InputAdornment position="end">%</InputAdornment>
+                    <InputAdornment position="end">ms</InputAdornment>
                   ),
                 }}
+                error={Boolean(errors.timeDiff)}
+                helperText={errors.timeDiff}
               />
-            )}
-            {isPositionAction(action) && (
-              <Flex>
+              {isScaleAction(action) && (
                 <TextField
                   {...textFieldProps}
                   type="number"
-                  name="x"
-                  label="X Coordinate"
+                  name="scale"
+                  label="Zoom"
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  value={values.x}
-                  style={{ marginRight: 5 }}
+                  value={values.scale}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">%</InputAdornment>
+                    ),
+                  }}
                 />
-                <TextField
-                  {...textFieldProps}
-                  type="number"
-                  name="y"
-                  label="Y Coordinate"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.y}
-                />
+              )}
+              {isPositionAction(action) && (
+                <Flex>
+                  <TextField
+                    {...textFieldProps}
+                    type="number"
+                    name="x"
+                    label="X Coordinate"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.x}
+                    style={{ marginRight: 5 }}
+                  />
+                  <TextField
+                    {...textFieldProps}
+                    type="number"
+                    name="y"
+                    label="Y Coordinate"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.y}
+                  />
+                </Flex>
+              )}
+              <Flex mt="auto">
+                <Button
+                  type="submit"
+                  disabled={!isValid || equals(formatedInitialValues, values)}
+                >
+                  Save edit
+                </Button>
+                <Button style={{ marginLeft: 'auto' }}>See more</Button>
               </Flex>
-            )}
-            <Flex mt="auto">
-              <Button type="submit" disabled={!isValid}>
-                Save edit
-              </Button>
-              <Button style={{ marginLeft: 'auto' }}>See more</Button>
-            </Flex>
-          </Form>
-        </Flex>
-      );
-    }}
-  </Formik>
-);
+            </Form>
+          </Flex>
+        );
+      }}
+    </Formik>
+  );
+};
 
 export default ActionCardForm;
