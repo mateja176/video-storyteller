@@ -14,7 +14,7 @@ import {
   Modifier,
 } from 'draft-js';
 import 'draft-js/dist/Draft.css';
-import { EditorProps, Maybe } from 'models';
+import { EditorProps as BaseEditorProps, Maybe } from 'models';
 import React, { KeyboardEvent } from 'react';
 
 const useStyles = makeStyles({
@@ -59,14 +59,20 @@ const getBlockStyle = (block: ContentBlock) => {
 
 export type EditorCommand = DraftEditorCommand | 'tab-indent';
 
-const Editor: React.FC<EditorProps &
-  Pick<React.HTMLProps<HTMLDivElement>, 'onMouseEnter' | 'onMouseLeave'>> = ({
+export interface EditorProps
+  extends BaseEditorProps,
+    Pick<React.HTMLProps<HTMLDivElement>, 'onMouseEnter' | 'onMouseLeave'> {
+  cursor?: React.CSSProperties['cursor'];
+}
+
+const Editor: React.FC<EditorProps> = ({
   editorState,
   setEditorState,
   onFocus,
   onBlur,
   onMouseEnter,
   onMouseLeave,
+  cursor = 'text',
 }) => {
   const editor = React.useRef<DraftEditor>(null);
 
@@ -116,7 +122,7 @@ const Editor: React.FC<EditorProps &
     <div
       style={{
         background: 'transparent',
-        cursor: 'text',
+        cursor,
       }}
       className={classes.editor}
       onClick={focus}

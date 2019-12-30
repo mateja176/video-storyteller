@@ -16,6 +16,7 @@ import {
   ArrowDownward,
   Audiotrack,
   Build,
+  Delete,
   Fullscreen,
   Title,
 } from '@material-ui/icons';
@@ -41,7 +42,11 @@ import store, {
   useActions,
   useSelector,
 } from './store';
-import { createCreateAction, createUpdateAction } from './store/blockStates';
+import {
+  createCreateAction,
+  createDeleteAction,
+  createUpdateAction,
+} from './store/blockStates';
 import { createSetPosition, createSetScale } from './store/transform';
 
 const controlsHeight = 50;
@@ -70,11 +75,13 @@ const Canvas: React.FC<CanvasProps> = () => {
     setPosition: _setPosition,
     createBlockState,
     updateBlockState,
+    deleteBlockState,
   } = useActions({
     setScale: createSetScale,
     setPosition: createSetPosition,
     createBlockState: createCreateAction,
     updateBlockState: createUpdateAction,
+    deleteBlockState: createDeleteAction,
   });
 
   const setScale = React.useMemo(() => debounce(_setScale, 1000), [_setScale]);
@@ -173,8 +180,15 @@ const Canvas: React.FC<CanvasProps> = () => {
   const [uploadPercentage, setUploadPercentage] = React.useState(-1);
   const uploading = uploadPercentage !== -1;
 
+  const [deleteModeOn, setDeleteModeOn] = React.useState(false);
+
   return (
-    <Flex style={{ height: '100%' }}>
+    <Flex
+      style={{
+        height: '100%',
+        cursor: deleteModeOn ? 'not-allowed' : 'default',
+      }}
+    >
       <Drawer
         variant="permanent"
         open
@@ -218,23 +232,41 @@ const Canvas: React.FC<CanvasProps> = () => {
           <ListItem
             button
             onClick={() => {
-              if (window.document.fullscreenElement) {
-                window.document.exitFullscreen();
-              } else {
-                window.document.documentElement.requestFullscreen();
-              }
+              setDeleteModeOn(!deleteModeOn);
             }}
           >
-            <Tooltip title="Toggle full screen">
+            <Tooltip title="Toggle delete mode">
               <ListItemIcon>
-                <Box>
-                  {/* {isFullscreen ? <FullscreenExit /> : <Fullscreen />} // * not working */}
-                  <Fullscreen />
-                </Box>
+                <Delete
+                  style={{
+                    color: deleteModeOn
+                      ? theme.palette.secondary.main
+                      : 'inherit',
+                  }}
+                />
               </ListItemIcon>
             </Tooltip>
           </ListItem>
         </List>
+        <ListItem
+          button
+          onClick={() => {
+            if (window.document.fullscreenElement) {
+              window.document.exitFullscreen();
+            } else {
+              window.document.documentElement.requestFullscreen();
+            }
+          }}
+        >
+          <Tooltip title="Toggle full screen">
+            <ListItemIcon>
+              <Box>
+                {/* {isFullscreen ? <FullscreenExit /> : <Fullscreen />} // * not working */}
+                <Fullscreen />
+              </Box>
+            </ListItemIcon>
+          </Tooltip>
+        </ListItem>
       </Drawer>
       <Flex
         flexDirection="column"
@@ -360,6 +392,12 @@ const Canvas: React.FC<CanvasProps> = () => {
                   resume();
                 }}
                 disableDragging={focusedEditorId === id || disableDragging}
+                onMouseDown={() => {
+                  if (deleteModeOn) {
+                    deleteBlockState({ id });
+                    setDeleteModeOn(false);
+                  }
+                }}
               >
                 <Editor
                   editorState={
@@ -386,6 +424,7 @@ const Canvas: React.FC<CanvasProps> = () => {
                     setHoveredBlockId(initialHoveredBlockId);
                     setDisableDragging(false);
                   }}
+                  cursor={deleteModeOn ? 'not-allowed' : 'text'}
                 />
               </Rnd>
             ))}

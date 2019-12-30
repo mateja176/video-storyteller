@@ -105,6 +105,6 @@ export default createReducer(initialState)<BlockStatesReducerAction>({
 
     return updatedBlocks;
   },
-  delete: (state, { payload }) => state.filter(({ id }) => id === payload.id),
+  delete: (state, { payload }) => state.filter(({ id }) => id !== payload.id),
   'blockStates/set': (_, { payload }) => payload,
 });
