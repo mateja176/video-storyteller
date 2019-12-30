@@ -218,10 +218,10 @@ const Canvas: React.FC<CanvasProps> = () => {
           <ListItem
             button
             onClick={() => {
-              if (document.fullscreenElement) {
-                document.exitFullscreen();
+              if (window.document.fullscreenElement) {
+                window.document.exitFullscreen();
               } else {
-                document.documentElement.requestFullscreen();
+                window.document.documentElement.requestFullscreen();
               }
             }}
           >
@@ -242,7 +242,6 @@ const Canvas: React.FC<CanvasProps> = () => {
           flexGrow: 1,
           background: theme.palette.background.paper,
           position: 'relative',
-          overflow: 'hidden',
         }}
       >
         <Box
