@@ -2,6 +2,7 @@ import { InputAdornment, TextField } from '@material-ui/core';
 import { Button } from 'components';
 import { Form, Formik } from 'formik';
 import { startCase } from 'lodash';
+import { equals } from 'ramda';
 import React from 'react';
 import { Flex } from 'rebass';
 import {
@@ -9,7 +10,6 @@ import {
   TransformState,
 } from './store/transform';
 import { EditableAction, isPositionAction, isScaleAction } from './utils';
-import { equals } from 'ramda';
 
 const textFieldProps = {
   variant: 'outlined',
@@ -176,7 +176,7 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
                 >
                   Save edit
                 </Button>
-                <Button style={{ marginLeft: 'auto' }}>See more</Button>
+                {/* <Button style={{ marginLeft: 'auto' }}>See more</Button> */}
               </Flex>
             </Form>
           </Flex>
