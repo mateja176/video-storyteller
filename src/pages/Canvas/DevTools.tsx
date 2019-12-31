@@ -27,13 +27,11 @@ import {
   ActionById,
   ActionCreators,
   ActionId,
-  EditableAction,
-  EditableActionType,
   isCudAction,
-  isEditableActionById,
   isPositionAction,
   isScaleAction,
   MonitorProps,
+  ActionWithId,
 } from './utils';
 
 const initialHoveredCardId: number = -1;
@@ -54,7 +52,7 @@ const StoryMonitor = (props: MonitorProps) => {
   const { hoveredBlockId, setHoveredBlockId } = React.useContext(CanvasContext);
 
   const cudTypeBackgroundColorMap: Record<
-    EditableActionType,
+    Action['type'],
     React.CSSProperties['background']
   > = {
     create: 'green',
@@ -64,11 +62,12 @@ const StoryMonitor = (props: MonitorProps) => {
     'transform/position/set': 'gray',
   };
 
-  const stagedActions = stagedActionIds.map<ActionById & { id: number }>(
-    id => ({ ...actionsById[id], id }),
-  );
+  const stagedActions = stagedActionIds.map<ActionWithId>(id => ({
+    ...actionsById[id],
+    id,
+  }));
 
-  const editableActions = stagedActions.filter(isEditableActionById);
+  const editableActions = stagedActions.slice(1);
 
   const [hoveredActionId, setHoveredActionId] = React.useState('');
 
@@ -282,7 +281,7 @@ const StoryMonitor = (props: MonitorProps) => {
             const timestamp = getTimestamp(id);
             const isCurrentAction = id === currentActionId;
 
-            const isCud = isCudAction(action as EditableAction);
+            const isCud = isCudAction(action);
 
             const toggleDeleteHovered = () => {
               if (
@@ -318,11 +317,7 @@ const StoryMonitor = (props: MonitorProps) => {
               >
                 <Card
                   style={{
-                    background: color(
-                      cudTypeBackgroundColorMap[
-                        (action as EditableAction).type
-                      ],
-                    )
+                    background: color(cudTypeBackgroundColorMap[action.type])
                       .alpha(isCurrentAction ? 0.5 : 0.2)
                       .toString(),
                     width: cardWidth,
@@ -427,7 +422,7 @@ const StoryMonitor = (props: MonitorProps) => {
                   >
                     <ActionCardForm
                       id={id}
-                      action={action as EditableAction}
+                      action={action}
                       setIsEditing={setIsEditing}
                       initialValues={initialValues}
                       handleSubmit={({
@@ -457,10 +452,7 @@ const StoryMonitor = (props: MonitorProps) => {
                         const { scale: zoom, ...position } = transform;
                         const scale = zoom / 100;
 
-                        if (
-                          isScaleAction(action as EditableAction) &&
-                          scale !== action.payload
-                        ) {
+                        if (isScaleAction(action) && scale !== action.payload) {
                           store.dispatch({
                             ...action,
                             payload: scale,
@@ -470,7 +462,7 @@ const StoryMonitor = (props: MonitorProps) => {
                         }
 
                         if (
-                          isPositionAction(action as EditableAction) &&
+                          isPositionAction(action) &&
                           !equals(position, action.payload)
                         ) {
                           store.dispatch({

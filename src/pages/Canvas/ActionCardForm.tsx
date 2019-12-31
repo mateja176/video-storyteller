@@ -9,7 +9,8 @@ import {
   initialState as initialTransformState,
   TransformState,
 } from './store/transform';
-import { EditableAction, isPositionAction, isScaleAction } from './utils';
+import { isPositionAction, isScaleAction } from './utils';
+import { Action } from './store';
 
 const textFieldProps = {
   variant: 'outlined',
@@ -31,7 +32,7 @@ export interface ActionCardFormProps {
   id: number;
   initialValues: InitialValues;
   setIsEditing: (editing: boolean) => void;
-  action: EditableAction;
+  action: Action;
 }
 
 const ActionCardForm: React.FC<ActionCardFormProps> = ({

@@ -2,60 +2,23 @@ import { BlockStates } from 'models';
 import { Dispatch } from 'redux';
 // @ts-ignore
 import { ActionCreators as InstrumentActionCreators } from 'redux-devtools-instrument';
-import { Tuple } from 'ts-toolbelt';
-import { PayloadAction } from 'typesafe-actions';
 import { toObject } from 'utils';
 import { Action } from './store';
+import { CudAction, CudActionType, cudActionTypes } from './store/blockStates';
 import {
-  CudAction,
-  CudActionType,
-  CudActionTypes,
-  cudActionTypes,
-} from './store/blockStates';
-import {
-  TransformAction,
-  TransformActionTypes,
-  transformActionTypes,
-  TransformActionType,
-  ScaleAction,
-  scaleTypes,
   PositionAction,
   positionTypes,
+  ScaleAction,
+  scaleTypes,
+  TransformAction,
+  TransformActionType,
+  transformActionTypes,
 } from './store/transform';
-
-export type EditableActionTypes = Tuple.Concat<
-  CudActionTypes,
-  TransformActionTypes
->;
-export type EditableActionType = EditableActionTypes[number];
-export const editableActionTypes = [
-  ...cudActionTypes,
-  ...transformActionTypes,
-] as EditableActionTypes;
-export const isEditableActionType = (
-  type: string,
-): type is EditableActionType =>
-  editableActionTypes.includes(type as EditableActionType);
-
-export type EditableAction = CudAction | TransformAction;
-export type EditableActionPayload = EditableAction['payload'];
-
-export type EditableActionById = GenericActionById<
-  EditableActionType,
-  EditableActionPayload
->;
-
-export const isEditableActionById = (
-  action: ActionById,
-): action is EditableActionById => isEditableActionType(action.action.type);
 
 export const isCudActionType = (type: string): type is CudActionType =>
   cudActionTypes.includes(type as CudActionType);
 
-// ? 'CudAction' is assignable to the constraint of type 'A',
-// ? but 'A' could be instantiated with a different subtype of constraint 'EditableAction'
-// const isCudAction = <A extends EditableAction>(action: A): action is CudAction =>
-export const isCudAction = (action: EditableAction): action is CudAction =>
+export const isCudAction = (action: Action): action is CudAction =>
   isCudActionType(action.type);
 
 export const isTransformActionType = (
@@ -63,29 +26,25 @@ export const isTransformActionType = (
 ): type is TransformActionType =>
   transformActionTypes.includes(type as TransformActionType);
 
-export const isTransformAction = (
-  action: EditableAction,
-): action is TransformAction => isTransformActionType(action.type);
+export const isTransformAction = (action: Action): action is TransformAction =>
+  isTransformActionType(action.type);
 
-export const isScaleAction = (action: EditableAction): action is ScaleAction =>
+export const isScaleAction = (action: Action): action is ScaleAction =>
   scaleTypes.includes(action.type as ScaleAction['type']);
 
-export const isPositionAction = (
-  action: EditableAction,
-): action is PositionAction =>
+export const isPositionAction = (action: Action): action is PositionAction =>
   positionTypes.includes(action.type as PositionAction['type']);
 
 export interface MonitorState {}
 
 export type ActionId = number;
 
-export interface GenericActionById<Type extends string, Payload extends any> {
+export interface ActionById {
   type: string;
-  action: PayloadAction<Type, Payload>;
+  action: Action;
   timestamp: number;
 }
 
-export type ActionById = GenericActionById<Action['type'], Action['payload']>;
 export type ActionWithId = ActionById & { id: number };
 
 export type ActionsById = Record<number, ActionById>;
