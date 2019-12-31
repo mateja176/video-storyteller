@@ -7,10 +7,10 @@ import { PayloadAction } from 'typesafe-actions';
 import { toObject } from 'utils';
 import { Action } from './store';
 import {
-  CfudAction,
-  CfudActionType,
-  CfudActionTypes,
-  cfudActionTypes,
+  CudAction,
+  CudActionType,
+  CudActionTypes,
+  cudActionTypes,
 } from './store/blockStates';
 import {
   TransformAction,
@@ -24,12 +24,12 @@ import {
 } from './store/transform';
 
 export type EditableActionTypes = Tuple.Concat<
-  CfudActionTypes,
+  CudActionTypes,
   TransformActionTypes
 >;
 export type EditableActionType = EditableActionTypes[number];
 export const editableActionTypes = [
-  ...cfudActionTypes,
+  ...cudActionTypes,
   ...transformActionTypes,
 ] as EditableActionTypes;
 export const isEditableActionType = (
@@ -37,7 +37,7 @@ export const isEditableActionType = (
 ): type is EditableActionType =>
   editableActionTypes.includes(type as EditableActionType);
 
-export type EditableAction = CfudAction | TransformAction;
+export type EditableAction = CudAction | TransformAction;
 export type EditableActionPayload = EditableAction['payload'];
 
 export type EditableActionById = GenericActionById<
@@ -49,14 +49,14 @@ export const isEditableActionById = (
   action: ActionById,
 ): action is EditableActionById => isEditableActionType(action.action.type);
 
-export const isCfudActionType = (type: string): type is CfudActionType =>
-  cfudActionTypes.includes(type as CfudActionType);
+export const isCudActionType = (type: string): type is CudActionType =>
+  cudActionTypes.includes(type as CudActionType);
 
-// ? 'CfudAction' is assignable to the constraint of type 'A',
+// ? 'CudAction' is assignable to the constraint of type 'A',
 // ? but 'A' could be instantiated with a different subtype of constraint 'EditableAction'
-// const isCfudAction = <A extends EditableAction>(action: A): action is CfudAction =>
-export const isCfudAction = (action: EditableAction): action is CfudAction =>
-  isCfudActionType(action.type);
+// const isCudAction = <A extends EditableAction>(action: A): action is CudAction =>
+export const isCudAction = (action: EditableAction): action is CudAction =>
+  isCudActionType(action.type);
 
 export const isTransformActionType = (
   type: string,

@@ -3,13 +3,13 @@
 import { Card, Divider, useTheme } from '@material-ui/core';
 import {
   Delete,
+  DeleteForever,
   DeleteSweep,
   Pause,
   PlayArrow,
   Stop,
   Visibility,
   VisibilityOff,
-  DeleteForever,
 } from '@material-ui/icons';
 import color from 'color';
 import { IconButton, Progress, progressHeight } from 'components';
@@ -22,14 +22,14 @@ import { createDevTools } from 'redux-devtools';
 import ActionCardForm from './ActionCardForm';
 import { CanvasContext, initialHoveredBlockId } from './CanvasContext';
 import store, { Action } from './store';
-import { CfudAction, cfudActionType } from './store/blockStates';
+import { CudAction, cudActionType } from './store/blockStates';
 import {
   ActionById,
   ActionCreators,
   ActionId,
   EditableAction,
   EditableActionType,
-  isCfudAction,
+  isCudAction,
   isEditableActionById,
   isPositionAction,
   isScaleAction,
@@ -53,12 +53,11 @@ const StoryMonitor = (props: MonitorProps) => {
 
   const { hoveredBlockId, setHoveredBlockId } = React.useContext(CanvasContext);
 
-  const cfudTypeBackgroundColorMap: Record<
+  const cudTypeBackgroundColorMap: Record<
     EditableActionType,
     React.CSSProperties['background']
   > = {
     create: 'green',
-    focus: 'blue',
     update: 'yellow',
     delete: 'red',
     'transform/scale/set': 'gray',
@@ -283,12 +282,12 @@ const StoryMonitor = (props: MonitorProps) => {
             const timestamp = getTimestamp(id);
             const isCurrentAction = id === currentActionId;
 
-            const isCfud = isCfudAction(action as EditableAction);
+            const isCud = isCudAction(action as EditableAction);
 
             const toggleDeleteHovered = () => {
               if (
                 hoveredCardId === id &&
-                action.type === cfudActionType.create
+                action.type === cudActionType.create
               ) {
                 setDeleteHovered(!deleteHovered);
               }
@@ -320,7 +319,7 @@ const StoryMonitor = (props: MonitorProps) => {
                 <Card
                   style={{
                     background: color(
-                      cfudTypeBackgroundColorMap[
+                      cudTypeBackgroundColorMap[
                         (action as EditableAction).type
                       ],
                     )
@@ -329,10 +328,9 @@ const StoryMonitor = (props: MonitorProps) => {
                     width: cardWidth,
                     height: '100%',
                     border:
-                      (isCfud &&
-                        (action as CfudAction).payload.id ===
-                          hoveredActionId) ||
-                      (action as CfudAction).payload.id === hoveredBlockId
+                      (isCud &&
+                        (action as CudAction).payload.id === hoveredActionId) ||
+                      (action as CudAction).payload.id === hoveredBlockId
                         ? `1px solid ${
                             deleteHovered
                               ? theme.palette.secondary.light
@@ -345,8 +343,8 @@ const StoryMonitor = (props: MonitorProps) => {
                   }}
                   onMouseEnter={() => {
                     dispatch(ActionCreators.jumpToAction(id));
-                    if (isCfud) {
-                      const actionId = (action as CfudAction).payload.id;
+                    if (isCud) {
+                      const actionId = (action as CudAction).payload.id;
                       setHoveredActionId(actionId);
                       setHoveredBlockId(actionId);
                     }
@@ -354,7 +352,7 @@ const StoryMonitor = (props: MonitorProps) => {
                   }}
                   onMouseLeave={() => {
                     dispatch(ActionCreators.jumpToAction(lastJumpedToActionId));
-                    if (isCfud) {
+                    if (isCud) {
                       setHoveredActionId('');
                       setHoveredBlockId(initialHoveredBlockId);
                     }
@@ -383,11 +381,11 @@ const StoryMonitor = (props: MonitorProps) => {
                       onClick={e => {
                         e.stopPropagation();
 
-                        if (action.type === cfudActionType.create) {
+                        if (action.type === cudActionType.create) {
                           const actionsToDelete = editableActions
                             .filter(
                               actionById =>
-                                (actionById.action as CfudAction).payload.id ===
+                                (actionById.action as CudAction).payload.id ===
                                 hoveredActionId,
                             )
                             .map(actionById => actionById.id);

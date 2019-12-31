@@ -1,7 +1,7 @@
 /* eslint-disable indent */
 
 import { ContentState, convertToRaw, RawDraftContentState } from 'draft-js';
-import { BlockState, BlockStates } from 'models';
+import { BlockState } from 'models';
 import { update } from 'ramda';
 import { createAction } from 'typesafe-actions';
 import { Required } from 'utility-types';
@@ -25,13 +25,13 @@ export const convertToRawBlockState = <
 
 export const initialState: RawBlockStates = [];
 
-export const cfudActionTypes = ['create', 'focus', 'update', 'delete'] as const;
-export const cfudActionType = toObject(cfudActionTypes);
-export type CfudActionTypes = typeof cfudActionTypes;
-export type CfudActionType = CfudActionTypes[number];
+export const cudActionTypes = ['create', 'update', 'delete'] as const;
+export const cudActionType = toObject(cudActionTypes);
+export type CudActionTypes = typeof cudActionTypes;
+export type CudActionType = CudActionTypes[number];
 
 export const createCreateAction = createAction(
-  cfudActionType.create,
+  cudActionType.create,
   action => ({
     editorState,
     ...payload
@@ -45,14 +45,9 @@ export const createCreateAction = createAction(
 export type CreateAction = ReturnType<typeof createCreateAction>;
 
 type WithId = Pick<BlockState, 'id'>;
-export const createFocusAction = createAction(
-  cfudActionType.focus,
-  action => (payload: WithId) => action(payload),
-);
-export type FocusAction = ReturnType<typeof createFocusAction>;
 
 export const createUpdateAction = createAction(
-  cfudActionType.update,
+  cudActionType.update,
   action => ({ editorState, ...rest }: Required<Partial<BlockState>, 'id'>) =>
     editorState
       ? action(
@@ -66,35 +61,18 @@ export const createUpdateAction = createAction(
 export type UpdateAction = ReturnType<typeof createUpdateAction>;
 
 export const createDeleteAction = createAction(
-  cfudActionType.delete,
+  cudActionType.delete,
   action => (payload: WithId) => action(payload),
 );
 export type DeleteAction = ReturnType<typeof createDeleteAction>;
 
-export type CfudAction =
-  | CreateAction
-  | FocusAction
-  | UpdateAction
-  | DeleteAction;
+export type CudAction = CreateAction | UpdateAction | DeleteAction;
 
-export type CfudActions = CfudAction[];
+export type CudActions = CudAction[];
 
-export const createSetBlockStates = createAction(
-  'blockStates/set',
-  action => (payload: BlockStates) =>
-    action(payload.map(convertToRawBlockState)),
-);
-export type SetBlockStatesAction = ReturnType<typeof createSetBlockStates>;
+export type BlockStatesAction = CudAction;
 
-export type BlockStatesReducerAction =
-  | CreateAction
-  | UpdateAction
-  | DeleteAction
-  | SetBlockStatesAction;
-
-export type BlockStatesAction = BlockStatesReducerAction | FocusAction;
-
-export default createReducer(initialState)<BlockStatesReducerAction>({
+export default createReducer(initialState)<BlockStatesAction>({
   create: (state, { payload }) => state.concat(payload),
   update: (state, { payload }) => {
     const blockIndex = state.findIndex(block => block.id === payload.id);
@@ -106,5 +84,4 @@ export default createReducer(initialState)<BlockStatesReducerAction>({
     return updatedBlocks;
   },
   delete: (state, { payload }) => state.filter(({ id }) => id !== payload.id),
-  'blockStates/set': (_, { payload }) => payload,
 });
