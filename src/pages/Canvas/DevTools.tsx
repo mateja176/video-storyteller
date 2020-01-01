@@ -55,9 +55,13 @@ const StoryMonitor = ({
   currentStateIndex,
   computedStates,
   skippedActionIds,
-}: // nextActionId,
-MonitorProps) => {
-  const { hoveredBlockId, setHoveredBlockId } = React.useContext(CanvasContext);
+}: MonitorProps) => {
+  const {
+    hoveredBlockId,
+    setHoveredBlockId,
+    isPlaying,
+    setIsPlaying,
+  } = React.useContext(CanvasContext);
 
   const stagedActions = stagedActionIds.map<ActionWithId>(id => ({
     ...actionsById[id],
@@ -88,7 +92,6 @@ MonitorProps) => {
   const [elapsedTime, setElapsedTime] = React.useState(0);
   const [playTimeout, setPlayTimeout] = React.useState(-1);
   const [timeoutStart, setTimeoutStart] = React.useState(0);
-  const [isPlaying, setIsPlaying] = React.useState(false);
 
   const nextActionId = stagedActionIds[currentStateIndex + 1];
   const nextAction = actionsById[nextActionId];

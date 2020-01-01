@@ -49,6 +49,8 @@ import {
 } from './store/blockStates';
 import { createSetPosition, createSetScale } from './store/transform';
 
+const transitionDuration = 500;
+
 const controlsHeight = 50;
 
 const useStyles = makeStyles(theme => ({
@@ -181,6 +183,20 @@ const Canvas: React.FC<CanvasProps> = () => {
   const uploading = uploadPercentage !== -1;
 
   const [deleteModeOn, setDeleteModeOn] = React.useState(false);
+
+  const [isPlaying, setIsPlaying] = React.useState(false);
+
+  const [playing, setPlaying] = React.useState(false);
+
+  React.useEffect(() => {
+    if (isPlaying) {
+      setPlaying(isPlaying);
+    } else {
+      setTimeout(() => {
+        setPlaying(false);
+      }, transitionDuration);
+    }
+  }, [isPlaying]);
 
   return (
     <Flex
@@ -373,6 +389,7 @@ const Canvas: React.FC<CanvasProps> = () => {
                       : 'none',
                   display: 'inline-block',
                   padding: 15,
+                  transition: playing ? 'all 500ms ease-in-out' : 'none',
                 }}
                 onResizeStart={pause}
                 onDragStart={pause}
@@ -442,7 +459,12 @@ const Canvas: React.FC<CanvasProps> = () => {
             }}
           >
             <CanvasContext.Provider
-              value={{ hoveredBlockId, setHoveredBlockId }}
+              value={{
+                hoveredBlockId,
+                setHoveredBlockId,
+                isPlaying,
+                setIsPlaying,
+              }}
             >
               <DevTools store={store} />
             </CanvasContext.Provider>

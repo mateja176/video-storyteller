@@ -7,7 +7,17 @@ import { createContext } from 'react';
 
 type HoveredBlockId = BlockState['id'];
 export const initialHoveredBlockId: HoveredBlockId = '';
+
+export type IsPlaying = boolean;
+
 export const CanvasContext = createContext<{
   hoveredBlockId: HoveredBlockId;
   setHoveredBlockId: (id: HoveredBlockId) => void;
-}>({ hoveredBlockId: initialHoveredBlockId, setHoveredBlockId: () => {} });
+  isPlaying: IsPlaying;
+  setIsPlaying: (id: IsPlaying) => void;
+}>({
+  hoveredBlockId: initialHoveredBlockId,
+  setHoveredBlockId: () => {},
+  isPlaying: false,
+  setIsPlaying: () => {},
+});
