@@ -13,7 +13,7 @@ import {
 } from '@material-ui/icons';
 import color from 'color';
 import { IconButton, Progress, progressHeight } from 'components';
-import { equals, last } from 'ramda';
+import { add, equals, last } from 'ramda';
 import React from 'react';
 import GridLayout from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
@@ -26,41 +26,38 @@ import { CudAction, cudActionType } from './store/blockStates';
 import {
   ActionById,
   ActionCreators,
-  ActionId,
+  ActionWithId,
   isCudAction,
   isPositionAction,
   isScaleAction,
   MonitorProps,
-  ActionWithId,
 } from './utils';
 
 const initialHoveredCardId: number = -1;
 
 const cardWidth = 300 - 2 * 10;
 
-const StoryMonitor = (props: MonitorProps) => {
-  const {
-    dispatch,
-    actionsById,
-    stagedActionIds,
-    currentStateIndex,
-    computedStates,
-    skippedActionIds,
-    // nextActionId,
-  } = props;
+const cudTypeBackgroundColorMap: Record<
+  Action['type'],
+  React.CSSProperties['background']
+> = {
+  create: 'green',
+  update: 'yellow',
+  delete: 'red',
+  'transform/scale/set': 'gray',
+  'transform/position/set': 'gray',
+};
 
+const StoryMonitor = ({
+  dispatch,
+  actionsById,
+  stagedActionIds,
+  currentStateIndex,
+  computedStates,
+  skippedActionIds,
+}: // nextActionId,
+MonitorProps) => {
   const { hoveredBlockId, setHoveredBlockId } = React.useContext(CanvasContext);
-
-  const cudTypeBackgroundColorMap: Record<
-    Action['type'],
-    React.CSSProperties['background']
-  > = {
-    create: 'green',
-    update: 'yellow',
-    delete: 'red',
-    'transform/scale/set': 'gray',
-    'transform/position/set': 'gray',
-  };
 
   const stagedActions = stagedActionIds.map<ActionWithId>(id => ({
     ...actionsById[id],
@@ -73,17 +70,9 @@ const StoryMonitor = (props: MonitorProps) => {
 
   const theme = useTheme();
 
-  const [timestamps, setTimestamps] = React.useState<
-    Record<ActionId, ActionById['timestamp']>
-  >(
-    Object.fromEntries(
-      editableActions.map(editableAction => [
-        editableAction.id,
-        editableAction.timestamp,
-      ]),
-    ),
+  const [timestamps, setTimestamps] = React.useState<ActionById['timestamp'][]>(
+    editableActions.map(editableAction => editableAction.timestamp),
   );
-  const getTimestamp = (id: keyof typeof timestamps) => timestamps[id] || 0;
 
   const [actionsCount, setActionsCount] = React.useState(
     editableActions.length,
@@ -106,15 +95,16 @@ const StoryMonitor = (props: MonitorProps) => {
 
   const currentActionId = stagedActionIds[currentStateIndex];
 
+  const nextTimestamp = timestamps[currentStateIndex];
+  const currentTimestamp = timestamps[currentStateIndex - 1];
+  const duration = nextTimestamp - currentTimestamp;
+
   const play = React.useCallback(
     (elapsed: number) => {
       if (nextAction && isPlaying) {
-        const timeDiff =
-          getTimestamp(nextActionId) - getTimestamp(currentActionId);
-
         const timeout = setTimeout(() => {
           dispatch(ActionCreators.jumpToAction(nextActionId));
-        }, timeDiff - elapsed);
+        }, duration - elapsed);
 
         setTimeoutStart(Date.now());
 
@@ -144,12 +134,7 @@ const StoryMonitor = (props: MonitorProps) => {
     if (actionsCount < editableActions.length) {
       setActionsCount(actionsCount + 1);
       setLastJumpedToActionId(lastEditableActionId);
-      setTimestamps({
-        ...timestamps,
-        [lastEditableActionId]: editableActions.find(
-          ({ id }) => lastEditableActionId === id,
-        )!.timestamp,
-      });
+      setTimestamps(timestamps.concat(lastEditableAction!.timestamp));
       if (currentStateIndex < lastStateIndex) {
         dispatch(ActionCreators.jumpToState(lastStateIndex));
         dispatch(
@@ -167,6 +152,7 @@ const StoryMonitor = (props: MonitorProps) => {
     computedStates,
     editableActions,
     lastEditableActionId,
+    lastEditableAction,
     nextActionId,
     timestamps,
   ]);
@@ -238,7 +224,7 @@ const StoryMonitor = (props: MonitorProps) => {
           onClick={() => {
             setLastJumpedToActionId(lastEditableActionId);
             dispatch(ActionCreators.reset());
-            setTimestamps({});
+            setTimestamps([]);
           }}
           color="secondary"
         >
@@ -278,7 +264,7 @@ const StoryMonitor = (props: MonitorProps) => {
           isDraggable={!isEditing}
         >
           {editableActions.map(({ action, id }, i) => {
-            const timestamp = getTimestamp(id);
+            const timestamp = timestamps[i];
             const isCurrentAction = id === currentActionId;
 
             const isCud = isCudAction(action);
@@ -292,11 +278,14 @@ const StoryMonitor = (props: MonitorProps) => {
               }
             };
 
-            const precedingAction = editableActions[i - 1];
-            const followingAction = editableActions[i + 1];
+            const precedingActionIndex = i - 1;
+            const precedingAction = editableActions[precedingActionIndex];
+            const followingActionIndex = i + 1;
+            const followingAction = editableActions[followingActionIndex];
 
-            const timeDiff = followingAction
-              ? getTimestamp(followingAction.id) - timestamp
+            const followingTimestamp = timestamps[followingActionIndex];
+            const timeDiff = followingTimestamp
+              ? followingTimestamp - timestamp
               : 0;
 
             const initialValues = {
@@ -432,21 +421,15 @@ const StoryMonitor = (props: MonitorProps) => {
                         const delta = newTimeDiff - timeDiff;
 
                         if (delta) {
-                          const newTimestamps = editableActions
-                            .slice(i + 1)
-                            .reduce((currentTimestamps, editableAction) => {
-                              const newTimestamp =
-                                delta + timestamps[editableAction.id];
+                          const newTimestamps = timestamps
+                            .slice(followingActionIndex)
+                            .map(add(delta));
 
-                              const updatedTimestamps = {
-                                ...currentTimestamps,
-                                [editableAction.id]: newTimestamp,
-                              };
-
-                              return updatedTimestamps;
-                            }, timestamps);
-
-                          setTimestamps(newTimestamps);
+                          setTimestamps(
+                            timestamps
+                              .slice(0, followingActionIndex)
+                              .concat(newTimestamps),
+                          );
                         }
 
                         const { scale: zoom, ...position } = transform;
@@ -478,10 +461,7 @@ const StoryMonitor = (props: MonitorProps) => {
                     <Box height={progressHeight}>
                       {id === currentActionId && nextAction && isPlaying && (
                         <Progress
-                          timeInMs={
-                            getTimestamp(nextActionId) -
-                            getTimestamp(currentActionId)
-                          }
+                          timeInMs={duration}
                           paused={!isPlaying}
                           stopped={!isPlaying && !elapsedTime}
                         />
