@@ -41,6 +41,7 @@ import store, {
   selectScale,
   useActions,
   useSelector,
+  selectPosition,
 } from './store';
 import {
   createCreateAction,
@@ -105,6 +106,13 @@ const Canvas: React.FC<CanvasProps> = () => {
   );
 
   const scale = useSelector(selectScale);
+  const position = useSelector(selectPosition);
+
+  React.useEffect(() => {
+    if (panzoomInstance) {
+      panzoomInstance.moveTo(position.x, position.y);
+    }
+  }, [panzoomInstance, position]);
 
   React.useEffect(() => {
     const instance = panzoom(canvasRef.current!, {

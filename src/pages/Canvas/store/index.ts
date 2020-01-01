@@ -55,6 +55,10 @@ export const selectScale = createSelector(
   selectTransform,
   ({ scale }) => scale,
 );
+export const selectPosition = createSelector(
+  selectTransform,
+  ({ scale, ...position }) => position,
+);
 
 export const useSelector = <R>(selector: Selector<State, R>) => {
   const [result, setResult] = useState(selector(store.getState()));
