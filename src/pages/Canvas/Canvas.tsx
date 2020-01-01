@@ -75,7 +75,7 @@ const Canvas: React.FC<CanvasProps> = () => {
 
   const {
     setScale: _setScale,
-    setPosition: _setPosition,
+    setPosition,
     createBlockState,
     updateBlockState,
     deleteBlockState,
@@ -88,9 +88,6 @@ const Canvas: React.FC<CanvasProps> = () => {
   });
 
   const setScale = React.useMemo(() => debounce(_setScale, 1000), [_setScale]);
-  const setPosition = React.useMemo(() => debounce(_setPosition, 1000), [
-    _setPosition,
-  ]);
 
   const blockStates = useSelector(selectBlockStates);
 
