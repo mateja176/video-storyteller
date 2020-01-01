@@ -57,7 +57,7 @@
     "logrocket": "^1.0.1",
     "logrocket-react": "^3.0.0",
     "matchmedia-polyfill": "^0.3.2",
-    "panzoom": "^8.7.0",
+    "panzoom": "^8.7.4",
     "path": "^0.12.7",
     "ramda": "^0.26.1",
     "re-resizable": "^6.1.1",
