@@ -46,6 +46,7 @@ const cudTypeBackgroundColorMap: Record<
   delete: 'red',
   'transform/scale/set': 'gray',
   'transform/position/set': 'gray',
+  'transform/set': 'gray',
 };
 
 const StoryMonitor = ({

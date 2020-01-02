@@ -11,6 +11,13 @@ export const initialState: ReturnType<PanZoom['getTransform']> = {
 
 export type TransformState = typeof initialState;
 
+export const setTransformType = 'transform/set';
+export const createSetTransform = createAction(
+  setTransformType,
+  action => (payload: TransformState) => action(payload),
+);
+export type SetTransformAction = ReturnType<typeof createSetTransform>;
+
 export const scaleSetType = 'transform/scale/set';
 export const createSetScale = createAction(
   scaleSetType,
@@ -29,9 +36,10 @@ export type ScaleAction = SetScaleAction;
 
 export type PositionAction = SetPositionAction;
 
-export type TransformAction = ScaleAction | PositionAction;
+export type TransformAction = SetTransformAction | ScaleAction | PositionAction;
 
 export default createReducer(initialState)<TransformAction>({
+  [setTransformType]: (_, { payload }) => payload,
   [scaleSetType]: (state, { payload }) => ({ ...state, payload }),
   [positionSetType]: (state, { payload }) => ({ ...state, ...payload }),
 });
@@ -41,6 +49,7 @@ export const scaleTypes = [scaleSetType] as const;
 export const positionTypes = [positionSetType] as const;
 
 export const transformActionTypes = [
+  setTransformType,
   ...scaleTypes,
   ...positionTypes,
 ] as Tuple.Concat<typeof scaleTypes, typeof positionTypes>;

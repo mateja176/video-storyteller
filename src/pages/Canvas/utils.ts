@@ -13,6 +13,8 @@ import {
   TransformAction,
   TransformActionType,
   transformActionTypes,
+  SetTransformAction,
+  setTransformType,
 } from './store/transform';
 
 export const isCudActionType = (type: string): type is CudActionType =>
@@ -28,6 +30,10 @@ export const isTransformActionType = (
 
 export const isTransformAction = (action: Action): action is TransformAction =>
   isTransformActionType(action.type);
+
+export const isSetTransformAction = (
+  action: Action,
+): action is SetTransformAction => action.type === setTransformType;
 
 export const isScaleAction = (action: Action): action is ScaleAction =>
   scaleTypes.includes(action.type as ScaleAction['type']);
