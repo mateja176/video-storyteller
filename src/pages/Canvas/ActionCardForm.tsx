@@ -134,47 +134,45 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
                 error={Boolean(errors.timeDiff)}
                 helperText={errors.timeDiff}
               />
-              {isScaleAction(action) ||
-                (isSetTransformAction(action) && (
+              {(isScaleAction(action) || isSetTransformAction(action)) && (
+                <TextField
+                  {...textFieldProps}
+                  type="number"
+                  name="scale"
+                  label="Zoom"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.scale}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">%</InputAdornment>
+                    ),
+                  }}
+                />
+              )}
+              {(isPositionAction(action) || isSetTransformAction(action)) && (
+                <Flex>
                   <TextField
                     {...textFieldProps}
                     type="number"
-                    name="scale"
-                    label="Zoom"
+                    name="x"
+                    label="X Coordinate"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={values.scale}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">%</InputAdornment>
-                      ),
-                    }}
+                    value={values.x}
+                    style={{ marginRight: 5 }}
                   />
-                ))}
-              {isPositionAction(action) ||
-                (isSetTransformAction(action) && (
-                  <Flex>
-                    <TextField
-                      {...textFieldProps}
-                      type="number"
-                      name="x"
-                      label="X Coordinate"
-                      onBlur={handleBlur}
-                      onChange={handleChange}
-                      value={values.x}
-                      style={{ marginRight: 5 }}
-                    />
-                    <TextField
-                      {...textFieldProps}
-                      type="number"
-                      name="y"
-                      label="Y Coordinate"
-                      onBlur={handleBlur}
-                      onChange={handleChange}
-                      value={values.y}
-                    />
-                  </Flex>
-                ))}
+                  <TextField
+                    {...textFieldProps}
+                    type="number"
+                    name="y"
+                    label="Y Coordinate"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.y}
+                  />
+                </Flex>
+              )}
               <Flex mt="auto">
                 <Button
                   type="submit"
