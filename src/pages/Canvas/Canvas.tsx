@@ -124,7 +124,7 @@ const Canvas: React.FC<CanvasProps> = () => {
       filterKey: () => true,
     });
 
-    instance.zoomAbs(0, 0, scale);
+    instance.zoomAbs(position.x, position.y, scale);
 
     setPanzoomInstance(instance);
 
