@@ -1,4 +1,3 @@
-import { BlockStates } from 'models';
 import { Dispatch } from 'redux';
 // @ts-ignore
 import { ActionCreators as InstrumentActionCreators } from 'redux-devtools-instrument';
@@ -10,11 +9,11 @@ import {
   positionTypes,
   ScaleAction,
   scaleTypes,
+  SetTransformAction,
+  setTransformType,
   TransformAction,
   TransformActionType,
   transformActionTypes,
-  SetTransformAction,
-  setTransformType,
 } from './store/transform';
 
 export const isCudActionType = (type: string): type is CudActionType =>
