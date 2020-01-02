@@ -439,26 +439,16 @@ const StoryMonitor = ({
 
                         const { scale: zoom, ...position } = transform;
                         const scale = zoom / 100;
+                        const newTransform = { ...position, scale };
 
                         if (
-                          isSetTransformAction(action) &&
-                          !equals(transform, action.payload)
+                          (isSetTransformAction(action) ||
+                            isScaleAction(action)) &&
+                          !equals(newTransform, action.payload)
                         ) {
                           store.dispatch({
                             ...action,
-                            payload: transform,
-                          } as Action);
-                          dispatch(ActionCreators.toggleAction(id));
-                          dispatch(ActionCreators.sweep());
-                        }
-
-                        if (
-                          isScaleAction(action) &&
-                          scale !== action.payload.scale
-                        ) {
-                          store.dispatch({
-                            ...action,
-                            payload: { scale },
+                            payload: newTransform,
                           } as Action);
                           dispatch(ActionCreators.toggleAction(id));
                           dispatch(ActionCreators.sweep());

@@ -49,11 +49,15 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
         ? Number((action.payload.scale * 100).toFixed(0))
         : initialTransformState.scale,
     x:
-      isPositionAction(action) || isSetTransformAction(action)
+      isPositionAction(action) ||
+      isSetTransformAction(action) ||
+      isScaleAction(action)
         ? Number(action.payload.x.toFixed(0))
         : initialTransformState.x,
     y:
-      isPositionAction(action) || isSetTransformAction(action)
+      isPositionAction(action) ||
+      isSetTransformAction(action) ||
+      isScaleAction(action)
         ? Number(action.payload.y.toFixed(0))
         : initialTransformState.y,
   };
@@ -150,7 +154,9 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
                   }}
                 />
               )}
-              {(isPositionAction(action) || isSetTransformAction(action)) && (
+              {(isPositionAction(action) ||
+                isSetTransformAction(action) ||
+                isScaleAction(action)) && (
                 <Flex>
                   <TextField
                     {...textFieldProps}
