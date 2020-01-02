@@ -129,7 +129,7 @@ const Canvas: React.FC<CanvasProps> = () => {
     setPanzoomInstance(instance);
 
     instance.on('zoom', () => {
-      setScale(instance.getTransform().scale);
+      setScale(instance.getTransform());
     });
 
     instance.on('panend', () => {
