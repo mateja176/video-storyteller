@@ -439,10 +439,13 @@ const StoryMonitor = ({
                         const { scale: zoom, ...position } = transform;
                         const scale = zoom / 100;
 
-                        if (isScaleAction(action) && scale !== action.payload) {
+                        if (
+                          isScaleAction(action) &&
+                          scale !== action.payload.scale
+                        ) {
                           store.dispatch({
                             ...action,
-                            payload: scale,
+                            payload: { scale },
                           } as Action);
                           dispatch(ActionCreators.toggleAction(id));
                           dispatch(ActionCreators.sweep());

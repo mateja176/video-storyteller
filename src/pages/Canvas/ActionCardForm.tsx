@@ -45,7 +45,7 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
   const formatedInitialValues = {
     ...initialValues,
     scale: isScaleAction(action)
-      ? Number((action.payload * 100).toFixed(0))
+      ? Number((action.payload.scale * 100).toFixed(0))
       : initialTransformState.scale,
     x: isPositionAction(action)
       ? Number(action.payload.x.toFixed(0))

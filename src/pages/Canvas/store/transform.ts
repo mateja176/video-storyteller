@@ -21,7 +21,7 @@ export type SetTransformAction = ReturnType<typeof createSetTransform>;
 export const scaleSetType = 'transform/scale/set';
 export const createSetScale = createAction(
   scaleSetType,
-  action => (payload: TransformState['scale']) => action(payload),
+  action => (payload: Pick<TransformState, 'scale'>) => action(payload),
 );
 export type SetScaleAction = ReturnType<typeof createSetScale>;
 
@@ -40,7 +40,7 @@ export type TransformAction = SetTransformAction | ScaleAction | PositionAction;
 
 export default createReducer(initialState)<TransformAction>({
   [setTransformType]: (_, { payload }) => payload,
-  [scaleSetType]: (state, { payload }) => ({ ...state, payload }),
+  [scaleSetType]: (state, { payload }) => ({ ...state, ...payload }),
   [positionSetType]: (state, { payload }) => ({ ...state, ...payload }),
 });
 
