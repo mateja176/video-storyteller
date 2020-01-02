@@ -3,7 +3,7 @@ import { Dispatch } from 'redux';
 // @ts-ignore
 import { ActionCreators as InstrumentActionCreators } from 'redux-devtools-instrument';
 import { toObject } from 'utils';
-import { Action } from './store';
+import { Action, State } from './store';
 import { CudAction, CudActionType, cudActionTypes } from './store/blockStates';
 import {
   PositionAction,
@@ -54,10 +54,6 @@ export interface ActionById {
 export type ActionWithId = ActionById & { id: number };
 
 export type ActionsById = Record<number, ActionById>;
-
-export interface State {
-  blockStates: BlockStates;
-}
 
 export interface ComputedState {
   state: State;
