@@ -9,7 +9,7 @@ import {
   initialState as initialTransformState,
   TransformState,
 } from './store/transform';
-import { isPositionAction, isScaleAction } from './utils';
+import { isPositionAction, isScaleAction, isSetTransformAction } from './utils';
 import { Action } from './store';
 
 const textFieldProps = {
@@ -44,15 +44,18 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
 }) => {
   const formatedInitialValues = {
     ...initialValues,
-    scale: isScaleAction(action)
-      ? Number((action.payload.scale * 100).toFixed(0))
-      : initialTransformState.scale,
-    x: isPositionAction(action)
-      ? Number(action.payload.x.toFixed(0))
-      : initialTransformState.x,
-    y: isPositionAction(action)
-      ? Number(action.payload.y.toFixed(0))
-      : initialTransformState.y,
+    scale:
+      isScaleAction(action) || isSetTransformAction(action)
+        ? Number((action.payload.scale * 100).toFixed(0))
+        : initialTransformState.scale,
+    x:
+      isPositionAction(action) || isSetTransformAction(action)
+        ? Number(action.payload.x.toFixed(0))
+        : initialTransformState.x,
+    y:
+      isPositionAction(action) || isSetTransformAction(action)
+        ? Number(action.payload.y.toFixed(0))
+        : initialTransformState.y,
   };
 
   return (
@@ -131,45 +134,47 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
                 error={Boolean(errors.timeDiff)}
                 helperText={errors.timeDiff}
               />
-              {isScaleAction(action) && (
-                <TextField
-                  {...textFieldProps}
-                  type="number"
-                  name="scale"
-                  label="Zoom"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.scale}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">%</InputAdornment>
-                    ),
-                  }}
-                />
-              )}
-              {isPositionAction(action) && (
-                <Flex>
+              {isScaleAction(action) ||
+                (isSetTransformAction(action) && (
                   <TextField
                     {...textFieldProps}
                     type="number"
-                    name="x"
-                    label="X Coordinate"
+                    name="scale"
+                    label="Zoom"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={values.x}
-                    style={{ marginRight: 5 }}
+                    value={values.scale}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">%</InputAdornment>
+                      ),
+                    }}
                   />
-                  <TextField
-                    {...textFieldProps}
-                    type="number"
-                    name="y"
-                    label="Y Coordinate"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.y}
-                  />
-                </Flex>
-              )}
+                ))}
+              {isPositionAction(action) ||
+                (isSetTransformAction(action) && (
+                  <Flex>
+                    <TextField
+                      {...textFieldProps}
+                      type="number"
+                      name="x"
+                      label="X Coordinate"
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      value={values.x}
+                      style={{ marginRight: 5 }}
+                    />
+                    <TextField
+                      {...textFieldProps}
+                      type="number"
+                      name="y"
+                      label="Y Coordinate"
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      value={values.y}
+                    />
+                  </Flex>
+                ))}
               <Flex mt="auto">
                 <Button
                   type="submit"

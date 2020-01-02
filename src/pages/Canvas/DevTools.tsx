@@ -31,6 +31,7 @@ import {
   isPositionAction,
   isScaleAction,
   MonitorProps,
+  isSetTransformAction,
 } from './utils';
 
 const initialHoveredCardId: number = -1;
@@ -438,6 +439,18 @@ const StoryMonitor = ({
 
                         const { scale: zoom, ...position } = transform;
                         const scale = zoom / 100;
+
+                        if (
+                          isSetTransformAction(action) &&
+                          !equals(transform, action.payload)
+                        ) {
+                          store.dispatch({
+                            ...action,
+                            payload: transform,
+                          } as Action);
+                          dispatch(ActionCreators.toggleAction(id));
+                          dispatch(ActionCreators.sweep());
+                        }
 
                         if (
                           isScaleAction(action) &&
