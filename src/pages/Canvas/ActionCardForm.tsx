@@ -113,9 +113,6 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
               onMouseEnter={() => {
                 setIsEditing(true);
               }}
-              onMouseLeave={() => {
-                setIsEditing(false);
-              }}
               style={{
                 flexGrow: 1,
                 display: 'flex',

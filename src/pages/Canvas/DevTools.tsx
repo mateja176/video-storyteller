@@ -30,8 +30,8 @@ import {
   isCudAction,
   isPositionAction,
   isScaleAction,
-  MonitorProps,
   isSetTransformAction,
+  MonitorProps,
 } from './utils';
 
 const initialHoveredCardId: number = -1;
@@ -346,6 +346,7 @@ const StoryMonitor = ({
                       setHoveredBlockId(initialHoveredBlockId);
                     }
                     setHoveredCardId(initialHoveredCardId);
+                    setIsEditing(false);
                   }}
                   onClick={() => {
                     dispatch(ActionCreators.jumpToAction(id));
