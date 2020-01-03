@@ -38,17 +38,17 @@ import { CanvasContext, initialHoveredBlockId } from './CanvasContext';
 import DevTools from './DevTools';
 import store, {
   selectBlockStates,
-  selectScale,
+  selectPosition,
+  selectZoom,
   useActions,
   useSelector,
-  selectPosition,
 } from './store';
 import {
   createCreateAction,
   createDeleteAction,
   createUpdateAction,
 } from './store/blockStates';
-import { createSetPosition, createSetScale } from './store/transform';
+import { createSetPosition, createSetZoom } from './store/transform';
 
 const transitionDuration = 500;
 
@@ -80,7 +80,7 @@ const Canvas: React.FC<CanvasProps> = () => {
     updateBlockState,
     deleteBlockState,
   } = useActions({
-    setScale: createSetScale,
+    setScale: createSetZoom,
     setPosition: createSetPosition,
     createBlockState: createCreateAction,
     updateBlockState: createUpdateAction,
@@ -102,7 +102,9 @@ const Canvas: React.FC<CanvasProps> = () => {
     null,
   );
 
-  const scale = useSelector(selectScale);
+  const zoom = useSelector(selectZoom);
+  const { scale } = zoom;
+
   const position = useSelector(selectPosition);
 
   React.useEffect(() => {
@@ -124,14 +126,12 @@ const Canvas: React.FC<CanvasProps> = () => {
       filterKey: () => true,
     });
 
-    instance.zoomAbs(position.x, position.y, scale);
-
     setPanzoomInstance(instance);
 
-    instance.on('zoom', () => {
+    instance.on('zoom', e => {
       // * non-realizable object (Transform class instance)
-      const { x, y, scale: newScale } = instance.getTransform();
-      setScale({ x, y, scale: newScale });
+      const { scale: newScale } = instance.getTransform();
+      setScale({ clientX: 0, clientY: 0, scale: newScale });
     });
 
     instance.on('panend', () => {

@@ -6,35 +6,43 @@ import { Action, State } from './store';
 import { CudAction, CudActionType, cudActionTypes } from './store/blockStates';
 import {
   PositionAction,
+  PositionState,
   positionTypes,
-  ScaleAction,
-  scaleTypes,
   SetTransformAction,
   setTransformType,
   TransformAction,
   TransformActionType,
   transformActionTypes,
   TransformState,
+  Zoom,
+  ZoomAction,
+  zoomTypes,
 } from './store/transform';
 
-export const formatScale = (scale: TransformState['scale']) =>
-  Number((scale * 100).toFixed(0));
+const round = (n: number) => Number(n.toFixed(0));
 
-export const formatCoordinate = (coordinate: TransformState['x']) =>
-  Number(coordinate.toFixed(0));
+export const formatScale = (scale: Zoom['scale']) => round(scale * 100);
 
-type Position = Omit<TransformState, 'scale'>;
-export const formatPosition = (position: Position): Position => ({
-  x: formatCoordinate(position.x),
-  y: formatCoordinate(position.y),
+export const formatZoom = ({ scale, clientX, clientY }: Zoom): Zoom => ({
+  scale: formatScale(scale),
+  clientX: round(clientX),
+  clientY: round(clientY),
+});
+
+export const formatCoordinate = (coordinate: PositionState['x']) =>
+  round(coordinate);
+
+export const formatPosition = ({ x, y }: PositionState): PositionState => ({
+  x: formatCoordinate(x),
+  y: formatCoordinate(y),
 });
 
 export const formatTransform = ({
-  scale,
-  ...position
+  position,
+  zoom,
 }: TransformState): TransformState => ({
-  scale: formatScale(scale),
-  ...formatPosition(position),
+  position: formatPosition(position),
+  zoom: formatZoom(zoom),
 });
 
 export const isCudActionType = (type: string): type is CudActionType =>
@@ -55,8 +63,8 @@ export const isSetTransformAction = (
   action: Action,
 ): action is SetTransformAction => action.type === setTransformType;
 
-export const isScaleAction = (action: Action): action is ScaleAction =>
-  scaleTypes.includes(action.type as ScaleAction['type']);
+export const isZoomAction = (action: Action): action is ZoomAction =>
+  zoomTypes.includes(action.type as ZoomAction['type']);
 
 export const isPositionAction = (action: Action): action is PositionAction =>
   positionTypes.includes(action.type as PositionAction['type']);

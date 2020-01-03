@@ -27,13 +27,12 @@ import {
   ActionById,
   ActionCreators,
   ActionWithId,
+  formatPosition,
+  formatZoom,
   isCudAction,
   isPositionAction,
-  isScaleAction,
-  isSetTransformAction,
+  isZoomAction,
   MonitorProps,
-  formatTransform,
-  formatPosition,
 } from './utils';
 
 const initialHoveredCardId: number = -1;
@@ -47,7 +46,7 @@ const cudTypeBackgroundColorMap: Record<
   create: 'green',
   update: 'yellow',
   delete: 'red',
-  'transform/scale/set': 'gray',
+  'transform/zoom/set': 'gray',
   'transform/position/set': 'gray',
   'transform/set': 'gray',
 };
@@ -424,7 +423,8 @@ const StoryMonitor = ({
                       initialValues={initialValues}
                       handleSubmit={({
                         timeDiff: newTimeDiff,
-                        ...transform
+                        zoom,
+                        position,
                       }) => {
                         const delta = newTimeDiff - timeDiff;
 
@@ -440,24 +440,15 @@ const StoryMonitor = ({
                           );
                         }
 
-                        const { scale: zoom, ...position } = transform;
+                        if (isZoomAction(action)) {
+                          const currentZoom = formatZoom(action.payload);
 
-                        if (
-                          isSetTransformAction(action) ||
-                          isScaleAction(action)
-                        ) {
-                          const currentTransform = formatTransform(
-                            action.payload,
-                          );
+                          if (!equals(currentZoom, zoom)) {
+                            const { scale, ...client } = zoom;
 
-                          const scale = zoom / 100;
-
-                          const newTransform = { ...position, scale };
-
-                          if (!equals(currentTransform, newTransform)) {
                             store.dispatch({
                               ...action,
-                              payload: newTransform,
+                              payload: { ...client, scale: scale / 100 },
                             } as Action);
 
                             dispatch(ActionCreators.toggleAction(id));

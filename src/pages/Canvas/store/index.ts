@@ -51,13 +51,10 @@ export const convertFromRawBlockState = ({
 export const selectBlockStates = (state: State) =>
   state.blockStates.map<BlockState>(convertFromRawBlockState);
 export const selectTransform = (state: State) => state.transform;
-export const selectScale = createSelector(
-  selectTransform,
-  ({ scale }) => scale,
-);
+export const selectZoom = createSelector(selectTransform, ({ zoom }) => zoom);
 export const selectPosition = createSelector(
   selectTransform,
-  ({ scale, ...position }) => position,
+  ({ position }) => position,
 );
 
 export const useSelector = <R>(selector: Selector<State, R>) => {

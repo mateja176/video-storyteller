@@ -5,31 +5,25 @@ import { startCase } from 'lodash';
 import { equals } from 'ramda';
 import React from 'react';
 import { Flex } from 'rebass';
+import { Action } from './store';
 import {
   initialState as initialTransformState,
   TransformState,
 } from './store/transform';
 import {
+  formatPosition,
+  formatZoom,
   isPositionAction,
-  isScaleAction,
-  isSetTransformAction,
-  formatScale,
-  formatCoordinate,
+  isZoomAction,
 } from './utils';
-import { Action } from './store';
 
 const textFieldProps = {
   variant: 'outlined',
   margin: 'dense',
 } as const;
 
-type Timestamps = Record<number, number>;
-
-interface InitialValues {
+interface InitialValues extends Partial<TransformState> {
   timeDiff: number;
-  scale?: TransformState['scale'];
-  x?: TransformState['x'];
-  y?: TransformState['y'];
 }
 type Values = Required<InitialValues>;
 
@@ -48,24 +42,14 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
   id,
   action,
 }) => {
-  const formatedInitialValues = {
+  const formatedInitialValues: Required<typeof initialValues> = {
     ...initialValues,
-    scale:
-      isScaleAction(action) || isSetTransformAction(action)
-        ? formatScale(action.payload.scale)
-        : initialTransformState.scale,
-    x:
-      isPositionAction(action) ||
-      isSetTransformAction(action) ||
-      isScaleAction(action)
-        ? formatCoordinate(action.payload.x)
-        : initialTransformState.x,
-    y:
-      isPositionAction(action) ||
-      isSetTransformAction(action) ||
-      isScaleAction(action)
-        ? formatCoordinate(action.payload.y)
-        : initialTransformState.y,
+    zoom: isZoomAction(action)
+      ? formatZoom(action.payload)
+      : initialTransformState.zoom,
+    position: isPositionAction(action)
+      ? formatPosition(action.payload)
+      : initialTransformState.position,
   };
 
   return (
@@ -141,15 +125,15 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
                 error={Boolean(errors.timeDiff)}
                 helperText={errors.timeDiff}
               />
-              {(isScaleAction(action) || isSetTransformAction(action)) && (
+              {isZoomAction(action) && (
                 <TextField
                   {...textFieldProps}
                   type="number"
-                  name="scale"
+                  name="zoom.scale"
                   label="Zoom"
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  value={values.scale}
+                  value={values.zoom.scale}
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">%</InputAdornment>
@@ -157,28 +141,49 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
                   }}
                 />
               )}
-              {(isPositionAction(action) ||
-                isSetTransformAction(action) ||
-                isScaleAction(action)) && (
+              {isZoomAction(action) && (
                 <Flex>
                   <TextField
                     {...textFieldProps}
                     type="number"
-                    name="x"
-                    label="X Coordinate"
+                    name="zoom.clientX"
+                    label="Mouse X"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={values.x}
+                    value={values.zoom.clientX}
                     style={{ marginRight: 5 }}
                   />
                   <TextField
                     {...textFieldProps}
                     type="number"
-                    name="y"
+                    name="zoom.clientY"
+                    label="Mouse Y"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.zoom.clientY}
+                  />
+                </Flex>
+              )}
+              {isPositionAction(action) && (
+                <Flex>
+                  <TextField
+                    {...textFieldProps}
+                    type="number"
+                    name="position.x"
+                    label="X Coordinate"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.position.x}
+                    style={{ marginRight: 5 }}
+                  />
+                  <TextField
+                    {...textFieldProps}
+                    type="number"
+                    name="position.y"
                     label="Y Coordinate"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={values.y}
+                    value={values.position.y}
                   />
                 </Flex>
               )}
