@@ -129,7 +129,8 @@ const Canvas: React.FC<CanvasProps> = () => {
     setPanzoomInstance(instance);
 
     instance.on('zoom', () => {
-      const { x, y, scale: newScale } = instance.getTransform(); // * non-realizable object (Transform class instance)
+      // * non-realizable object (Transform class instance)
+      const { x, y, scale: newScale } = instance.getTransform();
       setScale({ x, y, scale: newScale });
     });
 
