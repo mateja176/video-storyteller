@@ -32,6 +32,8 @@ import {
   isScaleAction,
   isSetTransformAction,
   MonitorProps,
+  formatTransform,
+  formatPosition,
 } from './utils';
 
 const initialHoveredCardId: number = -1;
@@ -439,32 +441,44 @@ const StoryMonitor = ({
                         }
 
                         const { scale: zoom, ...position } = transform;
-                        const scale = zoom / 100;
-                        const newTransform = { ...position, scale };
 
                         if (
-                          (isSetTransformAction(action) ||
-                            isScaleAction(action)) &&
-                          !equals(newTransform, action.payload)
+                          isSetTransformAction(action) ||
+                          isScaleAction(action)
                         ) {
-                          store.dispatch({
-                            ...action,
-                            payload: newTransform,
-                          } as Action);
-                          dispatch(ActionCreators.toggleAction(id));
-                          dispatch(ActionCreators.sweep());
+                          const currentTransform = formatTransform(
+                            action.payload,
+                          );
+
+                          const scale = zoom / 100;
+
+                          const newTransform = { ...position, scale };
+
+                          if (!equals(currentTransform, newTransform)) {
+                            store.dispatch({
+                              ...action,
+                              payload: newTransform,
+                            } as Action);
+
+                            dispatch(ActionCreators.toggleAction(id));
+                            dispatch(ActionCreators.sweep());
+                          }
                         }
 
-                        if (
-                          isPositionAction(action) &&
-                          !equals(position, action.payload)
-                        ) {
-                          store.dispatch({
-                            ...action,
-                            payload: position,
-                          } as Action);
-                          dispatch(ActionCreators.toggleAction(id));
-                          dispatch(ActionCreators.sweep());
+                        if (isPositionAction(action)) {
+                          const currentPosition = formatPosition(
+                            action.payload,
+                          );
+
+                          if (!equals(currentPosition, position)) {
+                            store.dispatch({
+                              ...action,
+                              payload: position,
+                            } as Action);
+
+                            dispatch(ActionCreators.toggleAction(id));
+                            dispatch(ActionCreators.sweep());
+                          }
                         }
                       }}
                     />

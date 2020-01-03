@@ -9,7 +9,13 @@ import {
   initialState as initialTransformState,
   TransformState,
 } from './store/transform';
-import { isPositionAction, isScaleAction, isSetTransformAction } from './utils';
+import {
+  isPositionAction,
+  isScaleAction,
+  isSetTransformAction,
+  formatScale,
+  formatCoordinate,
+} from './utils';
 import { Action } from './store';
 
 const textFieldProps = {
@@ -46,19 +52,19 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
     ...initialValues,
     scale:
       isScaleAction(action) || isSetTransformAction(action)
-        ? Number((action.payload.scale * 100).toFixed(0))
+        ? formatScale(action.payload.scale)
         : initialTransformState.scale,
     x:
       isPositionAction(action) ||
       isSetTransformAction(action) ||
       isScaleAction(action)
-        ? Number(action.payload.x.toFixed(0))
+        ? formatCoordinate(action.payload.x)
         : initialTransformState.x,
     y:
       isPositionAction(action) ||
       isSetTransformAction(action) ||
       isScaleAction(action)
-        ? Number(action.payload.y.toFixed(0))
+        ? formatCoordinate(action.payload.y)
         : initialTransformState.y,
   };
 

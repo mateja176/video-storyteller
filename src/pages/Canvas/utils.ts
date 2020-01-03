@@ -14,7 +14,28 @@ import {
   TransformAction,
   TransformActionType,
   transformActionTypes,
+  TransformState,
 } from './store/transform';
+
+export const formatScale = (scale: TransformState['scale']) =>
+  Number((scale * 100).toFixed(0));
+
+export const formatCoordinate = (coordinate: TransformState['x']) =>
+  Number(coordinate.toFixed(0));
+
+type Position = Omit<TransformState, 'scale'>;
+export const formatPosition = (position: Position): Position => ({
+  x: formatCoordinate(position.x),
+  y: formatCoordinate(position.y),
+});
+
+export const formatTransform = ({
+  scale,
+  ...position
+}: TransformState): TransformState => ({
+  scale: formatScale(scale),
+  ...formatPosition(position),
+});
 
 export const isCudActionType = (type: string): type is CudActionType =>
   cudActionTypes.includes(type as CudActionType);
