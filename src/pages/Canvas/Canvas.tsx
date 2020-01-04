@@ -51,8 +51,8 @@ import {
 import {
   Client,
   createSetPosition,
-  initialState,
   createSetZoom,
+  initialState,
 } from './store/transform';
 
 const headerHeight = 76;
@@ -120,26 +120,66 @@ const Canvas: React.FC<CanvasProps> = () => {
     [],
   );
 
+  const [direction, setDirection] = React.useState(true);
+
   const [panzoomInstance, setPanzoomInstance] = React.useState<PanZoom | null>(
     null,
   );
 
   const zoom = useSelector(selectZoom);
-  const { scale } = zoom;
+  const { scale, clientX, clientY } = zoom;
+
+  const [lastRecordedClient, setLastRecordedClient] = React.useState<Client>(
+    initialState.zoom,
+  );
+
+  React.useEffect(() => {
+    setLastRecordedClient({ clientX, clientY });
+  }, [clientX, clientY]);
 
   const position = useSelector(selectPosition);
 
   const debouncedSetZoom = React.useMemo(() => {
     const plainSetZoom = (instance: PanZoom) => {
-      const {
-        current: { clientX, clientY },
-      } = client;
+      const { current } = client;
 
-      setZoom({ clientX, clientY, scale: instance.getTransform().scale });
+      setZoom({
+        clientX: current.clientX,
+        clientY: current.clientY,
+        scale: instance.getTransform().scale,
+      });
     };
 
     return debounce(plainSetZoom, 500);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  React.useEffect(() => {
+    if (panzoomInstance) {
+      if (scale !== panzoomInstance.getTransform().scale) {
+        panzoomInstance.off('zoom', debouncedSetZoom);
+
+        if (direction) {
+          panzoomInstance.zoomAbs(clientX, clientY, scale);
+        } else {
+          panzoomInstance.zoomAbs(
+            lastRecordedClient.clientX,
+            lastRecordedClient.clientY,
+            scale,
+          );
+        }
+
+        panzoomInstance.on('zoom', debouncedSetZoom);
+      }
+    }
+  }, [
+    scale,
+    clientX,
+    clientY,
+    lastRecordedClient,
+    panzoomInstance,
+    direction,
+    debouncedSetZoom,
+  ]);
 
   React.useEffect(() => {
     if (panzoomInstance) {
@@ -159,6 +199,8 @@ const Canvas: React.FC<CanvasProps> = () => {
       },
       filterKey: () => true,
     });
+
+    (window as any).panzoom = instance; // eslint-disable-line
 
     setPanzoomInstance(instance);
 
@@ -510,6 +552,8 @@ const Canvas: React.FC<CanvasProps> = () => {
                 setHoveredBlockId,
                 isPlaying,
                 setIsPlaying,
+                direction,
+                setDirection,
               }}
             >
               <DevTools store={store} />

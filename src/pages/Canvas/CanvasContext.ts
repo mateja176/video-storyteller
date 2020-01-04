@@ -10,14 +10,20 @@ export const initialHoveredBlockId: HoveredBlockId = '';
 
 export type IsPlaying = boolean;
 
+export type Direction = boolean;
+
 export const CanvasContext = createContext<{
   hoveredBlockId: HoveredBlockId;
   setHoveredBlockId: (id: HoveredBlockId) => void;
   isPlaying: IsPlaying;
   setIsPlaying: (id: IsPlaying) => void;
+  direction: Direction;
+  setDirection: (direction: Direction) => void;
 }>({
   hoveredBlockId: initialHoveredBlockId,
   setHoveredBlockId: () => {},
   isPlaying: false,
   setIsPlaying: () => {},
+  direction: true,
+  setDirection: () => {},
 });

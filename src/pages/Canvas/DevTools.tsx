@@ -64,6 +64,8 @@ const StoryMonitor = ({
     setHoveredBlockId,
     isPlaying,
     setIsPlaying,
+    direction,
+    setDirection,
   } = React.useContext(CanvasContext);
 
   const stagedActions = stagedActionIds.map<ActionWithId>(id => ({
@@ -101,8 +103,11 @@ const StoryMonitor = ({
 
   const currentActionId = stagedActionIds[currentStateIndex];
 
-  const nextTimestamp = timestamps[currentStateIndex];
-  const currentTimestamp = timestamps[currentStateIndex - 1];
+  const currentActionIndex = currentStateIndex - 1;
+  const nextActionIndex = currentStateIndex;
+
+  const currentTimestamp = timestamps[currentActionIndex];
+  const nextTimestamp = timestamps[nextActionIndex];
   const duration = nextTimestamp - currentTimestamp;
 
   const play = React.useCallback(
@@ -332,6 +337,10 @@ const StoryMonitor = ({
                     flexDirection: 'column',
                   }}
                   onMouseEnter={() => {
+                    const newDirection = i >= currentActionIndex;
+                    if (direction !== newDirection) {
+                      setDirection(i >= currentActionIndex);
+                    }
                     dispatch(ActionCreators.jumpToAction(id));
                     if (isCud) {
                       const actionId = (action as CudAction).payload.id;
