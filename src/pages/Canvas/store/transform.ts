@@ -5,8 +5,9 @@ import { createReducer } from 'utils';
 
 export type Transform = ReturnType<PanZoom['getTransform']>;
 
-export type Zoom = Pick<React.MouseEvent, 'clientX' | 'clientY'> &
-  Pick<Transform, 'scale'>;
+export type Client = Pick<React.MouseEvent, 'clientX' | 'clientY'>;
+
+export type Zoom = Client & Pick<Transform, 'scale'>;
 
 export type PositionState = Pick<Transform, 'x' | 'y'>;
 

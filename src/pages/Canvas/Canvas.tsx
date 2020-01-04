@@ -48,11 +48,26 @@ import {
   createDeleteAction,
   createUpdateAction,
 } from './store/blockStates';
-import { createSetPosition, createSetZoom } from './store/transform';
+import {
+  Client,
+  createSetPosition,
+  initialState,
+  createSetZoom,
+} from './store/transform';
+
+const headerHeight = 76;
+
+const borderWidth = 1;
+
+const drawerWidth = 55;
+const fullDrawerWidth = drawerWidth + borderWidth;
 
 const transitionDuration = 500;
 
 const controlsHeight = 50;
+const fullControlsHeight = controlsHeight + borderWidth;
+
+const headerAndControlsHeight = headerHeight + fullControlsHeight;
 
 const useStyles = makeStyles(theme => ({
   drawer: {
@@ -74,20 +89,18 @@ const Canvas: React.FC<CanvasProps> = () => {
   const theme = useTheme();
 
   const {
-    setScale: _setScale,
+    setZoom,
     setPosition,
     createBlockState,
     updateBlockState,
     deleteBlockState,
   } = useActions({
-    setScale: createSetZoom,
+    setZoom: createSetZoom,
     setPosition: createSetPosition,
     createBlockState: createCreateAction,
     updateBlockState: createUpdateAction,
     deleteBlockState: createDeleteAction,
   });
-
-  const setScale = React.useMemo(() => debounce(_setScale, 1000), [_setScale]);
 
   const blockStates = useSelector(selectBlockStates);
 
@@ -98,6 +111,15 @@ const Canvas: React.FC<CanvasProps> = () => {
 
   const [focusedEditorId, setFocusedEditorId] = React.useState('');
 
+  const client = React.useRef<Client>(initialState.zoom);
+  const setClient = React.useMemo(
+    () =>
+      debounce((newClient: Client) => {
+        client.current = newClient; // eslint-disable-line
+      }, 400),
+    [],
+  );
+
   const [panzoomInstance, setPanzoomInstance] = React.useState<PanZoom | null>(
     null,
   );
@@ -106,6 +128,18 @@ const Canvas: React.FC<CanvasProps> = () => {
   const { scale } = zoom;
 
   const position = useSelector(selectPosition);
+
+  const debouncedSetZoom = React.useMemo(() => {
+    const plainSetZoom = (instance: PanZoom) => {
+      const {
+        current: { clientX, clientY },
+      } = client;
+
+      setZoom({ clientX, clientY, scale: instance.getTransform().scale });
+    };
+
+    return debounce(plainSetZoom, 500);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   React.useEffect(() => {
     if (panzoomInstance) {
@@ -128,11 +162,7 @@ const Canvas: React.FC<CanvasProps> = () => {
 
     setPanzoomInstance(instance);
 
-    instance.on('zoom', e => {
-      // * non-realizable object (Transform class instance)
-      const { scale: newScale } = instance.getTransform();
-      setScale({ clientX: 0, clientY: 0, scale: newScale });
-    });
+    instance.on('zoom', debouncedSetZoom);
 
     instance.on('panend', () => {
       const { x, y } = instance.getTransform();
@@ -378,7 +408,16 @@ const Canvas: React.FC<CanvasProps> = () => {
           </Flex>
           <Divider />
         </Box>
-        <Box height="100%" style={{ overflow: 'hidden' }}>
+        <Box
+          height="100%"
+          style={{ overflow: 'hidden' }}
+          onMouseMove={e => {
+            setClient({
+              clientX: e.clientX - fullDrawerWidth,
+              clientY: e.clientY - headerAndControlsHeight,
+            });
+          }}
+        >
           <div ref={canvasRef}>
             {blockStates.map(({ id, top, left, editorState }) => (
               <Rnd
@@ -459,7 +498,7 @@ const Canvas: React.FC<CanvasProps> = () => {
           <Paper
             style={{
               height: storyMonitorOpen ? 300 : 0,
-              width: 'calc(100vw - 56px)',
+              width: `calc(100vw - ${fullDrawerWidth}px)`,
               transition: 'height 500ms ease-in-out',
               overflow: 'hidden',
               marginTop: 'auto',
