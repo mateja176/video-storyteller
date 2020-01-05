@@ -2,11 +2,27 @@ import { isNil } from 'ramda';
 import { Dispatch } from 'redux';
 // @ts-ignore
 import { ActionCreators as InstrumentActionCreators } from 'redux-devtools-instrument';
-import { DeepRequired } from 'utility-types';
+import { Required } from 'utility-types';
 import { toObject } from 'utils';
 import { Action, State } from './store';
-import { CudAction, CudActionType, cudActionTypes, UpdateAction } from './store/blockStates';
-import { PositionAction, positionTypes, ScaleAction, scaleTypes, SetTransformAction, setTransformType, TransformAction, TransformActionType, transformActionTypes, TransformState } from './store/transform';
+import {
+  CudAction,
+  CudActionType,
+  cudActionTypes,
+  UpdateAction,
+} from './store/blockStates';
+import {
+  PositionAction,
+  positionTypes,
+  ScaleAction,
+  scaleTypes,
+  SetTransformAction,
+  setTransformType,
+  TransformAction,
+  TransformActionType,
+  transformActionTypes,
+  TransformState,
+} from './store/transform';
 
 export const formatScale = (scale: TransformState['scale']) =>
   Number((scale * 100).toFixed(0));
@@ -37,7 +53,9 @@ export const isCudAction = (action: Action): action is CudAction =>
 export const isUpdateAction = (action: Action): action is UpdateAction =>
   action.type === 'update';
 
-export type UpdateMoveAction = DeepRequired<UpdateAction>;
+export interface UpdateMoveAction extends UpdateAction {
+  payload: Required<UpdateAction['payload'], 'top' | 'left'>;
+}
 export const isUpdateMoveAction = (
   action: Action,
 ): action is UpdateMoveAction =>

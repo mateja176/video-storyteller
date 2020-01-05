@@ -3,7 +3,7 @@
 import { ContentState, convertToRaw, RawDraftContentState } from 'draft-js';
 import { BlockState } from 'models';
 import { update } from 'ramda';
-import { createAction } from 'typesafe-actions';
+import { createAction, PayloadAction } from 'typesafe-actions';
 import { Required } from 'utility-types';
 import { createReducer, toObject } from 'utils';
 import { v4 } from 'uuid';
@@ -46,9 +46,15 @@ export type CreateAction = ReturnType<typeof createCreateAction>;
 
 type WithId = Pick<BlockState, 'id'>;
 
-export const createUpdateAction = createAction(
+type UpdateBlockPayload = Required<Partial<BlockState>, 'id'>;
+export const createUpdateAction: (
+  payload: UpdateBlockPayload,
+) => PayloadAction<
+  typeof cudActionType.update,
+  Partial<RawBlockState> & WithId
+> = createAction(
   cudActionType.update,
-  action => ({ editorState, ...rest }: Required<Partial<BlockState>, 'id'>) =>
+  action => ({ editorState, ...rest }: UpdateBlockPayload) =>
     editorState
       ? action(
           convertToRawBlockState({
