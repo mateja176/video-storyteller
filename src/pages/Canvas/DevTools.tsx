@@ -363,6 +363,8 @@ const StoryMonitor = ({
                 >
                   <Flex justifyContent="flex-end" pt={1} pr={1}>
                     <IconButton
+                      size="small"
+                      style={{ marginRight: 4 }}
                       onClick={e => {
                         e.preventDefault();
 
@@ -376,6 +378,7 @@ const StoryMonitor = ({
                       )}
                     </IconButton>
                     <IconButton
+                      size="small"
                       onClick={e => {
                         e.stopPropagation();
 

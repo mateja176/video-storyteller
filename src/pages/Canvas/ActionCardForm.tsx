@@ -1,22 +1,22 @@
 import { InputAdornment, TextField } from '@material-ui/core';
 import { Button } from 'components';
 import { Form, Formik } from 'formik';
-import { startCase } from 'lodash';
+import { lowerCase } from 'lodash';
 import { equals } from 'ramda';
 import React from 'react';
 import { Flex } from 'rebass';
+import { Action } from './store';
 import {
   initialState as initialTransformState,
   TransformState,
 } from './store/transform';
 import {
+  formatCoordinate,
+  formatScale,
   isPositionAction,
   isScaleAction,
   isSetTransformAction,
-  formatScale,
-  formatCoordinate,
 } from './utils';
-import { Action } from './store';
 
 const textFieldProps = {
   variant: 'outlined',
@@ -85,11 +85,11 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
       isInitialValid
     >
       {({ isValid, handleChange, handleBlur, values, errors }) => {
-        const formattedActionType = startCase(action.type);
+        const formattedActionType = lowerCase(action.type);
 
         return (
-          <Flex flexDirection="column" px={2} pb={1} flex={1}>
-            <Flex mb={2}>
+          <Flex flexDirection="column" px={2} flex={1}>
+            <Flex>
               <TextField
                 {...textFieldProps}
                 label="Action Id"
@@ -184,6 +184,7 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
               )}
               <Flex mt="auto">
                 <Button
+                  size="small"
                   type="submit"
                   disabled={!isValid || equals(formatedInitialValues, values)}
                 >
