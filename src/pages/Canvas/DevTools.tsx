@@ -333,22 +333,28 @@ const StoryMonitor = ({
                     flexDirection: 'column',
                   }}
                   onMouseEnter={() => {
-                    dispatch(ActionCreators.jumpToAction(id));
-                    if (isCud) {
-                      const actionId = (action as CudAction).payload.id;
-                      setHoveredActionId(actionId);
-                      setHoveredBlockId(actionId);
+                    if (!isPlaying) {
+                      dispatch(ActionCreators.jumpToAction(id));
+                      if (isCud) {
+                        const actionId = (action as CudAction).payload.id;
+                        setHoveredActionId(actionId);
+                        setHoveredBlockId(actionId);
+                      }
+                      setHoveredCardId(id);
                     }
-                    setHoveredCardId(id);
                   }}
                   onMouseLeave={() => {
-                    dispatch(ActionCreators.jumpToAction(lastJumpedToActionId));
-                    if (isCud) {
-                      setHoveredActionId('');
-                      setHoveredBlockId(initialHoveredBlockId);
+                    if (!isPlaying) {
+                      dispatch(
+                        ActionCreators.jumpToAction(lastJumpedToActionId),
+                      );
+                      if (isCud) {
+                        setHoveredActionId('');
+                        setHoveredBlockId(initialHoveredBlockId);
+                      }
+                      setHoveredCardId(initialHoveredCardId);
+                      setIsEditing(false);
                     }
-                    setHoveredCardId(initialHoveredCardId);
-                    setIsEditing(false);
                   }}
                   onClick={() => {
                     dispatch(ActionCreators.jumpToAction(id));
