@@ -53,15 +53,25 @@ export const isCudAction = (action: Action): action is CudAction =>
 export const isUpdateAction = (action: Action): action is UpdateAction =>
   action.type === 'update';
 
-export interface UpdateMoveAction extends UpdateAction {
-  payload: Required<UpdateAction['payload'], 'top' | 'left'>;
-}
+export type UpdateActionWith<
+  RequiredKeys extends keyof UpdateAction['payload']
+> = UpdateAction & {
+  payload: Required<UpdateAction['payload'], RequiredKeys>;
+};
+
+export type UpdateMoveAction = UpdateActionWith<'top' | 'left'>;
 export const isUpdateMoveAction = (
   action: Action,
 ): action is UpdateMoveAction =>
-  action.type === 'update' &&
+  isUpdateAction(action) &&
   !isNil(action.payload.left) &&
   !isNil(action.payload.top);
+
+export type UpdateEditAction = UpdateActionWith<'editorState'>;
+export const isUpdateEditAction = (
+  action: Action,
+): action is UpdateEditAction =>
+  isUpdateAction(action) && !isNil(action.payload.editorState);
 
 export const isTransformActionType = (
   type: string,

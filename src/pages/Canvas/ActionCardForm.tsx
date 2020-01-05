@@ -1,12 +1,13 @@
 import { InputAdornment, TextField } from '@material-ui/core';
 import { Button } from 'components';
+import { ContentState, convertToRaw, convertFromRaw } from 'draft-js';
 import { Form, Formik } from 'formik';
 import { lowerCase } from 'lodash';
-import { BlockState } from 'models';
 import { equals } from 'ramda';
 import React from 'react';
 import { Flex } from 'rebass';
 import { Action } from './store';
+import { UpdateAction } from './store/blockStates';
 import {
   initialState as initialTransformState,
   TransformState,
@@ -17,8 +18,11 @@ import {
   isPositionAction,
   isScaleAction,
   isSetTransformAction,
+  isUpdateEditAction,
   isUpdateMoveAction,
 } from './utils';
+
+type UpdateActionPayload = UpdateAction['payload'];
 
 const textFieldProps = {
   variant: 'outlined',
@@ -27,13 +31,10 @@ const textFieldProps = {
 
 type Timestamps = Record<number, number>;
 
-interface InitialValues {
+interface InitialValues
+  extends Omit<UpdateActionPayload, 'id'>,
+    Partial<TransformState> {
   timeDiff: number;
-  left?: BlockState['left'];
-  top?: BlockState['top'];
-  scale?: TransformState['scale'];
-  x?: TransformState['x'];
-  y?: TransformState['y'];
 }
 type Values = Required<InitialValues>;
 
@@ -56,6 +57,9 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
     ...initialValues,
     left: isUpdateMoveAction(action) ? action.payload.left : 0,
     top: isUpdateMoveAction(action) ? action.payload.top : 0,
+    editorState: isUpdateEditAction(action)
+      ? action.payload.editorState
+      : convertToRaw(ContentState.createFromText('')),
     scale:
       isScaleAction(action) || isSetTransformAction(action)
         ? formatScale(action.payload.scale)
@@ -161,6 +165,21 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
                       <InputAdornment position="end">%</InputAdornment>
                     ),
                   }}
+                />
+              )}
+              {isUpdateEditAction(action) && (
+                <TextField
+                  {...textFieldProps}
+                  type="text"
+                  name="editorState"
+                  label="Editor State"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={convertFromRaw(values.editorState).getPlainText()}
+                  multiline
+                  rows={3}
+                  rowsMax={3}
+                  disabled
                 />
               )}
               {isUpdateMoveAction(action) && (
