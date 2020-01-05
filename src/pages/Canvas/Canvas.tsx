@@ -187,7 +187,10 @@ const Canvas: React.FC<CanvasProps> = () => {
 
   React.useEffect(() => {
     if (panzoomInstance) {
-      panzoomInstance.moveTo(position.x, position.y);
+      const transform = panzoomInstance.getTransform();
+      if (position.x !== transform.x || position.y !== transform.y) {
+        panzoomInstance.moveTo(position.x, position.y);
+      }
     }
   }, [panzoomInstance, position]);
 
