@@ -75,7 +75,15 @@ const StoryMonitor = ({
 
   const editableActions = stagedActions.slice(1);
 
-  const [hoveredActionId, setHoveredActionId] = React.useState('');
+  const [hoveredCardId, setHoveredCardId] = React.useState(
+    initialHoveredCardId,
+  );
+  const hoveredAction = actionsById[hoveredCardId];
+
+  const hoveredActionId =
+    hoveredAction && isCudAction(hoveredAction.action)
+      ? hoveredAction.action.payload.id
+      : '';
 
   const theme = useTheme();
 
@@ -164,10 +172,6 @@ const StoryMonitor = ({
     nextActionId,
     timestamps,
   ]);
-
-  const [hoveredCardId, setHoveredCardId] = React.useState(
-    initialHoveredCardId,
-  );
 
   const deleteAction = (
     id: Parameters<typeof ActionCreators.toggleAction>[0],
@@ -335,10 +339,9 @@ const StoryMonitor = ({
                   }}
                   onMouseEnter={() => {
                     if (!isPlaying) {
-                      dispatch(ActionCreators.jumpToAction(id));
+                      // dispatch(ActionCreators.jumpToAction(id));
                       if (isCud) {
                         const actionId = (action as CudAction).payload.id;
-                        setHoveredActionId(actionId);
                         setHoveredBlockId(actionId);
                       }
                       setHoveredCardId(id);
@@ -346,11 +349,10 @@ const StoryMonitor = ({
                   }}
                   onMouseLeave={() => {
                     if (!isPlaying) {
-                      dispatch(
-                        ActionCreators.jumpToAction(lastJumpedToActionId),
-                      );
+                      // dispatch(
+                      //   ActionCreators.jumpToAction(lastJumpedToActionId),
+                      // );
                       if (isCud) {
-                        setHoveredActionId('');
                         setHoveredBlockId(initialHoveredBlockId);
                       }
                       setHoveredCardId(initialHoveredCardId);
