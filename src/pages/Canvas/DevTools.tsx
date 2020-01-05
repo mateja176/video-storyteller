@@ -64,8 +64,6 @@ const StoryMonitor = ({
     setHoveredBlockId,
     isPlaying,
     setIsPlaying,
-    direction,
-    setDirection,
   } = React.useContext(CanvasContext);
 
   const stagedActions = stagedActionIds.map<ActionWithId>(id => ({
@@ -338,9 +336,7 @@ const StoryMonitor = ({
                   }}
                   onMouseEnter={() => {
                     const newDirection = i >= currentActionIndex;
-                    if (direction !== newDirection) {
-                      setDirection(newDirection);
-                    }
+                    localStorage.setItem('direction', String(newDirection));
                     dispatch(ActionCreators.jumpToAction(id));
                     if (isCud) {
                       const actionId = (action as CudAction).payload.id;

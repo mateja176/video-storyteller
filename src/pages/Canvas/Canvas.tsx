@@ -158,7 +158,11 @@ const Canvas: React.FC<CanvasProps> = () => {
       if (scale !== panzoomInstance.getTransform().scale) {
         panzoomInstance.off('zoom', debouncedSetZoom);
 
-        if (direction) {
+        const newDirection = JSON.parse(
+          localStorage.getItem('direction') || '',
+        );
+
+        if (newDirection) {
           panzoomInstance.zoomAbs(clientX, clientY, scale);
         } else {
           panzoomInstance.zoomAbs(
