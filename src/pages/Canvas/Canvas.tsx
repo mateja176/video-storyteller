@@ -420,10 +420,8 @@ const Canvas: React.FC<CanvasProps> = () => {
                 onDragStart={pause}
                 onResizeStop={resume}
                 onDragStop={(e, dragStopEvent) => {
-                  const { x, y } = panzoomInstance!.getTransform();
-
-                  const newTop = dragStopEvent.y + y / scale; // - controlsHeight / scale;
-                  const newLeft = dragStopEvent.x + x / scale;
+                  const newTop = dragStopEvent.y;
+                  const newLeft = dragStopEvent.x;
 
                   updateBlockState({
                     id,
