@@ -339,7 +339,7 @@ const StoryMonitor = ({
                   onMouseEnter={() => {
                     const newDirection = i >= currentActionIndex;
                     if (direction !== newDirection) {
-                      setDirection(i >= currentActionIndex);
+                      setDirection(newDirection);
                     }
                     dispatch(ActionCreators.jumpToAction(id));
                     if (isCud) {
