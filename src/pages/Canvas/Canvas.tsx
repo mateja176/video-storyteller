@@ -75,7 +75,7 @@ const Canvas: React.FC<CanvasProps> = () => {
   const theme = useTheme();
 
   const {
-    setScale: _setScale,
+    setScale,
     setPosition,
     createBlockState,
     updateBlockState,
@@ -87,8 +87,6 @@ const Canvas: React.FC<CanvasProps> = () => {
     updateBlockState: createUpdateAction,
     deleteBlockState: createDeleteAction,
   });
-
-  const setScale = React.useMemo(() => debounce(_setScale, 1000), [_setScale]);
 
   const blockStates = useSelector(selectBlockStates);
 
@@ -105,6 +103,28 @@ const Canvas: React.FC<CanvasProps> = () => {
 
   const scale = useSelector(selectScale);
   const position = useSelector(selectPosition);
+
+  const handleZoom = React.useMemo(() => {
+    const setTransform = (instance: PanZoom) => {
+      const transform = instance.getTransform();
+      setScale({ ...transform });
+    };
+
+    return debounce(setTransform, 500);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  React.useEffect(() => {
+    if (panzoomInstance) {
+      const transform = panzoomInstance.getTransform();
+      if (scale !== transform.scale) {
+        panzoomInstance.off('zoom', handleZoom);
+
+        panzoomInstance.zoomAbs(position.x, position.y, scale);
+
+        panzoomInstance.off('on', handleZoom);
+      }
+    }
+  }, [panzoomInstance, scale, position, handleZoom]);
 
   React.useEffect(() => {
     if (panzoomInstance) {
@@ -130,10 +150,7 @@ const Canvas: React.FC<CanvasProps> = () => {
 
     setPanzoomInstance(instance);
 
-    instance.on('zoom', () => {
-      const transform = instance.getTransform();
-      setScale({ ...transform });
-    });
+    instance.on('zoom', handleZoom);
 
     instance.on('panend', () => {
       const { x, y } = instance.getTransform();
