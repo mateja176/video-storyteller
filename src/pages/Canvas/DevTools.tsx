@@ -22,18 +22,19 @@ import { createDevTools } from 'redux-devtools';
 import ActionCardForm from './ActionCardForm';
 import { CanvasContext, initialHoveredBlockId } from './CanvasContext';
 import store, { Action } from './store';
-import { CudAction, cudActionType } from './store/blockStates';
+import { CudAction, cudActionType, UpdateAction } from './store/blockStates';
 import {
   ActionById,
   ActionCreators,
   ActionWithId,
+  formatPosition,
+  formatTransform,
   isCudAction,
   isPositionAction,
   isScaleAction,
   isSetTransformAction,
+  isUpdateMoveAction,
   MonitorProps,
-  formatTransform,
-  formatPosition,
 } from './utils';
 
 const initialHoveredCardId: number = -1;
@@ -433,6 +434,8 @@ const StoryMonitor = ({
                       initialValues={initialValues}
                       handleSubmit={({
                         timeDiff: newTimeDiff,
+                        left,
+                        top,
                         ...transform
                       }) => {
                         const delta = newTimeDiff - timeDiff;
@@ -447,6 +450,20 @@ const StoryMonitor = ({
                               .slice(0, followingActionIndex)
                               .concat(newTimestamps),
                           );
+                        }
+
+                        if (
+                          isUpdateMoveAction(action) &&
+                          (action.payload.left !== left ||
+                            action.payload.top !== top)
+                        ) {
+                          store.dispatch({
+                            ...action,
+                            payload: { ...action.payload, left, top },
+                          } as UpdateAction);
+
+                          dispatch(ActionCreators.toggleAction(id));
+                          dispatch(ActionCreators.sweep());
                         }
 
                         const { scale: zoom, ...position } = transform;

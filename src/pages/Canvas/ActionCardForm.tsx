@@ -2,6 +2,7 @@ import { InputAdornment, TextField } from '@material-ui/core';
 import { Button } from 'components';
 import { Form, Formik } from 'formik';
 import { lowerCase } from 'lodash';
+import { BlockState } from 'models';
 import { equals } from 'ramda';
 import React from 'react';
 import { Flex } from 'rebass';
@@ -16,6 +17,7 @@ import {
   isPositionAction,
   isScaleAction,
   isSetTransformAction,
+  isUpdateMoveAction,
 } from './utils';
 
 const textFieldProps = {
@@ -27,6 +29,8 @@ type Timestamps = Record<number, number>;
 
 interface InitialValues {
   timeDiff: number;
+  left?: BlockState['left'];
+  top?: BlockState['top'];
   scale?: TransformState['scale'];
   x?: TransformState['x'];
   y?: TransformState['y'];
@@ -50,6 +54,8 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
 }) => {
   const formatedInitialValues = {
     ...initialValues,
+    left: isUpdateMoveAction(action) ? action.payload.left : 0,
+    top: isUpdateMoveAction(action) ? action.payload.top : 0,
     scale:
       isScaleAction(action) || isSetTransformAction(action)
         ? formatScale(action.payload.scale)
@@ -156,6 +162,29 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
                     ),
                   }}
                 />
+              )}
+              {isUpdateMoveAction(action) && (
+                <Flex>
+                  <TextField
+                    {...textFieldProps}
+                    type="number"
+                    name="left"
+                    label="Left"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.left}
+                    style={{ marginRight: 5 }}
+                  />
+                  <TextField
+                    {...textFieldProps}
+                    type="number"
+                    name="top"
+                    label="Top"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.top}
+                  />
+                </Flex>
               )}
               {(isPositionAction(action) ||
                 isSetTransformAction(action) ||

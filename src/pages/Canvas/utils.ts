@@ -1,21 +1,12 @@
+import { isNil } from 'ramda';
 import { Dispatch } from 'redux';
 // @ts-ignore
 import { ActionCreators as InstrumentActionCreators } from 'redux-devtools-instrument';
+import { DeepRequired } from 'utility-types';
 import { toObject } from 'utils';
 import { Action, State } from './store';
-import { CudAction, CudActionType, cudActionTypes } from './store/blockStates';
-import {
-  PositionAction,
-  positionTypes,
-  ScaleAction,
-  scaleTypes,
-  SetTransformAction,
-  setTransformType,
-  TransformAction,
-  TransformActionType,
-  transformActionTypes,
-  TransformState,
-} from './store/transform';
+import { CudAction, CudActionType, cudActionTypes, UpdateAction } from './store/blockStates';
+import { PositionAction, positionTypes, ScaleAction, scaleTypes, SetTransformAction, setTransformType, TransformAction, TransformActionType, transformActionTypes, TransformState } from './store/transform';
 
 export const formatScale = (scale: TransformState['scale']) =>
   Number((scale * 100).toFixed(0));
@@ -42,6 +33,17 @@ export const isCudActionType = (type: string): type is CudActionType =>
 
 export const isCudAction = (action: Action): action is CudAction =>
   isCudActionType(action.type);
+
+export const isUpdateAction = (action: Action): action is UpdateAction =>
+  action.type === 'update';
+
+export type UpdateMoveAction = DeepRequired<UpdateAction>;
+export const isUpdateMoveAction = (
+  action: Action,
+): action is UpdateMoveAction =>
+  action.type === 'update' &&
+  !isNil(action.payload.left) &&
+  !isNil(action.payload.top);
 
 export const isTransformActionType = (
   type: string,
