@@ -306,6 +306,8 @@ const StoryMonitor = ({
 
             const isActive = !skippedActionIds.includes(id);
 
+            const isLastJumpedToAction = lastJumpedToActionId === id;
+
             return (
               <Flex
                 key={id}
@@ -313,7 +315,7 @@ const StoryMonitor = ({
                 height="100%"
                 style={{
                   boxShadow:
-                    lastJumpedToActionId === id && !isPlaying
+                    isLastJumpedToAction && !isPlaying
                       ? `2px 0px ${theme.palette.secondary.light}`
                       : 'none',
                 }}
@@ -374,9 +376,21 @@ const StoryMonitor = ({
                       size="small"
                       style={{ marginRight: 4 }}
                       onClick={e => {
-                        e.preventDefault();
+                        e.stopPropagation();
 
                         dispatch(ActionCreators.toggleAction(id));
+
+                        if (
+                          isActive &&
+                          isLastJumpedToAction &&
+                          precedingAction
+                        ) {
+                          setLastJumpedToActionId(precedingAction.id);
+
+                          dispatch(
+                            ActionCreators.jumpToAction(precedingAction.id),
+                          );
+                        }
                       }}
                     >
                       {isActive ? <VisibilityOff /> : <Visibility />}
@@ -523,14 +537,6 @@ const StoryMonitor = ({
                     </Box>
                   </Flex>
                 </Card>
-                {/* {lastJumpedToActionId === id && (
-                  <Divider
-                    orientation="vertical"
-                    style={{
-                      background: theme.palette.secondary.light,
-                    }}
-                  />
-                )} */}
               </Flex>
             );
           })}
