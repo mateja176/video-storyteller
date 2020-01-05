@@ -25,6 +25,7 @@ import { EditorState } from 'draft-js';
 import { debounce } from 'lodash';
 import firebase from 'my-firebase';
 import panzoom, { PanZoom } from 'panzoom';
+import { equals } from 'ramda';
 import React from 'react';
 import Dropzone from 'react-dropzone';
 import { useSelector as useStoreSelector } from 'react-redux';
@@ -38,10 +39,10 @@ import { CanvasContext, initialHoveredBlockId } from './CanvasContext';
 import DevTools from './DevTools';
 import store, {
   selectBlockStates,
+  selectPosition,
   selectScale,
   useActions,
   useSelector,
-  selectPosition,
 } from './store';
 import {
   createCreateAction,
@@ -107,7 +108,10 @@ const Canvas: React.FC<CanvasProps> = () => {
 
   React.useEffect(() => {
     if (panzoomInstance) {
-      panzoomInstance.moveTo(position.x, position.y);
+      const { x, y } = panzoomInstance.getTransform();
+      if (!equals(position, { x, y })) {
+        panzoomInstance.moveTo(position.x, position.y);
+      }
     }
   }, [panzoomInstance, position]);
 
