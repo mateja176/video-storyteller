@@ -304,6 +304,8 @@ const StoryMonitor = ({
               timeDiff,
             };
 
+            const isActive = !skippedActionIds.includes(id);
+
             return (
               <Flex
                 key={id}
@@ -336,6 +338,7 @@ const StoryMonitor = ({
                     position: 'relative',
                     display: 'flex',
                     flexDirection: 'column',
+                    cursor: isActive ? 'pointer' : 'default',
                   }}
                   onMouseEnter={() => {
                     if (!isPlaying) {
@@ -360,8 +363,10 @@ const StoryMonitor = ({
                     }
                   }}
                   onClick={() => {
-                    dispatch(ActionCreators.jumpToAction(id));
-                    setLastJumpedToActionId(id);
+                    if (isActive) {
+                      dispatch(ActionCreators.jumpToAction(id));
+                      setLastJumpedToActionId(id);
+                    }
                   }}
                 >
                   <Flex justifyContent="flex-end" pt={1} pr={1}>
@@ -374,11 +379,7 @@ const StoryMonitor = ({
                         dispatch(ActionCreators.toggleAction(id));
                       }}
                     >
-                      {skippedActionIds.includes(id) ? (
-                        <Visibility />
-                      ) : (
-                        <VisibilityOff />
-                      )}
+                      {isActive ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                     <IconButton
                       size="small"
