@@ -115,11 +115,15 @@ const StoryMonitor = ({
   const currentTimestamp = timestamps[currentStateIndex - 1];
   const duration = nextTimestamp - currentTimestamp;
 
+  const nextActiveActionId = stagedActionIds
+    .slice(currentActionId + 1)
+    .find(id => !skippedActionIds.includes(id));
+
   const play = React.useCallback(
     (elapsed: number) => {
-      if (nextAction && isPlaying) {
+      if (nextActiveActionId && isPlaying) {
         const timeout = setTimeout(() => {
-          dispatch(ActionCreators.jumpToAction(nextActionId));
+          dispatch(ActionCreators.jumpToAction(nextActiveActionId));
         }, duration - elapsed);
 
         setTimeoutStart(Date.now());
@@ -127,7 +131,7 @@ const StoryMonitor = ({
         setPlayTimeout(timeout);
       }
 
-      if (!nextAction && isPlaying) {
+      if (!nextActiveActionId && isPlaying) {
         setIsPlaying(false);
 
         setElapsedTime(0);
@@ -135,7 +139,7 @@ const StoryMonitor = ({
         setLastJumpedToActionId(lastEditableActionId);
       }
     },
-    [nextAction, isPlaying], // eslint-disable-line react-hooks/exhaustive-deps
+    [nextActiveActionId, isPlaying], // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   React.useEffect(() => {
