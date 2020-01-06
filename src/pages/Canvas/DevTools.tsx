@@ -177,11 +177,22 @@ const StoryMonitor = ({
     timestamps,
   ]);
 
+  const toggleActions = (actionIds: typeof stagedActionIds) => {
+    actionIds
+      .slice()
+      .reverse()
+      .forEach(actionId => {
+        dispatch(ActionCreators.toggleAction(actionId));
+      });
+  };
+
   const deleteAction = (
     id: Parameters<typeof ActionCreators.toggleAction>[0],
   ) => {
+    toggleActions(skippedActionIds);
     dispatch(ActionCreators.toggleAction(id));
     dispatch(ActionCreators.sweep());
+    toggleActions(skippedActionIds);
   };
 
   const [deleteHovered, setDeleteHovered] = React.useState(false);
@@ -413,13 +424,14 @@ const StoryMonitor = ({
                             )
                             .map(actionById => actionById.id);
 
-                          actionsToDelete
-                            .slice()
-                            .reverse()
-                            .forEach(actionId => {
-                              dispatch(ActionCreators.toggleAction(actionId));
-                            });
+                          toggleActions(skippedActionIds);
+                          toggleActions(
+                            actionsToDelete.filter(
+                              actionId => !skippedActionIds.includes(actionId),
+                            ),
+                          );
                           dispatch(ActionCreators.sweep());
+                          toggleActions(skippedActionIds);
                         } else {
                           if (id === currentActionId) {
                             setLastJumpedToActionId(
@@ -483,8 +495,7 @@ const StoryMonitor = ({
                             payload: { ...action.payload, left, top },
                           } as UpdateAction);
 
-                          dispatch(ActionCreators.toggleAction(id));
-                          dispatch(ActionCreators.sweep());
+                          deleteAction(id);
                         }
 
                         const { scale: zoom, ...position } = transform;
@@ -507,8 +518,7 @@ const StoryMonitor = ({
                               payload: newTransform,
                             } as Action);
 
-                            dispatch(ActionCreators.toggleAction(id));
-                            dispatch(ActionCreators.sweep());
+                            deleteAction(id);
                           }
                         }
 
@@ -523,8 +533,7 @@ const StoryMonitor = ({
                               payload: position,
                             } as Action);
 
-                            dispatch(ActionCreators.toggleAction(id));
-                            dispatch(ActionCreators.sweep());
+                            deleteAction(id);
                           }
                         }
                       }}
