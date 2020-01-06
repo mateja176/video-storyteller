@@ -1,6 +1,6 @@
 import { InputAdornment, TextField } from '@material-ui/core';
 import { Button } from 'components';
-import { ContentState, convertToRaw, convertFromRaw } from 'draft-js';
+import { convertFromRaw } from 'draft-js';
 import { Form, Formik } from 'formik';
 import { lowerCase } from 'lodash';
 import { equals } from 'ramda';
@@ -32,9 +32,10 @@ const textFieldProps = {
 type Timestamps = Record<number, number>;
 
 interface InitialValues
-  extends Omit<UpdateActionPayload, 'id'>,
+  extends Omit<UpdateActionPayload, 'id' | 'editorState'>,
     Partial<TransformState> {
   timeDiff: number;
+  editorState?: string;
 }
 type Values = Required<InitialValues>;
 
@@ -58,8 +59,8 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
     left: isUpdateMoveAction(action) ? action.payload.left : 0,
     top: isUpdateMoveAction(action) ? action.payload.top : 0,
     editorState: isUpdateEditAction(action)
-      ? action.payload.editorState
-      : convertToRaw(ContentState.createFromText('')),
+      ? convertFromRaw(action.payload.editorState).getPlainText()
+      : '',
     scale:
       isScaleAction(action) || isSetTransformAction(action)
         ? formatScale(action.payload.scale)
@@ -175,7 +176,7 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
                   label="Editor State"
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  value={convertFromRaw(values.editorState).getPlainText()}
+                  value={values.editorState}
                   multiline
                   rows={3}
                   rowsMax={3}
