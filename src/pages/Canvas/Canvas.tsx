@@ -121,7 +121,7 @@ const Canvas: React.FC<CanvasProps> = () => {
 
         panzoomInstance.zoomAbs(position.x, position.y, scale);
 
-        panzoomInstance.off('on', handleZoom);
+        panzoomInstance.on('zoom', handleZoom);
       }
     }
   }, [panzoomInstance, scale, position, handleZoom]);
