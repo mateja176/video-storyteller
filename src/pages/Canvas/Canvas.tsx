@@ -18,6 +18,7 @@ import {
   Build,
   Delete,
   Fullscreen,
+  FullscreenExit,
   Title,
   Tv,
   TvOff,
@@ -242,6 +243,8 @@ const Canvas: React.FC<CanvasProps> = () => {
     }
   }, [isPlaying]);
 
+  const [isFullscreen, setIsFullScreen] = React.useState(false);
+
   return (
     <Flex
       style={{
@@ -324,18 +327,17 @@ const Canvas: React.FC<CanvasProps> = () => {
           button
           onClick={() => {
             if (window.document.fullscreenElement) {
+              setIsFullScreen(false);
               window.document.exitFullscreen();
             } else {
+              setIsFullScreen(true);
               window.document.documentElement.requestFullscreen();
             }
           }}
         >
           <Tooltip title="Toggle full screen">
             <ListItemIcon>
-              <Box>
-                {/* {isFullscreen ? <FullscreenExit /> : <Fullscreen />} // * not working */}
-                <Fullscreen />
-              </Box>
+              <Box>{isFullscreen ? <FullscreenExit /> : <Fullscreen />}</Box>
             </ListItemIcon>
           </Tooltip>
         </ListItem>
