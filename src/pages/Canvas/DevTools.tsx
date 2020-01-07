@@ -126,7 +126,7 @@ const StoryMonitor = ({
       : 0;
 
   const nextActiveActionId = stagedActionIds
-    .slice(currentActionId + 1)
+    .slice(currentStateIndex + 1)
     .find(id => !skippedActionIds.includes(id));
 
   const play = React.useCallback(
