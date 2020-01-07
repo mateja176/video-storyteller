@@ -5,3 +5,4 @@ export * from './lang';
 export * from './router';
 export * from './snackbar';
 export * from './theme';
+export * from './theatricalMode';

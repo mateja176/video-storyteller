@@ -16,6 +16,7 @@ import {
   theme,
   ThemeAction,
 } from './slices';
+import { TheatricalModeAction, theatricalMode } from './slices/theatricalMode';
 
 export type Action =
   | CountAction
@@ -24,9 +25,10 @@ export type Action =
   | SnackbarAction
   | ImagesAction
   | RouterAction
-  | LangAction;
+  | LangAction
+  | TheatricalModeAction;
 
-const reducer = combineReducers({
+const actionReducerMap = {
   count,
   theme,
   auth,
@@ -34,7 +36,10 @@ const reducer = combineReducers({
   images,
   router,
   lang,
-});
+  theatricalMode,
+};
+
+const reducer = combineReducers(actionReducerMap);
 
 export type Reducer = typeof reducer;
 

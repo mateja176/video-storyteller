@@ -1,9 +1,14 @@
 import { CssBaseline, Divider, Drawer, makeStyles } from '@material-ui/core';
 import { ChevronLeft, Close } from '@material-ui/icons';
 import { IconButton, Tooltip, Visible } from 'components';
+import { parse } from 'qs';
 import React, { FC, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Box, Flex } from 'rebass';
+import { createSetTheatricalMode, selectTheatricalMode } from 'store';
 import { createToolbarStyles } from 'styles';
+import { useActions } from 'utils';
 import Breadcrumbs from './Breadcrumbs';
 import Footer from './Footer';
 import Header from './Header';
@@ -18,11 +23,27 @@ const useStyles = makeStyles(theme => ({
   toolbar: createToolbarStyles(theme),
 }));
 
-export interface LayoutProps {
+export interface LayoutProps extends RouteComponentProps {
   isSignedIn: boolean;
 }
 
-const Layout: FC<LayoutProps> = ({ children, isSignedIn }) => {
+const Layout: FC<LayoutProps> = ({
+  children,
+  isSignedIn,
+  location: { search },
+}) => {
+  const theatricalMode = useSelector(selectTheatricalMode);
+
+  const { setTheatricalMode } = useActions({
+    setTheatricalMode: createSetTheatricalMode,
+  });
+
+  React.useEffect(() => {
+    const params = parse(search, { ignoreQueryPrefix: true });
+
+    setTheatricalMode(params.theatrical === String(true));
+  }, [search]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const { drawer, toolbar } = useStyles();
 
   const [open, setOpen] = useState(false);
@@ -48,7 +69,7 @@ const Layout: FC<LayoutProps> = ({ children, isSignedIn }) => {
       }}
     >
       <CssBaseline />
-      <Header toggle={handleDrawerToggle} />
+      {!theatricalMode && <Header toggle={handleDrawerToggle} />}
       <Drawer
         open={open}
         onClose={handleDrawerToggle}
@@ -103,4 +124,4 @@ const Layout: FC<LayoutProps> = ({ children, isSignedIn }) => {
   );
 };
 
-export default Layout;
+export default withRouter(Layout);

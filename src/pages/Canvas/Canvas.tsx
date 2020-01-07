@@ -19,6 +19,8 @@ import {
   Delete,
   Fullscreen,
   Title,
+  Tv,
+  TvOff,
 } from '@material-ui/icons';
 import { Button, Editor, EditorControls, Tooltip } from 'components';
 import { EditorState } from 'draft-js';
@@ -32,8 +34,13 @@ import { useSelector as useStoreSelector } from 'react-redux';
 import { Rnd } from 'react-rnd';
 import { Box, Flex } from 'rebass';
 import { putString } from 'rxfire/storage';
-import { selectUid } from 'store';
+import {
+  createToggleTheatricalMode,
+  selectTheatricalMode,
+  selectUid,
+} from 'store';
 import urlJoin from 'url-join';
+import { useActions as useStoreActions } from 'utils';
 import { v4 } from 'uuid';
 import { CanvasContext, initialHoveredBlockId } from './CanvasContext';
 import DevTools from './DevTools';
@@ -68,6 +75,12 @@ const useStyles = makeStyles(theme => ({
 export interface CanvasProps {}
 
 const Canvas: React.FC<CanvasProps> = () => {
+  const { toggleTheatricalMode } = useStoreActions({
+    toggleTheatricalMode: createToggleTheatricalMode,
+  });
+
+  const theatricalMode = useStoreSelector(selectTheatricalMode);
+
   const canvasRef = React.useRef<HTMLDivElement>(null);
 
   const classes = useStyles();
@@ -192,6 +205,12 @@ const Canvas: React.FC<CanvasProps> = () => {
 
   const [storyMonitorOpen, setStoryMonitorOpen] = React.useState(true);
 
+  React.useEffect(() => {
+    if (theatricalMode) {
+      setStoryMonitorOpen(false);
+    }
+  }, [theatricalMode]);
+
   const toggleStoryMonitorOpen = () => {
     setStoryMonitorOpen(!storyMonitorOpen);
   };
@@ -292,6 +311,18 @@ const Canvas: React.FC<CanvasProps> = () => {
         <ListItem
           button
           onClick={() => {
+            toggleTheatricalMode();
+          }}
+        >
+          <Tooltip title="Toggle theatrical mode">
+            <ListItemIcon>
+              <Box>{theatricalMode ? <TvOff /> : <Tv />}</Box>
+            </ListItemIcon>
+          </Tooltip>
+        </ListItem>
+        <ListItem
+          button
+          onClick={() => {
             if (window.document.fullscreenElement) {
               window.document.exitFullscreen();
             } else {
@@ -323,77 +354,79 @@ const Canvas: React.FC<CanvasProps> = () => {
             e.preventDefault();
           }}
         >
-          <Flex style={{ minHeight: controlsHeight }}>
-            {focusedEditorId && (
-              <EditorControls
-                editorState={focusedEditorState}
-                setEditorState={setFocusedEditorState}
-              />
-            )}
-            {audioUploadOpen && (
-              <Dropzone
-                onDrop={([audioFile]) => {
-                  const { name } = audioFile;
-                  const id = v4();
-                  const reader = new FileReader();
-                  reader.readAsDataURL(audioFile);
-                  // eslint-disable-next-line
-                  reader.onload = () => {
-                    putString(
-                      firebase.storage().ref(urlJoin('audio', uid, id)),
-                      String(reader.result),
-                      'data_url',
-                      { customMetadata: { name, id } },
-                    ).subscribe(({ bytesTransferred, totalBytes }) => {
-                      const percentage = Number(
-                        ((bytesTransferred / totalBytes) * 100).toFixed(0),
-                      );
+          {!theatricalMode && (
+            <Flex style={{ minHeight: controlsHeight }}>
+              {focusedEditorId && (
+                <EditorControls
+                  editorState={focusedEditorState}
+                  setEditorState={setFocusedEditorState}
+                />
+              )}
+              {audioUploadOpen && (
+                <Dropzone
+                  onDrop={([audioFile]) => {
+                    const { name } = audioFile;
+                    const id = v4();
+                    const reader = new FileReader();
+                    reader.readAsDataURL(audioFile);
+                    // eslint-disable-next-line
+                    reader.onload = () => {
+                      putString(
+                        firebase.storage().ref(urlJoin('audio', uid, id)),
+                        String(reader.result),
+                        'data_url',
+                        { customMetadata: { name, id } },
+                      ).subscribe(({ bytesTransferred, totalBytes }) => {
+                        const percentage = Number(
+                          ((bytesTransferred / totalBytes) * 100).toFixed(0),
+                        );
 
-                      setUploadPercentage(percentage);
+                        setUploadPercentage(percentage);
 
-                      if (percentage === 100) {
-                        setUploadPercentage(-1);
-                      }
-                    });
-                  };
-                }}
-                accept={['audio/*']}
-                disabled={uploading}
-              >
-                {({ getRootProps, getInputProps }) => {
-                  const rootProps = getRootProps();
-                  return (
-                    <Flex
-                      {...(rootProps as any)}
-                      width="100%"
-                      height={100}
-                      justifyContent="center"
-                      alignItems="center"
-                    >
-                      <input {...getInputProps()} />
-                      <Flex alignItems="center">
-                        <Box mr={10}>
-                          {uploading ? (
-                            `${uploadPercentage} %`
-                          ) : (
-                            <Icon>
-                              <ArrowDownward />
-                            </Icon>
-                          )}
-                        </Box>
-                        <Typography
-                          style={{ display: 'inline-block', marginRight: 5 }}
-                        >
-                          Drop audio track here or
-                        </Typography>
-                        <Button disabled={uploading}>click to select</Button>
+                        if (percentage === 100) {
+                          setUploadPercentage(-1);
+                        }
+                      });
+                    };
+                  }}
+                  accept={['audio/*']}
+                  disabled={uploading}
+                >
+                  {({ getRootProps, getInputProps }) => {
+                    const rootProps = getRootProps();
+                    return (
+                      <Flex
+                        {...(rootProps as any)}
+                        width="100%"
+                        height={100}
+                        justifyContent="center"
+                        alignItems="center"
+                      >
+                        <input {...getInputProps()} />
+                        <Flex alignItems="center">
+                          <Box mr={10}>
+                            {uploading ? (
+                              `${uploadPercentage} %`
+                            ) : (
+                              <Icon>
+                                <ArrowDownward />
+                              </Icon>
+                            )}
+                          </Box>
+                          <Typography
+                            style={{ display: 'inline-block', marginRight: 5 }}
+                          >
+                            Drop audio track here or
+                          </Typography>
+                          <Button disabled={uploading}>click to select</Button>
+                        </Flex>
                       </Flex>
-                    </Flex>
-                  );
-                }}
-              </Dropzone>
-            )}
-          </Flex>
+                    );
+                  }}
+                </Dropzone>
+              )}
+            </Flex>
+          )}
           <Divider />
         </Box>
         <Box height="100%" style={{ overflow: 'hidden' }}>

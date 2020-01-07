@@ -4,4 +4,5 @@ export * from './images';
 export * from './lang';
 export * from './router';
 export * from './snackbar';
+export * from './theatricalMode';
 export * from './theme';
