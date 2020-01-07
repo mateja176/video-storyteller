@@ -19,6 +19,7 @@ import {
   Delete,
   Fullscreen,
   FullscreenExit,
+  Image,
   Title,
   Tv,
   TvOff,
@@ -59,9 +60,13 @@ import {
 } from './store/blockStates';
 import { createSetPosition, createSetScale } from './store/transform';
 
+const headerHeight = 76;
+
 const transitionDuration = 500;
 
 const controlsHeight = 50;
+
+const actionsTimelineHeight = 300;
 
 const useStyles = makeStyles(theme => ({
   drawer: {
@@ -245,6 +250,8 @@ const Canvas: React.FC<CanvasProps> = () => {
 
   const [isFullscreen, setIsFullScreen] = React.useState(false);
 
+  const [galleryOpen, setGalleryOpen] = React.useState(false);
+
   return (
     <Flex
       style={{
@@ -275,6 +282,18 @@ const Canvas: React.FC<CanvasProps> = () => {
             <Tooltip title="Add text block">
               <ListItemIcon>
                 <Title />
+              </ListItemIcon>
+            </Tooltip>
+          </ListItem>
+          <ListItem
+            button
+            onClick={() => {
+              setGalleryOpen(!galleryOpen);
+            }}
+          >
+            <Tooltip title="Toggle gallery open">
+              <ListItemIcon>
+                <Image color={galleryOpen ? 'secondary' : 'inherit'} />
               </ListItemIcon>
             </Tooltip>
           </ListItem>
@@ -425,7 +444,7 @@ const Canvas: React.FC<CanvasProps> = () => {
           )}
           <Divider />
         </Box>
-        <Box height="100%" style={{ overflow: 'hidden' }}>
+        <Flex height="100%" style={{ overflow: 'hidden' }}>
           <div ref={canvasRef}>
             {blockStates.map(({ id, top, left, editorState }) => (
               <Rnd
@@ -498,12 +517,30 @@ const Canvas: React.FC<CanvasProps> = () => {
               </Rnd>
             ))}
           </div>
-        </Box>
+          <Flex ml="auto">
+            <Divider orientation="vertical" />
+            <Paper
+              style={{
+                transition: 'all 500ms ease-in-out',
+                overflow: 'hidden',
+                width: galleryOpen ? 300 : 0,
+                whiteSpace: 'nowrap',
+                height: `calc(100vh - ${headerHeight +
+                  controlsHeight +
+                  1 +
+                  1 +
+                  actionsTimelineHeight}px)`,
+              }}
+            >
+              Image gallery
+            </Paper>
+          </Flex>
+        </Flex>
         <Box>
           <Divider />
           <Paper
             style={{
-              height: storyMonitorOpen ? 300 : 0,
+              height: storyMonitorOpen ? actionsTimelineHeight : 0,
               width: 'calc(100vw - 56px)',
               transition: 'height 500ms ease-in-out',
               overflow: 'hidden',
@@ -523,17 +560,6 @@ const Canvas: React.FC<CanvasProps> = () => {
           </Paper>
         </Box>
       </Flex>
-      <Paper
-        style={{
-          alignSelf: 'right',
-          transition: 'all 500ms ease-in-out',
-          overflow: 'hidden',
-          width: false ? 300 : 0, // eslint-disable-line no-constant-condition
-          whiteSpace: 'nowrap',
-        }}
-      >
-        Left side menu
-      </Paper>
     </Flex>
   );
 };
