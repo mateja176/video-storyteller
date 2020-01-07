@@ -13,7 +13,7 @@ import {
 } from '@material-ui/icons';
 import color from 'color';
 import { IconButton, Progress, progressHeight } from 'components';
-import { equals, last } from 'ramda';
+import { equals, init, last, nth, update } from 'ramda';
 import React from 'react';
 import GridLayout from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
@@ -24,7 +24,6 @@ import { CanvasContext, initialHoveredBlockId } from './CanvasContext';
 import store, { Action } from './store';
 import { CudAction, cudActionType, UpdateAction } from './store/blockStates';
 import {
-  ActionById,
   ActionCreators,
   ActionWithId,
   formatPosition,
@@ -36,6 +35,8 @@ import {
   isUpdateMoveAction,
   MonitorProps,
 } from './utils';
+
+type Durations = { id: ActionWithId['id']; value: number }[];
 
 const initialHoveredCardId: number = -1;
 
@@ -87,13 +88,20 @@ const StoryMonitor = ({
 
   const theme = useTheme();
 
-  const [timestamps, setTimestamps] = React.useState<
-    { id: ActionWithId['id']; value: ActionById['timestamp'] }[]
-  >(
-    editableActions.map(editableAction => ({
-      id: editableAction.id,
-      value: editableAction.timestamp,
-    })),
+  const [durations, setDurations] = React.useState<Durations>(
+    editableActions.reduce<Durations>(
+      (initialDurations, action, i, actions) => {
+        const followingAction = nth(i + 1, actions);
+
+        return initialDurations.concat({
+          id: action.id,
+          value: followingAction
+            ? followingAction.timestamp - action.timestamp
+            : 0,
+        });
+      },
+      [],
+    ),
   );
 
   const [actionsCount, setActionsCount] = React.useState(
@@ -116,14 +124,7 @@ const StoryMonitor = ({
 
   const currentActionId = stagedActionIds[currentStateIndex];
 
-  const nextTimestamp: typeof timestamps[number] | undefined =
-    timestamps[currentStateIndex];
-  const currentTimestamp: typeof timestamps[number] | undefined =
-    timestamps[currentStateIndex - 1];
-  const duration =
-    currentTimestamp && nextTimestamp
-      ? nextTimestamp.value - currentTimestamp.value
-      : 0;
+  const currentDuration = nth(currentStateIndex - 1, durations);
 
   const nextActiveActionId = stagedActionIds
     .slice(currentStateIndex + 1)
@@ -131,10 +132,10 @@ const StoryMonitor = ({
 
   const play = React.useCallback(
     (elapsed: number) => {
-      if (nextActiveActionId && isPlaying) {
+      if (nextActiveActionId && isPlaying && currentDuration) {
         const timeout = setTimeout(() => {
           dispatch(ActionCreators.jumpToAction(nextActiveActionId));
-        }, duration - elapsed);
+        }, currentDuration.value - elapsed);
 
         setTimeoutStart(Date.now());
 
@@ -149,7 +150,8 @@ const StoryMonitor = ({
         setLastJumpedToActionId(lastEditableActionId);
       }
     },
-    [nextActiveActionId, isPlaying], // eslint-disable-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [nextActiveActionId, isPlaying, currentDuration],
   );
 
   React.useEffect(() => {
@@ -164,11 +166,25 @@ const StoryMonitor = ({
     if (actionsCount < editableActions.length) {
       setActionsCount(actionsCount + 1);
       setLastJumpedToActionId(lastEditableActionId);
-      setTimestamps(
-        timestamps.concat({
-          id: lastEditableAction!.id,
-          value: lastEditableAction!.timestamp,
-        }),
+
+      const nextToLastEditableAction = last(init(editableActions));
+      setDurations(
+        durations
+          .slice(0, -1)
+          .concat(
+            nextToLastEditableAction
+              ? {
+                  id: nextToLastEditableAction.id,
+                  value:
+                    lastEditableAction!.timestamp -
+                    nextToLastEditableAction.timestamp,
+                }
+              : [],
+          )
+          .concat({
+            id: lastEditableAction!.id,
+            value: 0,
+          }),
       );
       if (currentStateIndex < lastStateIndex) {
         dispatch(ActionCreators.jumpToState(lastStateIndex));
@@ -189,7 +205,7 @@ const StoryMonitor = ({
     lastEditableActionId,
     lastEditableAction,
     nextActionId,
-    timestamps,
+    durations,
   ]);
 
   const toggleActions = (actionIds: typeof stagedActionIds) => {
@@ -203,7 +219,7 @@ const StoryMonitor = ({
   const deleteAction = (
     id: Parameters<typeof ActionCreators.toggleAction>[0],
   ) => {
-    setTimestamps(timestamps.filter(timestamp => timestamp.id !== id));
+    setDurations(durations.filter(duration => duration.id !== id));
 
     toggleActions(skippedActionIds);
     dispatch(ActionCreators.toggleAction(id));
@@ -211,8 +227,8 @@ const StoryMonitor = ({
     toggleActions(skippedActionIds);
   };
   const deleteActions = (actionsToDelete: typeof stagedActionIds) => {
-    setTimestamps(
-      timestamps.filter(timestamp => !actionsToDelete.includes(timestamp.id)),
+    setDurations(
+      durations.filter(timestamp => !actionsToDelete.includes(timestamp.id)),
     );
 
     toggleActions(skippedActionIds);
@@ -279,7 +295,7 @@ const StoryMonitor = ({
           onClick={() => {
             setLastJumpedToActionId(lastEditableActionId);
             dispatch(ActionCreators.reset());
-            setTimestamps([]);
+            setDurations([]);
           }}
           color="secondary"
         >
@@ -319,7 +335,9 @@ const StoryMonitor = ({
           isDraggable={!isEditing}
         >
           {editableActions.map(({ action, id }, i) => {
-            const timestamp = timestamps[i];
+            const durationObject = nth(i, durations);
+            const duration = durationObject ? durationObject.value : 0;
+
             const isCurrentAction = id === currentActionId;
 
             const isCud = isCudAction(action);
@@ -338,13 +356,8 @@ const StoryMonitor = ({
             const followingActionIndex = i + 1;
             const followingAction = editableActions[followingActionIndex];
 
-            const followingTimestamp = timestamps[followingActionIndex];
-            const timeDiff = followingTimestamp
-              ? followingTimestamp.value - timestamp.value
-              : 0;
-
             const initialValues = {
-              timeDiff,
+              duration,
             };
 
             const isActive = !skippedActionIds.includes(id);
@@ -491,27 +504,14 @@ const StoryMonitor = ({
                       setIsEditing={setIsEditing}
                       initialValues={initialValues}
                       handleSubmit={({
-                        timeDiff: newTimeDiff,
+                        duration: newDuration,
                         left,
                         top,
                         ...transform
                       }) => {
-                        const delta = newTimeDiff - timeDiff;
-
-                        if (delta) {
-                          const newTimestamps = timestamps
-                            .slice(followingActionIndex)
-                            .map(({ value, ...rest }) => ({
-                              ...rest,
-                              value: value + delta,
-                            }));
-
-                          setTimestamps(
-                            timestamps
-                              .slice(0, followingActionIndex)
-                              .concat(newTimestamps),
-                          );
-                        }
+                        setDurations(
+                          update(i, { id, value: newDuration }, durations),
+                        );
 
                         if (
                           isUpdateMoveAction(action) &&

@@ -34,7 +34,7 @@ type Timestamps = Record<number, number>;
 interface InitialValues
   extends Omit<UpdateActionPayload, 'id' | 'editorState'>,
     Partial<TransformState> {
-  timeDiff: number;
+  duration: number;
   editorState?: string;
 }
 type Values = Required<InitialValues>;
@@ -84,9 +84,9 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
       initialValues={formatedInitialValues}
       onSubmit={handleSubmit}
       validate={values => {
-        if (values.timeDiff < 0) {
+        if (values.duration < -1) {
           return {
-            timeDiff: 'Difference must be greater than 0',
+            duration: 'Difference must be a positive number',
           };
         } else {
           return undefined;
@@ -138,19 +138,19 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
             >
               <TextField
                 {...textFieldProps}
-                name="timeDiff"
-                value={values.timeDiff}
+                name="duration"
+                value={values.duration}
                 onBlur={handleBlur}
                 onChange={handleChange}
-                label="Time diff"
+                label="Duration"
                 type="number"
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">ms</InputAdornment>
                   ),
                 }}
-                error={Boolean(errors.timeDiff)}
-                helperText={errors.timeDiff}
+                error={Boolean(errors.duration)}
+                helperText={errors.duration}
               />
               {(isScaleAction(action) || isSetTransformAction(action)) && (
                 <TextField
