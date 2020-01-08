@@ -28,6 +28,7 @@ import { Button, Editor, EditorControls, Tooltip } from 'components';
 import { EditorState } from 'draft-js';
 import { debounce } from 'lodash';
 import firebase from 'my-firebase';
+import { Gallery, galleryImageWidth } from 'pages';
 import panzoom, { PanZoom } from 'panzoom';
 import { equals } from 'ramda';
 import React from 'react';
@@ -523,7 +524,7 @@ const Canvas: React.FC<CanvasProps> = () => {
               style={{
                 transition: 'all 500ms ease-in-out',
                 overflow: 'hidden',
-                width: galleryOpen ? 300 : 0,
+                width: galleryOpen ? galleryImageWidth : 0,
                 whiteSpace: 'nowrap',
                 height: `calc(100vh - ${headerHeight +
                   controlsHeight +
@@ -532,7 +533,7 @@ const Canvas: React.FC<CanvasProps> = () => {
                   actionsTimelineHeight}px)`,
               }}
             >
-              Image gallery
+              <Gallery />
             </Paper>
           </Flex>
         </Flex>
