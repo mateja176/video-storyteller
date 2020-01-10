@@ -92,7 +92,7 @@ const verifyImage: Epic<
       return mobilenet$.pipe(
         switchMap(net => net.classify(image)),
         map(([{ className }]) => className),
-        switchMap(className =>
+        mergeMap(className =>
           ajax(
             `https://kgsearch.googleapis.com/v1/entities:search?query=${className.replace(
               / /g,
