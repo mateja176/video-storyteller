@@ -523,7 +523,7 @@ const Canvas: React.FC<CanvasProps> = () => {
             <Paper
               style={{
                 transition: 'all 500ms ease-in-out',
-                overflow: 'hidden',
+                overflowX: 'hidden',
                 width: galleryOpen ? galleryImageWidth : 0,
                 whiteSpace: 'nowrap',
                 height: `calc(100vh - ${headerHeight +
@@ -533,7 +533,7 @@ const Canvas: React.FC<CanvasProps> = () => {
                   actionsTimelineHeight}px)`,
               }}
             >
-              <Gallery />
+              <Gallery onMouseEnter={pause} onMouseLeave={resume} />
             </Paper>
           </Flex>
         </Flex>
