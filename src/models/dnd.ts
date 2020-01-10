@@ -6,18 +6,18 @@ export interface WithId {
   id: string;
 }
 
-export const draggables = ['Text'] as const;
+export const draggables = ['text'] as const;
 
 export type Draggable = typeof draggables[number];
 
-export const Draggables = toObject(draggables);
+export const draggable = toObject(draggables);
 
 export type WithInitialContent = Pick<EditorProps, 'editorState'>;
 
 export interface DropTextPayload extends WithId, WithInitialContent {}
 
 export const createDropText = createAction(
-  Draggables.Text,
+  draggable.text,
   action => (payload: DropTextPayload) => action(payload),
 );
 
