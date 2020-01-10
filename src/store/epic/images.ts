@@ -14,6 +14,7 @@ import {
   switchMap,
   tap,
   withLatestFrom,
+  last,
 } from 'rxjs/operators';
 import { EpicDependencies } from 'store/configureStore';
 import { getType } from 'typesafe-actions';
@@ -50,13 +51,12 @@ const upload: Epic<Action, UpdateProgressAction | SetSnackbarAction, State> = (
         dataUrl,
         'data_url',
         { customMetadata: { name, id } },
-      ),
+      ).pipe(last()),
     ),
-    map(({ bytesTransferred, totalBytes, metadata: { customMetadata } }) =>
+    map(({ metadata: { customMetadata } }) =>
       createUpdateProgress({
         id: customMetadata!.id,
-        uploadStatus:
-          bytesTransferred / totalBytes ? 'completed' : 'in progress',
+        uploadStatus: 'completed',
       }),
     ),
     catchError(({ message }) =>
