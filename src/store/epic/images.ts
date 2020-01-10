@@ -73,7 +73,7 @@ const removeUploadedImage: Epic<Action, RemoveImageAction> = action$ =>
     mergeMap(({ id }) => of(createRemoveImage(id))),
   );
 
-const verifyImage: Epic<
+export const verifyImage: Epic<
   Action,
   UpdateOneImageAction,
   State,
@@ -122,4 +122,4 @@ const verifyImage: Epic<
     }),
   );
 
-export default [upload, removeUploadedImage, verifyImage];
+export default [upload, removeUploadedImage];

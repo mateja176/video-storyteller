@@ -127,7 +127,7 @@ const Upload: FC<UploadProps> = ({
                   name,
                   dataUrl: String(reader.result),
                   uploadStatus: 'not started',
-                  verificationStatus: 'in progress',
+                  verificationStatus: 'completed',
                 });
               };
             });
