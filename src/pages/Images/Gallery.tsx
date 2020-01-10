@@ -1,37 +1,9 @@
-import firebase from 'my-firebase';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Box } from 'rebass';
-import { selectUid } from 'store';
-import urlJoin from 'url-join';
-
-export interface CustomMetadata {
-  name: string;
-  id: string;
-}
-
-export interface MetaData {
-  type: string;
-  bucket: string;
-  generation: string;
-  metageneration: string;
-  fullPath: string;
-  name: string;
-  size: number;
-  timeCreated: Date;
-  updated: Date;
-  md5Hash: string;
-  contentDisposition: string;
-  contentEncoding: string;
-  contentType: string;
-  customMetadata: CustomMetadata;
-}
-
-type DownloadUrl = string;
-
-interface WithDownloadUrl {
-  downloadUrl: DownloadUrl;
-}
+import { createFetchImages } from 'store';
+import { selectGalleryImages } from 'store/selectors/gallery';
+import { useActions } from 'utils';
 
 export const galleryImageWidth = 300;
 export const galleryImageHeight = 200;
@@ -45,43 +17,21 @@ export interface GalleryProps
   > {}
 
 const Gallery: React.FC<GalleryProps> = ({ onMouseEnter, onMouseLeave }) => {
-  const uid = useSelector(selectUid);
+  const { fetchImages } = useActions({
+    fetchImages: createFetchImages.request,
+  });
 
-  const [images, setImages] = React.useState<Array<MetaData & WithDownloadUrl>>(
-    [],
-  );
+  const images = useSelector(selectGalleryImages);
 
   React.useEffect(() => {
-    firebase
-      .storage()
-      .ref(urlJoin('images', uid))
-      .listAll()
-      .then(({ items }) => {
-        items.forEach(ref => {
-          ref.getMetadata().then((data: MetaData) => {
-            ref.getDownloadURL().then((downloadUrl: DownloadUrl) => {
-              setImages(currentImages =>
-                currentImages
-                  .concat({ ...data, downloadUrl })
-                  .sort((left, right) =>
-                    new Date(left.updated).getTime() <
-                    new Date(right.updated).getTime()
-                      ? 1
-                      : -1,
-                  ),
-              );
-            });
-          });
-        });
-      });
+    fetchImages();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Box p={spacing} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
       {images.map(({ name, customMetadata, downloadUrl }) => (
-        <Box mb={spacing}>
+        <Box mb={spacing} key={name}>
           <img
-            key={name}
             width={galleryImageWidth - 2 * spacing}
             src={downloadUrl}
             alt={customMetadata.name}
