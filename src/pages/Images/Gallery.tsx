@@ -64,7 +64,7 @@ const Gallery: React.FC<GalleryProps> = ({ onMouseEnter, onMouseLeave }) => {
                 currentImages
                   .concat({ ...data, downloadUrl })
                   .sort((left, right) =>
-                    new Date(left.updated).getTime() >
+                    new Date(left.updated).getTime() <
                     new Date(right.updated).getTime()
                       ? 1
                       : -1,
