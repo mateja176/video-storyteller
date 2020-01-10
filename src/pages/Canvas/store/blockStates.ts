@@ -1,7 +1,7 @@
 /* eslint-disable indent */
 
 import { ContentState, convertToRaw, RawDraftContentState } from 'draft-js';
-import { BlockState } from 'models';
+import { BlockState, WithId } from 'models';
 import { update } from 'ramda';
 import { createAction, PayloadAction } from 'typesafe-actions';
 import { Required } from 'utility-types';
@@ -43,8 +43,6 @@ export const createCreateAction = createAction(
     }),
 );
 export type CreateAction = ReturnType<typeof createCreateAction>;
-
-type WithId = Pick<BlockState, 'id'>;
 
 type UpdateBlockPayload = Required<Partial<BlockState>, 'id'>;
 export const createUpdateAction: (
