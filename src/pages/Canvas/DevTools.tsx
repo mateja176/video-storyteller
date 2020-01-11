@@ -60,7 +60,7 @@ const cudTypeBackgroundColorMap: Record<
   'update/renameImage': 'orange',
   'transform/scale/set': 'blue',
   'transform/position/set': 'gray',
-  'transform/set': 'dimgray',
+  'transform/set': 'brown',
 };
 
 const StoryMonitor = ({
@@ -388,7 +388,7 @@ const StoryMonitor = ({
                 <Card
                   style={{
                     background: color(cudTypeBackgroundColorMap[action.type])
-                      .alpha(isCurrentAction ? 0.5 : 0.2)
+                      .alpha(isCurrentAction ? 0.4 : 0.2)
                       .toString(),
                     width: cardWidth,
                     height: '100%',
