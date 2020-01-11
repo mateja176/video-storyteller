@@ -1,5 +1,3 @@
-import { convertFromRaw, EditorState } from 'draft-js';
-import { BlockState } from 'models';
 import { equals } from 'ramda';
 import { useEffect, useState } from 'react';
 import {
@@ -13,7 +11,7 @@ import {
 } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { createSelector, Selector } from 'reselect';
-import blockStates, { BlockStatesAction, RawBlockState } from './blockStates';
+import blockStates, { BlockStatesAction } from './blockStates';
 import transform, { TransformAction } from './transform';
 
 const actionReducerMap = {
@@ -37,19 +35,7 @@ const store = createStore(reducer, /* preloaded state */ composeEnhancers());
 
 export default store;
 
-export const convertFromRawBlockState = ({
-  editorState,
-  ...block
-}: RawBlockState): BlockState => ({
-  ...block,
-  // eslint-disable-next-line max-len
-  editorState: EditorState.moveSelectionToEnd(
-    EditorState.createWithContent(convertFromRaw(editorState)),
-  ),
-});
-
-export const selectBlockStates = (state: State) =>
-  state.blockStates.map<BlockState>(convertFromRawBlockState);
+export const selectBlockStates = (state: State) => state.blockStates;
 export const selectTransform = (state: State) => state.transform;
 export const selectScale = createSelector(
   selectTransform,

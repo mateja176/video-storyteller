@@ -3,11 +3,11 @@ import { Button } from 'components';
 import { convertFromRaw } from 'draft-js';
 import { Form, Formik } from 'formik';
 import { lowerCase } from 'lodash';
+import { ImageBlockState, TextBlockState, WithDropResult } from 'models';
 import { equals } from 'ramda';
 import React from 'react';
 import { Flex } from 'rebass';
 import { Action } from './store';
-import { UpdateAction } from './store/blockStates';
 import {
   initialState as initialTransformState,
   TransformState,
@@ -20,24 +20,27 @@ import {
   isSetTransformAction,
   isUpdateEditAction,
   isUpdateMoveAction,
+  isUpdateRenameImageAction,
 } from './utils';
-
-type UpdateActionPayload = UpdateAction['payload'];
 
 const textFieldProps = {
   variant: 'outlined',
   margin: 'dense',
 } as const;
 
-type Timestamps = Record<number, number>;
-
-interface InitialValues
-  extends Omit<UpdateActionPayload, 'id' | 'editorState'>,
-    Partial<TransformState> {
+interface InitialValues {
   duration: number;
-  editorState?: string;
 }
-type Values = Required<InitialValues>;
+type TextBlockPayload = TextBlockState['payload'];
+type ImageBlockPayload = ImageBlockState['payload'];
+interface Values
+  extends InitialValues,
+    WithDropResult,
+    TransformState,
+    Omit<TextBlockPayload, 'editorState'>,
+    Pick<ImageBlockPayload, 'name'> {
+  editorState: string;
+}
 
 export interface ActionCardFormProps {
   handleSubmit: (values: Values) => void;
@@ -54,13 +57,10 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
   id,
   action,
 }) => {
-  const formatedInitialValues = {
+  const formatedInitialValues: Values = {
     ...initialValues,
     left: isUpdateMoveAction(action) ? action.payload.left : 0,
     top: isUpdateMoveAction(action) ? action.payload.top : 0,
-    editorState: isUpdateEditAction(action)
-      ? convertFromRaw(action.payload.editorState).getPlainText()
-      : '',
     scale:
       isScaleAction(action) || isSetTransformAction(action)
         ? formatScale(action.payload.scale)
@@ -77,6 +77,10 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
       isScaleAction(action)
         ? formatCoordinate(action.payload.y)
         : initialTransformState.y,
+    editorState: isUpdateEditAction(action)
+      ? convertFromRaw(action.payload.payload.editorState).getPlainText()
+      : '',
+    name: isUpdateRenameImageAction(action) ? action.payload.payload.name : '',
   };
 
   return (
@@ -177,6 +181,21 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
                   onBlur={handleBlur}
                   onChange={handleChange}
                   value={values.editorState}
+                  multiline
+                  rows={3}
+                  rowsMax={3}
+                  disabled
+                />
+              )}
+              {isUpdateRenameImageAction(action) && (
+                <TextField
+                  {...textFieldProps}
+                  type="text"
+                  name="name"
+                  label="Image Name"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.name}
                   multiline
                   rows={3}
                   rowsMax={3}

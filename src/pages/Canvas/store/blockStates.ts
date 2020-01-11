@@ -1,68 +1,70 @@
 /* eslint-disable indent */
 
-import { ContentState, convertToRaw, RawDraftContentState } from 'draft-js';
-import { BlockState, WithId } from 'models';
+import {
+  BlockState,
+  BlockStates,
+  TextBlockState,
+  ImageBlockState,
+  WithId,
+} from 'models';
 import { update } from 'ramda';
-import { createAction, PayloadAction } from 'typesafe-actions';
-import { Required } from 'utility-types';
+import { Tuple } from 'ts-toolbelt';
+import { createAction } from 'typesafe-actions';
 import { createReducer, toObject } from 'utils';
-import { v4 } from 'uuid';
 
-export type RawBlockState = Omit<BlockState, 'editorState'> & {
-  editorState: RawDraftContentState;
-};
-export type RawBlockStates = RawBlockState[];
+export const initialState: BlockStates = [];
 
-export const convertToRawBlockState = <
-  T extends Pick<BlockState, 'editorState'>
->({
-  editorState,
-  ...block
-}: T) => ({
-  ...block,
-  editorState: convertToRaw(editorState.getCurrentContent()),
-});
+// * the name "update" was chosen over "set" for mnemonic purposes
+export const updateActionTypes = [
+  'update/move',
+  'update/editText',
+  'update/renameImage',
+] as const;
+export type UpdateActionTypes = typeof updateActionTypes;
+export type UpdateActionType = UpdateActionTypes[number];
 
-export const initialState: RawBlockStates = [];
-
-export const cudActionTypes = ['create', 'update', 'delete'] as const;
+export const createAndDeleteActionTypes = ['create', 'delete'] as const;
+export type CudActionTypes = Tuple.Concat<
+  typeof createAndDeleteActionTypes,
+  UpdateActionTypes
+>;
+export const cudActionTypes = [
+  ...createAndDeleteActionTypes,
+  ...updateActionTypes,
+] as CudActionTypes;
 export const cudActionType = toObject(cudActionTypes);
-export type CudActionTypes = typeof cudActionTypes;
 export type CudActionType = CudActionTypes[number];
 
 export const createCreateAction = createAction(
   cudActionType.create,
-  action => ({
-    editorState,
-    ...payload
-  }: Omit<BlockState, 'id' | 'editorState'> & { editorState: string }) =>
-    action({
-      ...payload,
-      id: v4(),
-      editorState: convertToRaw(ContentState.createFromText(editorState)),
-    }),
+  action => (payload: BlockState) => action(payload),
 );
 export type CreateAction = ReturnType<typeof createCreateAction>;
 
-type UpdateBlockPayload = Required<Partial<BlockState>, 'id'>;
-export const createUpdateAction: (
-  payload: UpdateBlockPayload,
-) => PayloadAction<
-  typeof cudActionType.update,
-  Partial<RawBlockState> & WithId
-> = createAction(
-  cudActionType.update,
-  action => ({ editorState, ...rest }: UpdateBlockPayload) =>
-    editorState
-      ? action(
-          convertToRawBlockState({
-            ...rest,
-            editorState,
-          }),
-        )
-      : action(rest),
+export const createUpdateMove = createAction(
+  cudActionType['update/move'],
+  action => (payload: BlockState) => action(payload),
 );
-export type UpdateAction = ReturnType<typeof createUpdateAction>;
+export type UpdateMoveAction = ReturnType<typeof createUpdateMove>;
+
+export const createUpdateEditText = createAction(
+  cudActionType['update/editText'],
+  action => (payload: TextBlockState) => action(payload),
+);
+export type UpdateEditTextAction = ReturnType<typeof createUpdateEditText>;
+
+export const createUpdateRenameImage = createAction(
+  cudActionType['update/renameImage'],
+  action => (payload: ImageBlockState) => action(payload),
+);
+export type UpdateRenameImageAction = ReturnType<
+  typeof createUpdateRenameImage
+>;
+
+export type UpdateAction =
+  | UpdateMoveAction
+  | UpdateEditTextAction
+  | UpdateRenameImageAction;
 
 export const createDeleteAction = createAction(
   cudActionType.delete,
@@ -76,16 +78,20 @@ export type CudActions = CudAction[];
 
 export type BlockStatesAction = CudAction;
 
+const updateState = (state: BlockStates, { payload }: UpdateAction) => {
+  const blockIndex = state.findIndex(block => block.id === payload.id);
+
+  const updatedBlock = { ...state[blockIndex], ...payload };
+
+  const updatedBlocks = update(blockIndex, updatedBlock, state);
+
+  return updatedBlocks;
+};
+
 export default createReducer(initialState)<BlockStatesAction>({
   create: (state, { payload }) => state.concat(payload),
-  update: (state, { payload }) => {
-    const blockIndex = state.findIndex(block => block.id === payload.id);
-
-    const updatedBlock = { ...state[blockIndex], ...payload };
-
-    const updatedBlocks = update(blockIndex, updatedBlock, state);
-
-    return updatedBlocks;
-  },
   delete: (state, { payload }) => state.filter(({ id }) => id !== payload.id),
+  'update/move': updateState,
+  'update/editText': updateState,
+  'update/renameImage': updateState,
 });

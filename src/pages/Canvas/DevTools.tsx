@@ -22,7 +22,13 @@ import { createDevTools } from 'redux-devtools';
 import ActionCardForm from './ActionCardForm';
 import { CanvasContext, initialHoveredBlockId } from './CanvasContext';
 import store, { Action } from './store';
-import { CudAction, cudActionType, UpdateAction } from './store/blockStates';
+import {
+  CudAction,
+  cudActionType,
+  UpdateMoveAction,
+  UpdateRenameImageAction,
+} from './store/blockStates';
+import { SetPositionAction, SetScaleAction } from './store/transform';
 import {
   ActionCreators,
   ActionWithId,
@@ -33,6 +39,7 @@ import {
   isScaleAction,
   isSetTransformAction,
   isUpdateMoveAction,
+  isUpdateRenameImageAction,
   MonitorProps,
 } from './utils';
 
@@ -47,11 +54,13 @@ const cudTypeBackgroundColorMap: Record<
   React.CSSProperties['background']
 > = {
   create: 'green',
-  update: 'yellow',
   delete: 'red',
-  'transform/scale/set': 'gray',
+  'update/move': 'yellow',
+  'update/editText': 'purple',
+  'update/renameImage': 'orange',
+  'transform/scale/set': 'blue',
   'transform/position/set': 'gray',
-  'transform/set': 'gray',
+  'transform/set': 'dimgray',
 };
 
 const StoryMonitor = ({
@@ -507,11 +516,27 @@ const StoryMonitor = ({
                         duration: newDuration,
                         left,
                         top,
+                        editorState,
+                        name,
                         ...transform
                       }) => {
-                        setDurations(
-                          update(i, { id, value: newDuration }, durations),
-                        );
+                        if (duration !== newDuration) {
+                          setDurations(
+                            update(i, { id, value: newDuration }, durations),
+                          );
+                        }
+
+                        if (isUpdateRenameImageAction(action)) {
+                          store.dispatch({
+                            ...action,
+                            payload: {
+                              ...action.payload,
+                              name,
+                            },
+                          } as UpdateRenameImageAction);
+
+                          deleteAction(id);
+                        }
 
                         if (
                           isUpdateMoveAction(action) &&
@@ -521,7 +546,7 @@ const StoryMonitor = ({
                           store.dispatch({
                             ...action,
                             payload: { ...action.payload, left, top },
-                          } as UpdateAction);
+                          } as UpdateMoveAction);
 
                           deleteAction(id);
                         }
@@ -544,7 +569,7 @@ const StoryMonitor = ({
                             store.dispatch({
                               ...action,
                               payload: newTransform,
-                            } as Action);
+                            } as SetScaleAction);
 
                             deleteAction(id);
                           }
@@ -559,7 +584,7 @@ const StoryMonitor = ({
                             store.dispatch({
                               ...action,
                               payload: position,
-                            } as Action);
+                            } as SetPositionAction);
 
                             deleteAction(id);
                           }

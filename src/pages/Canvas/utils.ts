@@ -1,8 +1,6 @@
-import { isNil } from 'ramda';
 import { Dispatch } from 'redux';
 // @ts-ignore
 import { ActionCreators as InstrumentActionCreators } from 'redux-devtools-instrument';
-import { Required } from 'utility-types';
 import { toObject } from 'utils';
 import { Action, State } from './store';
 import {
@@ -10,6 +8,10 @@ import {
   CudActionType,
   cudActionTypes,
   UpdateAction,
+  UpdateActionType,
+  updateActionTypes,
+  UpdateEditTextAction,
+  UpdateRenameImageAction,
 } from './store/blockStates';
 import {
   PositionAction,
@@ -51,27 +53,18 @@ export const isCudAction = (action: Action): action is CudAction =>
   isCudActionType(action.type);
 
 export const isUpdateAction = (action: Action): action is UpdateAction =>
-  action.type === 'update';
+  updateActionTypes.includes(action.type as UpdateActionType);
 
-export type UpdateActionWith<
-  RequiredKeys extends keyof UpdateAction['payload']
-> = UpdateAction & {
-  payload: Required<UpdateAction['payload'], RequiredKeys>;
-};
+export const isUpdateMoveAction = (action: Action): action is UpdateAction =>
+  action.type === 'update/move';
 
-export type UpdateMoveAction = UpdateActionWith<'top' | 'left'>;
-export const isUpdateMoveAction = (
-  action: Action,
-): action is UpdateMoveAction =>
-  isUpdateAction(action) &&
-  !isNil(action.payload.left) &&
-  !isNil(action.payload.top);
-
-export type UpdateEditAction = UpdateActionWith<'editorState'>;
 export const isUpdateEditAction = (
   action: Action,
-): action is UpdateEditAction =>
-  isUpdateAction(action) && !isNil(action.payload.editorState);
+): action is UpdateEditTextAction => action.type === 'update/editText';
+
+export const isUpdateRenameImageAction = (
+  action: Action,
+): action is UpdateRenameImageAction => action.type === 'update/renameImage';
 
 export const isTransformActionType = (
   type: string,
