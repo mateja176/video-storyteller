@@ -4,6 +4,7 @@ import { Box } from 'rebass';
 import { createFetchImages } from 'store';
 import { selectGalleryImages } from 'store/selectors/gallery';
 import { useActions } from 'utils';
+import ImageBlock from './ImageBlock';
 
 export const galleryImageWidth = 300;
 export const galleryImageHeight = 200;
@@ -30,13 +31,13 @@ const Gallery: React.FC<GalleryProps> = ({ onMouseEnter, onMouseLeave }) => {
   return (
     <Box p={spacing} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
       {images.map(({ name, customMetadata, downloadUrl }) => (
-        <Box mb={spacing} key={name}>
-          <img
-            width={galleryImageWidth - 2 * spacing}
-            src={downloadUrl}
-            alt={customMetadata.name}
-          />
-        </Box>
+        <ImageBlock
+          key={name}
+          mb={spacing}
+          width={galleryImageWidth - 2 * spacing}
+          src={downloadUrl}
+          alt={customMetadata.name}
+        />
       ))}
     </Box>
   );

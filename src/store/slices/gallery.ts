@@ -1,3 +1,5 @@
+/* eslint-disable indent */
+
 import { ActionType, createAction, createAsyncAction } from 'typesafe-actions';
 import { createReducer } from 'utils';
 
@@ -69,13 +71,16 @@ export const gallery = createReducer(initialGalleryState)<GalleryReducerAction>(
   {
     'gallery/images/add': (state, { payload }) => ({
       ...state,
-      images: state.images
-        .concat(payload)
-        .sort((left, right) =>
-          new Date(left.updated).getTime() < new Date(right.updated).getTime()
-            ? 1
-            : -1,
-        ),
+      images: state.images.find(({ name }) => name === payload.name)
+        ? state.images
+        : state.images
+            .concat(payload)
+            .sort((left, right) =>
+              new Date(left.updated).getTime() <
+              new Date(right.updated).getTime()
+                ? 1
+                : -1,
+            ),
     }),
   },
 );

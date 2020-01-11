@@ -32,11 +32,13 @@ import {
   EditorState,
 } from 'draft-js';
 import { debounce } from 'lodash';
+import { draggables, DropAction } from 'models';
 import firebase from 'my-firebase';
 import { Gallery, galleryImageWidth } from 'pages';
 import panzoom, { PanZoom } from 'panzoom';
 import { equals } from 'ramda';
 import React from 'react';
+import { useDrop } from 'react-dnd';
 import Dropzone from 'react-dropzone';
 import { useSelector as useStoreSelector } from 'react-redux';
 import { Rnd } from 'react-rnd';
@@ -60,10 +62,11 @@ import store, {
   useSelector,
 } from './store';
 import {
+  CreateAction,
   createCreateAction,
   createDeleteAction,
-  createUpdateMove,
   createUpdateEditText,
+  createUpdateMove,
 } from './store/blockStates';
 import { createSetPosition, createSetScale } from './store/transform';
 
@@ -117,6 +120,11 @@ const Canvas: React.FC<CanvasProps> = () => {
   });
 
   const blockStates = useSelector(selectBlockStates);
+
+  const [, dropRef] = useDrop<DropAction, CreateAction, void>({
+    accept: [...draggables],
+    drop: action => createBlockState({ ...action, id: v4(), top: 0, left: 0 }),
+  });
 
   // eslint-disable-next-line max-len
   const [focusedEditorState, setFocusedEditorState] = React.useState<
@@ -460,117 +468,119 @@ const Canvas: React.FC<CanvasProps> = () => {
           <Divider />
         </Box>
         <Flex height="100%" style={{ overflow: 'hidden' }}>
-          <div ref={canvasRef}>
-            {blockStates.map(blockState => {
-              const { id, top, left } = blockState;
+          <Box ref={dropRef} flex={1}>
+            <div ref={canvasRef}>
+              {blockStates.map(blockState => {
+                const { id, top, left } = blockState;
 
-              return (
-                <Rnd
-                  key={id}
-                  scale={scale}
-                  position={{
-                    x: left,
-                    y: top,
-                  }}
-                  style={{
-                    overflow: 'hidden',
-                    border:
-                      hoveredBlockId === id
-                        ? `1px solid ${theme.palette.primary.dark}`
-                        : 'none',
-                    display: 'inline-block',
-                    padding: 15,
-                    transition: playing ? 'all 500ms ease-in-out' : 'none',
-                  }}
-                  onResizeStart={pause}
-                  onDragStart={pause}
-                  onResizeStop={resume}
-                  onDragStop={(e, dragStopEvent) => {
-                    const newTop = dragStopEvent.y;
-                    const newLeft = dragStopEvent.x;
+                return (
+                  <Rnd
+                    key={id}
+                    scale={scale}
+                    position={{
+                      x: left,
+                      y: top,
+                    }}
+                    style={{
+                      overflow: 'hidden',
+                      border:
+                        hoveredBlockId === id
+                          ? `1px solid ${theme.palette.primary.dark}`
+                          : 'none',
+                      display: 'inline-block',
+                      padding: 15,
+                      transition: playing ? 'all 500ms ease-in-out' : 'none',
+                    }}
+                    onResizeStart={pause}
+                    onDragStart={pause}
+                    onResizeStop={resume}
+                    onDragStop={(e, dragStopEvent) => {
+                      const newTop = dragStopEvent.y;
+                      const newLeft = dragStopEvent.x;
 
-                    updateMove({
-                      ...blockState,
-                      top: newTop,
-                      left: newLeft,
-                    });
+                      updateMove({
+                        ...blockState,
+                        top: newTop,
+                        left: newLeft,
+                      });
 
-                    resume();
-                  }}
-                  disableDragging={focusedEditorId === id || disableDragging}
-                  onMouseDown={() => {
-                    if (deleteModeOn) {
-                      deleteBlockState({ id });
-                      setDeleteModeOn(false);
-                    }
-                  }}
-                >
-                  {(() => {
-                    switch (blockState.type) {
-                      case 'text': {
-                        const {
-                          payload: { editorState },
-                        } = blockState;
+                      resume();
+                    }}
+                    disableDragging={focusedEditorId === id || disableDragging}
+                    onMouseDown={() => {
+                      if (deleteModeOn) {
+                        deleteBlockState({ id });
+                        setDeleteModeOn(false);
+                      }
+                    }}
+                  >
+                    {(() => {
+                      switch (blockState.type) {
+                        case 'text': {
+                          const {
+                            payload: { editorState },
+                          } = blockState;
 
-                        return (
-                          <Editor
-                            editorState={
-                              focusedEditorId === id
-                                ? focusedEditorState
-                                : EditorState.createWithContent(
+                          return (
+                            <Editor
+                              editorState={
+                                focusedEditorId === id
+                                  ? focusedEditorState
+                                  : EditorState.createWithContent(
+                                      convertFromRaw(editorState),
+                                    )
+                              }
+                              setEditorState={setFocusedEditorState}
+                              onFocus={() => {
+                                setFocusedEditorId(id);
+
+                                setFocusedEditorState(
+                                  EditorState.createWithContent(
                                     convertFromRaw(editorState),
-                                  )
-                            }
-                            setEditorState={setFocusedEditorState}
-                            onFocus={() => {
-                              setFocusedEditorId(id);
-
-                              setFocusedEditorState(
-                                EditorState.createWithContent(
-                                  convertFromRaw(editorState),
-                                ),
-                              );
-                            }}
-                            onBlur={() => {
-                              setFocusedEditorId('');
-
-                              updateEditText({
-                                ...blockState,
-                                payload: {
-                                  ...blockState.payload,
-                                  editorState: convertToRaw(
-                                    focusedEditorState.getCurrentContent(),
                                   ),
-                                },
-                              });
-                            }}
-                            onMouseEnter={() => {
-                              setHoveredBlockId(id);
-                              setDisableDragging(true);
-                            }}
-                            onMouseLeave={() => {
-                              setHoveredBlockId(initialHoveredBlockId);
-                              setDisableDragging(false);
-                            }}
-                            cursor={deleteModeOn ? 'not-allowed' : 'text'}
-                          />
-                        );
-                      }
-                      case 'image': {
-                        const {
-                          payload: { url, name },
-                        } = blockState;
+                                );
+                              }}
+                              onBlur={() => {
+                                setFocusedEditorId('');
 
-                        return <img src={url} alt={name} />;
+                                updateEditText({
+                                  ...blockState,
+                                  payload: {
+                                    ...blockState.payload,
+                                    editorState: convertToRaw(
+                                      focusedEditorState.getCurrentContent(),
+                                    ),
+                                  },
+                                });
+                              }}
+                              onMouseEnter={() => {
+                                setHoveredBlockId(id);
+                                setDisableDragging(true);
+                              }}
+                              onMouseLeave={() => {
+                                setHoveredBlockId(initialHoveredBlockId);
+                                setDisableDragging(false);
+                              }}
+                              cursor={deleteModeOn ? 'not-allowed' : 'text'}
+                            />
+                          );
+                        }
+                        case 'image': {
+                          const {
+                            payload: { url, name },
+                          } = blockState;
+
+                          return <img src={url} alt={name} draggable={false} />;
+                        }
+                        default:
+                          return null;
                       }
-                      default:
-                        return null;
-                    }
-                  })()}
-                </Rnd>
-              );
-            })}
-          </div>
+                    })()}
+                  </Rnd>
+                );
+              })}
+            </div>
+          </Box>
           <Flex ml="auto">
             <Divider orientation="vertical" />
             <Paper
