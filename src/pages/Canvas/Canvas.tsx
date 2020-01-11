@@ -70,17 +70,23 @@ import {
 } from './store/blockStates';
 import { createSetPosition, createSetScale } from './store/transform';
 
-const headerHeight = 76;
-
 const transitionDuration = 500;
 
-const controlsHeight = 50;
+const headerHeight = 76;
+
+const controlsHeightWithoutDivider = 50;
+const controlsHeight = controlsHeightWithoutDivider + 1;
+
+const headerAndControlsHeight = headerHeight + controlsHeight;
 
 const actionsTimelineHeight = 300;
 
+const leftDrawerWidthWithoutDivider = 55;
+const leftDrawerWidth = leftDrawerWidthWithoutDivider + 1;
+
 const useStyles = makeStyles(theme => ({
   drawer: {
-    width: theme.spacing(7),
+    width: leftDrawerWidthWithoutDivider,
   },
   paper: {
     position: 'static',
@@ -123,7 +129,15 @@ const Canvas: React.FC<CanvasProps> = () => {
 
   const [, dropRef] = useDrop<DropAction, CreateAction, void>({
     accept: [...draggables],
-    drop: action => createBlockState({ ...action, id: v4(), top: 0, left: 0 }),
+    drop: (action, monitor) => {
+      const offset = monitor.getSourceClientOffset() || { x: 0, y: 0 };
+      return createBlockState({
+        ...action,
+        id: v4(),
+        left: offset.x - leftDrawerWidth,
+        top: offset.y - headerAndControlsHeight,
+      });
+    },
   });
 
   // eslint-disable-next-line max-len
@@ -393,7 +407,7 @@ const Canvas: React.FC<CanvasProps> = () => {
           }}
         >
           {!theatricalMode && (
-            <Flex style={{ minHeight: controlsHeight }}>
+            <Flex style={{ minHeight: controlsHeightWithoutDivider }}>
               {focusedEditorId && (
                 <EditorControls
                   editorState={focusedEditorState}
@@ -488,7 +502,7 @@ const Canvas: React.FC<CanvasProps> = () => {
                           ? `1px solid ${theme.palette.primary.dark}`
                           : 'none',
                       display: 'inline-block',
-                      padding: 15,
+                      padding: blockState.type === 'text' ? 15 : 0,
                       transition: playing ? 'all 500ms ease-in-out' : 'none',
                     }}
                     onResizeStart={pause}
@@ -570,7 +584,13 @@ const Canvas: React.FC<CanvasProps> = () => {
                             payload: { url, name },
                           } = blockState;
 
-                          return <img src={url} alt={name} draggable={false} />;
+                          return (
+                            <img
+                              src={url}
+                              alt={name}
+                              draggable={false}
+                            />
+                          );
                         }
                         default:
                           return null;
@@ -589,9 +609,7 @@ const Canvas: React.FC<CanvasProps> = () => {
                 overflowX: 'hidden',
                 width: galleryOpen ? galleryImageWidth : 0,
                 whiteSpace: 'nowrap',
-                height: `calc(100vh - ${headerHeight +
-                  controlsHeight +
-                  1 +
+                height: `calc(100vh - ${headerAndControlsHeight +
                   1 +
                   actionsTimelineHeight}px)`,
               }}
@@ -605,7 +623,7 @@ const Canvas: React.FC<CanvasProps> = () => {
           <Paper
             style={{
               height: storyMonitorOpen ? actionsTimelineHeight : 0,
-              width: 'calc(100vw - 56px)',
+              width: `calc(100vw - ${leftDrawerWidth}px)`,
               transition: 'height 500ms ease-in-out',
               overflow: 'hidden',
               marginTop: 'auto',
