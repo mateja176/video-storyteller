@@ -51,6 +51,8 @@ export interface GenericBlockState<
   Type extends Draggables,
   Payload extends DropPayload
 > extends WithId, WithDropResult {
+  width?: number;
+  height?: number;
   type: Type;
   payload: Payload;
 }

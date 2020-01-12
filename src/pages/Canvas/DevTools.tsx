@@ -56,6 +56,7 @@ const cudTypeBackgroundColorMap: Record<
   create: 'green',
   delete: 'red',
   'update/move': 'yellow',
+  'update/resize': 'pink',
   'update/editText': 'purple',
   'update/renameImage': 'orange',
   'transform/scale/set': 'blue',

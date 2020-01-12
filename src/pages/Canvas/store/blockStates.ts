@@ -3,8 +3,8 @@
 import {
   BlockState,
   BlockStates,
-  TextBlockState,
   ImageBlockState,
+  TextBlockState,
   WithId,
 } from 'models';
 import { update } from 'ramda';
@@ -17,6 +17,7 @@ export const initialState: BlockStates = [];
 // * the name "update" was chosen over "set" for mnemonic purposes
 export const updateActionTypes = [
   'update/move',
+  'update/resize',
   'update/editText',
   'update/renameImage',
 ] as const;
@@ -47,6 +48,12 @@ export const createUpdateMove = createAction(
 );
 export type UpdateMoveAction = ReturnType<typeof createUpdateMove>;
 
+export const createUpdateResize = createAction(
+  cudActionType['update/resize'],
+  action => (payload: Required<BlockState>) => action(payload),
+);
+export type UpdateResizeAction = ReturnType<typeof createUpdateResize>;
+
 export const createUpdateEditText = createAction(
   cudActionType['update/editText'],
   action => (payload: TextBlockState) => action(payload),
@@ -63,6 +70,7 @@ export type UpdateRenameImageAction = ReturnType<
 
 export type UpdateAction =
   | UpdateMoveAction
+  | UpdateResizeAction
   | UpdateEditTextAction
   | UpdateRenameImageAction;
 
@@ -92,6 +100,7 @@ export default createReducer(initialState)<BlockStatesAction>({
   create: (state, { payload }) => state.concat(payload),
   delete: (state, { payload }) => state.filter(({ id }) => id !== payload.id),
   'update/move': updateState,
+  'update/resize': updateState,
   'update/editText': updateState,
   'update/renameImage': updateState,
 });

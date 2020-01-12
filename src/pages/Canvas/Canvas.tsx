@@ -67,6 +67,7 @@ import {
   createDeleteAction,
   createUpdateEditText,
   createUpdateMove,
+  createUpdateResize,
 } from './store/blockStates';
 import { createSetPosition, createSetScale } from './store/transform';
 import TextBlock from './TextBlock';
@@ -149,12 +150,14 @@ const Canvas: React.FC<CanvasProps> = () => {
     deleteBlockState,
     updateMove,
     updateEditText,
+    updateResize,
   } = useActions({
     setScale: createSetScale,
     setPosition: createSetPosition,
     createBlockState: createCreateAction,
     deleteBlockState: createDeleteAction,
     updateMove: createUpdateMove,
+    updateResize: createUpdateResize,
     updateEditText: createUpdateEditText,
   });
 
@@ -531,12 +534,13 @@ const Canvas: React.FC<CanvasProps> = () => {
           <Box ref={dropRef} flex={1}>
             <div ref={canvasRef}>
               {blockStates.map(blockState => {
-                const { id, top, left } = blockState;
+                const { id, top, left, width, height } = blockState;
 
                 return (
                   <Rnd
                     key={id}
                     scale={scale}
+                    size={width && height ? { width, height } : undefined}
                     position={{
                       x: left,
                       y: top,
@@ -553,7 +557,18 @@ const Canvas: React.FC<CanvasProps> = () => {
                     }}
                     onResizeStart={pause}
                     onDragStart={pause}
-                    onResizeStop={resume}
+                    onResizeStop={(e, dir, elementRef, delta, { x, y }) => {
+                      resume();
+
+                      const clientRect = elementRef.getBoundingClientRect();
+                      updateResize({
+                        ...blockState,
+                        top: y,
+                        left: x,
+                        width: clientRect.width,
+                        height: clientRect.height,
+                      });
+                    }}
                     onDragStop={(e, dragStopEvent) => {
                       const newTop = dragStopEvent.y;
                       const newLeft = dragStopEvent.x;
