@@ -332,6 +332,18 @@ const Canvas: React.FC<CanvasProps> = () => {
               </ListItemIcon>
             </Tooltip>
           </ListItem>
+          <ListItem
+            button
+            onClick={() => {
+              setDeleteModeOn(!deleteModeOn);
+            }}
+          >
+            <Tooltip title="Toggle delete mode">
+              <ListItemIcon>
+                <Delete color={deleteModeOn ? 'secondary' : 'inherit'} />
+              </ListItemIcon>
+            </Tooltip>
+          </ListItem>
           <ListItem button onClick={toggleStoryMonitorOpen}>
             <Tooltip title="Toggle open Story Monitor">
               <ListItemIcon>
@@ -343,18 +355,6 @@ const Canvas: React.FC<CanvasProps> = () => {
             <Tooltip title="Toggle open audio upload">
               <ListItemIcon>
                 <Audiotrack color={audioUploadOpen ? 'secondary' : 'inherit'} />
-              </ListItemIcon>
-            </Tooltip>
-          </ListItem>
-          <ListItem
-            button
-            onClick={() => {
-              setDeleteModeOn(!deleteModeOn);
-            }}
-          >
-            <Tooltip title="Toggle delete mode">
-              <ListItemIcon>
-                <Delete color={deleteModeOn ? 'secondary' : 'inherit'} />
               </ListItemIcon>
             </Tooltip>
           </ListItem>
