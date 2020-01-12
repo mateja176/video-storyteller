@@ -40,7 +40,7 @@ import React from 'react';
 import { useDrop } from 'react-dnd';
 import Dropzone from 'react-dropzone';
 import { useSelector as useStoreSelector } from 'react-redux';
-import { Rnd } from 'react-rnd';
+import { ResizeEnable, Rnd } from 'react-rnd';
 import { Box, Flex } from 'rebass';
 import { putString } from 'rxfire/storage';
 import {
@@ -86,6 +86,17 @@ const headerAndControlsHeight = headerHeight + controlsHeight;
 const actionsTimelineHeight = 300;
 
 const leftDrawerWidth = 55;
+
+const resizeDisabler: ResizeEnable = {
+  bottom: false,
+  top: false,
+  right: false,
+  left: false,
+  topLeft: false,
+  topRight: false,
+  bottomLeft: false,
+  bottomRight: false,
+};
 
 const RightDrawer: React.FC<Pick<React.CSSProperties, 'height'> & {
   open: boolean;
@@ -564,6 +575,10 @@ const Canvas: React.FC<CanvasProps> = () => {
                         setDeleteModeOn(false);
                       }
                     }}
+                    lockAspectRatio={blockState.type === 'image'}
+                    enableResizing={
+                      blockState.type === 'text' ? resizeDisabler : undefined
+                    }
                   >
                     {(() => {
                       switch (blockState.type) {
@@ -629,7 +644,21 @@ const Canvas: React.FC<CanvasProps> = () => {
                             payload: { url, name },
                           } = blockState;
 
-                          return <img src={url} alt={name} draggable={false} />;
+                          return (
+                            <img
+                              src={url}
+                              alt={name}
+                              draggable={false}
+                              width="100%"
+                              height="100%"
+                              onMouseEnter={() => {
+                                setHoveredBlockId(id);
+                              }}
+                              onMouseLeave={() => {
+                                setHoveredBlockId(initialHoveredBlockId);
+                              }}
+                            />
+                          );
                         }
                         default:
                           return null;
