@@ -238,16 +238,16 @@ const Canvas: React.FC<CanvasProps> = () => {
     resume();
   }, [focusedEditorId, disableDragging]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const [storyMonitorOpen, setStoryMonitorOpen] = React.useState(true);
+  const [actionsTimelineOpen, setActionsTimelineOpen] = React.useState(true);
 
   React.useEffect(() => {
     if (theatricalMode) {
-      setStoryMonitorOpen(false);
+      setActionsTimelineOpen(false);
     }
   }, [theatricalMode]);
 
-  const toggleStoryMonitorOpen = () => {
-    setStoryMonitorOpen(!storyMonitorOpen);
+  const toggleActionsTimelineOpen = () => {
+    setActionsTimelineOpen(!actionsTimelineOpen);
   };
 
   const [hoveredBlockId, setHoveredBlockId] = React.useState(
@@ -344,10 +344,10 @@ const Canvas: React.FC<CanvasProps> = () => {
               </ListItemIcon>
             </Tooltip>
           </ListItem>
-          <ListItem button onClick={toggleStoryMonitorOpen}>
-            <Tooltip title="Toggle open Story Monitor">
+          <ListItem button onClick={toggleActionsTimelineOpen}>
+            <Tooltip title="Toggle open actions timeline">
               <ListItemIcon>
-                <Build color={storyMonitorOpen ? 'secondary' : 'inherit'} />
+                <Build color={actionsTimelineOpen ? 'secondary' : 'inherit'} />
               </ListItemIcon>
             </Tooltip>
           </ListItem>
@@ -606,7 +606,7 @@ const Canvas: React.FC<CanvasProps> = () => {
                 // * 2px less presumably because of the paper's shadow
                 height: `calc(100vh - ${2 +
                   (theatricalMode ? 0 : headerAndControlsHeight) +
-                  (storyMonitorOpen ? actionsTimelineHeight : 0)}px)`,
+                  (actionsTimelineOpen ? actionsTimelineHeight : 0)}px)`,
               }}
             >
               <Gallery onMouseEnter={pause} onMouseLeave={resume} />
@@ -616,7 +616,7 @@ const Canvas: React.FC<CanvasProps> = () => {
         <Box style={{ borderTop: dividingBorder }}>
           <Paper
             style={{
-              height: storyMonitorOpen ? actionsTimelineHeight : 0,
+              height: actionsTimelineOpen ? actionsTimelineHeight : 0,
               width: `calc(100vw - ${leftDrawerWidth}px)`,
               transition: 'height 500ms ease-in-out',
               overflow: 'hidden',
