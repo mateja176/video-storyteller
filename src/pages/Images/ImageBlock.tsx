@@ -20,7 +20,11 @@ const ImageBlock: React.FC<ImageBlockProps> = ({ mb, ...props }) => {
   });
 
   return (
-    <Box ref={dragRef} mb={mb} style={{ border: dividingBorder }}>
+    <Box
+      ref={dragRef}
+      mb={mb}
+      style={{ border: dividingBorder, cursor: 'grab' }}
+    >
       {/* eslint-disable-next-line jsx-a11y/alt-text */}
       <img
         {...(props as React.DetailedHTMLProps<

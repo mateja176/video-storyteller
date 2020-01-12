@@ -31,7 +31,7 @@ import {
   EditorState,
 } from 'draft-js';
 import { debounce } from 'lodash';
-import { draggables, DropAction } from 'models';
+import { draggable, draggables, DropAction } from 'models';
 import firebase from 'my-firebase';
 import { Gallery, galleryImageWidth } from 'pages';
 import panzoom, { PanZoom } from 'panzoom';
@@ -69,6 +69,11 @@ import {
   createUpdateMove,
 } from './store/blockStates';
 import { createSetPosition, createSetScale } from './store/transform';
+import TextBlock from './TextBlock';
+
+const initialEditorState = EditorState.createWithContent(
+  ContentState.createFromText('Hello World'),
+);
 
 const transitionDuration = 500;
 
@@ -81,6 +86,25 @@ const headerAndControlsHeight = headerHeight + controlsHeight;
 const actionsTimelineHeight = 300;
 
 const leftDrawerWidth = 55;
+
+const RightDrawer: React.FC<Pick<React.CSSProperties, 'height'> & {
+  open: boolean;
+}> = ({ open, height, children }) => (
+  <Paper
+    style={{
+      position: 'absolute',
+      right: 0,
+      transition: 'all 500ms ease-in-out',
+      overflowX: 'hidden',
+      width: open ? galleryImageWidth : 0,
+      whiteSpace: 'nowrap',
+      zIndex: 1,
+      height,
+    }}
+  >
+    {children}
+  </Paper>
+);
 
 const useStyles = makeStyles(theme => ({
   drawer: {
@@ -279,7 +303,12 @@ const Canvas: React.FC<CanvasProps> = () => {
 
   const [isFullscreen, setIsFullScreen] = React.useState(false);
 
-  const [galleryOpen, setGalleryOpen] = React.useState(false);
+  const [rightDrawerOccupant, setRightDrawerOccupant] = React.useState<
+    'none' | 'gallery' | 'text blocks'
+  >('none');
+  const rightDrawerHeight = `calc(100vh - ${2 + // * 2px less presumably because of the paper's shadow
+    (theatricalMode ? 0 : headerAndControlsHeight) +
+    (actionsTimelineOpen ? actionsTimelineHeight : 0)}px)`;
 
   return (
     <Flex
@@ -300,35 +329,38 @@ const Canvas: React.FC<CanvasProps> = () => {
           <ListItem
             button
             onClick={() => {
-              const { x, y } = panzoomInstance!.getTransform();
-              createBlockState({
-                id: v4(),
-                top: 0 - y / scale,
-                left: 0 - x / scale,
-                type: 'text',
-                payload: {
-                  editorState: convertToRaw(
-                    ContentState.createFromText('Hello World'),
-                  ),
-                },
-              });
+              setRightDrawerOccupant(
+                rightDrawerOccupant === 'text blocks' ? 'none' : 'text blocks',
+              );
             }}
           >
-            <Tooltip title="Add text block">
+            <Tooltip title="Toggle open text blocks">
               <ListItemIcon>
-                <Title />
+                <Title
+                  color={
+                    rightDrawerOccupant === 'text blocks'
+                      ? 'secondary'
+                      : 'inherit'
+                  }
+                />
               </ListItemIcon>
             </Tooltip>
           </ListItem>
           <ListItem
             button
             onClick={() => {
-              setGalleryOpen(!galleryOpen);
+              setRightDrawerOccupant(
+                rightDrawerOccupant === 'gallery' ? 'none' : 'gallery',
+              );
             }}
           >
             <Tooltip title="Toggle gallery open">
               <ListItemIcon>
-                <Image color={galleryOpen ? 'secondary' : 'inherit'} />
+                <Image
+                  color={
+                    rightDrawerOccupant === 'gallery' ? 'secondary' : 'inherit'
+                  }
+                />
               </ListItemIcon>
             </Tooltip>
           </ListItem>
@@ -481,7 +513,10 @@ const Canvas: React.FC<CanvasProps> = () => {
             </Flex>
           )}
         </Box>
-        <Flex height="100%" style={{ overflow: 'hidden' }}>
+        <Flex
+          height="100%"
+          style={{ overflow: 'hidden', position: 'relative' }}
+        >
           <Box ref={dropRef} flex={1}>
             <div ref={canvasRef}>
               {blockStates.map(blockState => {
@@ -512,11 +547,13 @@ const Canvas: React.FC<CanvasProps> = () => {
                       const newTop = dragStopEvent.y;
                       const newLeft = dragStopEvent.x;
 
-                      updateMove({
-                        ...blockState,
-                        top: newTop,
-                        left: newLeft,
-                      });
+                      if (top !== newTop || left !== newLeft) {
+                        updateMove({
+                          ...blockState,
+                          top: newTop,
+                          left: newLeft,
+                        });
+                      }
 
                       resume();
                     }}
@@ -557,15 +594,23 @@ const Canvas: React.FC<CanvasProps> = () => {
                               onBlur={() => {
                                 setFocusedEditorId('');
 
-                                updateEditText({
-                                  ...blockState,
-                                  payload: {
-                                    ...blockState.payload,
-                                    editorState: convertToRaw(
-                                      focusedEditorState.getCurrentContent(),
-                                    ),
-                                  },
-                                });
+                                const newEditorState = convertToRaw(
+                                  focusedEditorState.getCurrentContent(),
+                                );
+                                if (
+                                  !equals(
+                                    blockState.payload.editorState,
+                                    newEditorState,
+                                  )
+                                ) {
+                                  updateEditText({
+                                    ...blockState,
+                                    payload: {
+                                      ...blockState.payload,
+                                      editorState: newEditorState,
+                                    },
+                                  });
+                                }
                               }}
                               onMouseEnter={() => {
                                 setHoveredBlockId(id);
@@ -595,27 +640,42 @@ const Canvas: React.FC<CanvasProps> = () => {
               })}
             </div>
           </Box>
-          <Flex ml="auto">
-            <Paper
-              style={{
-                transition: 'all 500ms ease-in-out',
-                overflowX: 'hidden',
-                width: galleryOpen ? galleryImageWidth : 0,
-                whiteSpace: 'nowrap',
-                zIndex: 1,
-                // * 2px less presumably because of the paper's shadow
-                height: `calc(100vh - ${2 +
-                  (theatricalMode ? 0 : headerAndControlsHeight) +
-                  (actionsTimelineOpen ? actionsTimelineHeight : 0)}px)`,
-              }}
-            >
-              <Gallery onMouseEnter={pause} onMouseLeave={resume} />
-            </Paper>
-          </Flex>
+          <RightDrawer
+            open={rightDrawerOccupant === 'text blocks'}
+            height={rightDrawerHeight}
+          >
+            <Box px={2}>
+              <Box pt={2} pb={2} style={{ borderBottom: dividingBorder }}>
+                <TextBlock
+                  editorState={
+                    focusedEditorId === draggable.text
+                      ? focusedEditorState
+                      : initialEditorState
+                  }
+                  setEditorState={setFocusedEditorState}
+                  onFocus={() => {
+                    setFocusedEditorId(draggable.text);
+
+                    setFocusedEditorState(initialEditorState);
+                  }}
+                  onDragEnd={() => {
+                    setFocusedEditorId('');
+                  }}
+                />
+              </Box>
+            </Box>
+          </RightDrawer>
+          <RightDrawer
+            open={rightDrawerOccupant === 'gallery'}
+            height={rightDrawerHeight}
+          >
+            <Gallery onMouseEnter={pause} onMouseLeave={resume} />
+          </RightDrawer>
         </Flex>
-        <Box style={{ borderTop: dividingBorder }}>
+        <Box>
           <Paper
             style={{
+              borderTop: dividingBorder,
               height: actionsTimelineOpen ? actionsTimelineHeight : 0,
               width: `calc(100vw - ${leftDrawerWidth}px)`,
               transition: 'height 500ms ease-in-out',
