@@ -1,7 +1,6 @@
 /* eslint-disable indent */
 
 import {
-  Divider,
   Drawer,
   Icon,
   List,
@@ -49,6 +48,7 @@ import {
   selectTheatricalMode,
   selectUid,
 } from 'store';
+import { dividingBorder } from 'styles';
 import urlJoin from 'url-join';
 import { useActions as useStoreActions } from 'utils';
 import { v4 } from 'uuid';
@@ -74,19 +74,17 @@ const transitionDuration = 500;
 
 const headerHeight = 76;
 
-const controlsHeightWithoutDivider = 50;
-const controlsHeight = controlsHeightWithoutDivider + 1;
+const controlsHeight = 50;
 
 const headerAndControlsHeight = headerHeight + controlsHeight;
 
 const actionsTimelineHeight = 300;
 
-const leftDrawerWidthWithoutDivider = 55;
-const leftDrawerWidth = leftDrawerWidthWithoutDivider + 1;
+const leftDrawerWidth = 55;
 
 const useStyles = makeStyles(theme => ({
   drawer: {
-    width: leftDrawerWidthWithoutDivider,
+    width: leftDrawerWidth,
   },
   paper: {
     position: 'static',
@@ -405,9 +403,12 @@ const Canvas: React.FC<CanvasProps> = () => {
           onMouseDown={e => {
             e.preventDefault();
           }}
+          style={{
+            borderBottom: dividingBorder,
+          }}
         >
           {!theatricalMode && (
-            <Flex style={{ minHeight: controlsHeightWithoutDivider }}>
+            <Flex style={{ minHeight: controlsHeight }}>
               {focusedEditorId && (
                 <EditorControls
                   editorState={focusedEditorState}
@@ -479,7 +480,6 @@ const Canvas: React.FC<CanvasProps> = () => {
               )}
             </Flex>
           )}
-          <Divider />
         </Box>
         <Flex height="100%" style={{ overflow: 'hidden' }}>
           <Box ref={dropRef} flex={1}>
@@ -584,13 +584,7 @@ const Canvas: React.FC<CanvasProps> = () => {
                             payload: { url, name },
                           } = blockState;
 
-                          return (
-                            <img
-                              src={url}
-                              alt={name}
-                              draggable={false}
-                            />
-                          );
+                          return <img src={url} alt={name} draggable={false} />;
                         }
                         default:
                           return null;
@@ -602,24 +596,24 @@ const Canvas: React.FC<CanvasProps> = () => {
             </div>
           </Box>
           <Flex ml="auto">
-            <Divider orientation="vertical" />
             <Paper
               style={{
                 transition: 'all 500ms ease-in-out',
                 overflowX: 'hidden',
                 width: galleryOpen ? galleryImageWidth : 0,
                 whiteSpace: 'nowrap',
-                height: `calc(100vh - ${headerAndControlsHeight +
-                  1 +
-                  actionsTimelineHeight}px)`,
+                zIndex: 1,
+                // * 2px less presumably because of the paper's shadow
+                height: `calc(100vh - ${2 +
+                  (theatricalMode ? 0 : headerAndControlsHeight) +
+                  (storyMonitorOpen ? actionsTimelineHeight : 0)}px)`,
               }}
             >
               <Gallery onMouseEnter={pause} onMouseLeave={resume} />
             </Paper>
           </Flex>
         </Flex>
-        <Box>
-          <Divider />
+        <Box style={{ borderTop: dividingBorder }}>
           <Paper
             style={{
               height: storyMonitorOpen ? actionsTimelineHeight : 0,

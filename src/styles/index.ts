@@ -6,3 +6,5 @@ export const createToolbarStyles = (theme: EnhancedTheme) => ({
   alignItems: 'center',
   justifyContent: 'flex-end',
 });
+
+export const dividingBorder = '1px solid #ddd';

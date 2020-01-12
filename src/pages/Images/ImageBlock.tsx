@@ -2,6 +2,7 @@ import { createDropImage } from 'models';
 import React from 'react';
 import { useDrag } from 'react-dnd';
 import { Box } from 'rebass';
+import { dividingBorder } from 'styles';
 import { Required } from 'utility-types';
 
 export interface ImageBlockProps
@@ -19,7 +20,7 @@ const ImageBlock: React.FC<ImageBlockProps> = ({ mb, ...props }) => {
   });
 
   return (
-    <Box ref={dragRef} mb={mb} style={{ border: '1px solid #ccc' }}>
+    <Box ref={dragRef} mb={mb} style={{ border: dividingBorder }}>
       {/* eslint-disable-next-line jsx-a11y/alt-text */}
       <img
         {...(props as React.DetailedHTMLProps<
