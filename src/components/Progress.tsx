@@ -27,15 +27,14 @@ interface TimerProps {
 }
 const Timer: React.FC<TimerProps> = ReactTimer;
 
-export interface ProgressProps {
-  timeInMs: number;
+export interface ProgressProps extends Omit<TimerProps, 'onTimeUpdate'> {
   initialPercentage?: number;
   paused?: boolean;
   stopped?: boolean;
 }
 
 const Progress: React.FC<ProgressProps> = ({
-  timeInMs,
+  duration,
   initialPercentage = 0,
   paused = false,
   stopped = false,
@@ -51,7 +50,7 @@ const Progress: React.FC<ProgressProps> = ({
         const { progress } = e;
         setPercentage(progress * 100);
       }}
-      duration={timeInMs}
+      duration={duration}
     >
       {/* <LinearProgress variant="determinate" value={percentage} /> */}
       <Box

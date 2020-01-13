@@ -596,7 +596,7 @@ const StoryMonitor = ({
                     <Box height={progressHeight}>
                       {id === currentActionId && nextAction && isPlaying && (
                         <Progress
-                          timeInMs={duration}
+                          duration={duration}
                           paused={!isPlaying}
                           stopped={!isPlaying && !elapsedTime}
                         />
