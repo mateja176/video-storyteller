@@ -28,8 +28,10 @@ export const useDeepSelector = <S extends Parameters<typeof useSelector>[0]>(
   selector: S,
 ) => useSelector(selector, equals);
 
-export const useActions = (
-  actions: Parameters<typeof bindActionCreators>[0],
+export const useActions = <
+  Actions extends Parameters<typeof bindActionCreators>[0]
+>(
+  actions: Actions,
 ) => {
   const dispatch = useDispatch();
 

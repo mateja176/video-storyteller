@@ -1,6 +1,7 @@
 export * from './auth';
 export * from './count';
 export * from './images';
+export * from './storage';
 export * from './lang';
 export * from './router';
 export * from './snackbar';

@@ -13,12 +13,12 @@ import {
   RouterAction,
   snackbar,
   SnackbarAction,
+  storage,
+  StorageAction,
   theme,
   ThemeAction,
-  gallery,
-  GalleryAction,
 } from './slices';
-import { TheatricalModeAction, theatricalMode } from './slices/theatricalMode';
+import { theatricalMode, TheatricalModeAction } from './slices/theatricalMode';
 
 export type Action =
   | CountAction
@@ -29,7 +29,7 @@ export type Action =
   | RouterAction
   | LangAction
   | TheatricalModeAction
-  | GalleryAction;
+  | StorageAction;
 
 const actionReducerMap = {
   count,
@@ -40,7 +40,7 @@ const actionReducerMap = {
   router,
   lang,
   theatricalMode,
-  gallery,
+  storage,
 };
 
 const reducer = combineReducers(actionReducerMap);

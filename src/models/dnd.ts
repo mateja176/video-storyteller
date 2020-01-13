@@ -1,5 +1,5 @@
 import { RawDraftContentState } from 'draft-js';
-import { GalleryImage } from 'store';
+import { StorageFile } from 'store';
 import { createAction } from 'typesafe-actions';
 import { toObject } from 'utils';
 
@@ -24,8 +24,8 @@ export type CreateDropText = typeof createDropText;
 export type DropTextAction = ReturnType<CreateDropText>;
 
 export interface DropImagePayload {
-  name: GalleryImage['customMetadata']['name'];
-  url: GalleryImage['downloadUrl'];
+  name: StorageFile['customMetadata']['name'];
+  url: StorageFile['downloadUrl'];
 }
 
 export const createDropImage = createAction(

@@ -19,6 +19,7 @@ import {
   Fullscreen,
   FullscreenExit,
   Image,
+  LibraryMusic,
   Title,
   Tv,
   TvOff,
@@ -33,7 +34,8 @@ import {
 import { debounce } from 'lodash';
 import { draggable, draggables, DropAction } from 'models';
 import firebase from 'my-firebase';
-import { Gallery, galleryImageWidth } from 'pages';
+import { storageImageWidth } from 'pages';
+import { Images } from 'pages/Images';
 import panzoom, { PanZoom } from 'panzoom';
 import { equals } from 'ramda';
 import React from 'react';
@@ -52,6 +54,7 @@ import { dividingBorder } from 'styles';
 import urlJoin from 'url-join';
 import { useActions as useStoreActions } from 'utils';
 import { v4 } from 'uuid';
+import Audio from './Audio';
 import { CanvasContext, initialHoveredBlockId } from './CanvasContext';
 import DevTools from './DevTools';
 import store, {
@@ -99,16 +102,16 @@ const resizeDisabler: ResizeEnable = {
   bottomRight: false,
 };
 
-const RightDrawer: React.FC<Pick<React.CSSProperties, 'height'> & {
+const RightDrawer: React.FC<Pick<React.CSSProperties, 'height' | 'width'> & {
   open: boolean;
-}> = ({ open, height, children }) => (
+}> = ({ open, height, width = storageImageWidth, children }) => (
   <Paper
     style={{
       position: 'absolute',
       right: 0,
       transition: 'all 500ms ease-in-out',
       overflowX: 'hidden',
-      width: open ? galleryImageWidth : 0,
+      width: open ? width : 0,
       whiteSpace: 'nowrap',
       zIndex: 1,
       height,
@@ -318,7 +321,7 @@ const Canvas: React.FC<CanvasProps> = () => {
   const [isFullscreen, setIsFullScreen] = React.useState(false);
 
   const [rightDrawerOccupant, setRightDrawerOccupant] = React.useState<
-    'none' | 'gallery' | 'text blocks'
+    'none' | 'images' | 'text blocks' | 'audio'
   >('none');
   const rightDrawerHeight = `calc(100vh - ${2 + // * 2px less presumably because of the paper's shadow
     (theatricalMode ? 0 : headerAndControlsHeight) +
@@ -364,15 +367,33 @@ const Canvas: React.FC<CanvasProps> = () => {
             button
             onClick={() => {
               setRightDrawerOccupant(
-                rightDrawerOccupant === 'gallery' ? 'none' : 'gallery',
+                rightDrawerOccupant === 'images' ? 'none' : 'images',
               );
             }}
           >
-            <Tooltip title="Toggle gallery open">
+            <Tooltip title="Toggle images open">
               <ListItemIcon>
                 <Image
                   color={
-                    rightDrawerOccupant === 'gallery' ? 'secondary' : 'inherit'
+                    rightDrawerOccupant === 'images' ? 'secondary' : 'inherit'
+                  }
+                />
+              </ListItemIcon>
+            </Tooltip>
+          </ListItem>
+          <ListItem
+            button
+            onClick={() => {
+              setRightDrawerOccupant(
+                rightDrawerOccupant === 'audio' ? 'none' : 'audio',
+              );
+            }}
+          >
+            <Tooltip title="Toggle open audio">
+              <ListItemIcon>
+                <LibraryMusic
+                  color={
+                    rightDrawerOccupant === 'audio' ? 'secondary' : 'inherit'
                   }
                 />
               </ListItemIcon>
@@ -710,10 +731,17 @@ const Canvas: React.FC<CanvasProps> = () => {
             </Box>
           </RightDrawer>
           <RightDrawer
-            open={rightDrawerOccupant === 'gallery'}
+            open={rightDrawerOccupant === 'images'}
             height={rightDrawerHeight}
           >
-            <Gallery onMouseEnter={pause} onMouseLeave={resume} />
+            <Images />
+          </RightDrawer>
+          <RightDrawer
+            open={rightDrawerOccupant === 'audio'}
+            height={rightDrawerHeight}
+            width={storageImageWidth + 30}
+          >
+            <Audio />
           </RightDrawer>
         </Flex>
         <Box>

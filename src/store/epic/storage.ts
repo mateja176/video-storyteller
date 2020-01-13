@@ -2,33 +2,33 @@ import 'firebase/storage';
 import firebase from 'my-firebase';
 import { Epic, ofType } from 'redux-observable';
 import { from, of } from 'rxjs';
-import { catchError, map, mergeMap, switchMap } from 'rxjs/operators';
+import { catchError, map, mergeMap, withLatestFrom } from 'rxjs/operators';
 import { selectUid } from 'store';
 import { getType } from 'typesafe-actions';
 import urlJoin from 'url-join';
-import { selectState } from 'utils';
 import { Action, State } from '../reducer';
 import {
-  AddImageToGalleryAction,
-  createAddImageToGallery,
-  createFetchImages,
+  AddFileAction,
+  createFetchFiles,
+  createFile,
   DownloadUrl,
-  FetchImagesFailureAction,
+  FetchFilesFailureAction,
+  FetchFilesRequestAction,
   MetaData,
 } from '../slices';
 
-const fetchImages: Epic<
+const fetchFiles: Epic<
   Action,
-  AddImageToGalleryAction | FetchImagesFailureAction,
+  AddFileAction | FetchFilesFailureAction,
   State
 > = (action$, state$) =>
   action$.pipe(
-    ofType(getType(createFetchImages.request)),
-    selectState(selectUid)(state$),
-    switchMap(uuid =>
+    ofType<Action, FetchFilesRequestAction>(getType(createFetchFiles.request)),
+    withLatestFrom(state$.pipe(map(selectUid))),
+    mergeMap(([{ payload: { path } }, uuid]) =>
       firebase
         .storage()
-        .ref(urlJoin('images', uuid))
+        .ref(urlJoin(path, uuid))
         .listAll(),
     ),
     mergeMap(({ items }) => items),
@@ -37,12 +37,12 @@ const fetchImages: Epic<
         mergeMap((data: MetaData) =>
           from(ref.getDownloadURL()).pipe(
             map((downloadUrl: DownloadUrl) => ({ ...data, downloadUrl })),
-            map(createAddImageToGallery),
+            map(createFile),
           ),
         ),
       ),
     ),
-    catchError(error => of(createFetchImages.failure(error))),
+    catchError(error => of(createFetchFiles.failure(error))),
   );
 
-export default [fetchImages];
+export default [fetchFiles];

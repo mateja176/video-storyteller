@@ -97,9 +97,9 @@ const loadMorePlaceholders = loadMore(() => 'Loading...');
 
 const loadMorePeople = loadMore(() => name.findName());
 
-export interface ImagesProps {}
+export interface ImageListProps {}
 
-const ImageList: React.FC<ImagesProps> = () => {
+const ImageList: React.FC<ImageListProps> = () => {
   const dict = useSelector(selectDictionary);
 
   const theme = useTheme();

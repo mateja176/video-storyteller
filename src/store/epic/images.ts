@@ -9,12 +9,12 @@ import {
   catchError,
   delay,
   filter,
+  last,
   map,
   mergeMap,
   switchMap,
   tap,
   withLatestFrom,
-  last,
 } from 'rxjs/operators';
 import { EpicDependencies } from 'store/configureStore';
 import { getType } from 'typesafe-actions';
