@@ -1,14 +1,15 @@
-import { Typography } from '@material-ui/core';
-import { startCase } from 'lodash';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { Box, Flex } from 'rebass';
+import { Box } from 'rebass';
 import { createFetchFiles, selectAudio } from 'store';
 import { useActions } from 'utils';
+import AudioBlock, { AudioElement } from './AudioBlock';
 
-export interface AudioProps {}
+export interface AudioProps {
+  setAudioElement: (element: AudioElement) => void;
+}
 
-const Audio: React.FC<AudioProps> = () => {
+const Audio: React.FC<AudioProps> = ({ setAudioElement }) => {
   const { fetchFiles } = useActions({
     fetchFiles: createFetchFiles.request,
   });
@@ -22,17 +23,12 @@ const Audio: React.FC<AudioProps> = () => {
   return (
     <Box p={3}>
       {audio.map(({ downloadUrl, customMetadata: { name } }) => (
-        <Box key={downloadUrl} mb={2} pb={2}>
-          <Flex mb={1} justifyContent="center">
-            <Typography variant="h6">
-              {startCase(name.split('.')[0])}
-            </Typography>
-          </Flex>
-          {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-          <audio controls>
-            <source src={downloadUrl} />
-          </audio>
-        </Box>
+        <AudioBlock
+          key={downloadUrl}
+          src={downloadUrl}
+          name={name}
+          onClick={setAudioElement}
+        />
       ))}
     </Box>
   );

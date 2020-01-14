@@ -24,7 +24,14 @@ import {
   Tv,
   TvOff,
 } from '@material-ui/icons';
-import { Button, Editor, EditorControls, Tooltip } from 'components';
+import {
+  Button,
+  Editor,
+  EditorControls,
+  Progress,
+  progressHeight,
+  Tooltip,
+} from 'components';
 import {
   ContentState,
   convertFromRaw,
@@ -74,6 +81,7 @@ import {
 } from './store/blockStates';
 import { createSetPosition, createSetScale } from './store/transform';
 import TextBlock from './TextBlock';
+import { AudioElement } from './AudioBlock';
 
 const initialEditorState = EditorState.createWithContent(
   ContentState.createFromText('Hello World'),
@@ -326,6 +334,18 @@ const Canvas: React.FC<CanvasProps> = () => {
   const rightDrawerHeight = `calc(100vh - ${2 + // * 2px less presumably because of the paper's shadow
     (theatricalMode ? 0 : headerAndControlsHeight) +
     (actionsTimelineOpen ? actionsTimelineHeight : 0)}px)`;
+
+  const [audioElement, setAudioElement] = React.useState<AudioElement>(null);
+
+  React.useEffect(() => {
+    if (audioElement) {
+      if (isPlaying) {
+        audioElement.play();
+      } else {
+        audioElement.pause();
+      }
+    }
+  }, [audioElement, isPlaying]);
 
   return (
     <Flex
@@ -741,13 +761,13 @@ const Canvas: React.FC<CanvasProps> = () => {
             height={rightDrawerHeight}
             width={storageImageWidth + 30}
           >
-            <Audio />
+            <Audio setAudioElement={setAudioElement} />
           </RightDrawer>
         </Flex>
         <Box>
           <Paper
             style={{
-              borderTop: dividingBorder,
+              borderTop: audioElement ? 'none' : dividingBorder,
               height: actionsTimelineOpen ? actionsTimelineHeight : 0,
               width: `calc(100vw - ${leftDrawerWidth}px)`,
               transition: 'height 500ms ease-in-out',
@@ -755,6 +775,14 @@ const Canvas: React.FC<CanvasProps> = () => {
               marginTop: 'auto',
             }}
           >
+            <Box height={progressHeight}>
+              {audioElement && (
+                <Progress
+                  duration={audioElement.duration * 1000}
+                  paused={!isPlaying}
+                />
+              )}
+            </Box>
             <CanvasContext.Provider
               value={{
                 hoveredBlockId,

@@ -3,6 +3,7 @@ import React from 'react';
 // @ts-ignore
 import ReactTimer from 'react-timer-wrapper';
 import { Box } from 'rebass';
+import { Required } from 'utility-types';
 
 export const progressHeight = 5;
 
@@ -27,7 +28,8 @@ interface TimerProps {
 }
 const Timer: React.FC<TimerProps> = ReactTimer;
 
-export interface ProgressProps extends Omit<TimerProps, 'onTimeUpdate'> {
+export interface ProgressProps
+  extends Required<Omit<TimerProps, 'onTimeUpdate'>, 'duration'> {
   initialPercentage?: number;
   paused?: boolean;
   stopped?: boolean;
