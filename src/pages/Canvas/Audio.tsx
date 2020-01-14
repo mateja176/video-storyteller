@@ -3,13 +3,13 @@ import { useSelector } from 'react-redux';
 import { Box } from 'rebass';
 import { createFetchFiles, selectAudio } from 'store';
 import { useActions } from 'utils';
-import AudioBlock, { AudioElement } from './AudioBlock';
+import AudioBlock, { AudioElement, AudioBlockProps } from './AudioBlock';
 
-export interface AudioProps {
+export interface AudioProps extends Pick<AudioBlockProps, 'activeId'> {
   setAudioElement: (element: AudioElement) => void;
 }
 
-const Audio: React.FC<AudioProps> = ({ setAudioElement }) => {
+const Audio: React.FC<AudioProps> = ({ setAudioElement, activeId }) => {
   const { fetchFiles } = useActions({
     fetchFiles: createFetchFiles.request,
   });
@@ -28,6 +28,7 @@ const Audio: React.FC<AudioProps> = ({ setAudioElement }) => {
           src={downloadUrl}
           name={name}
           onClick={setAudioElement}
+          activeId={activeId}
         />
       ))}
     </Box>

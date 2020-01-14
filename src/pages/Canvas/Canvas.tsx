@@ -62,6 +62,7 @@ import urlJoin from 'url-join';
 import { useActions as useStoreActions } from 'utils';
 import { v4 } from 'uuid';
 import Audio from './Audio';
+import { AudioElement } from './AudioBlock';
 import { CanvasContext, initialHoveredBlockId } from './CanvasContext';
 import DevTools from './DevTools';
 import store, {
@@ -81,7 +82,6 @@ import {
 } from './store/blockStates';
 import { createSetPosition, createSetScale } from './store/transform';
 import TextBlock from './TextBlock';
-import { AudioElement } from './AudioBlock';
 
 const initialEditorState = EditorState.createWithContent(
   ContentState.createFromText('Hello World'),
@@ -343,6 +343,8 @@ const Canvas: React.FC<CanvasProps> = () => {
         audioElement.play();
       } else {
         audioElement.pause();
+        // * when stopping set currentTime to 0
+        // audioElement.currentTime = 0; // eslint-disable-line
       }
     }
   }, [audioElement, isPlaying]);
@@ -759,9 +761,12 @@ const Canvas: React.FC<CanvasProps> = () => {
           <RightDrawer
             open={rightDrawerOccupant === 'audio'}
             height={rightDrawerHeight}
-            width={storageImageWidth + 30}
+            width={storageImageWidth + 32}
           >
-            <Audio setAudioElement={setAudioElement} />
+            <Audio
+              setAudioElement={setAudioElement}
+              activeId={(audioElement && audioElement.id) || ''}
+            />
           </RightDrawer>
         </Flex>
         <Box>
