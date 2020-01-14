@@ -22,12 +22,13 @@ const ImageBlock: React.FC<ImageBlockProps> = ({ mb, ...props }) => {
   });
 
   return (
-    <Box ref={dragRef} mb={mb}>
+    <Box mb={mb}>
       <Flex mb={1} justifyContent="center">
         <Typography variant="h6">{startCase(name.split('.')[0])}</Typography>
       </Flex>
       {/* eslint-disable-next-line jsx-a11y/alt-text */}
       <img
+        ref={dragRef}
         style={{ ...style, border: dividingBorder, cursor: 'grab' }}
         {...(props as React.DetailedHTMLProps<
           React.HTMLAttributes<HTMLImageElement>,
