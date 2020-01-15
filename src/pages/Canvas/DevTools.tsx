@@ -249,7 +249,8 @@ const StoryMonitor = ({
 
   const [deleteHovered, setDeleteHovered] = React.useState(false);
 
-  const [isEditing, setIsEditing] = React.useState(false);
+  // * not used since it re-instantiates component
+  const [isEditing, setIsEditing] = React.useState(false); // eslint-disable-line
 
   return (
     <Flex height="100%">
@@ -338,7 +339,6 @@ const StoryMonitor = ({
               ActionCreators.reorderAction(Number(newItem.i), beforeAction.id),
             );
           }}
-          isDraggable={!isEditing}
         >
           {editableActions.map(({ action, id }, i) => {
             const durationObject = nth(i, durations);
