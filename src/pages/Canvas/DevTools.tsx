@@ -20,7 +20,11 @@ import 'react-grid-layout/css/styles.css';
 import { Box, Flex } from 'rebass';
 import { createDevTools } from 'redux-devtools';
 import ActionCardForm from './ActionCardForm';
-import { CanvasContext, initialHoveredBlockId } from './CanvasContext';
+import {
+  CanvasContext,
+  initialHoveredBlockId,
+  initialElapsedTime,
+} from './CanvasContext';
 import store, { Action } from './store';
 import {
   CudAction,
@@ -77,6 +81,8 @@ const StoryMonitor = ({
     setHoveredBlockId,
     isPlaying,
     setIsPlaying,
+    elapsedTime,
+    setElapsedTime,
   } = React.useContext(CanvasContext);
 
   const stagedActions = stagedActionIds.map<ActionWithId>(id => ({
@@ -125,7 +131,6 @@ const StoryMonitor = ({
     lastEditableActionId,
   );
 
-  const [elapsedTime, setElapsedTime] = React.useState(0);
   const [playTimeout, setPlayTimeout] = React.useState(-1);
   const [timeoutStart, setTimeoutStart] = React.useState(0);
 
@@ -157,7 +162,7 @@ const StoryMonitor = ({
       if (!nextActiveActionId && isPlaying) {
         setIsPlaying(false);
 
-        setElapsedTime(0);
+        setElapsedTime(initialElapsedTime);
 
         setLastJumpedToActionId(lastEditableActionId);
       }
@@ -278,11 +283,13 @@ const StoryMonitor = ({
           </IconButton>
         )}
         <IconButton
-          disabled={areThereNoEditableActions || (!isPlaying && !elapsedTime)}
+          disabled={
+            areThereNoEditableActions || (!isPlaying && elapsedTime < 0)
+          }
           onClick={() => {
             setIsPlaying(false);
 
-            setElapsedTime(0);
+            setElapsedTime(initialElapsedTime);
 
             clearTimeout(playTimeout);
           }}
@@ -430,6 +437,10 @@ const StoryMonitor = ({
                     if (isActive) {
                       dispatch(ActionCreators.jumpToAction(id));
                       setLastJumpedToActionId(id);
+
+                      if (currentActionId !== id) {
+                        setElapsedTime(initialElapsedTime);
+                      }
                     }
                   }}
                 >
@@ -594,7 +605,7 @@ const StoryMonitor = ({
                         <Progress
                           duration={duration}
                           paused={!isPlaying}
-                          stopped={!isPlaying && !elapsedTime}
+                          stopped={!isPlaying && elapsedTime < 0}
                         />
                       )}
                     </Box>

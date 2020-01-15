@@ -63,7 +63,11 @@ import { useActions as useStoreActions } from 'utils';
 import { v4 } from 'uuid';
 import Audio from './Audio';
 import { AudioElement } from './AudioBlock';
-import { CanvasContext, initialHoveredBlockId } from './CanvasContext';
+import {
+  CanvasContext,
+  initialHoveredBlockId,
+  initialElapsedTime,
+} from './CanvasContext';
 import DevTools from './DevTools';
 import store, {
   selectBlockStates,
@@ -313,6 +317,7 @@ const Canvas: React.FC<CanvasProps> = () => {
   const [deleteModeOn, setDeleteModeOn] = React.useState(false);
 
   const [isPlaying, setIsPlaying] = React.useState(false);
+  const [elapsedTime, setElapsedTime] = React.useState(initialElapsedTime);
 
   const [playing, setPlaying] = React.useState(false);
 
@@ -344,10 +349,12 @@ const Canvas: React.FC<CanvasProps> = () => {
       } else {
         audioElement.pause();
         // * when stopping set currentTime to 0
-        // audioElement.currentTime = 0; // eslint-disable-line
+        if (elapsedTime < 0) {
+          audioElement.currentTime = 0; // eslint-disable-line
+        }
       }
     }
-  }, [audioElement, isPlaying]);
+  }, [audioElement, isPlaying, elapsedTime]);
 
   return (
     <Flex
@@ -785,6 +792,7 @@ const Canvas: React.FC<CanvasProps> = () => {
                 <Progress
                   duration={audioElement.duration * 1000}
                   paused={!isPlaying}
+                  stopped={!isPlaying && elapsedTime < 0}
                 />
               )}
             </Box>
@@ -794,6 +802,8 @@ const Canvas: React.FC<CanvasProps> = () => {
                 setHoveredBlockId,
                 isPlaying,
                 setIsPlaying,
+                elapsedTime,
+                setElapsedTime,
               }}
             >
               <DevTools store={store} />
