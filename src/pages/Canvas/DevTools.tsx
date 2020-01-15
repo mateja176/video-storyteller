@@ -434,7 +434,7 @@ const StoryMonitor = ({
                     }
                   }}
                   onClick={() => {
-                    if (isActive) {
+                    if (isActive && !isPlaying) {
                       dispatch(ActionCreators.jumpToAction(id));
                       setLastJumpedToActionId(id);
 
