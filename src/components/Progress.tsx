@@ -1,6 +1,7 @@
 import { useTheme } from '@material-ui/core';
 import React from 'react';
 import { Box } from 'rebass';
+import { Tooltip } from 'components';
 
 export const progressHeight = 5;
 
@@ -53,24 +54,29 @@ const Progress: React.FC<ProgressProps> = ({
   }, [stopped, clear]);
 
   return (
-    <Box
-      height={progressHeight}
-      bg={theme.palette.primary.light}
-      style={{
-        position: 'relative',
-      }}
+    <Tooltip
+      title={`${((percentage * duration) / 100 / 1000).toFixed(1)}s`}
+      placement="top-start"
     >
       <Box
-        height="100%"
-        width={`${percentage}%`}
-        bg={theme.palette.primary.dark}
+        height={progressHeight}
+        bg={theme.palette.primary.light}
         style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
+          position: 'relative',
         }}
-      />
-    </Box>
+      >
+        <Box
+          height="100%"
+          width={`${percentage}%`}
+          bg={theme.palette.primary.dark}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+          }}
+        />
+      </Box>
+    </Tooltip>
   );
 };
 
