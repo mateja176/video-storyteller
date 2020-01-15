@@ -140,12 +140,14 @@ const StoryMonitor = ({
     .slice(currentStateIndex + 1)
     .find(id => !skippedActionIds.includes(id));
 
-  const play = React.useCallback(
-    (elapsed: number) => {
+  React.useEffect(
+    () => {
       if (nextActiveActionId && isPlaying && currentDuration) {
         const timeout = setTimeout(() => {
+          setElapsedTime(0);
+
           dispatch(ActionCreators.jumpToAction(nextActiveActionId));
-        }, currentDuration.value - elapsed);
+        }, currentDuration.value - elapsedTime);
 
         setTimeoutStart(Date.now());
 
@@ -161,12 +163,8 @@ const StoryMonitor = ({
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [nextActiveActionId, isPlaying, currentDuration],
+    [nextActiveActionId, isPlaying, currentDuration, elapsedTime],
   );
-
-  React.useEffect(() => {
-    play(0);
-  }, [play]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const areThereNoEditableActions = !editableActions.length;
 
@@ -273,8 +271,6 @@ const StoryMonitor = ({
             disabled={areThereNoEditableActions || !nextAction}
             onClick={() => {
               setIsPlaying(true);
-
-              play(elapsedTime);
             }}
           >
             <PlayArrow />
@@ -594,7 +590,7 @@ const StoryMonitor = ({
                     />
 
                     <Box height={progressHeight}>
-                      {id === currentActionId && nextAction && isPlaying && (
+                      {id === currentActionId && nextAction && (
                         <Progress
                           duration={duration}
                           paused={!isPlaying}
