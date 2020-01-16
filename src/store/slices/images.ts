@@ -3,6 +3,7 @@ import { pick } from 'ramda';
 import { Reducer } from 'redux';
 import { createAction, getType } from 'typesafe-actions';
 import { v4 } from 'uuid';
+import { objectMap } from 'utils';
 
 export interface Image {
   dataUrl: string;
@@ -94,6 +95,13 @@ export const images: Reducer<ImagesState, ImagesAction> = (
         entities: { ...entities, [id]: image },
       };
     }
+    case uploadType:
+      return {
+        ids,
+        entities: objectMap(
+          (image: Image): Image => ({ ...image, uploadStatus: 'in progress' }),
+        )(entities),
+      };
     case getType(createUpdateProgress): {
       const {
         payload: { id, uploadStatus },
