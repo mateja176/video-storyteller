@@ -3,7 +3,7 @@ import { KnowledgeGraph } from 'models/knowlegdeGraph';
 import firebase from 'my-firebase';
 import { Epic, ofType } from 'redux-observable';
 import { putString } from 'rxfire/storage';
-import { of } from 'rxjs';
+import { from, of } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 import {
   catchError,
@@ -45,14 +45,36 @@ const upload: Epic<Action, UpdateProgressAction | SetSnackbarAction, State> = (
     selectState(selectImageEntities)(state$),
     mergeMap(entities => Object.entries(entities)),
     withLatestFrom(state$.pipe(map(selectUid))),
-    mergeMap(([[id, { name, dataUrl }], uid]) =>
-      putString(
-        firebase.storage().ref(urlJoin('images', uid, id)),
-        dataUrl,
-        'data_url',
-        { customMetadata: { name, id } },
-      ).pipe(last()),
-    ),
+    mergeMap(([[id, { name, dataUrl }], uid]) => {
+      const img = new Image();
+
+      img.src = dataUrl; // eslint-disable-line
+
+      const imgPromise = new Promise<{ width: number; height: number }>(
+        resolve =>
+          img.addEventListener('load', () =>
+            resolve({ width: img.width, height: img.height }),
+          ),
+      );
+
+      return from(imgPromise).pipe(
+        mergeMap(({ width, height }) =>
+          putString(
+            firebase.storage().ref(urlJoin('images', uid, id)),
+            dataUrl,
+            'data_url',
+            {
+              customMetadata: {
+                name,
+                id,
+                width: width.toString(),
+                height: height.toString(),
+              },
+            },
+          ).pipe(last()),
+        ),
+      );
+    }),
     map(({ metadata: { customMetadata } }) =>
       createUpdateProgress({
         id: customMetadata!.id,

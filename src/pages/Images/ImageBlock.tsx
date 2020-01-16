@@ -1,23 +1,31 @@
-import { createDropImage } from 'models';
+import { Typography } from '@material-ui/core';
+import { startCase } from 'lodash';
+import { createDropImage, DropImagePayload } from 'models';
 import React from 'react';
 import { useDrag } from 'react-dnd';
 import { Box, Flex } from 'rebass';
 import { dividingBorder } from 'styles';
-import { Required } from 'utility-types';
-import { Typography } from '@material-ui/core';
-import { startCase } from 'lodash';
 
 export interface ImageBlockProps
-  extends Required<React.HTMLProps<HTMLImageElement>, 'src' | 'alt'>,
-    Pick<React.ComponentProps<typeof Box>, 'mb'> {}
+  extends DropImagePayload,
+    Pick<React.ComponentProps<typeof Box>, 'mb'> {
+  thumbnailWidth: React.CSSProperties['width'];
+}
 
-const ImageBlock: React.FC<ImageBlockProps> = ({ mb, ...props }) => {
-  const { src: url, alt: name, style } = props;
-
+const ImageBlock: React.FC<ImageBlockProps> = ({
+  thumbnailWidth,
+  mb,
+  downloadUrl,
+  name,
+  width,
+  height,
+}) => {
   const [, dragRef] = useDrag({
     item: createDropImage({
       name,
-      url,
+      downloadUrl,
+      height,
+      width,
     }),
   });
 
@@ -29,11 +37,9 @@ const ImageBlock: React.FC<ImageBlockProps> = ({ mb, ...props }) => {
       {/* eslint-disable-next-line jsx-a11y/alt-text */}
       <img
         ref={dragRef}
-        style={{ ...style, border: dividingBorder, cursor: 'grab' }}
-        {...(props as React.DetailedHTMLProps<
-          React.HTMLAttributes<HTMLImageElement>,
-          HTMLImageElement
-        >)}
+        style={{ border: dividingBorder, cursor: 'grab' }}
+        src={downloadUrl}
+        width={thumbnailWidth}
       />
     </Box>
   );

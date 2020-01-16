@@ -32,9 +32,11 @@ const Images: React.FC<ImagesProps> = ({ onMouseEnter, onMouseLeave }) => {
         <ImageBlock
           key={name}
           mb={spacing}
-          width={storageImageWidth - 2 * spacing}
-          src={downloadUrl}
-          alt={customMetadata.name}
+          downloadUrl={downloadUrl}
+          name={customMetadata.name}
+          height={customMetadata.height}
+          width={customMetadata.width}
+          thumbnailWidth={storageImageWidth - 2 * spacing}
         />
       ))}
     </Box>

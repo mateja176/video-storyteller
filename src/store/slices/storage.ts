@@ -6,6 +6,8 @@ import { createReducer } from 'utils';
 export interface CustomMetadata {
   name: string;
   id: string;
+  width: number;
+  height: number;
 }
 
 export interface MetaData {

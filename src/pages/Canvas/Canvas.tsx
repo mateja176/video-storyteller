@@ -65,8 +65,8 @@ import Audio from './Audio';
 import { AudioElement } from './AudioBlock';
 import {
   CanvasContext,
-  initialHoveredBlockId,
   initialElapsedTime,
+  initialHoveredBlockId,
 } from './CanvasContext';
 import DevTools from './DevTools';
 import store, {
@@ -180,14 +180,33 @@ const Canvas: React.FC<CanvasProps> = () => {
 
   const [, dropRef] = useDrop<DropAction, CreateAction, void>({
     accept: [...draggables],
-    drop: (action, monitor) => {
+    drop: (action, monitor): CreateAction | undefined => {
       const offset = monitor.getSourceClientOffset() || { x: 0, y: 0 };
-      return createBlockState({
-        ...action,
-        id: v4(),
-        left: offset.x - leftDrawerWidth,
-        top: offset.y - headerAndControlsHeight,
-      });
+
+      const id = v4();
+      const left = offset.x - leftDrawerWidth;
+      const top = offset.y - headerAndControlsHeight;
+
+      switch (action.type) {
+        case 'text':
+          return createBlockState({
+            ...action,
+            id,
+            top,
+            left,
+          });
+        case 'image':
+          return createBlockState({
+            ...action,
+            id,
+            top,
+            left,
+            width: action.payload.width,
+            height: action.payload.height,
+          });
+        default:
+          return undefined;
+      }
     },
   });
 
@@ -714,12 +733,12 @@ const Canvas: React.FC<CanvasProps> = () => {
                         }
                         case 'image': {
                           const {
-                            payload: { url, name },
+                            payload: { downloadUrl, name },
                           } = blockState;
 
                           return (
                             <img
-                              src={url}
+                              src={downloadUrl}
                               alt={name}
                               draggable={false}
                               width="100%"
