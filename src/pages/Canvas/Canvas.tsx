@@ -356,6 +356,14 @@ const Canvas: React.FC<CanvasProps> = () => {
     }
   }, [audioElement, isPlaying, elapsedTime]);
 
+  const [totalElapsedTime, setTotalElapsedTime] = React.useState(-1);
+
+  React.useEffect(() => {
+    if (audioElement) {
+      audioElement.currentTime = totalElapsedTime / 1000; // eslint-disable-line
+    }
+  }, [totalElapsedTime, audioElement]);
+
   return (
     <Flex
       style={{
@@ -791,6 +799,7 @@ const Canvas: React.FC<CanvasProps> = () => {
               {audioElement && (
                 <Progress
                   duration={audioElement.duration * 1000}
+                  elapsed={totalElapsedTime}
                   paused={!isPlaying}
                   stopped={!isPlaying && elapsedTime < 0}
                 />
@@ -804,6 +813,8 @@ const Canvas: React.FC<CanvasProps> = () => {
                 setIsPlaying,
                 elapsedTime,
                 setElapsedTime,
+                totalElapsedTime,
+                setTotalElapsedTime,
               }}
             >
               <DevTools store={store} />

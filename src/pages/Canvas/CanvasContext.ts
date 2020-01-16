@@ -20,6 +20,8 @@ export const CanvasContext = createContext<{
   setIsPlaying: (id: IsPlaying) => void;
   elapsedTime: ElapsedTime;
   setElapsedTime: (elapsed: ElapsedTime) => void;
+  totalElapsedTime: ElapsedTime;
+  setTotalElapsedTime: (elapsed: ElapsedTime) => void;
 }>({
   hoveredBlockId: initialHoveredBlockId,
   setHoveredBlockId: () => {},
@@ -27,4 +29,6 @@ export const CanvasContext = createContext<{
   setIsPlaying: () => {},
   elapsedTime: initialElapsedTime,
   setElapsedTime: () => {},
+  totalElapsedTime: initialElapsedTime,
+  setTotalElapsedTime: () => {},
 });

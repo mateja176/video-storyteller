@@ -83,6 +83,7 @@ const StoryMonitor = ({
     setIsPlaying,
     elapsedTime,
     setElapsedTime,
+    setTotalElapsedTime,
   } = React.useContext(CanvasContext);
 
   const stagedActions = stagedActionIds.map<ActionWithId>(id => ({
@@ -441,6 +442,14 @@ const StoryMonitor = ({
                       if (currentActionId !== id) {
                         setElapsedTime(initialElapsedTime);
                       }
+
+                      const precedingDurations = durations.slice(0, i);
+                      const newTotalElapsedTime = precedingDurations.reduce(
+                        (totalElapsed, dur) => totalElapsed + dur.value,
+                        0,
+                      );
+
+                      setTotalElapsedTime(newTotalElapsedTime);
                     }
                   }}
                 >

@@ -7,18 +7,26 @@ export const progressHeight = 5;
 
 export interface ProgressProps {
   duration: number;
+  elapsed?: number;
   paused?: boolean;
   stopped?: boolean;
 }
 
 const Progress: React.FC<ProgressProps> = ({
   duration,
+  elapsed = 0,
   paused = false,
   stopped = false,
 }) => {
   const theme = useTheme();
 
-  const [percentage, setPercentage] = React.useState(0);
+  const elapsedPercentage = (elapsed / duration) * 100;
+
+  const [percentage, setPercentage] = React.useState(elapsedPercentage);
+
+  React.useEffect(() => {
+    setPercentage(elapsedPercentage);
+  }, [elapsedPercentage]);
 
   const [intervalState, setIntervalState] = React.useState(0);
 
