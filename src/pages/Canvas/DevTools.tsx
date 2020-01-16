@@ -22,8 +22,8 @@ import { createDevTools } from 'redux-devtools';
 import ActionCardForm from './ActionCardForm';
 import {
   CanvasContext,
-  initialHoveredBlockId,
   initialElapsedTime,
+  initialHoveredBlockId,
 } from './CanvasContext';
 import store, { Action } from './store';
 import {
@@ -50,6 +50,10 @@ import {
 type Durations = { id: ActionWithId['id']; value: number }[];
 
 const initialHoveredCardId: number = -1;
+
+const initialPlayTimeout = -1;
+
+const initialTimeoutStart = 0;
 
 const cardWidth = 300 - 2 * 10;
 
@@ -166,6 +170,10 @@ const StoryMonitor = ({
         setElapsedTime(initialElapsedTime);
 
         setLastJumpedToActionId(lastEditableActionId);
+
+        setPlayTimeout(initialPlayTimeout);
+
+        setTimeoutStart(initialTimeoutStart);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -293,6 +301,10 @@ const StoryMonitor = ({
             setElapsedTime(initialElapsedTime);
 
             clearTimeout(playTimeout);
+
+            setPlayTimeout(initialPlayTimeout);
+
+            setTimeoutStart(initialTimeoutStart);
           }}
         >
           <Stop />
@@ -309,8 +321,18 @@ const StoryMonitor = ({
           disabled={areThereNoEditableActions}
           onClick={() => {
             setLastJumpedToActionId(lastEditableActionId);
+
             dispatch(ActionCreators.reset());
+
             setDurations([]);
+
+            setElapsedTime(initialElapsedTime);
+
+            setPlayTimeout(initialPlayTimeout);
+
+            setTimeoutStart(initialTimeoutStart);
+
+            setTotalElapsedTime(initialElapsedTime);
           }}
           color="secondary"
         >
