@@ -819,6 +819,16 @@ const Canvas: React.FC<CanvasProps> = () => {
           </RightDrawer>
         </Flex>
         <Box>
+          <Box height={progressHeight}>
+            {audioElement && (
+              <Progress
+                duration={audioElement.duration * 1000}
+                elapsed={totalElapsedTime}
+                paused={!isPlaying}
+                stopped={!isPlaying && elapsedTime < 0}
+              />
+            )}
+          </Box>
           <Paper
             style={{
               borderTop: audioElement ? 'none' : dividingBorder,
@@ -829,16 +839,6 @@ const Canvas: React.FC<CanvasProps> = () => {
               marginTop: 'auto',
             }}
           >
-            <Box height={progressHeight}>
-              {audioElement && (
-                <Progress
-                  duration={audioElement.duration * 1000}
-                  elapsed={totalElapsedTime}
-                  paused={!isPlaying}
-                  stopped={!isPlaying && elapsedTime < 0}
-                />
-              )}
-            </Box>
             <CanvasContext.Provider
               value={{
                 hoveredBlockId,
