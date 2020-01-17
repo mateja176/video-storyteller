@@ -1,6 +1,13 @@
 /* eslint-disable indent */
 
-import { Card, Divider, useTheme } from '@material-ui/core';
+import {
+  Card,
+  Divider,
+  List,
+  ListItem,
+  ListItemIcon,
+  useTheme,
+} from '@material-ui/core';
 import {
   Delete,
   DeleteForever,
@@ -12,7 +19,7 @@ import {
   VisibilityOff,
 } from '@material-ui/icons';
 import color from 'color';
-import { IconButton, Progress, progressHeight } from 'components';
+import { IconButton, Progress, progressHeight, Tooltip } from 'components';
 import { equals, init, last, nth, update } from 'ramda';
 import React from 'react';
 import GridLayout from 'react-grid-layout';
@@ -46,6 +53,8 @@ import {
   isUpdateRenameImageAction,
   MonitorProps,
 } from './utils';
+
+export const miniDrawerWidth = 55;
 
 type Durations = { id: ActionWithId['id']; value: number }[];
 
@@ -268,9 +277,10 @@ const StoryMonitor = ({
 
   return (
     <Flex height="100%">
-      <Flex flexDirection="column" p={2} alignItems="center">
+      <List style={{ width: miniDrawerWidth }}>
         {isPlaying ? (
-          <IconButton
+          <ListItem
+            button
             onClick={() => {
               setElapsedTime(elapsedTime + Date.now() - timeoutStart);
 
@@ -279,19 +289,25 @@ const StoryMonitor = ({
               clearTimeout(playTimeout);
             }}
           >
-            <Pause />
-          </IconButton>
+            <ListItemIcon>
+              <Pause />
+            </ListItemIcon>
+          </ListItem>
         ) : (
-          <IconButton
+          <ListItem
+            button
             disabled={areThereNoEditableActions || !nextAction}
             onClick={() => {
               setIsPlaying(true);
             }}
           >
-            <PlayArrow />
-          </IconButton>
+            <ListItemIcon>
+              <PlayArrow />
+            </ListItemIcon>
+          </ListItem>
         )}
-        <IconButton
+        <ListItem
+          button
           disabled={
             areThereNoEditableActions || (!isPlaying && elapsedTime < 0)
           }
@@ -307,17 +323,23 @@ const StoryMonitor = ({
             setTimeoutStart(initialTimeoutStart);
           }}
         >
-          <Stop />
-        </IconButton>
-        <IconButton
+          <ListItemIcon>
+            <Stop />
+          </ListItemIcon>
+        </ListItem>
+        <ListItem
+          button
           disabled={!skippedActionIds.length}
           onClick={() => {
             dispatch(ActionCreators.sweep());
           }}
         >
-          <DeleteSweep />
-        </IconButton>
-        <IconButton
+          <ListItemIcon>
+            <DeleteSweep />
+          </ListItemIcon>
+        </ListItem>
+        <ListItem
+          button
           disabled={areThereNoEditableActions}
           onClick={() => {
             setLastJumpedToActionId(lastEditableActionId);
@@ -334,11 +356,14 @@ const StoryMonitor = ({
 
             setTotalElapsedTime(initialElapsedTime);
           }}
-          color="secondary"
         >
-          <DeleteForever />
-        </IconButton>
-      </Flex>
+          <Tooltip title="Delete all actions">
+            <ListItemIcon>
+              <DeleteForever color="secondary" />
+            </ListItemIcon>
+          </Tooltip>
+        </ListItem>
+      </List>
       <Divider orientation="vertical" />
       <Flex style={{ overflowX: 'auto' }} width="100%" height="100%">
         <GridLayout

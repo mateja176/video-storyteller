@@ -68,7 +68,7 @@ import {
   initialElapsedTime,
   initialHoveredBlockId,
 } from './CanvasContext';
-import DevTools from './DevTools';
+import DevTools, { miniDrawerWidth } from './DevTools';
 import store, {
   selectBlockStates,
   selectPosition,
@@ -100,8 +100,6 @@ const controlsHeight = 50;
 const headerAndControlsHeight = headerHeight + controlsHeight;
 
 const actionsTimelineHeight = 300;
-
-const leftDrawerWidth = 55;
 
 const resizeDisabler: ResizeEnable = {
   bottom: false,
@@ -135,7 +133,7 @@ const RightDrawer: React.FC<Pick<React.CSSProperties, 'height' | 'width'> & {
 
 const useStyles = makeStyles(theme => ({
   drawer: {
-    width: leftDrawerWidth,
+    width: miniDrawerWidth,
   },
   paper: {
     position: 'static',
@@ -184,7 +182,7 @@ const Canvas: React.FC<CanvasProps> = () => {
       const offset = monitor.getSourceClientOffset() || { x: 0, y: 0 };
 
       const id = v4();
-      const left = offset.x - leftDrawerWidth;
+      const left = offset.x - miniDrawerWidth;
       const top = offset.y - headerAndControlsHeight;
 
       switch (action.type) {
@@ -532,75 +530,92 @@ const Canvas: React.FC<CanvasProps> = () => {
         >
           {!theatricalMode && (
             <Flex style={{ minHeight: controlsHeight }}>
-              {focusedEditorId && (
-                <EditorControls
-                  editorState={focusedEditorState}
-                  setEditorState={setFocusedEditorState}
-                />
-              )}
-              {audioUploadOpen && (
-                <Dropzone
-                  onDrop={([audioFile]) => {
-                    const { name } = audioFile;
-                    const id = v4();
-                    const reader = new FileReader();
-                    reader.readAsDataURL(audioFile);
-                    // eslint-disable-next-line
-                    reader.onload = () => {
-                      putString(
-                        firebase.storage().ref(urlJoin('audio', uid, id)),
-                        String(reader.result),
-                        'data_url',
-                        { customMetadata: { name, id } },
-                      ).subscribe(({ bytesTransferred, totalBytes }) => {
-                        const percentage = Number(
-                          ((bytesTransferred / totalBytes) * 100).toFixed(0),
-                        );
-
-                        setUploadPercentage(percentage);
-
-                        if (percentage === 100) {
-                          setUploadPercentage(-1);
-                        }
-                      });
-                    };
-                  }}
-                  accept={['audio/*']}
-                  disabled={uploading}
-                >
-                  {({ getRootProps, getInputProps }) => {
-                    const rootProps = getRootProps();
+              {(() => {
+                switch (true) {
+                  case !!focusedEditorId:
                     return (
-                      <Flex
-                        {...(rootProps as any)}
-                        width="100%"
-                        height={100}
-                        justifyContent="center"
-                        alignItems="center"
-                      >
-                        <input {...getInputProps()} />
-                        <Flex alignItems="center">
-                          <Box mr={10}>
-                            {uploading ? (
-                              `${uploadPercentage} %`
-                            ) : (
-                              <Icon>
-                                <ArrowDownward />
-                              </Icon>
-                            )}
-                          </Box>
-                          <Typography
-                            style={{ display: 'inline-block', marginRight: 5 }}
-                          >
-                            Drop audio track here or
-                          </Typography>
-                          <Button disabled={uploading}>click to select</Button>
-                        </Flex>
-                      </Flex>
+                      <EditorControls
+                        editorState={focusedEditorState}
+                        setEditorState={setFocusedEditorState}
+                      />
                     );
-                  }}
-                </Dropzone>
-              )}
+
+                  case audioUploadOpen:
+                    return (
+                      <Dropzone
+                        onDrop={([audioFile]) => {
+                          const { name } = audioFile;
+                          const id = v4();
+                          const reader = new FileReader();
+                          reader.readAsDataURL(audioFile);
+                          // eslint-disable-next-line
+                          reader.onload = () => {
+                            putString(
+                              firebase.storage().ref(urlJoin('audio', uid, id)),
+                              String(reader.result),
+                              'data_url',
+                              { customMetadata: { name, id } },
+                            ).subscribe(({ bytesTransferred, totalBytes }) => {
+                              const percentage = Number(
+                                ((bytesTransferred / totalBytes) * 100).toFixed(
+                                  0,
+                                ),
+                              );
+
+                              setUploadPercentage(percentage);
+
+                              if (percentage === 100) {
+                                setUploadPercentage(-1);
+                              }
+                            });
+                          };
+                        }}
+                        accept={['audio/*']}
+                        disabled={uploading}
+                      >
+                        {({ getRootProps, getInputProps }) => {
+                          const rootProps = getRootProps();
+                          return (
+                            <Flex
+                              {...(rootProps as any)}
+                              width="100%"
+                              height={100}
+                              justifyContent="center"
+                              alignItems="center"
+                            >
+                              <input {...getInputProps()} />
+                              <Flex alignItems="center">
+                                <Box mr={10}>
+                                  {uploading ? (
+                                    `${uploadPercentage} %`
+                                  ) : (
+                                    <Icon>
+                                      <ArrowDownward />
+                                    </Icon>
+                                  )}
+                                </Box>
+                                <Typography
+                                  style={{
+                                    display: 'inline-block',
+                                    marginRight: 5,
+                                  }}
+                                >
+                                  Drop audio track here or
+                                </Typography>
+                                <Button disabled={uploading}>
+                                  click to select
+                                </Button>
+                              </Flex>
+                            </Flex>
+                          );
+                        }}
+                      </Dropzone>
+                    );
+
+                  default:
+                    return 'Default Controls';
+                }
+              })()}
             </Flex>
           )}
         </Box>
@@ -808,7 +823,7 @@ const Canvas: React.FC<CanvasProps> = () => {
             style={{
               borderTop: audioElement ? 'none' : dividingBorder,
               height: actionsTimelineOpen ? actionsTimelineHeight : 0,
-              width: `calc(100vw - ${leftDrawerWidth}px)`,
+              width: `calc(100vw - ${miniDrawerWidth}px)`,
               transition: 'height 500ms ease-in-out',
               overflow: 'hidden',
               marginTop: 'auto',
