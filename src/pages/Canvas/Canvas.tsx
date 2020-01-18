@@ -794,6 +794,9 @@ const Canvas: React.FC<CanvasProps> = () => {
 
                     setFocusedEditorState(initialEditorState);
                   }}
+                  onBlur={() => {
+                    setFocusedEditorId('');
+                  }}
                   onDragEnd={() => {
                     setFocusedEditorId('');
                   }}

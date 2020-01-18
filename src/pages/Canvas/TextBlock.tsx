@@ -6,7 +6,7 @@ import { useDrag } from 'react-dnd';
 import { Box } from 'rebass';
 import { dividingBorder } from 'styles';
 
-export interface TextBlockProps extends Omit<EditorProps, 'onBlur'> {
+export interface TextBlockProps extends EditorProps {
   onDragEnd: () => void;
 }
 
