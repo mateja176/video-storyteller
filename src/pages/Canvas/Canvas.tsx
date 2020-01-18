@@ -40,7 +40,7 @@ import {
   EditorState,
 } from 'draft-js';
 import { debounce } from 'lodash';
-import { draggable, draggables, DropAction } from 'models';
+import { draggable, draggables, DropAction, BlockState } from 'models';
 import firebase from 'my-firebase';
 import { storageImageWidth } from 'pages';
 import { Images } from 'pages/Images';
@@ -191,18 +191,26 @@ const Canvas: React.FC<CanvasProps> = () => {
         case 'text':
           return createBlockState({
             ...action,
-            id,
-            top,
-            left,
+            payload: {
+              block: action.payload,
+              id,
+              top,
+              left,
+              width: 0,
+              height: 0,
+            },
           });
         case 'image':
           return createBlockState({
             ...action,
-            id,
-            top,
-            left,
-            width: action.payload.width,
-            height: action.payload.height,
+            payload: {
+              block: action.payload,
+              id,
+              top,
+              left,
+              width: action.payload.width,
+              height: action.payload.height,
+            },
           });
         default:
           return undefined;
@@ -653,7 +661,9 @@ const Canvas: React.FC<CanvasProps> = () => {
           <Box ref={dropRef} flex={1}>
             <div ref={canvasRef}>
               {blockStates.map(blockState => {
-                const { id, top, left, width, height } = blockState;
+                const {
+                  payload: { id, top, left, width, height },
+                } = blockState;
 
                 return (
                   <Rnd
@@ -682,11 +692,14 @@ const Canvas: React.FC<CanvasProps> = () => {
                       const clientRect = elementRef.getBoundingClientRect();
                       updateResize({
                         ...blockState,
-                        top: y,
-                        left: x,
-                        width: clientRect.width,
-                        height: clientRect.height,
-                      });
+                        payload: {
+                          ...blockState.payload,
+                          top: y,
+                          left: x,
+                          width: clientRect.width,
+                          height: clientRect.height,
+                        },
+                      } as BlockState);
                     }}
                     onDragStop={(e, dragStopEvent) => {
                       const newTop = dragStopEvent.y;
@@ -695,9 +708,12 @@ const Canvas: React.FC<CanvasProps> = () => {
                       if (top !== newTop || left !== newLeft) {
                         updateMove({
                           ...blockState,
-                          top: newTop,
-                          left: newLeft,
-                        });
+                          payload: {
+                            ...blockState.payload,
+                            top: newTop,
+                            left: newLeft,
+                          },
+                        } as BlockState);
                       }
 
                       resume();
@@ -705,7 +721,7 @@ const Canvas: React.FC<CanvasProps> = () => {
                     disableDragging={focusedEditorId === id || disableDragging}
                     onMouseDown={() => {
                       if (deleteModeOn) {
-                        deleteBlockState({ id });
+                        deleteBlockState({ payload: { id } });
                         setDeleteModeOn(false);
                       }
                     }}
@@ -718,7 +734,9 @@ const Canvas: React.FC<CanvasProps> = () => {
                       switch (blockState.type) {
                         case 'text': {
                           const {
-                            payload: { editorState },
+                            payload: {
+                              block: { editorState },
+                            },
                           } = blockState;
 
                           return (
@@ -748,7 +766,7 @@ const Canvas: React.FC<CanvasProps> = () => {
                                 );
                                 if (
                                   !equals(
-                                    blockState.payload.editorState,
+                                    blockState.payload.block.editorState,
                                     newEditorState,
                                   )
                                 ) {
@@ -756,7 +774,7 @@ const Canvas: React.FC<CanvasProps> = () => {
                                     ...blockState,
                                     payload: {
                                       ...blockState.payload,
-                                      editorState: newEditorState,
+                                      block: { editorState: newEditorState },
                                     },
                                   });
                                 }
@@ -775,7 +793,9 @@ const Canvas: React.FC<CanvasProps> = () => {
                         }
                         case 'image': {
                           const {
-                            payload: { downloadUrl, name },
+                            payload: {
+                              block: { downloadUrl, name },
+                            },
                           } = blockState;
 
                           return (

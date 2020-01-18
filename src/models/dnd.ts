@@ -1,7 +1,8 @@
 import { RawDraftContentState } from 'draft-js';
-import { CustomMetadata, StorageFile } from 'store';
-import { createAction } from 'typesafe-actions';
+import { CustomMetadata } from 'store';
+import { createAction, PayloadAction } from 'typesafe-actions';
 import { toObject } from 'utils';
+import { WithDownloadUrl } from '../store/slices/storage';
 
 export const draggables = ['text', 'image'] as const;
 
@@ -23,8 +24,7 @@ export const createDropText = createAction(
 export type CreateDropText = typeof createDropText;
 export type DropTextAction = ReturnType<CreateDropText>;
 
-export type DropImagePayload = Omit<CustomMetadata, 'id'> &
-  Pick<StorageFile, 'downloadUrl'>;
+export type DropImagePayload = Omit<CustomMetadata, 'id'> & WithDownloadUrl;
 
 export const createDropImage = createAction(
   draggable.image,
@@ -39,21 +39,24 @@ export type DropPayload = DropAction['payload'];
 export interface WithDropResult {
   top: number;
   left: number;
+  width: number;
+  height: number;
 }
 
 export interface WithId {
   id: string;
 }
 
-export interface GenericBlockState<
+export interface BlockPayload<Payload extends DropPayload>
+  extends WithId,
+    WithDropResult {
+  block: Payload;
+}
+
+export type GenericBlockState<
   Type extends Draggables,
   Payload extends DropPayload
-> extends WithId, WithDropResult {
-  width?: number;
-  height?: number;
-  type: Type;
-  payload: Payload;
-}
+> = PayloadAction<Type, BlockPayload<Payload>>;
 
 export type TextBlockState = GenericBlockState<
   Draggable['text'],

@@ -3,7 +3,7 @@ import { Button } from 'components';
 import { convertFromRaw } from 'draft-js';
 import { Form, Formik } from 'formik';
 import { lowerCase } from 'lodash';
-import { ImageBlockState, TextBlockState, WithDropResult } from 'models';
+import { ImageBlockState, WithDropResult } from 'models';
 import { equals } from 'ramda';
 import React from 'react';
 import { Flex } from 'rebass';
@@ -21,6 +21,7 @@ import {
   isUpdateEditAction,
   isUpdateMoveAction,
   isUpdateRenameImageAction,
+  isUpdateResizeAction,
 } from './utils';
 
 const textFieldProps = {
@@ -31,14 +32,12 @@ const textFieldProps = {
 interface InitialValues {
   duration: number;
 }
-type TextBlockPayload = TextBlockState['payload'];
-type ImageBlockPayload = ImageBlockState['payload'];
+type ImageBlock = ImageBlockState['payload']['block'];
 interface Values
   extends InitialValues,
     WithDropResult,
     TransformState,
-    Omit<TextBlockPayload, 'editorState'>,
-    Pick<ImageBlockPayload, 'name'> {
+    Pick<ImageBlock, 'name'> {
   editorState: string;
 }
 
@@ -59,8 +58,10 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
 }) => {
   const formatedInitialValues: Values = {
     ...initialValues,
-    left: isUpdateMoveAction(action) ? action.payload.left : 0,
-    top: isUpdateMoveAction(action) ? action.payload.top : 0,
+    width: isUpdateResizeAction(action) ? action.payload.payload.width : 0,
+    height: isUpdateResizeAction(action) ? action.payload.payload.height : 0,
+    left: isUpdateMoveAction(action) ? action.payload.payload.left : 0,
+    top: isUpdateMoveAction(action) ? action.payload.payload.top : 0,
     scale:
       isScaleAction(action) || isSetTransformAction(action)
         ? formatScale(action.payload.scale)
@@ -78,9 +79,11 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
         ? formatCoordinate(action.payload.y)
         : initialTransformState.y,
     editorState: isUpdateEditAction(action)
-      ? convertFromRaw(action.payload.payload.editorState).getPlainText()
+      ? convertFromRaw(action.payload.payload.block.editorState).getPlainText()
       : '',
-    name: isUpdateRenameImageAction(action) ? action.payload.payload.name : '',
+    name: isUpdateRenameImageAction(action)
+      ? action.payload.payload.block.name
+      : '',
   };
 
   return (

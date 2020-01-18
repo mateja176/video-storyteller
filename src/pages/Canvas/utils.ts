@@ -12,6 +12,7 @@ import {
   updateActionTypes,
   UpdateEditTextAction,
   UpdateRenameImageAction,
+  UpdateResizeAction,
 } from './store/blockStates';
 import {
   PositionAction,
@@ -65,6 +66,10 @@ export const isUpdateEditAction = (
 export const isUpdateRenameImageAction = (
   action: Action,
 ): action is UpdateRenameImageAction => action.type === 'update/renameImage';
+
+export const isUpdateResizeAction = (
+  action: Action,
+): action is UpdateResizeAction => action.type === 'update/resize';
 
 export const isTransformActionType = (
   type: string,

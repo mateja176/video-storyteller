@@ -120,7 +120,7 @@ const StoryMonitor = ({
 
   const hoveredActionId =
     hoveredAction && isCudAction(hoveredAction.action)
-      ? hoveredAction.action.payload.id
+      ? hoveredAction.action.payload.payload.id
       : '';
 
   const theme = useTheme();
@@ -452,9 +452,11 @@ const StoryMonitor = ({
                     width: cardWidth,
                     height: '100%',
                     border:
-                      (isCud &&
-                        (action as CudAction).payload.id === hoveredActionId) ||
-                      (action as CudAction).payload.id === hoveredBlockId
+                      isCud &&
+                      ((action as CudAction).payload.payload.id ===
+                        hoveredActionId ||
+                        (action as CudAction).payload.payload.id ===
+                          hoveredBlockId)
                         ? `1px solid ${
                             deleteHovered
                               ? theme.palette.secondary.light
@@ -470,7 +472,8 @@ const StoryMonitor = ({
                     if (!isPlaying) {
                       // dispatch(ActionCreators.jumpToAction(id));
                       if (isCud) {
-                        const actionId = (action as CudAction).payload.id;
+                        const actionId = (action as CudAction).payload.payload
+                          .id;
                         setHoveredBlockId(actionId);
                       }
                       setHoveredCardId(id);
@@ -540,8 +543,8 @@ const StoryMonitor = ({
                           const actionsToDelete = editableActions
                             .filter(
                               actionById =>
-                                (actionById.action as CudAction).payload.id ===
-                                hoveredActionId,
+                                (actionById.action as CudAction).payload.payload
+                                  .id === hoveredActionId,
                             )
                             .map(actionById => actionById.id);
 
@@ -611,12 +614,15 @@ const StoryMonitor = ({
 
                         if (
                           isUpdateMoveAction(action) &&
-                          (action.payload.left !== left ||
-                            action.payload.top !== top)
+                          (action.payload.payload.left !== left ||
+                            action.payload.payload.top !== top)
                         ) {
                           store.dispatch({
                             ...action,
-                            payload: { ...action.payload, left, top },
+                            payload: {
+                              ...action.payload,
+                              payload: { ...action.payload.payload, left, top },
+                            },
                           } as UpdateMoveAction);
 
                           deleteAction(id);

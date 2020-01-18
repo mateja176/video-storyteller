@@ -50,7 +50,7 @@ export type UpdateMoveAction = ReturnType<typeof createUpdateMove>;
 
 export const createUpdateResize = createAction(
   cudActionType['update/resize'],
-  action => (payload: Required<BlockState>) => action(payload),
+  action => (payload: BlockState) => action(payload),
 );
 export type UpdateResizeAction = ReturnType<typeof createUpdateResize>;
 
@@ -76,7 +76,7 @@ export type UpdateAction =
 
 export const createDeleteAction = createAction(
   cudActionType.delete,
-  action => (payload: WithId) => action(payload),
+  action => (payload: { payload: WithId }) => action(payload),
 );
 export type DeleteAction = ReturnType<typeof createDeleteAction>;
 
@@ -87,7 +87,9 @@ export type CudActions = CudAction[];
 export type BlockStatesAction = CudAction;
 
 const updateState = (state: BlockStates, { payload }: UpdateAction) => {
-  const blockIndex = state.findIndex(block => block.id === payload.id);
+  const blockIndex = state.findIndex(
+    ({ payload: { id } }) => id === payload.payload.id,
+  );
 
   const updatedBlock = { ...state[blockIndex], ...payload };
 
@@ -98,7 +100,8 @@ const updateState = (state: BlockStates, { payload }: UpdateAction) => {
 
 export default createReducer(initialState)<BlockStatesAction>({
   create: (state, { payload }) => state.concat(payload),
-  delete: (state, { payload }) => state.filter(({ id }) => id !== payload.id),
+  delete: (state, { payload }) =>
+    state.filter(({ payload: { id } }) => id !== payload.payload.id),
   'update/move': updateState,
   'update/resize': updateState,
   'update/editText': updateState,

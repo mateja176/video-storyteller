@@ -5,7 +5,7 @@
 import { BlockState } from 'models';
 import { createContext } from 'react';
 
-type HoveredBlockId = BlockState['id'];
+type HoveredBlockId = BlockState['payload']['id'];
 export const initialHoveredBlockId: HoveredBlockId = '';
 
 export type IsPlaying = boolean;
