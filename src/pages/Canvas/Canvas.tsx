@@ -625,7 +625,6 @@ const Canvas: React.FC<CanvasProps> = () => {
                         style={{
                           paddingTop: 0,
                           paddingBottom: 0,
-                          height: '100%',
                         }}
                       >
                         <ListItem
