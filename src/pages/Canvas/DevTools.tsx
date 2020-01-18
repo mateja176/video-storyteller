@@ -97,6 +97,7 @@ const StoryMonitor = ({
     elapsedTime,
     setElapsedTime,
     setTotalElapsedTime,
+    setSetSave,
   } = React.useContext(CanvasContext);
 
   const stagedActions = stagedActionIds.map<ActionWithId>(id => ({
@@ -105,6 +106,12 @@ const StoryMonitor = ({
   }));
 
   const editableActions = stagedActions.slice(1);
+
+  React.useEffect(() => {
+    setSetSave(() => {
+      console.log(editableActions); // eslint-disable-line no-console
+    });
+  }, [editableActions]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [hoveredCardId, setHoveredCardId] = React.useState(
     initialHoveredCardId,

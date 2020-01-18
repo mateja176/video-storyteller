@@ -1,11 +1,11 @@
 /* eslint-disable indent */
-
 import {
   Drawer,
   Icon,
   List,
   ListItem,
   ListItemIcon,
+  ListItemText,
   makeStyles,
   Paper,
   Typography,
@@ -20,6 +20,7 @@ import {
   FullscreenExit,
   Image,
   LibraryMusic,
+  Save,
   Title,
   Tv,
   TvOff,
@@ -67,6 +68,7 @@ import {
   CanvasContext,
   initialElapsedTime,
   initialHoveredBlockId,
+  SetSave,
 } from './CanvasContext';
 import DevTools, { miniDrawerWidth } from './DevTools';
 import store, {
@@ -381,6 +383,11 @@ const Canvas: React.FC<CanvasProps> = () => {
     }
   }, [totalElapsedTime, audioElement]);
 
+  const setSave = React.useRef<SetSave>(() => {});
+  const setSetSave = (newSetSave: SetSave) => {
+    setSave.current = newSetSave; // eslint-disable-line
+  };
+
   return (
     <Flex
       style={{
@@ -613,7 +620,28 @@ const Canvas: React.FC<CanvasProps> = () => {
                     );
 
                   default:
-                    return 'Default Controls';
+                    return (
+                      <List
+                        style={{
+                          paddingTop: 0,
+                          paddingBottom: 0,
+                          height: '100%',
+                        }}
+                      >
+                        <ListItem
+                          button
+                          style={{ height: '100%' }}
+                          onClick={setSave.current}
+                        >
+                          <ListItemIcon
+                            style={{ minWidth: 'auto', marginRight: 10 }}
+                          >
+                            <Save />
+                          </ListItemIcon>
+                          <ListItemText>Save</ListItemText>
+                        </ListItem>
+                      </List>
+                    );
                 }
               })()}
             </Flex>
@@ -852,6 +880,7 @@ const Canvas: React.FC<CanvasProps> = () => {
                 setElapsedTime,
                 totalElapsedTime,
                 setTotalElapsedTime,
+                setSetSave,
               }}
             >
               <DevTools store={store} />

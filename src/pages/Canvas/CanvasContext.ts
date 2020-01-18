@@ -13,6 +13,9 @@ export type IsPlaying = boolean;
 export type ElapsedTime = number;
 export const initialElapsedTime: ElapsedTime = -1;
 
+export type SetSave = () => void;
+export type SetSetSave = (setSave: SetSave) => void;
+
 export const CanvasContext = createContext<{
   hoveredBlockId: HoveredBlockId;
   setHoveredBlockId: (id: HoveredBlockId) => void;
@@ -22,6 +25,7 @@ export const CanvasContext = createContext<{
   setElapsedTime: (elapsed: ElapsedTime) => void;
   totalElapsedTime: ElapsedTime;
   setTotalElapsedTime: (elapsed: ElapsedTime) => void;
+  setSetSave: SetSetSave;
 }>({
   hoveredBlockId: initialHoveredBlockId,
   setHoveredBlockId: () => {},
@@ -31,4 +35,5 @@ export const CanvasContext = createContext<{
   setElapsedTime: () => {},
   totalElapsedTime: initialElapsedTime,
   setTotalElapsedTime: () => {},
+  setSetSave: () => {},
 });
