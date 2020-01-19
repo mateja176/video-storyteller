@@ -25,6 +25,7 @@ import {
   Tv,
   TvOff,
 } from '@material-ui/icons';
+import color from 'color';
 import {
   Button,
   Editor,
@@ -40,7 +41,7 @@ import {
   EditorState,
 } from 'draft-js';
 import { debounce } from 'lodash';
-import { draggable, draggables, DropAction, BlockState } from 'models';
+import { BlockState, draggable, draggables, DropAction } from 'models';
 import firebase from 'my-firebase';
 import { storageImageWidth } from 'pages';
 import { Images } from 'pages/Images';
@@ -869,7 +870,12 @@ const Canvas: React.FC<CanvasProps> = () => {
           </RightDrawer>
         </Flex>
         <Box>
-          <Box height={progressHeight}>
+          <Box
+            height={progressHeight}
+            bg={color(theme.palette.primary.light)
+              .alpha(0.5)
+              .toString()}
+          >
             {audioElement && (
               <Progress
                 duration={audioElement.duration * 1000}
@@ -881,7 +887,6 @@ const Canvas: React.FC<CanvasProps> = () => {
           </Box>
           <Paper
             style={{
-              borderTop: audioElement ? 'none' : dividingBorder,
               height: actionsTimelineOpen ? actionsTimelineHeight : 0,
               width: `calc(100vw - ${miniDrawerWidth}px)`,
               transition: 'height 500ms ease-in-out',
