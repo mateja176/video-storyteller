@@ -1,27 +1,36 @@
-import React from 'react';
-import { Box, Flex } from 'rebass';
 import { Typography } from '@material-ui/core';
 import { startCase } from 'lodash';
+import React from 'react';
+import { Box, Flex } from 'rebass';
+import { CreateSetAudio } from './store/audio';
 
 export type AudioElement = HTMLAudioElement | null;
 
 export type AudioProps = React.HTMLProps<HTMLAudioElement>;
 
-export interface AudioBlockProps extends Pick<AudioProps, 'src'> {
-  activeId: AudioProps['id'];
+export interface AudioBlockProps extends Required<Pick<AudioProps, 'src'>> {
+  selectedDownloadUrl: AudioProps['id'];
   name: string;
-  onClick: (e: AudioElement) => void;
+  setAudioElement: (e: AudioElement) => void;
+  setAudio: CreateSetAudio;
 }
 
 const AudioBlock: React.FC<AudioBlockProps> = ({
-  onClick,
+  setAudioElement,
+  setAudio,
   src,
   name,
-  activeId,
+  selectedDownloadUrl,
 }) => {
   const audioRef = React.useRef<AudioElement>(null);
 
-  const isActive = activeId === name;
+  const isActive = selectedDownloadUrl === src;
+
+  React.useEffect(() => {
+    if (isActive && audioRef.current) {
+      setAudioElement(audioRef.current);
+    }
+  }, [isActive, setAudioElement]);
 
   return (
     <Box
@@ -29,7 +38,9 @@ const AudioBlock: React.FC<AudioBlockProps> = ({
       pb={2}
       onClick={() => {
         if (!isActive) {
-          onClick(audioRef.current);
+          setAudioElement(audioRef.current);
+
+          setAudio({ downloadUrl: src });
         }
       }}
       style={{ cursor: 'pointer' }}

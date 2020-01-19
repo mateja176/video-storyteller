@@ -1,20 +1,26 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector as useStoreSelector } from 'react-redux';
 import { Box } from 'rebass';
 import { createFetchFiles, selectAudio } from 'store';
-import { useActions } from 'utils';
-import AudioBlock, { AudioElement, AudioBlockProps } from './AudioBlock';
+import { useActions as useStoreActions } from 'utils';
+import AudioBlock, { AudioElement } from './AudioBlock';
+import { selectDownloadUrl, useActions, useSelector } from './store';
+import { createSetAudio } from './store/audio';
 
-export interface AudioProps extends Pick<AudioBlockProps, 'activeId'> {
+export interface AudioProps {
   setAudioElement: (element: AudioElement) => void;
 }
 
-const Audio: React.FC<AudioProps> = ({ setAudioElement, activeId }) => {
-  const { fetchFiles } = useActions({
+const Audio: React.FC<AudioProps> = ({ setAudioElement }) => {
+  const { fetchFiles } = useStoreActions({
     fetchFiles: createFetchFiles.request,
   });
 
-  const audio = useSelector(selectAudio);
+  const audio = useStoreSelector(selectAudio);
+
+  const { setAudio } = useActions({ setAudio: createSetAudio });
+
+  const selectedDownloadUrl = useSelector(selectDownloadUrl);
 
   React.useEffect(() => {
     fetchFiles({ path: 'audio' });
@@ -27,8 +33,9 @@ const Audio: React.FC<AudioProps> = ({ setAudioElement, activeId }) => {
           key={downloadUrl}
           src={downloadUrl}
           name={name}
-          onClick={setAudioElement}
-          activeId={activeId}
+          setAudioElement={setAudioElement}
+          setAudio={setAudio}
+          selectedDownloadUrl={selectedDownloadUrl}
         />
       ))}
     </Box>

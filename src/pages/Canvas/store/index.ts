@@ -12,6 +12,7 @@ import {
 } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { createSelector, Selector } from 'reselect';
+import audio, { AudioAction } from './audio';
 import blockStates, { BlockStatesAction } from './blockStates';
 import { middleware } from './middleware';
 import transform, { TransformAction } from './transform';
@@ -19,6 +20,7 @@ import transform, { TransformAction } from './transform';
 const actionReducerMap = {
   blockStates,
   transform,
+  audio,
 };
 
 type ActionReducerMap = typeof actionReducerMap;
@@ -27,7 +29,7 @@ export type State = {
   [key in keyof ActionReducerMap]: ReturnType<ActionReducerMap[key]>;
 };
 
-export type Action = BlockStatesAction | TransformAction;
+export type Action = BlockStatesAction | TransformAction | AudioAction;
 
 const reducer: Reducer<State, Action> = combineReducers(actionReducerMap);
 
@@ -49,6 +51,12 @@ export const selectScale = createSelector(
 export const selectPosition = createSelector(
   selectTransform,
   ({ scale, ...position }) => position,
+);
+
+export const selectAudio = (state: State) => state.audio;
+export const selectDownloadUrl = createSelector(
+  selectAudio,
+  ({ downloadUrl }) => downloadUrl,
 );
 
 export const useSelector = <R>(selector: Selector<State, R>) => {

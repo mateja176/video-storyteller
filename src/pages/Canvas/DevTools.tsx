@@ -66,7 +66,7 @@ const initialTimeoutStart = 0;
 
 const cardWidth = 300 - 2 * 10;
 
-const cudTypeBackgroundColorMap: Record<
+const actionTypeBackgroundColorMap: Record<
   Action['type'],
   React.CSSProperties['background']
 > = {
@@ -79,6 +79,7 @@ const cudTypeBackgroundColorMap: Record<
   'transform/scale/set': 'blue',
   'transform/position/set': 'gray',
   'transform/set': 'brown',
+  'audio/set': 'black',
 };
 
 const StoryMonitor = ({
@@ -470,7 +471,7 @@ const StoryMonitor = ({
               >
                 <Card
                   style={{
-                    background: color(cudTypeBackgroundColorMap[action.type])
+                    background: color(actionTypeBackgroundColorMap[action.type])
                       .alpha(isCurrentAction ? 0.4 : 0.2)
                       .toString(),
                     width: cardWidth,

@@ -863,10 +863,7 @@ const Canvas: React.FC<CanvasProps> = () => {
             height={rightDrawerHeight}
             width={storageImageWidth + 32}
           >
-            <Audio
-              setAudioElement={setAudioElement}
-              activeId={(audioElement && audioElement.id) || ''}
-            />
+            <Audio setAudioElement={setAudioElement} />
           </RightDrawer>
         </Flex>
         <Box>
