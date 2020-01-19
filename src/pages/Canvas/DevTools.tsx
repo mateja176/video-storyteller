@@ -107,27 +107,6 @@ const StoryMonitor = ({
 
   const editableActions = stagedActions.slice(1);
 
-  React.useEffect(() => {
-    setSetSave(() => {
-      console.log(actionsById); // eslint-disable-line no-console
-      console.log(stagedActionIds); // eslint-disable-line no-console
-      console.log(skippedActionIds); // eslint-disable-line no-console
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [actionsById, stagedActionIds, skippedActionIds]);
-
-  const [hoveredCardId, setHoveredCardId] = React.useState(
-    initialHoveredCardId,
-  );
-  const hoveredAction = actionsById[hoveredCardId];
-
-  const hoveredActionId =
-    hoveredAction && isCudAction(hoveredAction.action)
-      ? hoveredAction.action.payload.payload.id
-      : '';
-
-  const theme = useTheme();
-
   const [durations, setDurations] = React.useState<Durations>(
     editableActions.reduce<Durations>(
       (initialDurations, action, i, actions) => {
@@ -143,6 +122,28 @@ const StoryMonitor = ({
       [],
     ),
   );
+
+  React.useEffect(() => {
+    setSetSave(() => {
+      console.log(actionsById); // eslint-disable-line no-console
+      console.log(stagedActionIds); // eslint-disable-line no-console
+      console.log(skippedActionIds); // eslint-disable-line no-console
+      console.log(durations); // eslint-disable-line no-console
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [actionsById, stagedActionIds, skippedActionIds]);
+
+  const [hoveredCardId, setHoveredCardId] = React.useState(
+    initialHoveredCardId,
+  );
+  const hoveredAction = actionsById[hoveredCardId];
+
+  const hoveredActionId =
+    hoveredAction && isCudAction(hoveredAction.action)
+      ? hoveredAction.action.payload.payload.id
+      : '';
+
+  const theme = useTheme();
 
   const [actionsCount, setActionsCount] = React.useState(
     editableActions.length,
