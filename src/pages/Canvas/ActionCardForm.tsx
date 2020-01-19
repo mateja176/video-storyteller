@@ -27,6 +27,9 @@ import {
 const textFieldProps = {
   variant: 'outlined',
   margin: 'dense',
+  onMouseDown: (e: React.MouseEvent) => {
+    e.stopPropagation();
+  },
 } as const;
 
 interface InitialValues {
