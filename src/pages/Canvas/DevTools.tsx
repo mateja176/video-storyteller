@@ -56,7 +56,7 @@ import {
 
 export const miniDrawerWidth = 55;
 
-type Durations = { id: ActionWithId['id']; value: number }[];
+type Durations = number[];
 
 const initialHoveredCardId: number = -1;
 
@@ -114,12 +114,9 @@ const StoryMonitor = ({
       (initialDurations, action, i, actions) => {
         const followingAction = nth(i + 1, actions);
 
-        return initialDurations.concat({
-          id: action.id,
-          value: followingAction
-            ? followingAction.timestamp - action.timestamp
-            : 0,
-        });
+        return initialDurations.concat(
+          followingAction ? followingAction.timestamp - action.timestamp : 0,
+        );
       },
       [],
     ),
@@ -180,7 +177,7 @@ const StoryMonitor = ({
             setElapsedTime(initialElapsedTime);
           }
           dispatch(ActionCreators.jumpToAction(nextActiveActionId));
-        }, currentDuration.value - elapsed);
+        }, currentDuration - elapsed);
 
         setTimeoutStart(Date.now());
 
@@ -217,19 +214,12 @@ const StoryMonitor = ({
         durations
           .slice(0, -1)
           .concat(
-            nextToLastEditableAction
-              ? {
-                  id: nextToLastEditableAction.id,
-                  value:
-                    lastEditableAction!.timestamp -
-                    nextToLastEditableAction.timestamp,
-                }
+            lastEditableAction && nextToLastEditableAction
+              ? lastEditableAction.timestamp -
+                  nextToLastEditableAction.timestamp
               : [],
           )
-          .concat({
-            id: lastEditableAction!.id,
-            value: 0,
-          }),
+          .concat(0),
       );
       if (currentStateIndex < lastStateIndex) {
         dispatch(ActionCreators.jumpToState(lastStateIndex));
@@ -264,7 +254,7 @@ const StoryMonitor = ({
   const deleteAction = (
     id: Parameters<typeof ActionCreators.toggleAction>[0],
   ) => {
-    setDurations(durations.filter(duration => duration.id !== id));
+    setDurations(durations.filter((_, i) => i !== stagedActionIds.indexOf(id)));
 
     toggleActions(skippedActionIds);
     dispatch(ActionCreators.toggleAction(id));
@@ -272,9 +262,10 @@ const StoryMonitor = ({
     toggleActions(skippedActionIds);
   };
   const deleteActions = (actionsToDelete: typeof stagedActionIds) => {
-    setDurations(
-      durations.filter(timestamp => !actionsToDelete.includes(timestamp.id)),
+    const indexesToDelete = actionsToDelete.map(id =>
+      stagedActionIds.indexOf(id),
     );
+    setDurations(durations.filter((_, i) => !indexesToDelete.includes(i)));
 
     toggleActions(skippedActionIds);
     toggleActions(
@@ -410,8 +401,7 @@ const StoryMonitor = ({
           }}
         >
           {editableActions.map(({ action, id }, i) => {
-            const durationObject = nth(i, durations);
-            const duration = durationObject ? durationObject.value : 0;
+            const duration = nth(i, durations) || 0;
 
             const isCurrentAction = id === currentActionId;
 
@@ -509,7 +499,7 @@ const StoryMonitor = ({
 
                       const precedingDurations = durations.slice(0, i);
                       const newTotalElapsedTime = precedingDurations.reduce(
-                        (totalElapsed, dur) => totalElapsed + dur.value,
+                        (totalElapsed, dur) => totalElapsed + dur,
                         0,
                       );
 
@@ -602,9 +592,7 @@ const StoryMonitor = ({
                         ...transform
                       }) => {
                         if (duration !== newDuration) {
-                          setDurations(
-                            update(i, { id, value: newDuration }, durations),
-                          );
+                          setDurations(update(i, newDuration, durations));
                         }
 
                         if (isUpdateRenameImageAction(action)) {
