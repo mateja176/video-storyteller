@@ -142,6 +142,17 @@ const StoryMonitor = ({
       ? hoveredAction.action.payload.payload.id
       : '';
 
+  const timelineRef = React.useRef<HTMLDivElement | null>(null);
+
+  const scrollByOneCard = () => {
+    if (timelineRef.current) {
+      timelineRef.current.scrollBy({
+        left: cardWidth + 2 * 10,
+        behavior: 'smooth',
+      });
+    }
+  };
+
   const theme = useTheme();
 
   const [actionsCount, setActionsCount] = React.useState(
@@ -177,6 +188,8 @@ const StoryMonitor = ({
             setElapsedTime(initialElapsedTime);
           }
           dispatch(ActionCreators.jumpToAction(nextActiveActionId));
+
+          scrollByOneCard();
         }, currentDuration - elapsed);
 
         setTimeoutStart(Date.now());
@@ -208,6 +221,8 @@ const StoryMonitor = ({
     if (actionsCount < editableActions.length) {
       setActionsCount(actionsCount + 1);
       setLastJumpedToActionId(lastEditableActionId);
+
+      scrollByOneCard();
 
       if (currentStateIndex < lastStateIndex) {
         setDurations(insert(currentStateIndex, 1000, durations));
@@ -377,7 +392,12 @@ const StoryMonitor = ({
         </ListItem>
       </List>
       <Divider orientation="vertical" />
-      <Flex style={{ overflowX: 'auto' }} width="100%" height="100%">
+      <Flex
+        ref={timelineRef}
+        style={{ overflowX: 'auto' }}
+        width="100%"
+        height="100%"
+      >
         <GridLayout
           style={{ height: '100%', width: '100%' }}
           isResizable={false}
