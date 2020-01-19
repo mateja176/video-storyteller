@@ -93,9 +93,15 @@ export interface MonitorState {}
 
 export type ActionId = number;
 
+export type ActionWithMeta = Action & {
+  meta: {
+    previousActionDuration: number;
+  };
+};
+
 export interface ActionById {
   type: string;
-  action: Action;
+  action: ActionWithMeta;
   timestamp: number;
 }
 
