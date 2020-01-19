@@ -109,9 +109,12 @@ const StoryMonitor = ({
 
   React.useEffect(() => {
     setSetSave(() => {
-      console.log(editableActions); // eslint-disable-line no-console
+      console.log(actionsById); // eslint-disable-line no-console
+      console.log(stagedActionIds); // eslint-disable-line no-console
+      console.log(skippedActionIds); // eslint-disable-line no-console
     });
-  }, [editableActions]); // eslint-disable-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [actionsById, stagedActionIds, skippedActionIds]);
 
   const [hoveredCardId, setHoveredCardId] = React.useState(
     initialHoveredCardId,
