@@ -100,6 +100,8 @@ const StoryMonitor = ({
     setSetSave,
   } = React.useContext(CanvasContext);
 
+  const elapsed = elapsedTime > initialElapsedTime ? elapsedTime : 0;
+
   const stagedActions = stagedActionIds.map<ActionWithId>(id => ({
     ...actionsById[id],
     id,
@@ -174,10 +176,11 @@ const StoryMonitor = ({
     () => {
       if (nextActiveActionId && isPlaying && currentDuration) {
         const timeout = setTimeout(() => {
-          setElapsedTime(0);
-
+          if (elapsed) {
+            setElapsedTime(initialElapsedTime);
+          }
           dispatch(ActionCreators.jumpToAction(nextActiveActionId));
-        }, currentDuration.value - elapsedTime);
+        }, currentDuration.value - elapsed);
 
         setTimeoutStart(Date.now());
 
@@ -197,7 +200,7 @@ const StoryMonitor = ({
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [nextActiveActionId, isPlaying, currentDuration, elapsedTime],
+    [nextActiveActionId, isPlaying, currentDuration],
   );
 
   const areThereNoEditableActions = !editableActions.length;
