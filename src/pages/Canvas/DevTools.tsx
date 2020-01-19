@@ -222,10 +222,10 @@ const StoryMonitor = ({
           .concat(0),
       );
       if (currentStateIndex < lastStateIndex) {
-        dispatch(ActionCreators.jumpToState(lastStateIndex));
         dispatch(
           ActionCreators.reorderAction(lastEditableActionId, nextActionId),
         );
+        dispatch(ActionCreators.jumpToState(nextActionId));
       }
     }
     if (actionsCount > editableActions.length) {
