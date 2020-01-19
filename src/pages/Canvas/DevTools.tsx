@@ -20,7 +20,7 @@ import {
 } from '@material-ui/icons';
 import color from 'color';
 import { IconButton, Progress, progressHeight, Tooltip } from 'components';
-import { equals, init, last, nth, update } from 'ramda';
+import { equals, init, last, nth, update, insert } from 'ramda';
 import React from 'react';
 import GridLayout from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
@@ -209,18 +209,22 @@ const StoryMonitor = ({
       setActionsCount(actionsCount + 1);
       setLastJumpedToActionId(lastEditableActionId);
 
-      const nextToLastEditableAction = last(init(editableActions));
-      setDurations(
-        durations
-          .slice(0, -1)
-          .concat(
-            lastEditableAction && nextToLastEditableAction
-              ? lastEditableAction.timestamp -
-                  nextToLastEditableAction.timestamp
-              : [],
-          )
-          .concat(0),
-      );
+      if (currentStateIndex < lastStateIndex) {
+        setDurations(insert(currentStateIndex, 1000, durations));
+      } else {
+        const nextToLastEditableAction = last(init(editableActions));
+        setDurations(
+          durations
+            .slice(0, -1)
+            .concat(
+              lastEditableAction && nextToLastEditableAction
+                ? lastEditableAction.timestamp -
+                    nextToLastEditableAction.timestamp
+                : [],
+            )
+            .concat(0),
+        );
+      }
       if (currentStateIndex < lastStateIndex) {
         dispatch(
           ActionCreators.reorderAction(lastEditableActionId, nextActionId),
@@ -241,6 +245,7 @@ const StoryMonitor = ({
     lastEditableAction,
     nextActionId,
     durations,
+    stagedActionIds,
   ]);
 
   const toggleActions = (actionIds: typeof stagedActionIds) => {
@@ -254,7 +259,9 @@ const StoryMonitor = ({
   const deleteAction = (
     id: Parameters<typeof ActionCreators.toggleAction>[0],
   ) => {
-    setDurations(durations.filter((_, i) => i !== stagedActionIds.indexOf(id)));
+    setDurations(
+      durations.filter((_, i) => i !== stagedActionIds.indexOf(id) - 1),
+    );
 
     toggleActions(skippedActionIds);
     dispatch(ActionCreators.toggleAction(id));
@@ -262,8 +269,8 @@ const StoryMonitor = ({
     toggleActions(skippedActionIds);
   };
   const deleteActions = (actionsToDelete: typeof stagedActionIds) => {
-    const indexesToDelete = actionsToDelete.map(id =>
-      stagedActionIds.indexOf(id),
+    const indexesToDelete = actionsToDelete.map(
+      id => stagedActionIds.indexOf(id) - 1,
     );
     setDurations(durations.filter((_, i) => !indexesToDelete.includes(i)));
 
