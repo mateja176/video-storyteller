@@ -227,6 +227,11 @@ const StoryMonitor = ({
 
       if (currentStateIndex < lastStateIndex) {
         setDurations(insert(currentStateIndex, 1000, durations));
+
+        dispatch(
+          ActionCreators.reorderAction(lastEditableActionId, nextActionId),
+        );
+        dispatch(ActionCreators.jumpToAction(lastEditableActionId));
       } else {
         const nextToLastEditableAction = last(init(editableActions));
         setDurations(
@@ -240,12 +245,6 @@ const StoryMonitor = ({
             )
             .concat(0),
         );
-      }
-      if (currentStateIndex < lastStateIndex) {
-        dispatch(
-          ActionCreators.reorderAction(lastEditableActionId, nextActionId),
-        );
-        dispatch(ActionCreators.jumpToState(nextActionId));
       }
     }
     if (actionsCount > editableActions.length) {
