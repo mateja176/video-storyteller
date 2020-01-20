@@ -67,7 +67,8 @@ const initialPlayTimeout = -1;
 
 const initialTimeoutStart = 0;
 
-const cardWidth = 300 - 2 * 10;
+const fullCardWidth = 300;
+const cardWidth = fullCardWidth - 2 * 10;
 
 const actionTypeBackgroundColorMap: Record<
   Action['type'],
@@ -151,7 +152,7 @@ const StoryMonitor = ({
   const scrollByOneCard = () => {
     if (timelineRef.current) {
       timelineRef.current.scrollBy({
-        left: cardWidth + 2 * 10,
+        left: fullCardWidth,
         behavior: 'smooth',
       });
     }
@@ -420,11 +421,7 @@ const StoryMonitor = ({
         <GridLayout
           style={{ height: '100%', width: '100%' }}
           isResizable={false}
-          width={
-            cardWidth * editableActions.length +
-            20 +
-            (editableActions.length - 1) * 10
-          }
+          width={10 + (cardWidth + 10) * editableActions.length}
           rowHeight={cardWidth}
           layout={editableActions.map(({ id }, i) => ({
             i: id.toString(),
@@ -479,7 +476,7 @@ const StoryMonitor = ({
                     background: color(actionTypeBackgroundColorMap[action.type])
                       .alpha(isCurrentAction ? 0.4 : 0.2)
                       .toString(),
-                    width: cardWidth,
+                    minWidth: cardWidth,
                     height: '100%',
                     border:
                       isCud &&
@@ -725,6 +722,7 @@ const StoryMonitor = ({
                     </Box>
                   </Flex>
                 </Card>
+                <Box style={{ minWidth: 10 }} />
               </Flex>
             );
           })}
