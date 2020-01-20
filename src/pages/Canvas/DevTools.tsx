@@ -2,6 +2,7 @@
 
 import {
   Card,
+  Chip,
   Divider,
   List,
   ListItem,
@@ -19,7 +20,7 @@ import {
   VisibilityOff,
 } from '@material-ui/icons';
 import color from 'color';
-import { IconButton, Progress, progressHeight, Tooltip } from 'components';
+import { Progress, progressHeight, Tooltip } from 'components';
 import { equals, init, insert, last, nth, update } from 'ramda';
 import React from 'react';
 import GridLayout from 'react-grid-layout';
@@ -53,6 +54,8 @@ import {
   isUpdateRenameImageAction,
   MonitorProps,
 } from './utils';
+
+const listItemPaddingX = 6;
 
 export const miniDrawerWidth = 55;
 
@@ -299,6 +302,25 @@ const StoryMonitor = ({
 
   const [deleteHovered, setDeleteHovered] = React.useState(false);
 
+  const listItemProps: React.ComponentProps<typeof ListItem> = {
+    button: true,
+    style: {
+      width: 'auto',
+      paddingLeft: listItemPaddingX,
+      paddingRight: listItemPaddingX,
+    },
+  };
+
+  const listItemIconStyle: React.CSSProperties = {
+    marginRight: 4,
+    color: theme.palette.grey.A700,
+    width: 'auto',
+    minWidth: 30,
+    display: 'flex',
+    justifyContent: 'center',
+    margin: 0,
+  };
+
   return (
     <Flex height="100%">
       <List style={{ width: miniDrawerWidth }}>
@@ -431,12 +453,9 @@ const StoryMonitor = ({
 
             const isCud = isCudAction(action);
 
-            const toggleDeleteHovered = () => {
-              if (
-                hoveredCardId === id &&
-                action.type === cudActionType.create
-              ) {
-                setDeleteHovered(!deleteHovered);
+            const setDeleteHoveredWithCheck: typeof setDeleteHovered = newDeleteHovered => {
+              if (action.type === cudActionType.create) {
+                setDeleteHovered(newDeleteHovered);
               }
             };
 
@@ -454,17 +473,7 @@ const StoryMonitor = ({
             const isLastJumpedToAction = lastJumpedToActionId === id;
 
             return (
-              <Flex
-                key={id}
-                mr={10}
-                height="100%"
-                style={{
-                  boxShadow:
-                    isLastJumpedToAction && !isPlaying
-                      ? `2px 0px ${theme.palette.secondary.light}`
-                      : 'none',
-                }}
-              >
+              <Flex key={id} height="100%">
                 <Card
                   style={{
                     background: color(actionTypeBackgroundColorMap[action.type])
@@ -530,68 +539,86 @@ const StoryMonitor = ({
                     }
                   }}
                 >
-                  <Flex justifyContent="flex-end" pt={1} pr={1}>
-                    <IconButton
-                      size="small"
-                      style={{ marginRight: 4, color: theme.palette.grey.A700 }}
-                      onClick={e => {
-                        e.stopPropagation();
+                  <Flex>
+                    <List style={{ padding: 0, display: 'flex', flexGrow: 1 }}>
+                      <ListItem
+                        {...listItemProps}
+                        onClick={e => {
+                          e.stopPropagation();
 
-                        dispatch(ActionCreators.toggleAction(id));
+                          dispatch(ActionCreators.toggleAction(id));
 
-                        if (
-                          isActive &&
-                          isLastJumpedToAction &&
-                          precedingAction
-                        ) {
-                          setLastJumpedToActionId(precedingAction.id);
+                          if (
+                            isActive &&
+                            isLastJumpedToAction &&
+                            precedingAction
+                          ) {
+                            setLastJumpedToActionId(precedingAction.id);
 
-                          dispatch(
-                            ActionCreators.jumpToAction(precedingAction.id),
-                          );
-                        }
-                      }}
-                    >
-                      {isActive ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      style={{ color: theme.palette.grey.A700 }}
-                      onClick={e => {
-                        e.stopPropagation();
-
-                        if (action.type === cudActionType.create) {
-                          const actionsToDelete = editableActions
-                            .filter(
-                              actionById =>
-                                (actionById.action as CudAction).payload.payload
-                                  .id === hoveredActionId,
-                            )
-                            .map(actionById => actionById.id);
-
-                          deleteActions(
-                            actionsToDelete.filter(
-                              actionId => !skippedActionIds.includes(actionId),
-                            ),
-                          );
-                        } else {
-                          if (id === currentActionId) {
-                            setLastJumpedToActionId(
-                              followingAction
-                                ? followingAction.id
-                                : precedingAction
-                                ? precedingAction.id
-                                : -1,
+                            dispatch(
+                              ActionCreators.jumpToAction(precedingAction.id),
                             );
                           }
-                          deleteAction(id);
-                        }
-                      }}
-                      onMouseEnter={toggleDeleteHovered}
-                      onMouseLeave={toggleDeleteHovered}
-                    >
-                      <Delete />
-                    </IconButton>
+                        }}
+                      >
+                        <ListItemIcon style={listItemIconStyle}>
+                          {isActive ? <VisibilityOff /> : <Visibility />}
+                        </ListItemIcon>
+                      </ListItem>
+                      <ListItem
+                        {...listItemProps}
+                        onClick={e => {
+                          e.stopPropagation();
+
+                          if (action.type === cudActionType.create) {
+                            const actionsToDelete = editableActions
+                              .filter(
+                                actionById =>
+                                  (actionById.action as CudAction).payload
+                                    .payload.id === hoveredActionId,
+                              )
+                              .map(actionById => actionById.id);
+
+                            deleteActions(
+                              actionsToDelete.filter(
+                                actionId =>
+                                  !skippedActionIds.includes(actionId),
+                              ),
+                            );
+                          } else {
+                            if (id === currentActionId) {
+                              setLastJumpedToActionId(
+                                followingAction
+                                  ? followingAction.id
+                                  : precedingAction
+                                  ? precedingAction.id
+                                  : -1,
+                              );
+                            }
+                            deleteAction(id);
+                          }
+                        }}
+                        onMouseEnter={() => {
+                          setDeleteHoveredWithCheck(true);
+                        }}
+                        onMouseLeave={() => {
+                          setDeleteHoveredWithCheck(false);
+                        }}
+                      >
+                        <ListItemIcon style={listItemIconStyle}>
+                          <Delete />
+                        </ListItemIcon>
+                      </ListItem>
+                    </List>
+                    {isLastJumpedToAction && (
+                      <Box mr={1} mt={1}>
+                        <Chip
+                          label="Cursor"
+                          variant="outlined"
+                          color="primary"
+                        />
+                      </Box>
+                    )}
                   </Flex>
                   <Flex
                     flexDirection="column"
