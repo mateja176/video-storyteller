@@ -18,6 +18,7 @@ import {
   Stop,
   Visibility,
   VisibilityOff,
+  ArrowDropDown,
 } from '@material-ui/icons';
 import color from 'color';
 import { Progress, progressHeight, Tooltip } from 'components';
@@ -722,7 +723,16 @@ const StoryMonitor = ({
                     </Box>
                   </Flex>
                 </Card>
-                <Box style={{ minWidth: 10 }} />
+                <Box
+                  style={{ minWidth: 10, maxWidth: 10, position: 'relative' }}
+                >
+                  {isLastJumpedToAction && (
+                    <ArrowDropDown
+                      color="primary"
+                      style={{ position: 'absolute', top: -15, left: -7 }}
+                    />
+                  )}
+                </Box>
               </Flex>
             );
           })}
