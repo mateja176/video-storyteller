@@ -10,6 +10,7 @@ import {
   useTheme,
 } from '@material-ui/core';
 import {
+  ArrowDropDown,
   Delete,
   DeleteForever,
   DeleteSweep,
@@ -18,7 +19,6 @@ import {
   Stop,
   Visibility,
   VisibilityOff,
-  ArrowDropDown,
 } from '@material-ui/icons';
 import color from 'color';
 import { Progress, progressHeight, Tooltip } from 'components';
@@ -104,6 +104,8 @@ const StoryMonitor = ({
     setElapsedTime,
     setTotalElapsedTime,
     setSetSave,
+    lastJumpedToActionId,
+    setLastJumpedToActionId,
   } = React.useContext(CanvasContext);
 
   const elapsed = elapsedTime > initialElapsedTime ? elapsedTime : 0;
@@ -167,10 +169,6 @@ const StoryMonitor = ({
 
   const lastEditableAction = last(editableActions);
   const lastEditableActionId = lastEditableAction ? lastEditableAction.id : -1;
-
-  const [lastJumpedToActionId, setLastJumpedToActionId] = React.useState(
-    lastEditableActionId,
-  );
 
   const [playTimeout, setPlayTimeout] = React.useState(-1);
   const [timeoutStart, setTimeoutStart] = React.useState(0);
@@ -266,6 +264,7 @@ const StoryMonitor = ({
     nextActionId,
     durations,
     stagedActionIds,
+    setLastJumpedToActionId,
   ]);
 
   const toggleActions = (actionIds: typeof stagedActionIds) => {

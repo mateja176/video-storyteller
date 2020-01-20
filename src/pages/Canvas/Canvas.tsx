@@ -55,7 +55,9 @@ import { ResizeEnable, Rnd } from 'react-rnd';
 import { Box, Flex } from 'rebass';
 import { putString } from 'rxfire/storage';
 import {
+  createSetLastJumpedToActionId,
   createToggleTheatricalMode,
+  selectLastJumpedToActionId,
   selectTheatricalMode,
   selectUid,
 } from 'store';
@@ -147,9 +149,12 @@ const useStyles = makeStyles(theme => ({
 export interface CanvasProps {}
 
 const Canvas: React.FC<CanvasProps> = () => {
-  const { toggleTheatricalMode } = useStoreActions({
+  const { toggleTheatricalMode, setLastJumpedToActionId } = useStoreActions({
     toggleTheatricalMode: createToggleTheatricalMode,
+    setLastJumpedToActionId: createSetLastJumpedToActionId,
   });
+
+  const lastJumpedToActionId = useStoreSelector(selectLastJumpedToActionId);
 
   const theatricalMode = useStoreSelector(selectTheatricalMode);
 
@@ -902,6 +907,8 @@ const Canvas: React.FC<CanvasProps> = () => {
                 totalElapsedTime,
                 setTotalElapsedTime,
                 setSetSave,
+                lastJumpedToActionId,
+                setLastJumpedToActionId,
               }}
             >
               <DevTools store={store} />

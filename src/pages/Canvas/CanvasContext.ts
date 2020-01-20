@@ -4,6 +4,12 @@
 
 import { BlockState } from 'models';
 import { createContext } from 'react';
+import {
+  CanvasState,
+  createSetLastJumpedToActionId,
+  CreateSetLastJumpedToActionId,
+  initialCanvasState,
+} from 'store';
 
 type HoveredBlockId = BlockState['payload']['id'];
 export const initialHoveredBlockId: HoveredBlockId = '';
@@ -16,7 +22,7 @@ export const initialElapsedTime: ElapsedTime = -1;
 export type SetSave = () => void;
 export type SetSetSave = (setSave: SetSave) => void;
 
-export const CanvasContext = createContext<{
+export interface ICanvasContext extends CanvasState {
   hoveredBlockId: HoveredBlockId;
   setHoveredBlockId: (id: HoveredBlockId) => void;
   isPlaying: IsPlaying;
@@ -26,7 +32,9 @@ export const CanvasContext = createContext<{
   totalElapsedTime: ElapsedTime;
   setTotalElapsedTime: (elapsed: ElapsedTime) => void;
   setSetSave: SetSetSave;
-}>({
+  setLastJumpedToActionId: CreateSetLastJumpedToActionId;
+}
+export const CanvasContext = createContext<ICanvasContext>({
   hoveredBlockId: initialHoveredBlockId,
   setHoveredBlockId: () => {},
   isPlaying: false,
@@ -36,4 +44,6 @@ export const CanvasContext = createContext<{
   totalElapsedTime: initialElapsedTime,
   setTotalElapsedTime: () => {},
   setSetSave: () => {},
+  lastJumpedToActionId: initialCanvasState.lastJumpedToActionId,
+  setLastJumpedToActionId: createSetLastJumpedToActionId,
 });

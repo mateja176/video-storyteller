@@ -3,6 +3,8 @@ import { createAction, getType } from 'typesafe-actions';
 import {
   auth,
   AuthAction,
+  canvas,
+  CanvasAction,
   count,
   CountAction,
   images,
@@ -29,7 +31,8 @@ export type Action =
   | RouterAction
   | LangAction
   | TheatricalModeAction
-  | StorageAction;
+  | StorageAction
+  | CanvasAction;
 
 const actionReducerMap = {
   count,
@@ -41,6 +44,7 @@ const actionReducerMap = {
   lang,
   theatricalMode,
   storage,
+  canvas,
 };
 
 const reducer = combineReducers(actionReducerMap);

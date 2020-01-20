@@ -1,4 +1,5 @@
 export * from './auth';
+export * from './canvas';
 export * from './count';
 export * from './images';
 export * from './lang';
