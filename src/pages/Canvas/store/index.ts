@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import {
   ActionCreatorsMapObject,
   AnyAction,
-  applyMiddleware,
   bindActionCreators,
   combineReducers,
   createStore,
@@ -14,7 +13,6 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import { createSelector, Selector } from 'reselect';
 import audio, { AudioAction } from './audio';
 import blockStates, { BlockStatesAction } from './blockStates';
-import { middleware } from './middleware';
 import transform, { TransformAction } from './transform';
 
 const actionReducerMap = {
@@ -35,10 +33,7 @@ const reducer: Reducer<State, Action> = combineReducers(actionReducerMap);
 
 const composeEnhancers = composeWithDevTools({ name: 'Canvas Store' });
 
-const store = createStore(
-  reducer,
-  /* preloaded state */ composeEnhancers(applyMiddleware(...middleware)),
-);
+const store = createStore(reducer, /* preloaded state */ composeEnhancers());
 
 export default store;
 
