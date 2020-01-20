@@ -20,7 +20,7 @@ import {
 } from '@material-ui/icons';
 import color from 'color';
 import { IconButton, Progress, progressHeight, Tooltip } from 'components';
-import { equals, init, last, nth, update, insert } from 'ramda';
+import { equals, init, insert, last, nth, update } from 'ramda';
 import React from 'react';
 import GridLayout from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
@@ -299,9 +299,6 @@ const StoryMonitor = ({
 
   const [deleteHovered, setDeleteHovered] = React.useState(false);
 
-  // * not used since it re-instantiates component
-  const [isEditing, setIsEditing] = React.useState(false); // eslint-disable-line
-
   return (
     <Flex height="100%">
       <List style={{ width: miniDrawerWidth }}>
@@ -512,7 +509,6 @@ const StoryMonitor = ({
                         setHoveredBlockId(initialHoveredBlockId);
                       }
                       setHoveredCardId(initialHoveredCardId);
-                      setIsEditing(false);
                     }
                   }}
                   onClick={() => {
@@ -609,7 +605,6 @@ const StoryMonitor = ({
                     <ActionCardForm
                       id={id}
                       action={action}
-                      setIsEditing={setIsEditing}
                       initialValues={initialValues}
                       handleSubmit={({
                         duration: newDuration,

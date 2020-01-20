@@ -48,14 +48,12 @@ export interface ActionCardFormProps {
   handleSubmit: (values: Values) => void;
   id: number;
   initialValues: InitialValues;
-  setIsEditing: (editing: boolean) => void;
   action: Action;
 }
 
 const ActionCardForm: React.FC<ActionCardFormProps> = ({
   handleSubmit,
   initialValues,
-  setIsEditing,
   id,
   action,
 }) => {
@@ -137,9 +135,6 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
               />
             </Flex>
             <Form
-              onMouseEnter={() => {
-                setIsEditing(true);
-              }}
               style={{
                 flexGrow: 1,
                 display: 'flex',
