@@ -829,7 +829,7 @@ const Canvas: React.FC<CanvasProps> = () => {
             height={rightDrawerHeight}
           >
             <Box px={2}>
-              <Box pt={2} pb={2} style={{ borderBottom: dividingBorder }}>
+              <Box pt={2} pb={2}>
                 <TextBlock
                   editorState={
                     focusedEditorId === draggable.text
