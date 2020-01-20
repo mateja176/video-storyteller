@@ -60,6 +60,8 @@ import {
   selectLastJumpedToActionId,
   selectTheatricalMode,
   selectUid,
+  selectDurations,
+  createSetDurations,
 } from 'store';
 import { dividingBorder } from 'styles';
 import urlJoin from 'url-join';
@@ -149,12 +151,19 @@ const useStyles = makeStyles(theme => ({
 export interface CanvasProps {}
 
 const Canvas: React.FC<CanvasProps> = () => {
-  const { toggleTheatricalMode, setLastJumpedToActionId } = useStoreActions({
+  const {
+    toggleTheatricalMode,
+    setLastJumpedToActionId,
+    setDurations,
+  } = useStoreActions({
     toggleTheatricalMode: createToggleTheatricalMode,
     setLastJumpedToActionId: createSetLastJumpedToActionId,
+    setDurations: createSetDurations,
   });
 
   const lastJumpedToActionId = useStoreSelector(selectLastJumpedToActionId);
+
+  const durations = useStoreSelector(selectDurations);
 
   const theatricalMode = useStoreSelector(selectTheatricalMode);
 
@@ -909,6 +918,8 @@ const Canvas: React.FC<CanvasProps> = () => {
                 setSetSave,
                 lastJumpedToActionId,
                 setLastJumpedToActionId,
+                durations,
+                setDurations,
               }}
             >
               <DevTools store={store} />

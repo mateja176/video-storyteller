@@ -6,3 +6,7 @@ export const selectLastJumpedToActionId = createSelector(
   selectCanvas,
   ({ lastJumpedToActionId }) => lastJumpedToActionId,
 );
+export const selectDurations = createSelector(
+  selectCanvas,
+  ({ durations }) => durations,
+);

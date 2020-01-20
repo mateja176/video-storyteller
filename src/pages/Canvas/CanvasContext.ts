@@ -6,6 +6,8 @@ import { BlockState } from 'models';
 import { createContext } from 'react';
 import {
   CanvasState,
+  createSetDurations,
+  CreateSetDurations,
   createSetLastJumpedToActionId,
   CreateSetLastJumpedToActionId,
   initialCanvasState,
@@ -33,6 +35,7 @@ export interface ICanvasContext extends CanvasState {
   setTotalElapsedTime: (elapsed: ElapsedTime) => void;
   setSetSave: SetSetSave;
   setLastJumpedToActionId: CreateSetLastJumpedToActionId;
+  setDurations: CreateSetDurations;
 }
 export const CanvasContext = createContext<ICanvasContext>({
   hoveredBlockId: initialHoveredBlockId,
@@ -46,4 +49,6 @@ export const CanvasContext = createContext<ICanvasContext>({
   setSetSave: () => {},
   lastJumpedToActionId: initialCanvasState.lastJumpedToActionId,
   setLastJumpedToActionId: createSetLastJumpedToActionId,
+  durations: initialCanvasState.durations,
+  setDurations: createSetDurations,
 });

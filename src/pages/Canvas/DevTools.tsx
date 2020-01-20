@@ -60,8 +60,6 @@ const listItemPaddingX = 6;
 
 export const miniDrawerWidth = 55;
 
-type Durations = number[];
-
 const initialHoveredCardId: number = -1;
 
 const initialPlayTimeout = -1;
@@ -106,6 +104,8 @@ const StoryMonitor = ({
     setSetSave,
     lastJumpedToActionId,
     setLastJumpedToActionId,
+    durations,
+    setDurations,
   } = React.useContext(CanvasContext);
 
   const elapsed = elapsedTime > initialElapsedTime ? elapsedTime : 0;
@@ -116,19 +116,6 @@ const StoryMonitor = ({
   }));
 
   const editableActions = stagedActions.slice(1);
-
-  const [durations, setDurations] = React.useState<Durations>(
-    editableActions.reduce<Durations>(
-      (initialDurations, action, i, actions) => {
-        const followingAction = nth(i + 1, actions);
-
-        return initialDurations.concat(
-          followingAction ? followingAction.timestamp - action.timestamp : 0,
-        );
-      },
-      [],
-    ),
-  );
 
   React.useEffect(() => {
     setSetSave(() => {
@@ -265,6 +252,7 @@ const StoryMonitor = ({
     durations,
     stagedActionIds,
     setLastJumpedToActionId,
+    setDurations,
   ]);
 
   const toggleActions = (actionIds: typeof stagedActionIds) => {
