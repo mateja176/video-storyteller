@@ -6,6 +6,7 @@ import {
   List,
   ListItem,
   ListItemIcon,
+  Popover,
   useTheme,
 } from '@material-ui/core';
 import {
@@ -20,7 +21,7 @@ import {
   VisibilityOff,
 } from '@material-ui/icons';
 import color from 'color';
-import { Progress, progressHeight, Tooltip } from 'components';
+import { Button, Progress, progressHeight, Tooltip } from 'components';
 import { equals, init, insert, last, nth, update } from 'ramda';
 import React from 'react';
 import GridLayout from 'react-grid-layout';
@@ -289,6 +290,24 @@ const StoryMonitor = ({
   };
 
   const [deleteHovered, setDeleteHovered] = React.useState(false);
+  const [deletePopoverOpen, setDeletePopoverOpen] = React.useState(false);
+  const deleteRef = React.useRef<HTMLDivElement | null>(null);
+
+  const deleteAll = () => {
+    setLastJumpedToActionId(lastEditableActionId);
+
+    dispatch(ActionCreators.reset());
+
+    setDurations([]);
+
+    setElapsedTime(initialElapsedTime);
+
+    setPlayTimeout(initialPlayTimeout);
+
+    setTimeoutStart(initialTimeoutStart);
+
+    setTotalElapsedTime(initialElapsedTime);
+  };
 
   const listItemProps: React.ComponentProps<typeof ListItem> = {
     button: true,
@@ -373,22 +392,11 @@ const StoryMonitor = ({
           </ListItemIcon>
         </ListItem>
         <ListItem
+          ref={deleteRef}
           button
           disabled={areThereNoEditableActions}
           onClick={() => {
-            setLastJumpedToActionId(lastEditableActionId);
-
-            dispatch(ActionCreators.reset());
-
-            setDurations([]);
-
-            setElapsedTime(initialElapsedTime);
-
-            setPlayTimeout(initialPlayTimeout);
-
-            setTimeoutStart(initialTimeoutStart);
-
-            setTotalElapsedTime(initialElapsedTime);
+            setDeletePopoverOpen(!deletePopoverOpen);
           }}
         >
           <Tooltip title="Delete all actions">
@@ -397,6 +405,17 @@ const StoryMonitor = ({
             </ListItemIcon>
           </Tooltip>
         </ListItem>
+        <Popover
+          open={deletePopoverOpen}
+          onClose={() => {
+            setDeletePopoverOpen(false);
+          }}
+          anchorEl={deleteRef.current}
+        >
+          <Button onClick={deleteAll} variant="contained" color="secondary">
+            Delete All
+          </Button>
+        </Popover>
       </List>
       <Divider orientation="vertical" />
       <Flex
