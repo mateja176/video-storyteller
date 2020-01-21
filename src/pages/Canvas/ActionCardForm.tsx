@@ -25,7 +25,6 @@ import {
 } from './utils';
 
 const textFieldProps = {
-  variant: 'outlined',
   margin: 'dense',
   onMouseDown: (e: React.MouseEvent) => {
     e.stopPropagation();
