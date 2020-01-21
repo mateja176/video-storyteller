@@ -2,7 +2,7 @@ import { InputAdornment, TextField } from '@material-ui/core';
 import { Button } from 'components';
 import { convertFromRaw } from 'draft-js';
 import { Form, Formik } from 'formik';
-import { lowerCase } from 'lodash';
+import { startCase } from 'lodash';
 import { ImageBlockState, WithDropResult } from 'models';
 import { equals } from 'ramda';
 import React from 'react';
@@ -103,7 +103,7 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
       isInitialValid
     >
       {({ isValid, handleChange, handleBlur, values, errors }) => {
-        const formattedActionType = lowerCase(action.type);
+        const formattedActionType = startCase(action.type);
 
         return (
           <Flex flexDirection="column" px={2} flex={1}>
