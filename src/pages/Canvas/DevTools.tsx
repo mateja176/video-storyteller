@@ -2,7 +2,6 @@
 
 import {
   Card,
-  Chip,
   Divider,
   List,
   ListItem,
@@ -595,7 +594,7 @@ const StoryMonitor = ({
                         </ListItemIcon>
                       </ListItem>
                     </List>
-                    {isLastJumpedToAction && (
+                    {/* {isLastJumpedToAction && (
                       <Box mr={1} mt={1}>
                         <Chip
                           label="Cursor"
@@ -603,7 +602,7 @@ const StoryMonitor = ({
                           color="primary"
                         />
                       </Box>
-                    )}
+                    )} */}
                   </Flex>
                   <Flex
                     flexDirection="column"
@@ -714,10 +713,12 @@ const StoryMonitor = ({
                   style={{ minWidth: 10, maxWidth: 10, position: 'relative' }}
                 >
                   {isLastJumpedToAction && (
-                    <ArrowDropDown
-                      color="primary"
-                      style={{ position: 'absolute', top: -15, left: -7 }}
-                    />
+                    <Tooltip title="Cursor for inserting" placement="top">
+                      <ArrowDropDown
+                        color="primary"
+                        style={{ position: 'absolute', top: -15, left: -7 }}
+                      />
+                    </Tooltip>
                   )}
                 </Box>
               </Flex>
