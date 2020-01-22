@@ -13,7 +13,9 @@ import {
   ListRowRenderer,
   WindowScroller,
 } from 'react-virtualized';
+import { Box } from 'rebass';
 import { selectDictionary } from 'store';
+import { dividingBorder } from 'styles';
 import { cache } from 'utils';
 
 export interface Person {
@@ -61,6 +63,8 @@ const createRowRenderer = (list: People): ListRowRenderer => ({
   );
 };
 
+const rowHeight = 40;
+
 const initialIndexToScrollTo = -1;
 
 const pageSize = 100;
@@ -106,11 +110,22 @@ const ListPage: React.FC<ListPageProps> = () => {
 
   const [value, setValue] = useState('');
 
+  const listContainer = React.useRef<HTMLDivElement | null>(null);
+
   const [list, setList] = useState<People>({});
 
   const [indexToScrollTo, setIndexToScrollTo] = useState(
     initialIndexToScrollTo,
   );
+
+  React.useEffect(() => {
+    if (listContainer.current) {
+      window.scrollTo({
+        top: listContainer.current.offsetTop + indexToScrollTo * rowHeight,
+        behavior: 'smooth',
+      });
+    }
+  }, [indexToScrollTo, listContainer]);
 
   React.useEffect(() => {
     setList(merge(list, loadMorePeople(range(0)(pageSize))));
@@ -197,7 +212,11 @@ const ListPage: React.FC<ListPageProps> = () => {
         >
           <Tooltip title={dict.scrollToTop}>
             <IconButton
-              onClick={() => setIndexToScrollTo(0)}
+              onClick={() => {
+                setIndexToScrollTo(
+                  indexToScrollTo ? 0 : initialIndexToScrollTo, // * circumvents setter memoization
+                );
+              }}
               style={{ background: theme.palette.background.paper }}
             >
               <ArrowUpward />
@@ -207,41 +226,40 @@ const ListPage: React.FC<ListPageProps> = () => {
       </form>
       <br />
       <br />
-      <InfiniteLoader
-        minimumBatchSize={pageSize}
-        rowCount={rowCount}
-        isRowLoaded={({ index }) => Boolean(list[index])}
-        loadMoreRows={loadMoreRows}
-      >
-        {({ registerChild, onRowsRendered }) => (
-          <WindowScroller
-            onScroll={() => setIndexToScrollTo(initialIndexToScrollTo)}
-          >
-            {({ height, isScrolling, onChildScroll, scrollTop }) => (
-              <AutoSizer disableHeight>
-                {({ width }) => (
-                  <List
-                    ref={registerChild}
-                    autoHeight
-                    height={height}
-                    width={width}
-                    onRowsRendered={onRowsRendered}
-                    isScrolling={isScrolling}
-                    scrollTop={scrollTop}
-                    onScroll={onChildScroll}
-                    rowHeight={40}
-                    rowCount={rowCount}
-                    rowRenderer={rowRenderer}
-                    scrollToIndex={indexToScrollTo}
-                    style={{ border: '1px solid #ccc' }}
-                    scrollToAlignment="start"
-                  />
-                )}
-              </AutoSizer>
-            )}
-          </WindowScroller>
-        )}
-      </InfiniteLoader>
+      <Box ref={listContainer}>
+        <InfiniteLoader
+          minimumBatchSize={pageSize}
+          rowCount={rowCount}
+          isRowLoaded={({ index }) => Boolean(list[index])}
+          loadMoreRows={loadMoreRows}
+        >
+          {({ registerChild, onRowsRendered }) => (
+            <WindowScroller>
+              {({ height, isScrolling, onChildScroll, scrollTop }) => (
+                <AutoSizer disableHeight>
+                  {({ width }) => (
+                    <List
+                      ref={registerChild}
+                      autoHeight
+                      height={height}
+                      width={width}
+                      onRowsRendered={onRowsRendered}
+                      isScrolling={isScrolling}
+                      scrollTop={scrollTop}
+                      onScroll={onChildScroll}
+                      rowHeight={rowHeight}
+                      rowCount={rowCount}
+                      rowRenderer={rowRenderer}
+                      style={{ border: dividingBorder }}
+                      scrollToAlignment="start"
+                    />
+                  )}
+                </AutoSizer>
+              )}
+            </WindowScroller>
+          )}
+        </InfiniteLoader>
+      </Box>
     </div>
   );
 };
