@@ -22,7 +22,7 @@ import {
 } from '@material-ui/icons';
 import color from 'color';
 import { Button, Progress, progressHeight, Tooltip } from 'components';
-import { equals, init, insert, last, nth, update } from 'ramda';
+import { equals, init, insert, last, nth, update, pickAll } from 'ramda';
 import React from 'react';
 import GridLayout from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
@@ -140,7 +140,15 @@ const StoryMonitor = ({
 
   React.useEffect(() => {
     setSetSave(() => {
-      console.log(actionsById); // eslint-disable-line no-console
+      const stagedAndSkippedActionIds = stagedActionIds.concat(
+        skippedActionIds,
+      );
+      const actionsByIdWithoutDeleted = pickAll(
+        stagedAndSkippedActionIds.map(String),
+        actionsById,
+      );
+      // eslint-disable-next-line no-console
+      console.log(actionsByIdWithoutDeleted);
       console.log(stagedActionIds); // eslint-disable-line no-console
       console.log(skippedActionIds); // eslint-disable-line no-console
       console.log(durations); // eslint-disable-line no-console
