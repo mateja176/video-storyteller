@@ -200,7 +200,10 @@ const ListPage: React.FC<ListPageProps> = () => {
           value={value}
           onChange={({ target: { value: newValue } }) => setValue(newValue)}
         />
-        <Button type="submit">{dict.submit}</Button>
+        <Box ml={2} alignSelf="flex-end">
+          <Button type="submit">{dict.submit}</Button>
+        </Box>
+
         <div
           ref={scrollButtonRef}
           style={{
