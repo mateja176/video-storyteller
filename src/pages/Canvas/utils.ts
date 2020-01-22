@@ -4,6 +4,7 @@ import { ActionCreators as InstrumentActionCreators } from 'redux-devtools-instr
 import { toObject } from 'utils';
 import { Action, State } from './store';
 import {
+  CreateAction,
   CudAction,
   CudActionType,
   cudActionTypes,
@@ -53,6 +54,12 @@ export const isCudActionType = (type: string): type is CudActionType =>
 export const isCudAction = (action: Action): action is CudAction =>
   isCudActionType(action.type);
 
+export const isCudActionById = (action: ActionById): action is CudActionById =>
+  isCudActionType(action.action.type);
+
+export const isCreateAction = (action: Action): action is CudAction =>
+  action.type === 'create';
+
 export const isUpdateAction = (action: Action): action is UpdateAction =>
   updateActionTypes.includes(action.type as UpdateActionType);
 
@@ -93,17 +100,14 @@ export interface MonitorState {}
 
 export type ActionId = number;
 
-export type ActionWithMeta = Action & {
-  meta: {
-    previousActionDuration: number;
-  };
-};
-
-export interface ActionById {
+export interface CreateActionById<A extends Action> {
   type: string;
-  action: ActionWithMeta;
+  action: A;
   timestamp: number;
 }
+
+export type ActionById = CreateActionById<Action>;
+export type CudActionById = CreateActionById<CreateAction>;
 
 export type ActionWithId = ActionById & { id: number };
 
