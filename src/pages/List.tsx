@@ -1,4 +1,4 @@
-import { Input, Typography, useTheme } from '@material-ui/core';
+import { TextField, Typography, useTheme } from '@material-ui/core';
 import { ArrowUpward } from '@material-ui/icons';
 import { Button, IconButton, Tooltip } from 'components';
 import { name } from 'faker';
@@ -97,9 +97,9 @@ const loadMorePlaceholders = loadMore(() => 'Loading...');
 
 const loadMorePeople = loadMore(() => name.findName());
 
-export interface ImageListProps {}
+export interface ListPageProps {}
 
-const ImageList: React.FC<ImageListProps> = () => {
+const ListPage: React.FC<ListPageProps> = () => {
   const dict = useSelector(selectDictionary);
 
   const theme = useTheme();
@@ -174,11 +174,13 @@ const ImageList: React.FC<ImageListProps> = () => {
         onSubmit={e => {
           e.preventDefault();
 
-          setIndexToScrollTo(Number(value) - 1);
+          const index = Number(value) - 1;
+          setIndexToScrollTo(index);
         }}
         style={{ position: 'relative', display: 'flex', alignItems: 'center' }}
       >
-        <Input
+        <TextField
+          label="Go to index"
           type="number"
           value={value}
           onChange={({ target: { value: newValue } }) => setValue(newValue)}
@@ -244,4 +246,4 @@ const ImageList: React.FC<ImageListProps> = () => {
   );
 };
 
-export default ImageList;
+export default ListPage;
