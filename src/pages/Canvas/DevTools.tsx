@@ -28,6 +28,7 @@ import GridLayout from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import { Box, Flex } from 'rebass';
 import { createDevTools } from 'redux-devtools';
+import { initialCanvasState } from 'store';
 import ActionCardForm from './ActionCardForm';
 import {
   CanvasContext,
@@ -116,6 +117,24 @@ const StoryMonitor = ({
   }));
 
   const editableActions = stagedActions.slice(1);
+  const areThereNoEditableActions = !editableActions.length;
+  const currentActionId = stagedActionIds[currentStateIndex];
+  const currentDuration = nth(currentStateIndex - 1, durations);
+  const nextActionId = stagedActionIds[currentStateIndex + 1];
+  const nextAction = actionsById[nextActionId];
+  const lastEditableAction = last(editableActions);
+  const lastEditableActionId = lastEditableAction ? lastEditableAction.id : -1;
+
+  const activeActions = editableActions.filter(
+    action => !skippedActionIds.includes(action.id),
+  );
+  const isCurrentActionIdActive = !skippedActionIds.includes(currentActionId);
+  const nextActiveAction = editableActions
+    .slice(currentStateIndex)
+    .find(({ id }) => !skippedActionIds.includes(id));
+  const nextActiveActionId = nextActiveAction && nextActiveAction.id;
+  const lastActiveAction = last(activeActions);
+  const lastActiveActionId = lastActiveAction ? lastActiveAction.id : -1;
 
   React.useEffect(() => {
     setSetSave(() => {
@@ -125,7 +144,7 @@ const StoryMonitor = ({
       console.log(durations); // eslint-disable-line no-console
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [actionsById, stagedActionIds, skippedActionIds]);
+  }, [actionsById, stagedActionIds, skippedActionIds, durations]);
 
   const [hoveredCardId, setHoveredCardId] = React.useState(
     initialHoveredCardId,
@@ -154,22 +173,11 @@ const StoryMonitor = ({
     editableActions.length,
   );
 
-  const lastEditableAction = last(editableActions);
-  const lastEditableActionId = lastEditableAction ? lastEditableAction.id : -1;
-
   const [playTimeout, setPlayTimeout] = React.useState(-1);
   const [timeoutStart, setTimeoutStart] = React.useState(0);
 
-  const nextActionId = stagedActionIds[currentStateIndex + 1];
-  const nextAction = actionsById[nextActionId];
-
-  const currentActionId = stagedActionIds[currentStateIndex];
-
-  const currentDuration = nth(currentStateIndex - 1, durations);
-
-  const nextActiveActionId = stagedActionIds
-    .slice(currentStateIndex + 1)
-    .find(id => !skippedActionIds.includes(id));
+  const canPlay = isCurrentActionIdActive && nextActiveAction;
+  const canStop = isPlaying || elapsedTime > 0; // * when playing or paused
 
   React.useEffect(
     () => {
@@ -193,7 +201,7 @@ const StoryMonitor = ({
 
         setElapsedTime(initialElapsedTime);
 
-        setLastJumpedToActionId(lastEditableActionId);
+        setLastJumpedToActionId(lastActiveActionId); // * there are at least 2 active actions
 
         setPlayTimeout(initialPlayTimeout);
 
@@ -203,8 +211,6 @@ const StoryMonitor = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [nextActiveActionId, isPlaying, currentDuration],
   );
-
-  const areThereNoEditableActions = !editableActions.length;
 
   React.useEffect(() => {
     const lastStateIndex = computedStates.length - 1;
@@ -349,7 +355,7 @@ const StoryMonitor = ({
         ) : (
           <ListItem
             button
-            disabled={areThereNoEditableActions || !nextAction}
+            disabled={!canPlay}
             onClick={() => {
               setIsPlaying(true);
             }}
@@ -361,9 +367,7 @@ const StoryMonitor = ({
         )}
         <ListItem
           button
-          disabled={
-            areThereNoEditableActions || (!isPlaying && elapsedTime < 0)
-          }
+          disabled={!canStop}
           onClick={() => {
             setIsPlaying(false);
 
@@ -397,6 +401,20 @@ const StoryMonitor = ({
           disabled={areThereNoEditableActions}
           onClick={() => {
             setDeletePopoverOpen(!deletePopoverOpen);
+
+            setLastJumpedToActionId(initialCanvasState.lastJumpedToActionId);
+
+            dispatch(ActionCreators.reset());
+
+            setDurations([]);
+
+            setElapsedTime(initialElapsedTime);
+
+            setPlayTimeout(initialPlayTimeout);
+
+            setTimeoutStart(initialTimeoutStart);
+
+            setTotalElapsedTime(initialElapsedTime);
           }}
         >
           <Tooltip title="Delete all actions">
