@@ -48,7 +48,9 @@ import {
   ActionWithId,
   formatPosition,
   formatTransform,
+  isCreateAction,
   isCudAction,
+  isCudActionById,
   isPositionAction,
   isScaleAction,
   isSetTransformAction,
@@ -276,10 +278,15 @@ const StoryMonitor = ({
       durations.filter((_, i) => i !== stagedActionIds.indexOf(id) - 1),
     );
 
-    toggleActions(skippedActionIds);
-    dispatch(ActionCreators.toggleAction(id));
+    const otherSkippedActionIds = skippedActionIds.filter(
+      skippedActionId => skippedActionId !== id,
+    );
+    toggleActions(otherSkippedActionIds);
+    if (!skippedActionIds.includes(id)) {
+      dispatch(ActionCreators.toggleAction(id));
+    }
     dispatch(ActionCreators.sweep());
-    toggleActions(skippedActionIds);
+    toggleActions(otherSkippedActionIds);
   };
   const deleteActions = (actionsToDelete: typeof stagedActionIds) => {
     const indexesToDelete = actionsToDelete.map(
@@ -287,12 +294,18 @@ const StoryMonitor = ({
     );
     setDurations(durations.filter((_, i) => !indexesToDelete.includes(i)));
 
-    toggleActions(skippedActionIds);
-    toggleActions(
-      actionsToDelete.filter(actionId => !skippedActionIds.includes(actionId)),
+    const otherSkippedActionIds = skippedActionIds.filter(
+      skippedAction => !actionsToDelete.includes(skippedAction),
     );
+    toggleActions(otherSkippedActionIds);
+
+    const activeActionIdsToDelete = actionsToDelete.filter(
+      actionIdToDelete => !skippedActionIds.includes(actionIdToDelete),
+    );
+    toggleActions(activeActionIdsToDelete);
     dispatch(ActionCreators.sweep());
-    toggleActions(skippedActionIds);
+
+    toggleActions(otherSkippedActionIds);
   };
 
   const [deleteHovered, setDeleteHovered] = React.useState(false);
@@ -591,32 +604,31 @@ const StoryMonitor = ({
                         onClick={e => {
                           e.stopPropagation();
 
-                          if (action.type === cudActionType.create) {
+                          if (isCreateAction(action)) {
                             const actionsToDelete = editableActions
                               .filter(
                                 actionById =>
-                                  (actionById.action as CudAction).payload
-                                    .payload.id === hoveredActionId,
+                                  isCudActionById(actionById) &&
+                                  actionById.action.payload.payload.id ===
+                                    hoveredActionId,
                               )
                               .map(actionById => actionById.id);
 
-                            deleteActions(
-                              actionsToDelete.filter(
-                                actionId =>
-                                  !skippedActionIds.includes(actionId),
-                              ),
-                            );
+                            deleteActions(actionsToDelete);
                           } else {
-                            if (id === currentActionId) {
-                              setLastJumpedToActionId(
-                                followingAction
-                                  ? followingAction.id
-                                  : precedingAction
-                                  ? precedingAction.id
-                                  : -1,
-                              );
-                            }
                             deleteAction(id);
+                          }
+
+                          // TODO prefer jumping to active action
+                          // TODO handle case when "create" action is deleted
+                          if (id === currentActionId) {
+                            setLastJumpedToActionId(
+                              followingAction
+                                ? followingAction.id
+                                : precedingAction
+                                ? precedingAction.id
+                                : -1,
+                            );
                           }
                         }}
                         onMouseEnter={() => {
