@@ -22,13 +22,14 @@ import {
 } from '@material-ui/icons';
 import color from 'color';
 import { Button, Progress, progressHeight, Tooltip } from 'components';
-import { equals, init, insert, last, nth, update, pickAll } from 'ramda';
+import { equals, init, insert, last, nth, pickAll, update } from 'ramda';
 import React from 'react';
 import GridLayout from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import { Box, Flex } from 'rebass';
 import { createDevTools } from 'redux-devtools';
 import { initialCanvasState } from 'store';
+import { removeNils } from 'utils';
 import ActionCardForm from './ActionCardForm';
 import {
   CanvasContext,
@@ -45,6 +46,7 @@ import {
 import { SetPositionAction, SetScaleAction } from './store/transform';
 import {
   ActionCreators,
+  ActionsById,
   ActionWithId,
   formatPosition,
   formatTransform,
@@ -97,6 +99,7 @@ const StoryMonitor = ({
   skippedActionIds,
 }: MonitorProps) => {
   const {
+    setStoryMonitorState,
     hoveredBlockId,
     setHoveredBlockId,
     isPlaying,
@@ -104,7 +107,6 @@ const StoryMonitor = ({
     elapsedTime,
     setElapsedTime,
     setTotalElapsedTime,
-    setSetSave,
     lastJumpedToActionId,
     setLastJumpedToActionId,
     durations,
@@ -139,22 +141,19 @@ const StoryMonitor = ({
   const lastActiveActionId = lastActiveAction ? lastActiveAction.id : -1;
 
   React.useEffect(() => {
-    setSetSave(() => {
-      const stagedAndSkippedActionIds = stagedActionIds.concat(
-        skippedActionIds,
-      );
-      const actionsByIdWithoutDeleted = pickAll(
-        stagedAndSkippedActionIds.map(String),
-        actionsById,
-      );
-      // eslint-disable-next-line no-console
-      console.log(actionsByIdWithoutDeleted);
-      console.log(stagedActionIds); // eslint-disable-line no-console
-      console.log(skippedActionIds); // eslint-disable-line no-console
-      console.log(durations); // eslint-disable-line no-console
+    const actionsByIdWithoutDeleted: ActionsById = pickAll(
+      stagedActionIds.concat(skippedActionIds).map(String),
+      actionsById,
+    );
+    const plainActionsById: ActionsById = removeNils(actionsByIdWithoutDeleted);
+
+    setStoryMonitorState({
+      actionsById: plainActionsById,
+      stagedActionIds,
+      skippedActionIds,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [actionsById, stagedActionIds, skippedActionIds, durations]);
+  }, [actionsById, stagedActionIds, skippedActionIds]);
 
   const [hoveredCardId, setHoveredCardId] = React.useState(
     initialHoveredCardId,
@@ -321,7 +320,9 @@ const StoryMonitor = ({
   const deleteRef = React.useRef<HTMLDivElement | null>(null);
 
   const deleteAll = () => {
-    setLastJumpedToActionId(lastEditableActionId);
+    setDeletePopoverOpen(false);
+
+    setLastJumpedToActionId(initialCanvasState.lastJumpedToActionId);
 
     dispatch(ActionCreators.reset());
 
@@ -416,28 +417,7 @@ const StoryMonitor = ({
             <DeleteSweep />
           </ListItemIcon>
         </ListItem>
-        <ListItem
-          ref={deleteRef}
-          button
-          disabled={areThereNoEditableActions}
-          onClick={() => {
-            setDeletePopoverOpen(!deletePopoverOpen);
-
-            setLastJumpedToActionId(initialCanvasState.lastJumpedToActionId);
-
-            dispatch(ActionCreators.reset());
-
-            setDurations([]);
-
-            setElapsedTime(initialElapsedTime);
-
-            setPlayTimeout(initialPlayTimeout);
-
-            setTimeoutStart(initialTimeoutStart);
-
-            setTotalElapsedTime(initialElapsedTime);
-          }}
-        >
+        <ListItem ref={deleteRef} button disabled={areThereNoEditableActions}>
           <Tooltip title="Delete all actions">
             <ListItemIcon>
               <DeleteForever color="secondary" />

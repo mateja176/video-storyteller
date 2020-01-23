@@ -1,10 +1,45 @@
 /* eslint-disable indent */
 import { isEqual, kebabCase } from 'lodash';
-import { equals, pipe } from 'ramda';
+import {
+  either,
+  equals,
+  filter,
+  identity,
+  ifElse,
+  is,
+  isNil,
+  map,
+  not,
+  pipe,
+} from 'ramda';
 import { Selector } from 'react-redux';
 import { createSelectorCreator, defaultMemoize } from 'reselect';
 import { State } from 'store';
 import urlJoin from 'url-join';
+import { RequiredKeys } from 'utility-types';
+
+/**
+ * @example
+ * type RemoveNilsFromMe = { a: { c?: 0; d: 1 }; b?: 0 };
+ * type WithoutNils = RemoveNils<RemoveNilsFromMe>;
+ * const withoutNils: WithoutNils = {
+ *   a: {
+ *     d: 1,
+ *   },
+ * };
+ */
+type RemoveNils<A extends object> = {
+  [key in RequiredKeys<A>]: A[key] extends object ? RemoveNils<A[key]> : A[key];
+};
+
+export const removeNils: <A extends object>(a: A) => RemoveNils<A> = ifElse(
+  either(is(Array), is(Object)),
+  pipe(
+    filter(pipe(isNil, not)) as any,
+    map(a => removeNils(a as any)),
+  ),
+  identity,
+);
 
 export const cache = <I, O>(f: (i: I) => O) => {
   let previousInput: I | null = null; // eslint-disable-line
@@ -70,7 +105,7 @@ export const mapStateToProps = <
   return fromEntries;
 };
 
+export * from './files';
 export * from './hooks';
 export * from './operators';
 export * from './store';
-export * from './files';

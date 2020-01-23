@@ -2,7 +2,8 @@
 /* eslint-disable func-call-spacing */
 /* eslint-disable indent */
 
-import { BlockState } from 'models';
+import { BlockState, WithId } from 'models';
+import { pick } from 'ramda';
 import { createContext } from 'react';
 import {
   CanvasState,
@@ -11,7 +12,9 @@ import {
   createSetLastJumpedToActionId,
   CreateSetLastJumpedToActionId,
   initialCanvasState,
+  User,
 } from 'store';
+import { ActionIds, ActionsById } from './utils';
 
 type HoveredBlockId = BlockState['payload']['id'];
 export const initialHoveredBlockId: HoveredBlockId = '';
@@ -21,10 +24,44 @@ export type IsPlaying = boolean;
 export type ElapsedTime = number;
 export const initialElapsedTime: ElapsedTime = -1;
 
-export type SetSave = () => void;
-export type SetSetSave = (setSave: SetSave) => void;
+export type StoryMonitorState = {
+  actionsById: ActionsById;
+  stagedActionIds: ActionIds;
+  skippedActionIds: ActionIds;
+};
+export const initialStoryMonitorState: StoryMonitorState = {
+  actionsById: {},
+  stagedActionIds: [],
+  skippedActionIds: [],
+};
 
-export interface ICanvasContext extends CanvasState {
+export type DurationsAndLastJumpedToActionId = Pick<
+  CanvasState,
+  'lastJumpedToActionId' | 'durations'
+>;
+
+export type StoryMetaData = {
+  authorId: User['uid'];
+  isPublic: boolean;
+};
+
+export type StoryState = StoryMonitorState &
+  DurationsAndLastJumpedToActionId &
+  StoryMetaData;
+
+export type StoryWithId = StoryState & WithId;
+
+export const initialStoryState: StoryWithId = {
+  ...pick(['durations', 'lastJumpedToActionId'], initialCanvasState),
+  ...initialStoryMonitorState,
+  id: '',
+  authorId: '',
+  isPublic: false,
+};
+
+export interface ICanvasContext extends DurationsAndLastJumpedToActionId {
+  storyMonitorState: StoryMonitorState;
+  setStoryMonitorState: (state: StoryMonitorState) => void;
   hoveredBlockId: HoveredBlockId;
   setHoveredBlockId: (id: HoveredBlockId) => void;
   isPlaying: IsPlaying;
@@ -33,11 +70,12 @@ export interface ICanvasContext extends CanvasState {
   setElapsedTime: (elapsed: ElapsedTime) => void;
   totalElapsedTime: ElapsedTime;
   setTotalElapsedTime: (elapsed: ElapsedTime) => void;
-  setSetSave: SetSetSave;
   setLastJumpedToActionId: CreateSetLastJumpedToActionId;
   setDurations: CreateSetDurations;
 }
 export const CanvasContext = createContext<ICanvasContext>({
+  storyMonitorState: initialStoryMonitorState,
+  setStoryMonitorState: () => {},
   hoveredBlockId: initialHoveredBlockId,
   setHoveredBlockId: () => {},
   isPlaying: false,
@@ -46,7 +84,6 @@ export const CanvasContext = createContext<ICanvasContext>({
   setElapsedTime: () => {},
   totalElapsedTime: initialElapsedTime,
   setTotalElapsedTime: () => {},
-  setSetSave: () => {},
   lastJumpedToActionId: initialCanvasState.lastJumpedToActionId,
   setLastJumpedToActionId: createSetLastJumpedToActionId,
   durations: initialCanvasState.durations,

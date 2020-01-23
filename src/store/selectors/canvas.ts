@@ -10,3 +10,7 @@ export const selectDurations = createSelector(
   selectCanvas,
   ({ durations }) => durations,
 );
+export const selectSaveStoryStatus = createSelector(
+  selectCanvas,
+  ({ saveStoryStatus }) => saveStoryStatus,
+);

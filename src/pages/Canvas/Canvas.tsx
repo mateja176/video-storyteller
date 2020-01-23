@@ -55,13 +55,15 @@ import { ResizeEnable, Rnd } from 'react-rnd';
 import { Box, Flex } from 'rebass';
 import { putString } from 'rxfire/storage';
 import {
+  createSaveStory,
+  createSetDurations,
   createSetLastJumpedToActionId,
   createToggleTheatricalMode,
+  selectDurations,
   selectLastJumpedToActionId,
+  selectSaveStoryStatus,
   selectTheatricalMode,
   selectUid,
-  selectDurations,
-  createSetDurations,
 } from 'store';
 import { dividingBorder } from 'styles';
 import urlJoin from 'url-join';
@@ -73,7 +75,9 @@ import {
   CanvasContext,
   initialElapsedTime,
   initialHoveredBlockId,
-  SetSave,
+  initialStoryMonitorState,
+  StoryState,
+  StoryWithId,
 } from './CanvasContext';
 import DevTools, { miniDrawerWidth } from './DevTools';
 import store, {
@@ -155,11 +159,15 @@ const Canvas: React.FC<CanvasProps> = () => {
     toggleTheatricalMode,
     setLastJumpedToActionId,
     setDurations,
+    saveStory,
   } = useStoreActions({
     toggleTheatricalMode: createToggleTheatricalMode,
     setLastJumpedToActionId: createSetLastJumpedToActionId,
     setDurations: createSetDurations,
+    saveStory: createSaveStory.request,
   });
+
+  const saveStoryStatus = useStoreSelector(selectSaveStoryStatus);
 
   const lastJumpedToActionId = useStoreSelector(selectLastJumpedToActionId);
 
@@ -406,10 +414,9 @@ const Canvas: React.FC<CanvasProps> = () => {
     }
   }, [totalElapsedTime, audioElement]);
 
-  const setSave = React.useRef<SetSave>(() => {});
-  const setSetSave = (newSetSave: SetSave) => {
-    setSave.current = newSetSave; // eslint-disable-line
-  };
+  const [storyMonitorState, setStoryMonitorState] = React.useState(
+    initialStoryMonitorState,
+  );
 
   return (
     <Flex
@@ -651,9 +658,21 @@ const Canvas: React.FC<CanvasProps> = () => {
                         }}
                       >
                         <ListItem
+                          disabled={saveStoryStatus === 'in progress'}
                           button
                           style={{ height: '100%' }}
-                          onClick={setSave.current}
+                          onClick={() => {
+                            const storyState: StoryWithId = {
+                              ...storyMonitorState,
+                              id: v4(),
+                              durations,
+                              lastJumpedToActionId,
+                              isPublic: false,
+                              authorId: uid,
+                            };
+                            // eslint-disable-next-line no-console
+                            saveStory(storyState);
+                          }}
                         >
                           <ListItemIcon
                             style={{ minWidth: 'auto', marginRight: 10 }}
@@ -907,6 +926,8 @@ const Canvas: React.FC<CanvasProps> = () => {
           >
             <CanvasContext.Provider
               value={{
+                storyMonitorState,
+                setStoryMonitorState,
                 hoveredBlockId,
                 setHoveredBlockId,
                 isPlaying,
@@ -915,7 +936,6 @@ const Canvas: React.FC<CanvasProps> = () => {
                 setElapsedTime,
                 totalElapsedTime,
                 setTotalElapsedTime,
-                setSetSave,
                 lastJumpedToActionId,
                 setLastJumpedToActionId,
                 durations,

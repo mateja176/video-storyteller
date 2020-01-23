@@ -99,6 +99,8 @@ export const isPositionAction = (action: Action): action is PositionAction =>
 export interface MonitorState {}
 
 export type ActionId = number;
+export type ActionIds = ActionId[];
+export type WithActionId = { id: ActionId };
 
 export interface CreateActionById<A extends Action> {
   type: string;
@@ -108,8 +110,7 @@ export interface CreateActionById<A extends Action> {
 
 export type ActionById = CreateActionById<Action>;
 export type CudActionById = CreateActionById<CreateAction>;
-
-export type ActionWithId = ActionById & { id: number };
+export type ActionWithId = ActionById & WithActionId;
 
 export type ActionsById = Record<number, ActionById>;
 
