@@ -1,7 +1,3 @@
-/* eslint-disable no-spaced-func */
-/* eslint-disable func-call-spacing */
-/* eslint-disable indent */
-
 import { BlockState, WithId } from 'models';
 import { pick } from 'ramda';
 import { createContext } from 'react';
