@@ -8,6 +8,7 @@ import {
   ListItemText,
   makeStyles,
   Paper,
+  TextField,
   Typography,
   useTheme,
 } from '@material-ui/core';
@@ -80,12 +81,12 @@ import {
 } from './CanvasContext';
 import DevTools, { miniDrawerWidth } from './DevTools';
 import store, {
+  selectAudioSrc,
   selectBlockStates,
   selectPosition,
   selectScale,
   useActions,
   useSelector,
-  selectAudioSrc,
 } from './store';
 import {
   CreateAction,
@@ -420,6 +421,8 @@ const Canvas: React.FC<CanvasProps> = () => {
     initialStoryMonitorState,
   );
 
+  const [storyName, setStoryName] = React.useState('');
+
   return (
     <Flex
       style={{
@@ -653,39 +656,62 @@ const Canvas: React.FC<CanvasProps> = () => {
 
                   default:
                     return (
-                      <List
-                        style={{
-                          paddingTop: 0,
-                          paddingBottom: 0,
-                        }}
-                      >
-                        <ListItem
-                          disabled={saveStoryStatus === 'in progress'}
-                          button
-                          style={{ height: '100%' }}
-                          onClick={() => {
-                            const storyState: StoryWithId = {
-                              ...storyMonitorState,
-                              id: v4(),
-                              durations,
-                              audioId: audioElement ? audioElement.id : '',
-                              audioSrc: audioElement ? audioSrc : '',
-                              lastJumpedToActionId,
-                              isPublic: false,
-                              authorId: uid,
-                            };
-                            // eslint-disable-next-line no-console
-                            saveStory(storyState);
+                      <Flex>
+                        <form
+                          onSubmit={e => {
+                            e.preventDefault();
                           }}
                         >
-                          <ListItemIcon
-                            style={{ minWidth: 'auto', marginRight: 10 }}
+                          <Flex alignItems="center" height="100%" ml={2} mr={1}>
+                            <TextField
+                              style={{ marginRight: 5, width: 150 }}
+                              placeholder="Story name"
+                              onMouseDown={e => {
+                                e.stopPropagation();
+                              }}
+                              value={storyName}
+                              onChange={({ target: { value } }) => {
+                                setStoryName(value);
+                              }}
+                            />
+                            {/* <Button type="submit">rename</Button> */}
+                          </Flex>
+                        </form>
+                        <List
+                          style={{
+                            paddingTop: 0,
+                            paddingBottom: 0,
+                          }}
+                        >
+                          <ListItem
+                            disabled={saveStoryStatus === 'in progress'}
+                            button
+                            style={{ height: '100%' }}
+                            onClick={() => {
+                              const storyState: StoryWithId = {
+                                ...storyMonitorState,
+                                id: v4(),
+                                name: storyName,
+                                durations,
+                                audioId: audioElement ? audioElement.id : '',
+                                audioSrc: audioElement ? audioSrc : '',
+                                lastJumpedToActionId,
+                                isPublic: false,
+                                authorId: uid,
+                              };
+                              // eslint-disable-next-line no-console
+                              saveStory(storyState);
+                            }}
                           >
-                            <Save />
-                          </ListItemIcon>
-                          <ListItemText>Save</ListItemText>
-                        </ListItem>
-                      </List>
+                            <ListItemIcon
+                              style={{ minWidth: 'auto', marginRight: 10 }}
+                            >
+                              <Save />
+                            </ListItemIcon>
+                            <ListItemText>Save Story</ListItemText>
+                          </ListItem>
+                        </List>
+                      </Flex>
                     );
                 }
               })()}

@@ -38,6 +38,7 @@ export type DurationsAndLastJumpedToActionId = Pick<
 >;
 
 export type StoryData = {
+  name: string;
   authorId: User['uid'];
   audioId: StorageFile['name'];
   audioSrc: StorageFile['downloadUrl'];
@@ -54,6 +55,7 @@ export const initialStoryState: StoryWithId = {
   ...pick(['durations', 'lastJumpedToActionId'], initialCanvasState),
   ...initialStoryMonitorState,
   id: '',
+  name: '',
   audioId: '',
   audioSrc: '',
   authorId: '',
