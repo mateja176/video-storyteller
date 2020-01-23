@@ -1,7 +1,7 @@
-import { StoryState, StoryWithId } from 'pages/Canvas/CanvasContext';
+import { ExtendedLoadingStatus } from 'models';
+import { StoryWithId } from 'pages/Canvas/CanvasContext';
 import { ActionType, createAction, createAsyncAction } from 'typesafe-actions';
 import { createReducer, toObject } from 'utils';
-import { ExtendedLoadingStatus } from 'models';
 
 export type Durations = number[];
 

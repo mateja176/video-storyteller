@@ -76,7 +76,6 @@ import {
   initialElapsedTime,
   initialHoveredBlockId,
   initialStoryMonitorState,
-  StoryState,
   StoryWithId,
 } from './CanvasContext';
 import DevTools, { miniDrawerWidth } from './DevTools';
