@@ -9,6 +9,7 @@ import {
   CreateSetLastJumpedToActionId,
   initialCanvasState,
   User,
+  StorageFile,
 } from 'store';
 import { ActionIds, ActionsById } from './utils';
 
@@ -36,14 +37,16 @@ export type DurationsAndLastJumpedToActionId = Pick<
   'lastJumpedToActionId' | 'durations'
 >;
 
-export type StoryMetaData = {
+export type StoryData = {
   authorId: User['uid'];
+  audioId: StorageFile['name'];
+  audioSrc: StorageFile['downloadUrl'];
   isPublic: boolean;
 };
 
 export type StoryState = StoryMonitorState &
   DurationsAndLastJumpedToActionId &
-  StoryMetaData;
+  StoryData;
 
 export type StoryWithId = StoryState & WithId;
 
@@ -51,6 +54,8 @@ export const initialStoryState: StoryWithId = {
   ...pick(['durations', 'lastJumpedToActionId'], initialCanvasState),
   ...initialStoryMonitorState,
   id: '',
+  audioId: '',
+  audioSrc: '',
   authorId: '',
   isPublic: false,
 };

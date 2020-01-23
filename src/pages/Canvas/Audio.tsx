@@ -4,7 +4,7 @@ import { Box } from 'rebass';
 import { createFetchFiles, selectAudio } from 'store';
 import { useActions as useStoreActions } from 'utils';
 import AudioBlock, { AudioElement } from './AudioBlock';
-import { selectDownloadUrl, useActions, useSelector } from './store';
+import { selectAudioId, useActions, useSelector } from './store';
 import { createSetAudio } from './store/audio';
 
 export interface AudioProps {
@@ -20,7 +20,7 @@ const Audio: React.FC<AudioProps> = ({ setAudioElement }) => {
 
   const { setAudio } = useActions({ setAudio: createSetAudio });
 
-  const selectedDownloadUrl = useSelector(selectDownloadUrl);
+  const selectedAudioId = useSelector(selectAudioId);
 
   React.useEffect(() => {
     fetchFiles({ path: 'audio' });
@@ -28,14 +28,15 @@ const Audio: React.FC<AudioProps> = ({ setAudioElement }) => {
 
   return (
     <Box p={3}>
-      {audio.map(({ downloadUrl, customMetadata: { name } }) => (
+      {audio.map(({ name: id, downloadUrl, customMetadata: { name } }) => (
         <AudioBlock
+          id={id}
+          selectedId={selectedAudioId}
           key={downloadUrl}
           src={downloadUrl}
           name={name}
           setAudioElement={setAudioElement}
           setAudio={setAudio}
-          selectedDownloadUrl={selectedDownloadUrl}
         />
       ))}
     </Box>

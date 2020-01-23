@@ -85,6 +85,7 @@ import store, {
   selectScale,
   useActions,
   useSelector,
+  selectAudioSrc,
 } from './store';
 import {
   CreateAction,
@@ -413,6 +414,8 @@ const Canvas: React.FC<CanvasProps> = () => {
     }
   }, [totalElapsedTime, audioElement]);
 
+  const audioSrc = useSelector(selectAudioSrc);
+
   const [storyMonitorState, setStoryMonitorState] = React.useState(
     initialStoryMonitorState,
   );
@@ -665,6 +668,8 @@ const Canvas: React.FC<CanvasProps> = () => {
                               ...storyMonitorState,
                               id: v4(),
                               durations,
+                              audioId: audioElement ? audioElement.id : '',
+                              audioSrc: audioElement ? audioSrc : '',
                               lastJumpedToActionId,
                               isPublic: false,
                               authorId: uid,

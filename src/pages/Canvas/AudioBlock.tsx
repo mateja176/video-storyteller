@@ -2,6 +2,7 @@ import { Typography } from '@material-ui/core';
 import { startCase } from 'lodash';
 import React from 'react';
 import { Box, Flex } from 'rebass';
+import { StorageFile } from 'store';
 import { CreateSetAudio } from './store/audio';
 
 export type AudioElement = HTMLAudioElement | null;
@@ -9,22 +10,24 @@ export type AudioElement = HTMLAudioElement | null;
 export type AudioProps = React.HTMLProps<HTMLAudioElement>;
 
 export interface AudioBlockProps extends Required<Pick<AudioProps, 'src'>> {
-  selectedDownloadUrl: AudioProps['id'];
+  id: StorageFile['name'];
+  selectedId: StorageFile['name'];
   name: string;
   setAudioElement: (e: AudioElement) => void;
   setAudio: CreateSetAudio;
 }
 
 const AudioBlock: React.FC<AudioBlockProps> = ({
+  id,
+  selectedId,
   setAudioElement,
   setAudio,
   src,
   name,
-  selectedDownloadUrl,
 }) => {
   const audioRef = React.useRef<AudioElement>(null);
 
-  const isActive = selectedDownloadUrl === src;
+  const isActive = selectedId === id;
 
   React.useEffect(() => {
     if (isActive && audioRef.current) {
@@ -40,7 +43,7 @@ const AudioBlock: React.FC<AudioBlockProps> = ({
         if (!isActive) {
           setAudioElement(audioRef.current);
 
-          setAudio({ downloadUrl: src });
+          setAudio({ downloadUrl: src, id });
         }
       }}
       style={{ cursor: 'pointer' }}
@@ -51,7 +54,7 @@ const AudioBlock: React.FC<AudioBlockProps> = ({
         </Typography>
       </Flex>
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <audio ref={audioRef} controls id={name}>
+      <audio ref={audioRef} controls id={id}>
         <source src={src} />
       </audio>
     </Box>

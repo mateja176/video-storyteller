@@ -49,9 +49,13 @@ export const selectPosition = createSelector(
 );
 
 export const selectAudio = (state: State) => state.audio;
-export const selectDownloadUrl = createSelector(
+export const selectAudioSrc = createSelector(
   selectAudio,
   ({ downloadUrl }) => downloadUrl,
+);
+export const selectAudioId = createSelector(
+  selectAudio,
+  ({ id }) => id,
 );
 
 export const useSelector = <R>(selector: Selector<State, R>) => {
