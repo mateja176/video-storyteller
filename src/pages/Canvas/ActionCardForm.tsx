@@ -182,8 +182,8 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
                   onChange={handleChange}
                   value={values.editorState}
                   multiline
-                  rows={3}
-                  rowsMax={3}
+                  rows={2}
+                  rowsMax={2}
                   disabled
                 />
               )}
@@ -226,8 +226,8 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
                 </Flex>
               )}
               {(isPositionAction(action) ||
-                isSetTransformAction(action) ||
-                isScaleAction(action)) && (
+                // isScaleAction(action) ||
+                isSetTransformAction(action)) && (
                 <Flex>
                   <TextField
                     {...textFieldProps}
