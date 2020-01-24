@@ -234,7 +234,7 @@ const PlainNavItem: FC<NavItemProps> = ({
   const { '/': level } = countBy(navItemProps.path);
 
   const boxShadow = `-${theme.spacing(level)}px 0px ${
-    theme.palette.primary.light
+    theme.palette.primary.main
   }`;
 
   return (
