@@ -422,6 +422,7 @@ const Canvas: React.FC<CanvasProps> = () => {
   );
 
   const [storyName, setStoryName] = React.useState('');
+  const [storyNameError, setStoryNameError] = React.useState('');
 
   return (
     <Flex
@@ -671,8 +672,14 @@ const Canvas: React.FC<CanvasProps> = () => {
                               }}
                               value={storyName}
                               onChange={({ target: { value } }) => {
+                                if (value && storyNameError) {
+                                  setStoryNameError('');
+                                }
+
                                 setStoryName(value);
                               }}
+                              error={!!storyNameError}
+                              helperText={storyNameError}
                             />
                             {/* <Button type="submit">rename</Button> */}
                           </Flex>
@@ -688,19 +695,23 @@ const Canvas: React.FC<CanvasProps> = () => {
                             button
                             style={{ height: '100%' }}
                             onClick={() => {
-                              const storyState: StoryWithId = {
-                                ...storyMonitorState,
-                                id: v4(),
-                                name: storyName,
-                                durations,
-                                audioId: audioElement ? audioElement.id : '',
-                                audioSrc: audioElement ? audioSrc : '',
-                                lastJumpedToActionId,
-                                isPublic: false,
-                                authorId: uid,
-                              };
-                              // eslint-disable-next-line no-console
-                              saveStory(storyState);
+                              if (!storyName) {
+                                setStoryNameError('Make it memorable');
+                              } else {
+                                const storyState: StoryWithId = {
+                                  ...storyMonitorState,
+                                  id: v4(),
+                                  name: storyName,
+                                  durations,
+                                  audioId: audioElement ? audioElement.id : '',
+                                  audioSrc: audioElement ? audioSrc : '',
+                                  lastJumpedToActionId,
+                                  isPublic: false,
+                                  authorId: uid,
+                                };
+                                // eslint-disable-next-line no-console
+                                saveStory(storyState);
+                              }
                             }}
                           >
                             <ListItemIcon
