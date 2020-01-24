@@ -425,15 +425,10 @@ const Canvas: React.FC<CanvasProps> = () => {
   );
 
   const [storyName, setStoryName] = React.useState('');
-  const [storyNameError, setStoryNameError] = React.useState('');
 
   const [duplicateStoryName, setDuplicateStoryName] = React.useState('');
-  const [duplicateStoryNameError, setDuplicateStoryNameError] = React.useState(
-    '',
-  );
 
   const [newStoryName, setNewStoryName] = React.useState('');
-  const [newStoryNameError, setNewStoryNameError] = React.useState('');
 
   return (
     <Flex
@@ -680,22 +675,17 @@ const Canvas: React.FC<CanvasProps> = () => {
                             button
                             style={{ height: '100%' }}
                             onClick={() => {
-                              if (!storyName) {
-                                setStoryNameError('Make it interesting');
-                              } else {
-                                const storyState: StoryWithId = {
-                                  ...storyMonitorState,
-                                  id: v4(), // TODO replace with existing id
-                                  name: storyName,
-                                  durations,
-                                  audioId: audioElement ? audioElement.id : '',
-                                  audioSrc: audioElement ? audioSrc : '',
-                                  lastJumpedToActionId,
-                                  isPublic: false,
-                                  authorId: uid,
-                                };
-                                saveStory(storyState);
-                              }
+                              const storyState: Omit<StoryWithId, 'name'> = {
+                                ...storyMonitorState,
+                                id: v4(), // TODO replace with existing id
+                                durations,
+                                audioId: audioElement ? audioElement.id : '',
+                                audioSrc: audioElement ? audioSrc : '',
+                                lastJumpedToActionId,
+                                isPublic: false,
+                                authorId: uid,
+                              };
+                              saveStory(storyState);
                             }}
                           >
                             <ListItemIcon
@@ -710,14 +700,10 @@ const Canvas: React.FC<CanvasProps> = () => {
                           onSubmit={e => {
                             e.preventDefault();
 
-                            if (!storyName) {
-                              setStoryNameError('Make it interesting');
-                            } else {
-                              saveStory({
-                                id: v4(), // TODO replace with existing id
-                                name: storyName,
-                              });
-                            }
+                            saveStory({
+                              id: v4(), // TODO replace with existing id
+                              name: storyName,
+                            });
                           }}
                         >
                           <Flex alignItems="center" height="100%" ml={2} mr={1}>
@@ -729,44 +715,39 @@ const Canvas: React.FC<CanvasProps> = () => {
                               }}
                               value={storyName}
                               onChange={({ target: { value } }) => {
-                                if (value && storyNameError) {
-                                  setStoryNameError('');
-                                }
-
                                 setStoryName(value);
                               }}
-                              error={!!storyNameError}
-                              helperText={storyNameError}
                               InputProps={{
                                 startAdornment: (
                                   <InsertDriveFile color="action" />
                                 ),
                               }}
                             />
-                            <Button type="submit">rename</Button>
+                            <Button type="submit" disabled={!storyName}>
+                              rename
+                            </Button>
                           </Flex>
                         </form>
                         <form
                           onSubmit={e => {
                             e.preventDefault();
 
-                            if (!newStoryName) {
-                              setStoryNameError('Make it memorable');
-                            } else {
-                              const newStory: Omit<StoryWithId, 'audioSrc' | 'audioId'> = {
-                                id: v4(),
-                                name: newStoryName,
-                                actionsById: {},
-                                stagedActionIds: [],
-                                skippedActionIds: [],
-                                durations: [],
-                                lastJumpedToActionId: -1,
-                                isPublic: false,
-                                authorId: uid,
-                              };
+                            const newStory: Omit<
+                              StoryWithId,
+                              'audioSrc' | 'audioId'
+                            > = {
+                              id: v4(),
+                              name: newStoryName,
+                              actionsById: {},
+                              stagedActionIds: [],
+                              skippedActionIds: [],
+                              durations: [],
+                              lastJumpedToActionId: -1,
+                              isPublic: false,
+                              authorId: uid,
+                            };
 
-                              saveStory(newStory);
-                            }
+                            saveStory(newStory);
                           }}
                         >
                           <Flex alignItems="center" height="100%" ml={2} mr={1}>
@@ -778,41 +759,33 @@ const Canvas: React.FC<CanvasProps> = () => {
                               }}
                               value={newStoryName}
                               onChange={({ target: { value } }) => {
-                                if (value && newStoryNameError) {
-                                  setNewStoryNameError('');
-                                }
-
                                 setNewStoryName(value);
                               }}
-                              error={!!newStoryNameError}
-                              helperText={newStoryNameError}
                               InputProps={{
                                 startAdornment: <NoteAdd color="action" />,
                               }}
                             />
-                            <Button type="submit">create</Button>
+                            <Button type="submit" disabled={!newStoryName}>
+                              create
+                            </Button>
                           </Flex>
                         </form>
                         <form
                           onSubmit={e => {
                             e.preventDefault();
 
-                            if (!storyName) {
-                              setStoryNameError('Make it sound good');
-                            } else {
-                              const storyState: StoryWithId = {
-                                ...storyMonitorState,
-                                id: v4(),
-                                name: storyName,
-                                durations,
-                                audioId: audioElement ? audioElement.id : '',
-                                audioSrc: audioElement ? audioSrc : '',
-                                lastJumpedToActionId,
-                                isPublic: false,
-                                authorId: uid,
-                              };
-                              saveStory(storyState);
-                            }
+                            const storyState: StoryWithId = {
+                              ...storyMonitorState,
+                              id: v4(),
+                              name: storyName,
+                              durations,
+                              audioId: audioElement ? audioElement.id : '',
+                              audioSrc: audioElement ? audioSrc : '',
+                              lastJumpedToActionId,
+                              isPublic: false,
+                              authorId: uid,
+                            };
+                            saveStory(storyState);
                           }}
                         >
                           <Flex alignItems="center" height="100%" ml={2} mr={1}>
@@ -824,19 +797,18 @@ const Canvas: React.FC<CanvasProps> = () => {
                               }}
                               value={duplicateStoryName}
                               onChange={({ target: { value } }) => {
-                                if (value && duplicateStoryNameError) {
-                                  setDuplicateStoryNameError('');
-                                }
-
                                 setDuplicateStoryName(value);
                               }}
-                              error={!!duplicateStoryNameError}
-                              helperText={duplicateStoryNameError}
                               InputProps={{
                                 startAdornment: <FileCopy color="action" />,
                               }}
                             />
-                            <Button type="submit">duplicate</Button>
+                            <Button
+                              type="submit"
+                              disabled={!duplicateStoryName}
+                            >
+                              duplicate
+                            </Button>
                           </Flex>
                         </form>
                       </Flex>
