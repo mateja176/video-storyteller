@@ -17,9 +17,11 @@ import {
   Audiotrack,
   Build,
   Delete,
+  FileCopy,
   Fullscreen,
   FullscreenExit,
   Image,
+  InsertDriveFile,
   LibraryMusic,
   Save,
   Title,
@@ -424,6 +426,11 @@ const Canvas: React.FC<CanvasProps> = () => {
   const [storyName, setStoryName] = React.useState('');
   const [storyNameError, setStoryNameError] = React.useState('');
 
+  const [duplicateStoryName, setDuplicateStoryName] = React.useState('');
+  const [duplicateStoryNameError, setDuplicateStoryNameError] = React.useState(
+    '',
+  );
+
   return (
     <Flex
       style={{
@@ -680,6 +687,11 @@ const Canvas: React.FC<CanvasProps> = () => {
                               }}
                               error={!!storyNameError}
                               helperText={storyNameError}
+                              InputProps={{
+                                startAdornment: (
+                                  <InsertDriveFile color="action" />
+                                ),
+                              }}
                             />
                             {/* <Button type="submit">rename</Button> */}
                           </Flex>
@@ -700,7 +712,7 @@ const Canvas: React.FC<CanvasProps> = () => {
                               } else {
                                 const storyState: StoryWithId = {
                                   ...storyMonitorState,
-                                  id: v4(),
+                                  id: v4(), // TODO replace with existing id
                                   name: storyName,
                                   durations,
                                   audioId: audioElement ? audioElement.id : '',
@@ -709,7 +721,6 @@ const Canvas: React.FC<CanvasProps> = () => {
                                   isPublic: false,
                                   authorId: uid,
                                 };
-                                // eslint-disable-next-line no-console
                                 saveStory(storyState);
                               }
                             }}
@@ -722,6 +733,52 @@ const Canvas: React.FC<CanvasProps> = () => {
                             <ListItemText>Save Story</ListItemText>
                           </ListItem>
                         </List>
+                        <form
+                          onSubmit={e => {
+                            e.preventDefault();
+
+                            if (!storyName) {
+                              setStoryNameError('Make it sound good');
+                            } else {
+                              const storyState: StoryWithId = {
+                                ...storyMonitorState,
+                                id: v4(),
+                                name: storyName,
+                                durations,
+                                audioId: audioElement ? audioElement.id : '',
+                                audioSrc: audioElement ? audioSrc : '',
+                                lastJumpedToActionId,
+                                isPublic: false,
+                                authorId: uid,
+                              };
+                              saveStory(storyState);
+                            }
+                          }}
+                        >
+                          <Flex alignItems="center" height="100%" ml={2} mr={1}>
+                            <TextField
+                              style={{ marginRight: 5, width: 150 }}
+                              placeholder="Duplicate name"
+                              onMouseDown={e => {
+                                e.stopPropagation();
+                              }}
+                              value={duplicateStoryName}
+                              onChange={({ target: { value } }) => {
+                                if (value && duplicateStoryNameError) {
+                                  setDuplicateStoryNameError('');
+                                }
+
+                                setDuplicateStoryName(value);
+                              }}
+                              error={!!duplicateStoryNameError}
+                              helperText={duplicateStoryNameError}
+                              InputProps={{
+                                startAdornment: <FileCopy color="action" />,
+                              }}
+                            />
+                            <Button type="submit">duplicate</Button>
+                          </Flex>
+                        </form>
                       </Flex>
                     );
                 }
