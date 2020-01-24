@@ -112,7 +112,6 @@ const StoryMonitor = ({
     durations,
     setDurations,
     reset,
-    setReset,
   } = React.useContext(CanvasContext);
 
   const elapsed = elapsedTime > initialElapsedTime ? elapsedTime : 0;
@@ -147,12 +146,14 @@ const StoryMonitor = ({
       stagedActionIds.concat(skippedActionIds).map(String),
       actionsById,
     );
-    const plainActionsById: ActionsById = removeNils(actionsByIdWithoutDeleted);
+    const { 0: zero, ...plainActionsById }: ActionsById = removeNils(
+      actionsByIdWithoutDeleted,
+    );
 
     setStoryMonitorState({
       actionsById: plainActionsById,
-      stagedActionIds,
-      skippedActionIds,
+      stagedActionIds: stagedActionIds.slice(1),
+      skippedActionIds: skippedActionIds.slice(1),
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [actionsById, stagedActionIds, skippedActionIds]);
@@ -425,7 +426,14 @@ const StoryMonitor = ({
             <DeleteSweep />
           </ListItemIcon>
         </ListItem>
-        <ListItem ref={deleteRef} button disabled={areThereNoEditableActions}>
+        <ListItem
+          ref={deleteRef}
+          button
+          disabled={areThereNoEditableActions}
+          onClick={() => {
+            setDeletePopoverOpen(true);
+          }}
+        >
           <Tooltip title="Delete all actions">
             <ListItemIcon>
               <DeleteForever color="secondary" />
