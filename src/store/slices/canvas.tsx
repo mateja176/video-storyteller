@@ -1,6 +1,7 @@
 import { ExtendedLoadingStatus } from 'models';
-import { StoryWithId, StoryState } from 'pages/Canvas/CanvasContext';
+import { StoryState, StoryWithId } from 'pages/Canvas/CanvasContext';
 import { ActionType, createAction, createAsyncAction } from 'typesafe-actions';
+import { Required } from 'utility-types';
 import { createReducer, toObject } from 'utils';
 
 export type Durations = number[];
@@ -46,7 +47,7 @@ export const saveStoryTypes = [
 ] as const;
 export const saveStoryType = toObject(saveStoryTypes);
 export const createSaveStory = createAsyncAction(...saveStoryTypes)<
-  StoryWithId,
+  Required<Partial<StoryWithId>, 'id'>,
   void,
   void
 >();

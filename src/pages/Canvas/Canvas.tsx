@@ -665,9 +665,55 @@ const Canvas: React.FC<CanvasProps> = () => {
                   default:
                     return (
                       <Flex>
+                        <List
+                          style={{
+                            paddingTop: 0,
+                            paddingBottom: 0,
+                          }}
+                        >
+                          <ListItem
+                            disabled={saveStoryStatus === 'in progress'}
+                            button
+                            style={{ height: '100%' }}
+                            onClick={() => {
+                              if (!storyName) {
+                                setStoryNameError('Make it interesting');
+                              } else {
+                                const storyState: StoryWithId = {
+                                  ...storyMonitorState,
+                                  id: v4(), // TODO replace with existing id
+                                  name: storyName,
+                                  durations,
+                                  audioId: audioElement ? audioElement.id : '',
+                                  audioSrc: audioElement ? audioSrc : '',
+                                  lastJumpedToActionId,
+                                  isPublic: false,
+                                  authorId: uid,
+                                };
+                                saveStory(storyState);
+                              }
+                            }}
+                          >
+                            <ListItemIcon
+                              style={{ minWidth: 'auto', marginRight: 10 }}
+                            >
+                              <Save />
+                            </ListItemIcon>
+                            <ListItemText>Save Story</ListItemText>
+                          </ListItem>
+                        </List>
                         <form
                           onSubmit={e => {
                             e.preventDefault();
+
+                            if (!storyName) {
+                              setStoryNameError('Make it interesting');
+                            } else {
+                              saveStory({
+                                id: v4(), // TODO replace with existing id
+                                name: storyName,
+                              });
+                            }
                           }}
                         >
                           <Flex alignItems="center" height="100%" ml={2} mr={1}>
@@ -693,46 +739,9 @@ const Canvas: React.FC<CanvasProps> = () => {
                                 ),
                               }}
                             />
-                            {/* <Button type="submit">rename</Button> */}
+                            <Button type="submit">rename</Button>
                           </Flex>
                         </form>
-                        <List
-                          style={{
-                            paddingTop: 0,
-                            paddingBottom: 0,
-                          }}
-                        >
-                          <ListItem
-                            disabled={saveStoryStatus === 'in progress'}
-                            button
-                            style={{ height: '100%' }}
-                            onClick={() => {
-                              if (!storyName) {
-                                setStoryNameError('Make it memorable');
-                              } else {
-                                const storyState: StoryWithId = {
-                                  ...storyMonitorState,
-                                  id: v4(), // TODO replace with existing id
-                                  name: storyName,
-                                  durations,
-                                  audioId: audioElement ? audioElement.id : '',
-                                  audioSrc: audioElement ? audioSrc : '',
-                                  lastJumpedToActionId,
-                                  isPublic: false,
-                                  authorId: uid,
-                                };
-                                saveStory(storyState);
-                              }
-                            }}
-                          >
-                            <ListItemIcon
-                              style={{ minWidth: 'auto', marginRight: 10 }}
-                            >
-                              <Save />
-                            </ListItemIcon>
-                            <ListItemText>Save Story</ListItemText>
-                          </ListItem>
-                        </List>
                         <form
                           onSubmit={e => {
                             e.preventDefault();
