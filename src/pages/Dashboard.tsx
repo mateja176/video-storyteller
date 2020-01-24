@@ -43,12 +43,12 @@ const Dashboard: React.FC<DashboardProps> = () => {
           <Spinner />
         ) : (
           <List>
-            {stories.map(({ name, isPublic, durations }) => {
+            {stories.map(({ id, name, isPublic, durations }) => {
               const duration = durations.reduce(add, 0);
               const time = new Date(duration);
 
               return (
-                <ListItem button>
+                <ListItem key={id} button>
                   <ListItemIcon>
                     <Tooltip
                       title={isPublic ? 'Public' : 'Draft'}

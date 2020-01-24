@@ -1,5 +1,5 @@
 import { ExtendedLoadingStatus } from 'models';
-import { StoryState, StoryWithId } from 'pages/Canvas/CanvasContext';
+import { StoryWithId } from 'pages/Canvas/CanvasContext';
 import { ActionType, createAction, createAsyncAction } from 'typesafe-actions';
 import { Required } from 'utility-types';
 import { createReducer, toObject } from 'utils';
@@ -10,7 +10,7 @@ export interface CanvasState {
   saveStoryStatus: ExtendedLoadingStatus;
   lastJumpedToActionId: number;
   durations: Durations;
-  stories: StoryState[];
+  stories: StoryWithId[];
   fetchStoriesStatus: ExtendedLoadingStatus;
 }
 
