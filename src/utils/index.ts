@@ -91,9 +91,9 @@ export const getPathFromComponent = <Component extends React.FC<any>>(
 export const mapStateToProps = <
   Map extends Record<string, Selector<State, any>>
 >(
-  map: Map,
+  m: Map,
 ) => (state: State) => {
-  const entries = Object.entries(map).map(([prop, selector]) => [
+  const entries = Object.entries(m).map(([prop, selector]) => [
     prop,
     selector(state),
   ]);
