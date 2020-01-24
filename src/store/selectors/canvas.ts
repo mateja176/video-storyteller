@@ -14,3 +14,11 @@ export const selectSaveStoryStatus = createSelector(
   selectCanvas,
   ({ saveStoryStatus }) => saveStoryStatus,
 );
+export const selectFetchStoriesStatus = createSelector(
+  selectCanvas,
+  ({ fetchStoriesStatus }) => fetchStoriesStatus,
+);
+export const selectStories = createSelector(
+  selectCanvas,
+  ({ stories }) => stories,
+);
