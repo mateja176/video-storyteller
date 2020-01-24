@@ -23,6 +23,7 @@ import {
   Image,
   InsertDriveFile,
   LibraryMusic,
+  NoteAdd,
   Save,
   Title,
   Tv,
@@ -431,6 +432,9 @@ const Canvas: React.FC<CanvasProps> = () => {
     '',
   );
 
+  const [newStoryName, setNewStoryName] = React.useState('');
+  const [newStoryNameError, setNewStoryNameError] = React.useState('');
+
   return (
     <Flex
       style={{
@@ -746,6 +750,53 @@ const Canvas: React.FC<CanvasProps> = () => {
                           onSubmit={e => {
                             e.preventDefault();
 
+                            if (!newStoryName) {
+                              setStoryNameError('Make it memorable');
+                            } else {
+                              const newStory: Omit<StoryWithId, 'audioSrc' | 'audioId'> = {
+                                id: v4(),
+                                name: newStoryName,
+                                actionsById: {},
+                                stagedActionIds: [],
+                                skippedActionIds: [],
+                                durations: [],
+                                lastJumpedToActionId: -1,
+                                isPublic: false,
+                                authorId: uid,
+                              };
+
+                              saveStory(newStory);
+                            }
+                          }}
+                        >
+                          <Flex alignItems="center" height="100%" ml={2} mr={1}>
+                            <TextField
+                              style={{ marginRight: 5, width: 150 }}
+                              placeholder="New story"
+                              onMouseDown={e => {
+                                e.stopPropagation();
+                              }}
+                              value={newStoryName}
+                              onChange={({ target: { value } }) => {
+                                if (value && newStoryNameError) {
+                                  setNewStoryNameError('');
+                                }
+
+                                setNewStoryName(value);
+                              }}
+                              error={!!newStoryNameError}
+                              helperText={newStoryNameError}
+                              InputProps={{
+                                startAdornment: <NoteAdd color="action" />,
+                              }}
+                            />
+                            <Button type="submit">create</Button>
+                          </Flex>
+                        </form>
+                        <form
+                          onSubmit={e => {
+                            e.preventDefault();
+
                             if (!storyName) {
                               setStoryNameError('Make it sound good');
                             } else {
@@ -767,7 +818,7 @@ const Canvas: React.FC<CanvasProps> = () => {
                           <Flex alignItems="center" height="100%" ml={2} mr={1}>
                             <TextField
                               style={{ marginRight: 5, width: 150 }}
-                              placeholder="Duplicate name"
+                              placeholder="Duplicate's name"
                               onMouseDown={e => {
                                 e.stopPropagation();
                               }}
