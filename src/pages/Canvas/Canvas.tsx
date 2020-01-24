@@ -685,9 +685,10 @@ const Canvas: React.FC<CanvasProps> = () => {
                             button
                             style={{ height: '100%' }}
                             onClick={() => {
-                              const storyState: Omit<StoryWithId, 'name'> = {
+                              const storyState: StoryWithId = {
                                 ...storyMonitorState,
                                 id: v4(), // TODO replace with existing id
+                                name: storyName,
                                 durations,
                                 audioId: audioElement ? audioElement.id : '',
                                 audioSrc: audioElement ? audioSrc : '',
