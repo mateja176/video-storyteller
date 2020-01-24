@@ -429,6 +429,16 @@ const Canvas: React.FC<CanvasProps> = () => {
   const [duplicateStoryName, setDuplicateStoryName] = React.useState('');
 
   const [newStoryName, setNewStoryName] = React.useState('');
+  const [creatingNew, setCreatingNew] = React.useState(false);
+  const [reset, setReset] = React.useState(false);
+
+  React.useEffect(() => {
+    if (saveStoryStatus === 'completed' && creatingNew) {
+      setReset(true);
+
+      setCreatingNew(false);
+    }
+  }, [saveStoryStatus, creatingNew]);
 
   return (
     <Flex
@@ -723,7 +733,12 @@ const Canvas: React.FC<CanvasProps> = () => {
                                 ),
                               }}
                             />
-                            <Button type="submit" disabled={!storyName}>
+                            <Button
+                              type="submit"
+                              disabled={
+                                !storyName || saveStoryStatus === 'in progress'
+                              }
+                            >
                               rename
                             </Button>
                           </Flex>
@@ -731,6 +746,8 @@ const Canvas: React.FC<CanvasProps> = () => {
                         <form
                           onSubmit={e => {
                             e.preventDefault();
+
+                            setCreatingNew(true);
 
                             const newStory: Omit<
                               StoryWithId,
@@ -765,7 +782,13 @@ const Canvas: React.FC<CanvasProps> = () => {
                                 startAdornment: <NoteAdd color="action" />,
                               }}
                             />
-                            <Button type="submit" disabled={!newStoryName}>
+                            <Button
+                              type="submit"
+                              disabled={
+                                !newStoryName ||
+                                saveStoryStatus === 'in progress'
+                              }
+                            >
                               create
                             </Button>
                           </Flex>
@@ -805,7 +828,10 @@ const Canvas: React.FC<CanvasProps> = () => {
                             />
                             <Button
                               type="submit"
-                              disabled={!duplicateStoryName}
+                              disabled={
+                                !duplicateStoryName ||
+                                saveStoryStatus === 'in progress'
+                              }
                             >
                               duplicate
                             </Button>
@@ -1070,6 +1096,8 @@ const Canvas: React.FC<CanvasProps> = () => {
                 setLastJumpedToActionId,
                 durations,
                 setDurations,
+                reset,
+                setReset,
               }}
             >
               <DevTools store={store} />

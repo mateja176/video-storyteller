@@ -13,6 +13,8 @@ import {
 } from 'store';
 import { ActionIds, ActionsById } from './utils';
 
+export type Reset = boolean;
+
 type HoveredBlockId = BlockState['payload']['id'];
 export const initialHoveredBlockId: HoveredBlockId = '';
 
@@ -75,6 +77,8 @@ export interface ICanvasContext extends DurationsAndLastJumpedToActionId {
   setTotalElapsedTime: (elapsed: ElapsedTime) => void;
   setLastJumpedToActionId: CreateSetLastJumpedToActionId;
   setDurations: CreateSetDurations;
+  reset: Reset;
+  setReset: (reset: Reset) => void;
 }
 export const CanvasContext = createContext<ICanvasContext>({
   storyMonitorState: initialStoryMonitorState,
@@ -91,4 +95,6 @@ export const CanvasContext = createContext<ICanvasContext>({
   setLastJumpedToActionId: createSetLastJumpedToActionId,
   durations: initialCanvasState.durations,
   setDurations: createSetDurations,
+  reset: false,
+  setReset: () => {},
 });

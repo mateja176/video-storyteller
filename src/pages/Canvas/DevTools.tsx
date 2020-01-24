@@ -111,6 +111,8 @@ const StoryMonitor = ({
     setLastJumpedToActionId,
     durations,
     setDurations,
+    reset,
+    setReset,
   } = React.useContext(CanvasContext);
 
   const elapsed = elapsedTime > initialElapsedTime ? elapsedTime : 0;
@@ -336,6 +338,12 @@ const StoryMonitor = ({
 
     setTotalElapsedTime(initialElapsedTime);
   };
+
+  React.useEffect(() => {
+    if (reset) {
+      deleteAll();
+    }
+  }, [reset]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const listItemProps: React.ComponentProps<typeof ListItem> = {
     button: true,
