@@ -432,7 +432,14 @@ const Canvas: React.FC<CanvasProps> = () => {
     initialStoryMonitorState,
   );
 
-  const [storyName, setStoryName] = React.useState('');
+  const [storyName, setStoryName] = React.useState(
+    currentStory ? currentStory.name : '',
+  );
+  React.useEffect(() => {
+    if (currentStory) {
+      setStoryName(currentStory.name);
+    }
+  }, [currentStory]);
 
   const [duplicateStoryName, setDuplicateStoryName] = React.useState('');
 
@@ -701,7 +708,7 @@ const Canvas: React.FC<CanvasProps> = () => {
                             onClick={() => {
                               const storyState: StoryWithId = {
                                 ...storyMonitorState,
-                                id: v4(), // TODO replace with existing id
+                                id: currentStoryId,
                                 name: storyName,
                                 durations,
                                 audioId: audioElement ? audioElement.id : '',
@@ -726,7 +733,7 @@ const Canvas: React.FC<CanvasProps> = () => {
                             e.preventDefault();
 
                             saveStory({
-                              id: v4(), // TODO replace with existing id
+                              id: currentStoryId,
                               name: storyName,
                             });
                           }}
