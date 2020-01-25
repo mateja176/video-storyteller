@@ -352,8 +352,11 @@ const StoryMonitor = ({
           store.dispatch(action.action);
         }
       });
+      setLastJumpedToActionId(currentStory.lastJumpedToActionId);
+      setDurations(currentStory.durations);
 
       setActionsCount(currentStory.stagedActionIds.length);
+
       setReset(false);
     }
   }, [reset, currentStory]); // eslint-disable-line react-hooks/exhaustive-deps

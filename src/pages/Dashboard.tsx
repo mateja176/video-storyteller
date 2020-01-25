@@ -15,8 +15,6 @@ import { useSelector } from 'react-redux';
 import { Box } from 'rebass';
 import {
   createSetCurrentStoryId,
-  createSetDurations,
-  createSetLastJumpedToActionId,
   selectCurrentStoryId,
   selectFetchStoriesStatus,
   selectStories,
@@ -27,14 +25,8 @@ import { useActions } from 'utils';
 export interface DashboardProps {}
 
 const Dashboard: React.FC<DashboardProps> = () => {
-  const {
-    setCurrentStoryId,
-    setDurations,
-    setLastJumpedToActionId,
-  } = useActions({
+  const { setCurrentStoryId } = useActions({
     setCurrentStoryId: createSetCurrentStoryId,
-    setLastJumpedToActionId: createSetLastJumpedToActionId,
-    setDurations: createSetDurations,
   });
 
   const fetchStoriesStatus = useSelector(selectFetchStoriesStatus);
@@ -67,10 +59,6 @@ const Dashboard: React.FC<DashboardProps> = () => {
                     button
                     onClick={() => {
                       setCurrentStoryId({ currentStoryId: id });
-
-                      setLastJumpedToActionId(lastJumpedToActionId);
-
-                      setDurations(durations);
                     }}
                     selected={selected}
                     disabled={selected}
