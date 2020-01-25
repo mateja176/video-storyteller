@@ -758,7 +758,10 @@ const Canvas: React.FC<CanvasProps> = () => {
                             <Button
                               type="submit"
                               disabled={
-                                !storyName || saveStoryStatus === 'in progress'
+                                !storyName ||
+                                saveStoryStatus === 'in progress' ||
+                                (currentStory &&
+                                  currentStory.name === storyName)
                               }
                             >
                               rename
