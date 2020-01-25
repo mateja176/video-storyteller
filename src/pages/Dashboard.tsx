@@ -8,6 +8,7 @@ import {
 } from '@material-ui/core';
 import { Edit, Public } from '@material-ui/icons';
 import { Link, Spinner, Tooltip } from 'components';
+import { absoluteRootPaths } from 'Layout';
 import { add } from 'ramda';
 import React from 'react';
 import { useSelector } from 'react-redux';
@@ -20,6 +21,7 @@ import {
   selectFetchStoriesStatus,
   selectStories,
 } from 'store';
+import urlJoin from 'url-join';
 import { useActions } from 'utils';
 
 export interface DashboardProps {}
@@ -45,8 +47,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
 
   return (
     <Box>
-      <Link to="canvas">
-      </Link>
+      <Link to="canvas" />
       <Typography variant="h2">Recent stories</Typography>
       <Box my={2}>
         {fetchStoriesStatus === 'in progress' ? (
@@ -83,7 +84,9 @@ const Dashboard: React.FC<DashboardProps> = () => {
                       </Tooltip>
                     </ListItemIcon>
                     <ListItemText>
-                      {name} ({time.getMinutes()}m {time.getSeconds()}s)
+                      <Link to={urlJoin(absoluteRootPaths.canvas, id)}>
+                        {name} ({time.getMinutes()}m {time.getSeconds()}s)
+                      </Link>
                     </ListItemText>
                   </ListItem>
                 );
