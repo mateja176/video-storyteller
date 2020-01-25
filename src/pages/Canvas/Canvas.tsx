@@ -37,10 +37,10 @@ import {
   Button,
   Editor,
   EditorControls,
+  Loader,
   Progress,
   progressHeight,
   Tooltip,
-  Loader,
 } from 'components';
 import {
   ContentState,
@@ -48,6 +48,7 @@ import {
   convertToRaw,
   EditorState,
 } from 'draft-js';
+import { absoluteRootPaths } from 'Layout';
 import { debounce } from 'lodash';
 import { BlockState, draggable, draggables, DropAction } from 'models';
 import firebase from 'my-firebase';
@@ -65,18 +66,19 @@ import { Box, Flex } from 'rebass';
 import { putString } from 'rxfire/storage';
 import {
   createSaveStory,
+  createSetCurrentStoryId,
   createSetDurations,
   createSetLastJumpedToActionId,
   createSetSnackbar,
   createToggleTheatricalMode,
+  selectCurrentStoryId,
   selectDurations,
+  selectFetchStoriesStatus,
   selectLastJumpedToActionId,
   selectSaveStoryStatus,
   selectStories,
   selectTheatricalMode,
   selectUid,
-  selectCurrentStoryId,
-  createSetCurrentStoryId,
 } from 'store';
 import { dividingBorder } from 'styles';
 import urlJoin from 'url-join';
@@ -171,6 +173,7 @@ const Canvas: React.FC<CanvasProps> = ({
   match: {
     params: { storyId: currentStoryId },
   },
+  history,
 }) => {
   const {
     toggleTheatricalMode,
@@ -193,6 +196,7 @@ const Canvas: React.FC<CanvasProps> = ({
   const selectedStoryId = useStoreSelector(selectCurrentStoryId);
   const currentStory = stories.find(({ id }) => id === currentStoryId);
 
+  const fetchStoriesStatus = useStoreSelector(selectFetchStoriesStatus);
   const saveStoryStatus = useStoreSelector(selectSaveStoryStatus);
 
   const lastJumpedToActionId = useStoreSelector(selectLastJumpedToActionId);
@@ -486,6 +490,9 @@ const Canvas: React.FC<CanvasProps> = ({
     setLinkInputValue(window.location.href);
   }, []);
 
+  const storyLoading =
+    fetchStoriesStatus === 'in progress' || saveStoryStatus === 'in progress';
+
   return (
     <Flex
       style={{
@@ -503,6 +510,7 @@ const Canvas: React.FC<CanvasProps> = ({
       >
         <List>
           <ListItem
+            disabled={fetchStoriesStatus === 'in progress'}
             button
             onClick={() => {
               setRightDrawerOccupant(
@@ -523,6 +531,7 @@ const Canvas: React.FC<CanvasProps> = ({
             </Tooltip>
           </ListItem>
           <ListItem
+            disabled={fetchStoriesStatus === 'in progress'}
             button
             onClick={() => {
               setRightDrawerOccupant(
@@ -541,6 +550,7 @@ const Canvas: React.FC<CanvasProps> = ({
             </Tooltip>
           </ListItem>
           <ListItem
+            disabled={fetchStoriesStatus === 'in progress'}
             button
             onClick={() => {
               setRightDrawerOccupant(
@@ -559,6 +569,7 @@ const Canvas: React.FC<CanvasProps> = ({
             </Tooltip>
           </ListItem>
           <ListItem
+            disabled={fetchStoriesStatus === 'in progress'}
             button
             onClick={() => {
               setDeleteModeOn(!deleteModeOn);
@@ -729,7 +740,7 @@ const Canvas: React.FC<CanvasProps> = ({
                           }}
                         >
                           <ListItem
-                            disabled={saveStoryStatus === 'in progress'}
+                            disabled={storyLoading}
                             button
                             onClick={() => {
                               const storyState: StoryWithId = {
@@ -816,7 +827,7 @@ const Canvas: React.FC<CanvasProps> = ({
                               type="submit"
                               disabled={
                                 !storyName ||
-                                saveStoryStatus === 'in progress' ||
+                                storyLoading ||
                                 (currentStory &&
                                   currentStory.name === storyName)
                               }
@@ -829,13 +840,19 @@ const Canvas: React.FC<CanvasProps> = ({
                           onSubmit={e => {
                             e.preventDefault();
 
+                            const newStoryId = v4();
+
+                            history.push(
+                              urlJoin(absoluteRootPaths.canvas, newStoryId),
+                            );
+
                             setCreatingNew(true);
 
                             const newStory: Omit<
                               StoryWithId,
                               'audioSrc' | 'audioId'
                             > = {
-                              id: v4(),
+                              id: newStoryId,
                               name: newStoryName,
                               actionsById: {},
                               stagedActionIds: [],
@@ -847,6 +864,8 @@ const Canvas: React.FC<CanvasProps> = ({
                             };
 
                             saveStory(newStory);
+
+                            setCurrentStoryId({ currentStoryId: newStoryId });
                           }}
                         >
                           <Flex alignItems="center" height="100%" ml={2} mr={1}>
@@ -864,13 +883,7 @@ const Canvas: React.FC<CanvasProps> = ({
                                 startAdornment: <NoteAdd color="action" />,
                               }}
                             />
-                            <Button
-                              type="submit"
-                              disabled={
-                                !newStoryName ||
-                                saveStoryStatus === 'in progress'
-                              }
-                            >
+                            <Button type="submit" disabled={!newStoryName}>
                               create
                             </Button>
                           </Flex>
@@ -910,10 +923,7 @@ const Canvas: React.FC<CanvasProps> = ({
                             />
                             <Button
                               type="submit"
-                              disabled={
-                                !duplicateStoryName ||
-                                saveStoryStatus === 'in progress'
-                              }
+                              disabled={!duplicateStoryName || storyLoading}
                             >
                               duplicate
                             </Button>
