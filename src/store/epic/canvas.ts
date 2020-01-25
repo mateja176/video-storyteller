@@ -1,6 +1,7 @@
 import 'firebase/firestore';
 import firebase from 'my-firebase';
 import { StoryWithId } from 'pages/Canvas/CanvasContext';
+import { not } from 'ramda';
 import { Epic, ofType } from 'redux-observable';
 import { collectionData } from 'rxfire/firestore';
 import { defer, from } from 'rxjs';
@@ -20,7 +21,6 @@ import {
   saveStoryType,
 } from '../slices/canvas';
 import { createSetErrorSnackbar, SetSnackbarAction } from '../slices/snackbar';
-import { not } from 'ramda';
 
 const storiesCollection = firebase.firestore().collection('stories');
 
