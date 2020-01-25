@@ -40,6 +40,7 @@ import {
   Progress,
   progressHeight,
   Tooltip,
+  Loader,
 } from 'components';
 import {
   ContentState,
@@ -74,6 +75,8 @@ import {
   selectStories,
   selectTheatricalMode,
   selectUid,
+  selectCurrentStoryId,
+  createSetCurrentStoryId,
 } from 'store';
 import { dividingBorder } from 'styles';
 import urlJoin from 'url-join';
@@ -175,16 +178,19 @@ const Canvas: React.FC<CanvasProps> = ({
     setDurations,
     saveStory,
     setSnackbar,
+    setCurrentStoryId,
   } = useStoreActions({
     toggleTheatricalMode: createToggleTheatricalMode,
     setLastJumpedToActionId: createSetLastJumpedToActionId,
     setDurations: createSetDurations,
     saveStory: createSaveStory.request,
     setSnackbar: createSetSnackbar,
+    setCurrentStoryId: createSetCurrentStoryId,
   });
 
   const stories = useStoreSelector(selectStories);
 
+  const selectedStoryId = useStoreSelector(selectCurrentStoryId);
   const currentStory = stories.find(({ id }) => id === currentStoryId);
 
   const saveStoryStatus = useStoreSelector(selectSaveStoryStatus);
@@ -468,6 +474,12 @@ const Canvas: React.FC<CanvasProps> = ({
       setReset(true);
     }
   }, [currentStoryId]);
+
+  React.useEffect(() => {
+    if (!selectedStoryId) {
+      setCurrentStoryId({ currentStoryId });
+    }
+  }, [selectedStoryId, currentStoryId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [linkInputValue, setLinkInputValue] = React.useState('');
   React.useEffect(() => {
@@ -907,7 +919,7 @@ const Canvas: React.FC<CanvasProps> = ({
                             </Button>
                           </Flex>
                         </form>
-                        {currentStory && (
+                        <Loader isLoading={!currentStory}>
                           <FormControlLabel
                             label="Public"
                             labelPlacement="start"
@@ -915,17 +927,19 @@ const Canvas: React.FC<CanvasProps> = ({
                             control={
                               <Switch
                                 color="primary"
-                                defaultChecked={currentStory.isPublic}
+                                defaultChecked={
+                                  currentStory && currentStory.isPublic
+                                }
                                 onChange={({ target: { checked } }) => {
                                   saveStory({
-                                    id: currentStory.id,
+                                    id: currentStory ? currentStory.id : '',
                                     isPublic: checked,
                                   });
                                 }}
                               />
                             }
                           />
-                        )}
+                        </Loader>
                       </Flex>
                     );
                 }
