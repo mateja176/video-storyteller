@@ -113,6 +113,7 @@ const StoryMonitor = ({
     durations,
     setDurations,
     reset,
+    setReset,
   } = React.useContext(CanvasContext);
 
   const elapsed = elapsedTime > initialElapsedTime ? elapsedTime : 0;
@@ -226,40 +227,44 @@ const StoryMonitor = ({
   );
 
   React.useEffect(() => {
-    const lastStateIndex = computedStates.length - 1;
+    if (!reset) {
+      const lastStateIndex = computedStates.length - 1;
 
-    if (actionsCount < editableActions.length) {
-      setActionsCount(actionsCount + 1);
-      setLastJumpedToActionId(lastEditableActionId);
+      if (actionsCount < editableActions.length) {
+        setActionsCount(actionsCount + 1);
 
-      scrollByOneCard();
+        setLastJumpedToActionId(lastEditableActionId);
 
-      if (currentStateIndex < lastStateIndex) {
-        setDurations(insert(currentStateIndex, 1000, durations));
+        scrollByOneCard();
 
-        dispatch(
-          ActionCreators.reorderAction(lastEditableActionId, nextActionId),
-        );
-        dispatch(ActionCreators.jumpToAction(lastEditableActionId));
-      } else {
-        const nextToLastEditableAction = last(init(editableActions));
-        setDurations(
-          durations
-            .slice(0, -1)
-            .concat(
-              lastEditableAction && nextToLastEditableAction
-                ? lastEditableAction.timestamp -
-                    nextToLastEditableAction.timestamp
-                : [],
-            )
-            .concat(0),
-        );
+        if (currentStateIndex < lastStateIndex) {
+          setDurations(insert(currentStateIndex, 1000, durations));
+
+          dispatch(
+            ActionCreators.reorderAction(lastEditableActionId, nextActionId),
+          );
+          dispatch(ActionCreators.jumpToAction(lastEditableActionId));
+        } else {
+          const nextToLastEditableAction = last(init(editableActions));
+          setDurations(
+            durations
+              .slice(0, -1)
+              .concat(
+                lastEditableAction && nextToLastEditableAction
+                  ? lastEditableAction.timestamp -
+                      nextToLastEditableAction.timestamp
+                  : [],
+              )
+              .concat(0),
+          );
+        }
+      }
+      if (actionsCount > editableActions.length) {
+        setActionsCount(actionsCount - 1);
       }
     }
-    if (actionsCount > editableActions.length) {
-      setActionsCount(actionsCount - 1);
-    }
   }, [
+    reset,
     dispatch,
     actionsCount,
     currentStateIndex,
@@ -347,6 +352,9 @@ const StoryMonitor = ({
           store.dispatch(action.action);
         }
       });
+
+      setActionsCount(currentStory.stagedActionIds.length);
+      setReset(false);
     }
   }, [reset, currentStory]); // eslint-disable-line react-hooks/exhaustive-deps
 
