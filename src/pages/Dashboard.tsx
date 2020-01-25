@@ -12,7 +12,6 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { Box } from 'rebass';
 import {
-  createFetchStories,
   createSetCurrentStoryId,
   createSetDurations,
   createSetLastJumpedToActionId,
@@ -26,24 +25,16 @@ export interface DashboardProps {}
 
 const Dashboard: React.FC<DashboardProps> = () => {
   const {
-    fetchStories,
     setCurrentStoryId,
     setDurations,
     setLastJumpedToActionId,
   } = useActions({
-    fetchStories: createFetchStories.request,
     setCurrentStoryId: createSetCurrentStoryId,
     setLastJumpedToActionId: createSetLastJumpedToActionId,
     setDurations: createSetDurations,
   });
 
   const fetchStoriesStatus = useSelector(selectFetchStoriesStatus);
-
-  React.useEffect(() => {
-    if (fetchStoriesStatus === 'not started') {
-      fetchStories();
-    }
-  }, [fetchStoriesStatus]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const stories = useSelector(selectStories);
 

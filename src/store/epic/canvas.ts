@@ -4,10 +4,11 @@ import { StoryWithId } from 'pages/Canvas/CanvasContext';
 import { Epic, ofType } from 'redux-observable';
 import { collectionData } from 'rxfire/firestore';
 import { defer, from } from 'rxjs';
-import { catchError, first, map, switchMap } from 'rxjs/operators';
-import { selectUid } from 'store';
+import { catchError, filter, first, map, switchMap } from 'rxjs/operators';
 import { selectState } from 'utils';
 import { Action, State } from '../reducer';
+import { selectUid } from '../selectors';
+import { AuthStateChangeAction, authStateChangeType } from '../slices/auth';
 import {
   CreateFetchStories,
   createFetchStories,
@@ -19,13 +20,15 @@ import {
   saveStoryType,
 } from '../slices/canvas';
 import { createSetErrorSnackbar, SetSnackbarAction } from '../slices/snackbar';
+import { not } from 'ramda';
 
 const storiesCollection = firebase.firestore().collection('stories');
 
-const saveStory: Epic<Action, SaveStoryAction | SetSnackbarAction, State> = (
-  action$,
-  state$,
-) =>
+const saveStory: Epic<
+  Action,
+  SaveStoryAction | SetSnackbarAction,
+  State
+> = action$ =>
   action$.pipe(
     ofType<Action, SaveStoryRequest>(saveStoryType['canvas/saveStory/request']),
     switchMap(({ payload: storyState }) =>
@@ -41,6 +44,18 @@ const saveStory: Epic<Action, SaveStoryAction | SetSnackbarAction, State> = (
         ),
       ),
     ),
+  );
+
+export const requestStories: Epic<Action, FetchStoryAction, State> = (
+  action$,
+  state$,
+) =>
+  action$.pipe(
+    ofType<Action, AuthStateChangeAction>(authStateChangeType),
+    filter(({ payload }) => Boolean(payload)),
+    selectState(selectUid)(state$),
+    filter(not),
+    map(() => createFetchStories.request()),
   );
 
 export const fetchStories: Epic<
@@ -70,4 +85,4 @@ export const fetchStories: Epic<
     ),
   );
 
-export default [saveStory, fetchStories];
+export default [saveStory, requestStories, fetchStories];

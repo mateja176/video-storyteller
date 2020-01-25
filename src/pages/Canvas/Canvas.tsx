@@ -866,27 +866,25 @@ const Canvas: React.FC<CanvasProps> = ({
                             </Button>
                           </Flex>
                         </form>
-                        <FormControlLabel
-                          label="Public"
-                          labelPlacement="start"
-                          disabled={!currentStory}
-                          control={
-                            <Switch
-                              color="primary"
-                              defaultChecked={
-                                currentStory && currentStory.isPublic
-                              }
-                              onChange={({ target: { checked } }) => {
-                                if (currentStory) {
+                        {currentStory && (
+                          <FormControlLabel
+                            label="Public"
+                            labelPlacement="start"
+                            disabled={!currentStory}
+                            control={
+                              <Switch
+                                color="primary"
+                                defaultChecked={currentStory.isPublic}
+                                onChange={({ target: { checked } }) => {
                                   saveStory({
                                     id: currentStory.id,
                                     isPublic: checked,
                                   });
-                                }
-                              }}
-                            />
-                          }
-                        />
+                                }}
+                              />
+                            }
+                          />
+                        )}
                       </Flex>
                     );
                 }
