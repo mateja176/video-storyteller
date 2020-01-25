@@ -1,6 +1,7 @@
 /* eslint-disable indent */
 import {
   Drawer,
+  FormControlLabel,
   Icon,
   List,
   ListItem,
@@ -8,11 +9,10 @@ import {
   ListItemText,
   makeStyles,
   Paper,
+  Switch,
   TextField,
   Typography,
   useTheme,
-  Switch,
-  FormControlLabel,
 } from '@material-ui/core';
 import {
   ArrowDownward,
@@ -58,6 +58,7 @@ import { useDrop } from 'react-dnd';
 import Dropzone from 'react-dropzone';
 import { useSelector as useStoreSelector } from 'react-redux';
 import { ResizeEnable, Rnd } from 'react-rnd';
+import { RouteComponentProps } from 'react-router-dom';
 import { Box, Flex } from 'rebass';
 import { putString } from 'rxfire/storage';
 import {
@@ -65,13 +66,12 @@ import {
   createSetDurations,
   createSetLastJumpedToActionId,
   createToggleTheatricalMode,
-  selectCurrentStoryId,
   selectDurations,
   selectLastJumpedToActionId,
   selectSaveStoryStatus,
+  selectStories,
   selectTheatricalMode,
   selectUid,
-  selectStories,
 } from 'store';
 import { dividingBorder } from 'styles';
 import urlJoin from 'url-join';
@@ -160,9 +160,13 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export interface CanvasProps {}
+export interface CanvasProps extends RouteComponentProps<{ storyId: string }> {}
 
-const Canvas: React.FC<CanvasProps> = () => {
+const Canvas: React.FC<CanvasProps> = ({
+  match: {
+    params: { storyId: currentStoryId },
+  },
+}) => {
   const {
     toggleTheatricalMode,
     setLastJumpedToActionId,
@@ -176,8 +180,6 @@ const Canvas: React.FC<CanvasProps> = () => {
   });
 
   const stories = useStoreSelector(selectStories);
-
-  const currentStoryId = useStoreSelector(selectCurrentStoryId);
 
   const currentStory = stories.find(({ id }) => id === currentStoryId);
 

@@ -48,7 +48,7 @@ const Routes: FC<RoutesProps> = ({ isSignedIn }) => {
                 />
                 <Route
                   key={absoluteRootPaths.canvas}
-                  path={absoluteRootPaths.canvas}
+                  path={`${absoluteRootPaths.canvas}/:storyId?`}
                   component={pages.Canvas}
                 />
                 {absoluteRootPathnames.map((path, i) => (
