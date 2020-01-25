@@ -4,9 +4,10 @@ import {
   ListItemIcon,
   ListItemText,
   Typography,
+  useTheme,
 } from '@material-ui/core';
 import { Edit, Public } from '@material-ui/icons';
-import { Spinner, Tooltip } from 'components';
+import { Link, Spinner, Tooltip } from 'components';
 import { add } from 'ramda';
 import React from 'react';
 import { useSelector } from 'react-redux';
@@ -40,13 +41,17 @@ const Dashboard: React.FC<DashboardProps> = () => {
 
   const currentStoryId = useSelector(selectCurrentStoryId);
 
+  const theme = useTheme();
+
   return (
     <Box>
+      <Link to="canvas">
+      </Link>
       <Typography variant="h2">Recent stories</Typography>
       <Box my={2}>
         {fetchStoriesStatus === 'in progress' ? (
           <Spinner />
-        ) : (
+        ) : stories.length ? (
           <List>
             {stories.map(
               ({ id, name, isPublic, durations, lastJumpedToActionId }) => {
@@ -85,6 +90,10 @@ const Dashboard: React.FC<DashboardProps> = () => {
               },
             )}
           </List>
+        ) : (
+          <Link to="canvas">
+            <i color={theme.palette.primary.main}>Create your first story</i>
+          </Link>
         )}
       </Box>
     </Box>
