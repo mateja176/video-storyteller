@@ -326,8 +326,6 @@ const StoryMonitor = ({
   const deleteAll = () => {
     setDeletePopoverOpen(false);
 
-    setLastJumpedToActionId(initialCanvasState.lastJumpedToActionId);
-
     dispatch(ActionCreators.reset());
 
     setElapsedTime(initialElapsedTime);
@@ -456,6 +454,8 @@ const StoryMonitor = ({
           <Button
             onClick={() => {
               deleteAll();
+
+              setLastJumpedToActionId(initialCanvasState.lastJumpedToActionId);
               setDurations([]);
             }}
             variant="contained"
