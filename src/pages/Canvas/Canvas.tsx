@@ -63,11 +63,13 @@ import {
   createSetDurations,
   createSetLastJumpedToActionId,
   createToggleTheatricalMode,
+  selectCurrentStoryId,
   selectDurations,
   selectLastJumpedToActionId,
   selectSaveStoryStatus,
   selectTheatricalMode,
   selectUid,
+  selectStories,
 } from 'store';
 import { dividingBorder } from 'styles';
 import urlJoin from 'url-join';
@@ -170,6 +172,12 @@ const Canvas: React.FC<CanvasProps> = () => {
     setDurations: createSetDurations,
     saveStory: createSaveStory.request,
   });
+
+  const stories = useStoreSelector(selectStories);
+
+  const currentStoryId = useStoreSelector(selectCurrentStoryId);
+
+  const currentStory = stories.find(({ id }) => id === currentStoryId);
 
   const saveStoryStatus = useStoreSelector(selectSaveStoryStatus);
 
@@ -439,6 +447,12 @@ const Canvas: React.FC<CanvasProps> = () => {
       setCreatingNew(false);
     }
   }, [saveStoryStatus, creatingNew]);
+
+  React.useEffect(() => {
+    if (currentStoryId) {
+      setReset(true);
+    }
+  }, [currentStoryId]);
 
   return (
     <Flex
@@ -1083,6 +1097,7 @@ const Canvas: React.FC<CanvasProps> = () => {
           >
             <CanvasContext.Provider
               value={{
+                currentStory: currentStory || null,
                 storyMonitorState,
                 setStoryMonitorState,
                 hoveredBlockId,

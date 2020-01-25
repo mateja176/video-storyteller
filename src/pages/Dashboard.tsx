@@ -13,6 +13,8 @@ import { useSelector } from 'react-redux';
 import { Box } from 'rebass';
 import {
   createFetchStories,
+  createSetCurrentStoryId,
+  selectCurrentStoryId,
   selectFetchStoriesStatus,
   selectStories,
 } from 'store';
@@ -21,8 +23,9 @@ import { useActions } from 'utils';
 export interface DashboardProps {}
 
 const Dashboard: React.FC<DashboardProps> = () => {
-  const { fetchStories } = useActions({
+  const { fetchStories, setCurrentStoryId } = useActions({
     fetchStories: createFetchStories.request,
+    setCurrentStoryId: createSetCurrentStoryId,
   });
 
   const fetchStoriesStatus = useSelector(selectFetchStoriesStatus);
@@ -34,6 +37,8 @@ const Dashboard: React.FC<DashboardProps> = () => {
   }, [fetchStoriesStatus]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const stories = useSelector(selectStories);
+
+  const currentStoryId = useSelector(selectCurrentStoryId);
 
   return (
     <Box>
@@ -47,8 +52,18 @@ const Dashboard: React.FC<DashboardProps> = () => {
               const duration = durations.reduce(add, 0);
               const time = new Date(duration);
 
+              const selected = currentStoryId === id;
+
               return (
-                <ListItem key={id} button>
+                <ListItem
+                  key={id}
+                  button
+                  onClick={() => {
+                    setCurrentStoryId({ currentStoryId: id });
+                  }}
+                  selected={selected}
+                  disabled={selected}
+                >
                   <ListItemIcon>
                     <Tooltip
                       title={isPublic ? 'Public' : 'Draft'}

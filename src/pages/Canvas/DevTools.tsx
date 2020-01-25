@@ -99,6 +99,7 @@ const StoryMonitor = ({
   skippedActionIds,
 }: MonitorProps) => {
   const {
+    currentStory,
     setStoryMonitorState,
     hoveredBlockId,
     setHoveredBlockId,
@@ -341,10 +342,17 @@ const StoryMonitor = ({
   };
 
   React.useEffect(() => {
-    if (reset) {
+    if (reset && currentStory) {
       deleteAll();
+
+      currentStory.stagedActionIds.forEach(actionId => {
+        const action = currentStory.actionsById[actionId];
+        if (action) {
+          store.dispatch(action.action);
+        }
+      });
     }
-  }, [reset]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [reset, currentStory]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const listItemProps: React.ComponentProps<typeof ListItem> = {
     button: true,

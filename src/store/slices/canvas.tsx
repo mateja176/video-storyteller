@@ -12,6 +12,7 @@ export interface CanvasState {
   durations: Durations;
   stories: StoryWithId[];
   fetchStoriesStatus: ExtendedLoadingStatus;
+  currentStoryId: StoryWithId['id'];
 }
 
 export const initialCanvasState: CanvasState = {
@@ -20,6 +21,7 @@ export const initialCanvasState: CanvasState = {
   durations: [],
   stories: [],
   fetchStoriesStatus: 'not started',
+  currentStoryId: '',
 };
 
 export const setLastJumpedToActionIdType = 'canvas/lastJumpedToActionId/set';
@@ -72,13 +74,26 @@ export const createFetchStories = createAsyncAction(...fetchStoriesTypes)<
 export type CreateFetchStories = typeof createFetchStories;
 export type FetchStoryAction = ActionType<typeof createFetchStories>;
 
+export const setCurrentStoryIdType = 'canvas/currentStoryId/set';
+export const createSetCurrentStoryId = createAction(
+  setCurrentStoryIdType,
+  action => (payload: Pick<CanvasState, 'currentStoryId'>) => action(payload),
+);
+export type CreateSetCurrentStoryId = typeof createSetCurrentStoryId;
+export type SetCurrentStoryIdAction = ReturnType<CreateSetCurrentStoryId>;
+
 export type CanvasAction =
+  | SetCurrentStoryIdAction
   | FetchStoryAction
   | SetLastJumpedToActionIdAction
   | SetDurationsAction
   | SaveStoryAction;
 
 export const canvas = createReducer(initialCanvasState)<CanvasAction>({
+  'canvas/currentStoryId/set': (state, { payload: { currentStoryId } }) => ({
+    ...state,
+    currentStoryId,
+  }),
   'canvas/fetchStories/request': state => ({
     ...state,
     fetchStoryStatus: 'in progress',

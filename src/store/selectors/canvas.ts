@@ -22,3 +22,7 @@ export const selectStories = createSelector(
   selectCanvas,
   ({ stories }) => stories,
 );
+export const selectCurrentStoryId = createSelector(
+  selectCanvas,
+  ({ currentStoryId }) => currentStoryId,
+);
