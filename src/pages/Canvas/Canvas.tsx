@@ -11,6 +11,8 @@ import {
   TextField,
   Typography,
   useTheme,
+  Switch,
+  FormControlLabel,
 } from '@material-ui/core';
 import {
   ArrowDownward,
@@ -694,7 +696,7 @@ const Canvas: React.FC<CanvasProps> = () => {
 
                   default:
                     return (
-                      <Flex>
+                      <Flex alignItems="center">
                         <List
                           style={{
                             paddingTop: 0,
@@ -862,6 +864,27 @@ const Canvas: React.FC<CanvasProps> = () => {
                             </Button>
                           </Flex>
                         </form>
+                        <FormControlLabel
+                          label="Public"
+                          labelPlacement="start"
+                          disabled={!currentStory}
+                          control={
+                            <Switch
+                              color="primary"
+                              defaultChecked={
+                                currentStory && currentStory.isPublic
+                              }
+                              onChange={({ target: { checked } }) => {
+                                if (currentStory) {
+                                  saveStory({
+                                    id: currentStory.id,
+                                    isPublic: checked,
+                                  });
+                                }
+                              }}
+                            />
+                          }
+                        />
                       </Flex>
                     );
                 }
