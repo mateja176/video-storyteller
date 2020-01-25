@@ -14,6 +14,8 @@ import { Box } from 'rebass';
 import {
   createFetchStories,
   createSetCurrentStoryId,
+  createSetDurations,
+  createSetLastJumpedToActionId,
   selectCurrentStoryId,
   selectFetchStoriesStatus,
   selectStories,
@@ -23,9 +25,16 @@ import { useActions } from 'utils';
 export interface DashboardProps {}
 
 const Dashboard: React.FC<DashboardProps> = () => {
-  const { fetchStories, setCurrentStoryId } = useActions({
+  const {
+    fetchStories,
+    setCurrentStoryId,
+    setDurations,
+    setLastJumpedToActionId,
+  } = useActions({
     fetchStories: createFetchStories.request,
     setCurrentStoryId: createSetCurrentStoryId,
+    setLastJumpedToActionId: createSetLastJumpedToActionId,
+    setDurations: createSetDurations,
   });
 
   const fetchStoriesStatus = useSelector(selectFetchStoriesStatus);
@@ -48,36 +57,42 @@ const Dashboard: React.FC<DashboardProps> = () => {
           <Spinner />
         ) : (
           <List>
-            {stories.map(({ id, name, isPublic, durations }) => {
-              const duration = durations.reduce(add, 0);
-              const time = new Date(duration);
+            {stories.map(
+              ({ id, name, isPublic, durations, lastJumpedToActionId }) => {
+                const duration = durations.reduce(add, 0);
+                const time = new Date(duration);
 
-              const selected = currentStoryId === id;
+                const selected = currentStoryId === id;
 
-              return (
-                <ListItem
-                  key={id}
-                  button
-                  onClick={() => {
-                    setCurrentStoryId({ currentStoryId: id });
-                  }}
-                  selected={selected}
-                  disabled={selected}
-                >
-                  <ListItemIcon>
-                    <Tooltip
-                      title={isPublic ? 'Public' : 'Draft'}
-                      placement="top"
-                    >
-                      {isPublic ? <Public /> : <Edit />}
-                    </Tooltip>
-                  </ListItemIcon>
-                  <ListItemText>
-                    {name} ({time.getMinutes()}m {time.getSeconds()}s)
-                  </ListItemText>
-                </ListItem>
-              );
-            })}
+                return (
+                  <ListItem
+                    key={id}
+                    button
+                    onClick={() => {
+                      setCurrentStoryId({ currentStoryId: id });
+
+                      setLastJumpedToActionId(lastJumpedToActionId);
+
+                      setDurations(durations);
+                    }}
+                    selected={selected}
+                    disabled={selected}
+                  >
+                    <ListItemIcon>
+                      <Tooltip
+                        title={isPublic ? 'Public' : 'Draft'}
+                        placement="top"
+                      >
+                        {isPublic ? <Public /> : <Edit />}
+                      </Tooltip>
+                    </ListItemIcon>
+                    <ListItemText>
+                      {name} ({time.getMinutes()}m {time.getSeconds()}s)
+                    </ListItemText>
+                  </ListItem>
+                );
+              },
+            )}
           </List>
         )}
       </Box>

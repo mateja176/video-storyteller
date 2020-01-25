@@ -330,8 +330,6 @@ const StoryMonitor = ({
 
     dispatch(ActionCreators.reset());
 
-    setDurations([]);
-
     setElapsedTime(initialElapsedTime);
 
     setPlayTimeout(initialPlayTimeout);
@@ -455,7 +453,14 @@ const StoryMonitor = ({
           }}
           anchorEl={deleteRef.current}
         >
-          <Button onClick={deleteAll} variant="contained" color="secondary">
+          <Button
+            onClick={() => {
+              deleteAll();
+              setDurations([]);
+            }}
+            variant="contained"
+            color="secondary"
+          >
             Delete All
           </Button>
         </Popover>
