@@ -25,6 +25,7 @@ import {
   Image,
   InsertDriveFile,
   LibraryMusic,
+  Link,
   NoteAdd,
   Save,
   Title,
@@ -65,6 +66,7 @@ import {
   createSaveStory,
   createSetDurations,
   createSetLastJumpedToActionId,
+  createSetSnackbar,
   createToggleTheatricalMode,
   selectDurations,
   selectLastJumpedToActionId,
@@ -172,11 +174,13 @@ const Canvas: React.FC<CanvasProps> = ({
     setLastJumpedToActionId,
     setDurations,
     saveStory,
+    setSnackbar,
   } = useStoreActions({
     toggleTheatricalMode: createToggleTheatricalMode,
     setLastJumpedToActionId: createSetLastJumpedToActionId,
     setDurations: createSetDurations,
     saveStory: createSaveStory.request,
+    setSnackbar: createSetSnackbar,
   });
 
   const stories = useStoreSelector(selectStories);
@@ -465,6 +469,11 @@ const Canvas: React.FC<CanvasProps> = ({
     }
   }, [currentStoryId]);
 
+  const [linkInputValue, setLinkInputValue] = React.useState('');
+  React.useEffect(() => {
+    setLinkInputValue(window.location.href);
+  }, []);
+
   return (
     <Flex
       style={{
@@ -703,12 +712,13 @@ const Canvas: React.FC<CanvasProps> = ({
                           style={{
                             paddingTop: 0,
                             paddingBottom: 0,
+                            display: 'flex',
+                            height: '100%',
                           }}
                         >
                           <ListItem
                             disabled={saveStoryStatus === 'in progress'}
                             button
-                            style={{ height: '100%' }}
                             onClick={() => {
                               const storyState: StoryWithId = {
                                 ...storyMonitorState,
@@ -729,9 +739,40 @@ const Canvas: React.FC<CanvasProps> = ({
                             >
                               <Save />
                             </ListItemIcon>
-                            <ListItemText>Save Story</ListItemText>
+                            <ListItemText>Save</ListItemText>
                           </ListItem>
                         </List>
+                        <Tooltip title="Copy story link" placement="top">
+                          <TextField
+                            value={linkInputValue}
+                            placeholder="Copy Link"
+                            onClick={({ target }) => {
+                              (target as HTMLInputElement).select();
+
+                              document.execCommand('copy');
+
+                              setSnackbar({
+                                message: 'Link to story copied',
+                                variant: 'info',
+                                duration: 2000,
+                              });
+                            }}
+                            InputProps={{
+                              startAdornment: (
+                                <Box mr={2}>
+                                  <Link color="action" />
+                                </Box>
+                              ),
+                              style: {
+                                width: 150,
+                                cursor: 'copy',
+                                // whiteSpace: 'nowrap',
+                                // overflow: 'hidden',
+                                // textOverflow: 'ellipsis', // ? not working
+                              },
+                            }}
+                          />
+                        </Tooltip>
                         <form
                           onSubmit={e => {
                             e.preventDefault();
