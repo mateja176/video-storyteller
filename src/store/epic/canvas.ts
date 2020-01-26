@@ -46,18 +46,6 @@ const saveStory: Epic<
     ),
   );
 
-export const requestStories: Epic<Action, FetchStoryAction, State> = (
-  action$,
-  state$,
-) =>
-  action$.pipe(
-    ofType<Action, AuthStateChangeAction>(authStateChangeType),
-    filter(({ payload }) => Boolean(payload)),
-    selectState(selectUid)(state$),
-    filter(not),
-    map(() => createFetchStories.request()),
-  );
-
 export const fetchStories: Epic<
   Action,
   FetchStoryAction | SetSnackbarAction,
@@ -85,4 +73,4 @@ export const fetchStories: Epic<
     ),
   );
 
-export default [saveStory, requestStories, fetchStories];
+export default [saveStory, fetchStories];
