@@ -11,6 +11,7 @@ export interface CanvasState {
   lastJumpedToActionId: number;
   durations: Durations;
   stories: StoryWithId[];
+  fetchStoryStatus: ExtendedLoadingStatus;
   fetchStoriesStatus: ExtendedLoadingStatus;
   currentStoryId: StoryWithId['id'];
 }
@@ -20,6 +21,7 @@ export const initialCanvasState: CanvasState = {
   lastJumpedToActionId: -1,
   durations: [],
   stories: [],
+  fetchStoryStatus: 'not started',
   fetchStoriesStatus: 'not started',
   currentStoryId: '',
 };
@@ -68,6 +70,20 @@ export const createAddStory = createAction(
 export type CreateAddStory = typeof createAddStory;
 export type AddStoryAction = ReturnType<CreateAddStory>;
 
+export const fetchStoryTypes = [
+  'canvas/stories/fetchOne/request',
+  'canvas/stories/fetchOne/success',
+  'canvas/stories/fetchOne/failure',
+] as const;
+export const fetchStoryType = toObject(fetchStoryTypes);
+export const createFetchStory = createAsyncAction(...fetchStoryTypes)<
+  StoryWithId['id'],
+  StoryWithId,
+  void
+>();
+export type CreateFetchStory = typeof createFetchStory;
+export type FetchStoryAction = ActionType<CreateFetchStory>;
+
 export const fetchStoriesTypes = [
   'canvas/fetchStories/request',
   'canvas/fetchStories/success',
@@ -80,7 +96,7 @@ export const createFetchStories = createAsyncAction(...fetchStoriesTypes)<
   void
 >();
 export type CreateFetchStories = typeof createFetchStories;
-export type FetchStoryAction = ActionType<typeof createFetchStories>;
+export type FetchStoriesAction = ActionType<typeof createFetchStories>;
 
 export const setCurrentStoryIdType = 'canvas/currentStoryId/set';
 export const createSetCurrentStoryId = createAction(
@@ -94,6 +110,7 @@ export type CanvasAction =
   | AddStoryAction
   | SetCurrentStoryIdAction
   | FetchStoryAction
+  | FetchStoriesAction
   | SetLastJumpedToActionIdAction
   | SetDurationsAction
   | SaveStoryAction;
@@ -106,6 +123,19 @@ export const canvas = createReducer(initialCanvasState)<CanvasAction>({
   'canvas/currentStoryId/set': (state, { payload: { currentStoryId } }) => ({
     ...state,
     currentStoryId,
+  }),
+  'canvas/stories/fetchOne/request': state => ({
+    ...state,
+    fetchStoryStatus: 'in progress',
+  }),
+  'canvas/stories/fetchOne/success': (state, { payload: story }) => ({
+    ...state,
+    fetchStoryStatus: 'completed',
+    stories: state.stories.concat(story),
+  }),
+  'canvas/stories/fetchOne/failure': state => ({
+    ...state,
+    fetchStoryStatus: 'failed',
   }),
   'canvas/fetchStories/request': state => ({
     ...state,

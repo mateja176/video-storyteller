@@ -1,21 +1,19 @@
 import 'firebase/firestore';
 import firebase from 'my-firebase';
 import { StoryWithId } from 'pages/Canvas/CanvasContext';
-import { not } from 'ramda';
 import { Epic, ofType } from 'redux-observable';
 import { collectionData } from 'rxfire/firestore';
 import { defer, from } from 'rxjs';
-import { catchError, filter, first, map, switchMap } from 'rxjs/operators';
+import { catchError, first, map, switchMap } from 'rxjs/operators';
 import { selectState } from 'utils';
 import { Action, State } from '../reducer';
 import { selectUid } from '../selectors';
-import { AuthStateChangeAction, authStateChangeType } from '../slices/auth';
 import {
   CreateFetchStories,
   createFetchStories,
   createSaveStory,
+  FetchStoriesAction,
   fetchStoriesType,
-  FetchStoryAction,
   SaveStoryAction,
   SaveStoryRequest,
   saveStoryType,
@@ -48,7 +46,7 @@ const saveStory: Epic<
 
 export const fetchStories: Epic<
   Action,
-  FetchStoryAction | SetSnackbarAction,
+  FetchStoriesAction | SetSnackbarAction,
   State
 > = (action$, state$) =>
   action$.pipe(
