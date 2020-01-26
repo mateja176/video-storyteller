@@ -41,7 +41,10 @@ const Layout: FC<LayoutProps> = ({
   React.useEffect(() => {
     const params = parse(search, { ignoreQueryPrefix: true });
 
-    setTheatricalMode(params.theatrical === String(true));
+    const newTheatricalMode = params.theatrical === String(true);
+    if (theatricalMode !== newTheatricalMode) {
+      setTheatricalMode(newTheatricalMode);
+    }
   }, [search]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const { drawer, toolbar } = useStyles();
