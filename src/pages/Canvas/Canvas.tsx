@@ -919,7 +919,12 @@ const Canvas: React.FC<CanvasProps> = ({
                             </Button>
                           </Flex>
                         </form>
-                        <Loader isLoading={!currentStory}>
+                        <Loader
+                          isLoading={
+                            !currentStory &&
+                            fetchStoriesStatus === 'in progress'
+                          }
+                        >
                           <FormControlLabel
                             label="Public"
                             labelPlacement="start"
