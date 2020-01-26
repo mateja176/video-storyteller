@@ -109,15 +109,15 @@ export const canvas = createReducer(initialCanvasState)<CanvasAction>({
   }),
   'canvas/fetchStories/request': state => ({
     ...state,
-    fetchStoryStatus: 'in progress',
+    fetchStoriesStatus: 'in progress',
   }),
   'canvas/fetchStories/failure': state => ({
     ...state,
-    fetchStoryStatus: 'failure',
+    fetchStoriesStatus: 'failed',
   }),
   'canvas/fetchStories/success': (state, { payload: { stories } }) => ({
     ...state,
-    fetchStoryStatus: 'completed',
+    fetchStoriesStatus: 'completed',
     stories,
   }),
   'canvas/lastJumpedToActionId/set': (state, { payload }) => ({
