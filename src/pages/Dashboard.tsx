@@ -36,7 +36,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
   const stories = useSelector(selectStories);
 
   React.useEffect(() => {
-    if (stories.length === 0 && fetchStoriesStatus === 'not started') {
+    if (fetchStoriesStatus === 'not started') {
       fetchStories();
     }
   }, [fetchStories, fetchStoriesStatus, stories.length]);

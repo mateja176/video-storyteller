@@ -50,7 +50,13 @@ import {
 } from 'draft-js';
 import { absoluteRootPaths } from 'Layout';
 import { debounce } from 'lodash';
-import { BlockState, draggable, draggables, DropAction } from 'models';
+import {
+  BlockState,
+  draggable,
+  draggables,
+  DropAction,
+  ExtendedLoadingStatus,
+} from 'models';
 import firebase from 'my-firebase';
 import { storageImageWidth } from 'pages';
 import { Images } from 'pages/Images';
@@ -66,6 +72,7 @@ import { Box, Flex } from 'rebass';
 import { putString } from 'rxfire/storage';
 import {
   createAddStory,
+  createFetchStory,
   createSaveStory,
   createSetCurrentStoryId,
   createSetDurations,
@@ -75,6 +82,7 @@ import {
   selectCurrentStoryId,
   selectDurations,
   selectFetchStoriesStatus,
+  selectFetchStoryStatus,
   selectLastJumpedToActionId,
   selectSaveStoryStatus,
   selectStories,
@@ -183,6 +191,7 @@ const Canvas: React.FC<CanvasProps> = ({
     setSnackbar,
     setCurrentStoryId,
     addStory,
+    fetchStory,
   } = useStoreActions({
     addStory: createAddStory,
     toggleTheatricalMode: createToggleTheatricalMode,
@@ -191,6 +200,7 @@ const Canvas: React.FC<CanvasProps> = ({
     saveStory: createSaveStory.request,
     setSnackbar: createSetSnackbar,
     setCurrentStoryId: createSetCurrentStoryId,
+    fetchStory: createFetchStory.request,
   });
 
   const stories = useStoreSelector(selectStories);
@@ -198,6 +208,7 @@ const Canvas: React.FC<CanvasProps> = ({
   const currentStoryId = useStoreSelector(selectCurrentStoryId);
   const currentStory = stories.find(({ id }) => id === currentStoryId);
 
+  const fetchStoryStatus = useStoreSelector(selectFetchStoryStatus);
   const fetchStoriesStatus = useStoreSelector(selectFetchStoriesStatus);
   const saveStoryStatus = useStoreSelector(selectSaveStoryStatus);
 
@@ -481,13 +492,23 @@ const Canvas: React.FC<CanvasProps> = ({
     }
   }, [currentStoryId, pathStoryId]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  React.useEffect(() => {
+    const pathStory = stories.find(({ id }) => id === pathStoryId);
+    if (fetchStoryStatus === 'not started' && pathStoryId && !pathStory) {
+      fetchStory(pathStoryId);
+    }
+  }, [fetchStoryStatus, stories, pathStoryId, fetchStory]);
+
   const [linkInputValue, setLinkInputValue] = React.useState('');
   React.useEffect(() => {
     setLinkInputValue(window.location.href);
   }, []);
 
-  const storyLoading =
-    fetchStoriesStatus === 'in progress' || saveStoryStatus === 'in progress';
+  const storyLoading = [
+    fetchStoryStatus,
+    fetchStoriesStatus,
+    saveStoryStatus,
+  ].some(equals<ExtendedLoadingStatus>('in progress'));
 
   return (
     <Flex

@@ -2,7 +2,7 @@ import 'firebase/firestore';
 import firebase from 'my-firebase';
 import { StoryWithId } from 'pages/Canvas/CanvasContext';
 import { Epic, ofType } from 'redux-observable';
-import { collectionData } from 'rxfire/firestore';
+import { collectionData, docData } from 'rxfire/firestore';
 import { defer, from } from 'rxjs';
 import { catchError, first, map, switchMap } from 'rxjs/operators';
 import { selectState } from 'utils';
@@ -11,9 +11,13 @@ import { selectUid } from '../selectors';
 import {
   CreateFetchStories,
   createFetchStories,
+  CreateFetchStory,
+  createFetchStory,
   createSaveStory,
   FetchStoriesAction,
   fetchStoriesType,
+  FetchStoryAction,
+  fetchStoryType,
   SaveStoryAction,
   SaveStoryRequest,
   saveStoryType,
@@ -38,6 +42,29 @@ const saveStory: Epic<
           from([
             createSaveStory.failure(),
             createSetErrorSnackbar({ message: error.message }),
+          ]),
+        ),
+      ),
+    ),
+  );
+
+export const fetchStory: Epic<
+  Action,
+  FetchStoryAction | SetSnackbarAction,
+  State
+> = action$ =>
+  action$.pipe(
+    ofType<Action, ReturnType<CreateFetchStory['request']>>(
+      fetchStoryType['canvas/stories/fetchOne/request'],
+    ),
+    switchMap(({ payload: storyId }) =>
+      docData<StoryWithId>(storiesCollection.doc(storyId)).pipe(
+        first(),
+        map(createFetchStory.success),
+        catchError(({ message }: Error) =>
+          from([
+            createFetchStory.failure(),
+            createSetErrorSnackbar({ message }),
           ]),
         ),
       ),
@@ -71,4 +98,4 @@ export const fetchStories: Epic<
     ),
   );
 
-export default [saveStory, fetchStories];
+export default [saveStory, fetchStory, fetchStories];
