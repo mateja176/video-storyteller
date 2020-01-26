@@ -60,6 +60,14 @@ export type SaveStorySuccess = ReturnType<CreateSaveStory['success']>;
 export type SaveStoryFailure = ReturnType<CreateSaveStory['failure']>;
 export type SaveStoryAction = ActionType<CreateSaveStory>;
 
+export const addStoryType = 'canvas/story/add';
+export const createAddStory = createAction(
+  addStoryType,
+  action => (payload: StoryWithId) => action(payload),
+);
+export type CreateAddStory = typeof createAddStory;
+export type AddStoryAction = ReturnType<CreateAddStory>;
+
 export const fetchStoriesTypes = [
   'canvas/fetchStories/request',
   'canvas/fetchStories/success',
@@ -83,6 +91,7 @@ export type CreateSetCurrentStoryId = typeof createSetCurrentStoryId;
 export type SetCurrentStoryIdAction = ReturnType<CreateSetCurrentStoryId>;
 
 export type CanvasAction =
+  | AddStoryAction
   | SetCurrentStoryIdAction
   | FetchStoryAction
   | SetLastJumpedToActionIdAction
@@ -90,6 +99,10 @@ export type CanvasAction =
   | SaveStoryAction;
 
 export const canvas = createReducer(initialCanvasState)<CanvasAction>({
+  'canvas/story/add': (state, { payload: story }) => ({
+    ...state,
+    stories: [story].concat(state.stories),
+  }),
   'canvas/currentStoryId/set': (state, { payload: { currentStoryId } }) => ({
     ...state,
     currentStoryId,

@@ -65,6 +65,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import { Box, Flex } from 'rebass';
 import { putString } from 'rxfire/storage';
 import {
+  createAddStory,
   createSaveStory,
   createSetCurrentStoryId,
   createSetDurations,
@@ -171,9 +172,8 @@ export interface CanvasProps extends RouteComponentProps<{ storyId: string }> {}
 
 const Canvas: React.FC<CanvasProps> = ({
   match: {
-    params: { storyId: currentStoryId },
+    params: { storyId: pathStoryId },
   },
-  history,
 }) => {
   const {
     toggleTheatricalMode,
@@ -182,7 +182,9 @@ const Canvas: React.FC<CanvasProps> = ({
     saveStory,
     setSnackbar,
     setCurrentStoryId,
+    addStory,
   } = useStoreActions({
+    addStory: createAddStory,
     toggleTheatricalMode: createToggleTheatricalMode,
     setLastJumpedToActionId: createSetLastJumpedToActionId,
     setDurations: createSetDurations,
@@ -193,7 +195,7 @@ const Canvas: React.FC<CanvasProps> = ({
 
   const stories = useStoreSelector(selectStories);
 
-  const selectedStoryId = useStoreSelector(selectCurrentStoryId);
+  const currentStoryId = useStoreSelector(selectCurrentStoryId);
   const currentStory = stories.find(({ id }) => id === currentStoryId);
 
   const fetchStoriesStatus = useStoreSelector(selectFetchStoriesStatus);
@@ -462,28 +464,22 @@ const Canvas: React.FC<CanvasProps> = ({
   const [duplicateStoryName, setDuplicateStoryName] = React.useState('');
 
   const [newStoryName, setNewStoryName] = React.useState('');
-  const [creatingNew, setCreatingNew] = React.useState(false);
-  const [reset, setReset] = React.useState(false);
 
   React.useEffect(() => {
-    if (saveStoryStatus === 'completed' && creatingNew) {
-      setReset(true);
-
-      setCreatingNew(false);
+    if (!currentStoryId) {
+      setCurrentStoryId({ currentStoryId: pathStoryId });
+    } else {
+      window.history.pushState(
+        {},
+        '',
+        urlJoin(
+          new URL(window.location.href).origin,
+          absoluteRootPaths.canvas,
+          currentStoryId,
+        ),
+      );
     }
-  }, [saveStoryStatus, creatingNew]);
-
-  React.useEffect(() => {
-    if (currentStoryId) {
-      setReset(true);
-    }
-  }, [currentStoryId]);
-
-  React.useEffect(() => {
-    if (!selectedStoryId) {
-      setCurrentStoryId({ currentStoryId });
-    }
-  }, [selectedStoryId, currentStoryId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [currentStoryId, pathStoryId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [linkInputValue, setLinkInputValue] = React.useState('');
   React.useEffect(() => {
@@ -745,7 +741,7 @@ const Canvas: React.FC<CanvasProps> = ({
                             onClick={() => {
                               const storyState: StoryWithId = {
                                 ...storyMonitorState,
-                                id: currentStoryId,
+                                id: pathStoryId,
                                 name: storyName,
                                 durations,
                                 audioId: audioElement ? audioElement.id : '',
@@ -801,7 +797,7 @@ const Canvas: React.FC<CanvasProps> = ({
                             e.preventDefault();
 
                             saveStory({
-                              id: currentStoryId,
+                              id: pathStoryId,
                               name: storyName,
                             });
                           }}
@@ -842,16 +838,7 @@ const Canvas: React.FC<CanvasProps> = ({
 
                             const newStoryId = v4();
 
-                            history.push(
-                              urlJoin(absoluteRootPaths.canvas, newStoryId),
-                            );
-
-                            setCreatingNew(true);
-
-                            const newStory: Omit<
-                              StoryWithId,
-                              'audioSrc' | 'audioId'
-                            > = {
+                            const newStory: StoryWithId = {
                               id: newStoryId,
                               name: newStoryName,
                               actionsById: {},
@@ -861,11 +848,14 @@ const Canvas: React.FC<CanvasProps> = ({
                               lastJumpedToActionId: -1,
                               isPublic: false,
                               authorId: uid,
+                              audioId: '',
+                              audioSrc: '',
                             };
 
-                            saveStory(newStory);
-
+                            addStory(newStory);
                             setCurrentStoryId({ currentStoryId: newStoryId });
+
+                            saveStory(newStory);
                           }}
                         >
                           <Flex alignItems="center" height="100%" ml={2} mr={1}>
@@ -1195,6 +1185,7 @@ const Canvas: React.FC<CanvasProps> = ({
           >
             <CanvasContext.Provider
               value={{
+                currentStoryId,
                 currentStory: currentStory || null,
                 storyMonitorState,
                 setStoryMonitorState,
@@ -1210,8 +1201,6 @@ const Canvas: React.FC<CanvasProps> = ({
                 setLastJumpedToActionId,
                 durations,
                 setDurations,
-                reset,
-                setReset,
               }}
             >
               <DevTools store={store} />

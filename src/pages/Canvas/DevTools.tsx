@@ -99,6 +99,7 @@ const StoryMonitor = ({
   skippedActionIds,
 }: MonitorProps) => {
   const {
+    currentStoryId,
     currentStory,
     setStoryMonitorState,
     hoveredBlockId,
@@ -112,9 +113,9 @@ const StoryMonitor = ({
     setLastJumpedToActionId,
     durations,
     setDurations,
-    reset,
-    setReset,
   } = React.useContext(CanvasContext);
+
+  const [reset, setReset] = React.useState(false);
 
   const elapsed = elapsedTime > initialElapsedTime ? elapsedTime : 0;
 
@@ -341,6 +342,10 @@ const StoryMonitor = ({
 
     setTotalElapsedTime(initialElapsedTime);
   };
+
+  React.useEffect(() => {
+    setReset(true);
+  }, [currentStoryId]);
 
   React.useEffect(() => {
     if (reset && currentStory) {

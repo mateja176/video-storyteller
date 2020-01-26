@@ -65,7 +65,8 @@ export const initialStoryState: StoryWithId = {
 };
 
 export interface ICanvasContext extends DurationsAndLastJumpedToActionId {
-  currentStory: StoryWithId | null,
+  currentStoryId: StoryWithId['id'];
+  currentStory: StoryWithId | null;
   storyMonitorState: StoryMonitorState;
   setStoryMonitorState: (state: StoryMonitorState) => void;
   hoveredBlockId: HoveredBlockId;
@@ -78,10 +79,9 @@ export interface ICanvasContext extends DurationsAndLastJumpedToActionId {
   setTotalElapsedTime: (elapsed: ElapsedTime) => void;
   setLastJumpedToActionId: CreateSetLastJumpedToActionId;
   setDurations: CreateSetDurations;
-  reset: Reset;
-  setReset: (reset: Reset) => void;
 }
 export const CanvasContext = createContext<ICanvasContext>({
+  currentStoryId: '',
   currentStory: null,
   storyMonitorState: initialStoryMonitorState,
   setStoryMonitorState: () => {},
@@ -97,6 +97,4 @@ export const CanvasContext = createContext<ICanvasContext>({
   setLastJumpedToActionId: createSetLastJumpedToActionId,
   durations: initialCanvasState.durations,
   setDurations: createSetDurations,
-  reset: false,
-  setReset: () => {},
 });
