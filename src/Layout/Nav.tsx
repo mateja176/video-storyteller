@@ -255,12 +255,12 @@ const PlainNavItem: FC<NavItemProps> = ({
         timeout="auto"
         style={{
           marginLeft: theme.spacing(level),
+          boxShadow,
         }}
       >
         <INavItems
           navItems={mappedChildNavItems.map(childItem => ({
             ...childItem,
-            style: { boxShadow },
           }))}
           onNavigate={onNavigate}
         />
