@@ -19,11 +19,11 @@ import {
   Audiotrack,
   Build,
   Delete,
+  Edit,
   FileCopy,
   Fullscreen,
   FullscreenExit,
   Image,
-  InsertDriveFile,
   LibraryMusic,
   Link,
   NoteAdd,
@@ -63,6 +63,7 @@ import { Images } from 'pages/Images';
 import panzoom, { PanZoom } from 'panzoom';
 import { equals } from 'ramda';
 import React from 'react';
+import CopyToClipboard from 'react-copy-to-clipboard';
 import { useDrop } from 'react-dnd';
 import Dropzone from 'react-dropzone';
 import { useSelector as useStoreSelector } from 'react-redux';
@@ -781,38 +782,28 @@ const Canvas: React.FC<CanvasProps> = ({
                             </ListItemIcon>
                             <ListItemText>Save</ListItemText>
                           </ListItem>
-                        </List>
-                        <Tooltip title="Copy story link" placement="top">
-                          <TextField
-                            value={linkInputValue}
-                            placeholder="Copy Link"
-                            onClick={({ target }) => {
-                              (target as HTMLInputElement).select();
-
-                              document.execCommand('copy');
-
+                          <CopyToClipboard
+                            text={linkInputValue}
+                            onCopy={() => {
                               setSnackbar({
-                                message: 'Link to story copied',
                                 variant: 'info',
+                                message: 'Link to story copied',
                                 duration: 2000,
                               });
                             }}
-                            InputProps={{
-                              startAdornment: (
-                                <Box mr={2}>
-                                  <Link color="action" />
-                                </Box>
-                              ),
-                              style: {
-                                width: 150,
-                                cursor: 'copy',
-                                // whiteSpace: 'nowrap',
-                                // overflow: 'hidden',
-                                // textOverflow: 'ellipsis', // ? not working
-                              },
-                            }}
-                          />
-                        </Tooltip>
+                          >
+                            <ListItem button>
+                              <ListItemIcon
+                                style={{ minWidth: 'auto', marginRight: 10 }}
+                              >
+                                <Link />
+                              </ListItemIcon>
+                              <ListItemText style={{ whiteSpace: 'nowrap' }}>
+                                Copy link
+                              </ListItemText>
+                            </ListItem>
+                          </CopyToClipboard>
+                        </List>
                         <form
                           onSubmit={e => {
                             e.preventDefault();
@@ -836,7 +827,10 @@ const Canvas: React.FC<CanvasProps> = ({
                               }}
                               InputProps={{
                                 startAdornment: (
-                                  <InsertDriveFile color="action" />
+                                  <Edit
+                                    style={{ marginRight: 5 }}
+                                    color="action"
+                                  />
                                 ),
                               }}
                             />
