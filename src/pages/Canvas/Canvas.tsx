@@ -816,6 +816,7 @@ const Canvas: React.FC<CanvasProps> = ({
                         >
                           <Flex alignItems="center" height="100%" ml={2} mr={1}>
                             <TextField
+                              disabled={!currentStory}
                               style={{ marginRight: 5, width: 150 }}
                               placeholder="Story name"
                               onMouseDown={e => {
@@ -913,6 +914,7 @@ const Canvas: React.FC<CanvasProps> = ({
                         >
                           <Flex alignItems="center" height="100%" ml={2} mr={1}>
                             <TextField
+                              disabled={!currentStory}
                               style={{ marginRight: 5, width: 150 }}
                               placeholder="Duplicate's name"
                               onMouseDown={e => {
