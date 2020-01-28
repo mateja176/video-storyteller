@@ -31,6 +31,22 @@ import {
   selectImagesWithIds,
   State,
 } from 'store';
+import { createUseStyles } from 'react-jss';
+
+const useStyles = createUseStyles({
+  '@keyframes flicker': {
+    from: {
+      opacity: 1,
+    },
+    to: {
+      opacity: 0.7,
+    },
+  },
+  uploadButton: {
+    animation: ({ uploadDisabled }: { uploadDisabled: boolean }) =>
+      uploadDisabled ? 'none' : '$flicker 1000ms infinite alternate ease-in-out',
+  },
+});
 
 export interface ImageProps
   extends React.DetailedHTMLProps<
@@ -102,6 +118,10 @@ const Upload: FC<UploadProps> = ({
 
   const areAllImagesAppropriate = useSelector(selectAreAllImagesAppropriate);
 
+  const uploadDisabled = !images.length || !areAllImagesAppropriate;
+
+  const classes = useStyles({ uploadDisabled });
+
   return (
     <form
       onSubmit={e => {
@@ -150,8 +170,9 @@ const Upload: FC<UploadProps> = ({
         type="submit"
         variant="contained"
         color="primary"
-        disabled={!images.length || !areAllImagesAppropriate}
+        disabled={uploadDisabled}
         isLoading={uploading || imagesBeingVerified}
+        className={classes.uploadButton}
       >
         {dict.upload}
       </Button>

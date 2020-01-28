@@ -73,6 +73,7 @@
     "react-helmet": "^5.2.1",
     "react-hot-loader": "^4.8.2",
     "react-instantsearch-dom": "^5.7.0",
+    "react-jss": "^10.0.4",
     "react-kawaii": "^0.14.4",
     "react-motion": "^0.5.2",
     "react-pose": "^4.0.9",
