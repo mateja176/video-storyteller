@@ -1,3 +1,4 @@
+import { Link } from 'components';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Box } from 'rebass';
@@ -28,17 +29,21 @@ const Images: React.FC<ImagesProps> = ({ onMouseEnter, onMouseLeave }) => {
 
   return (
     <Box p={spacing} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-      {images.map(({ name, customMetadata, downloadUrl }) => (
-        <ImageBlock
-          key={name}
-          mb={spacing}
-          downloadUrl={downloadUrl}
-          name={customMetadata.name}
-          height={customMetadata.height}
-          width={customMetadata.width}
-          thumbnailWidth={storageImageWidth - 2 * spacing}
-        />
-      ))}
+      {images.length ? (
+        images.map(({ name, customMetadata, downloadUrl }) => (
+          <ImageBlock
+            key={name}
+            mb={spacing}
+            downloadUrl={downloadUrl}
+            name={customMetadata.name}
+            height={customMetadata.height}
+            width={customMetadata.width}
+            thumbnailWidth={storageImageWidth - 2 * spacing}
+          />
+        ))
+      ) : (
+        <Link to="upload">Upload your first images</Link>
+      )}
     </Box>
   );
 };
