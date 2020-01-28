@@ -7,19 +7,13 @@ import {
   useTheme,
 } from '@material-ui/core';
 import {
-  ArrowDownward,
-  ArrowUpward,
-  BarChart,
   Brush,
   CloudUpload,
   Collections,
   Dashboard,
   ExpandLess,
   ExpandMore,
-  List as ListIcon,
-  Money,
   Person,
-  Store,
 } from '@material-ui/icons';
 import { Link, Tooltip } from 'components';
 import { countBy, startCase } from 'lodash';
@@ -46,11 +40,11 @@ type INavItems = INavItem[];
 const rootPathnames = [
   'signin',
   'dashboard',
-  'count',
+  // 'count',
   'images',
-  'store',
-  'checkoutForm',
-  'list',
+  // 'store',
+  // 'checkoutForm',
+  // 'list',
   'canvas',
   'profile',
 ] as const;
@@ -110,25 +104,25 @@ const getPrivateNavItems: GetNavItems = dict => [
     path: '/',
     childNavItems: [],
   },
-  {
-    text: dict[paths.count],
-    path: absolutePaths.count,
-    icon: <BarChart />,
-    childNavItems: [
-      {
-        text: dict[paths.increment],
-        icon: <ArrowUpward />,
-        path: absolutePaths.increment,
-        childNavItems: [],
-      },
-      {
-        text: dict[paths.decrement],
-        icon: <ArrowDownward />,
-        path: absolutePaths.decrement,
-        childNavItems: [],
-      },
-    ],
-  },
+  // {
+  //   text: dict[paths.count],
+  //   path: absolutePaths.count,
+  //   icon: <BarChart />,
+  //   childNavItems: [
+  //     {
+  //       text: dict[paths.increment],
+  //       icon: <ArrowUpward />,
+  //       path: absolutePaths.increment,
+  //       childNavItems: [],
+  //     },
+  //     {
+  //       text: dict[paths.decrement],
+  //       icon: <ArrowDownward />,
+  //       path: absolutePaths.decrement,
+  //       childNavItems: [],
+  //     },
+  //   ],
+  // },
   {
     text: dict[paths.images],
     path: absolutePaths.images,
@@ -142,24 +136,24 @@ const getPrivateNavItems: GetNavItems = dict => [
       },
     ],
   },
-  {
-    text: dict[paths.store],
-    path: absolutePaths.store,
-    icon: <Store />,
-    childNavItems: [],
-  },
-  {
-    text: dict[paths.checkoutForm],
-    path: absolutePaths.checkoutForm,
-    icon: <Money />,
-    childNavItems: [],
-  },
-  {
-    text: dict[paths.list],
-    path: absolutePaths.list,
-    icon: <ListIcon />,
-    childNavItems: [],
-  },
+  // {
+  //   text: dict[paths.store],
+  //   path: absolutePaths.store,
+  //   icon: <Store />,
+  //   childNavItems: [],
+  // },
+  // {
+  //   text: dict[paths.checkoutForm],
+  //   path: absolutePaths.checkoutForm,
+  //   icon: <Money />,
+  //   childNavItems: [],
+  // },
+  // {
+  //   text: dict[paths.list],
+  //   path: absolutePaths.list,
+  //   icon: <ListIcon />,
+  //   childNavItems: [],
+  // },
   {
     text: dict[paths.canvas],
     path: absolutePaths.canvas,
