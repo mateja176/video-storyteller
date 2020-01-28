@@ -10,7 +10,6 @@ import {
   makeStyles,
   Paper,
   Switch,
-  TextField,
   Typography,
   useTheme,
 } from '@material-ui/core';
@@ -104,6 +103,7 @@ import {
   StoryWithId,
 } from './CanvasContext';
 import DevTools, { miniDrawerWidth } from './DevTools';
+import OptionWithPopover from './OptionWithPopover';
 import store, {
   selectAudioSrc,
   selectBlockStates,
@@ -473,10 +473,6 @@ const Canvas: React.FC<CanvasProps> = ({
     }
   }, [currentStory]);
 
-  const [duplicateStoryName, setDuplicateStoryName] = React.useState('');
-
-  const [newStoryName, setNewStoryName] = React.useState('');
-
   React.useEffect(() => {
     if (!currentStoryId) {
       setCurrentStoryId({ currentStoryId: pathStoryId });
@@ -803,139 +799,73 @@ const Canvas: React.FC<CanvasProps> = ({
                               </ListItemText>
                             </ListItem>
                           </CopyToClipboard>
+                          <OptionWithPopover
+                            disabled={!currentStory || storyLoading}
+                            Icon={Edit}
+                            initialValue={currentStory ? currentStory.name : ''}
+                            placeholder="Story name"
+                            submitText="Rename"
+                            text="Rename"
+                            onSubmit={value => {
+                              saveStory({
+                                id: pathStoryId,
+                                name: value,
+                              });
+                            }}
+                          />
+                          <OptionWithPopover
+                            disabled={storyLoading}
+                            Icon={NoteAdd}
+                            initialValue=""
+                            text="New story"
+                            submitText="Create"
+                            placeholder="New story"
+                            onSubmit={value => {
+                              const newStoryId = v4();
+
+                              const newStory: StoryWithId = {
+                                id: newStoryId,
+                                name: value,
+                                actionsById: {},
+                                stagedActionIds: [],
+                                skippedActionIds: [],
+                                durations: [],
+                                lastJumpedToActionId: -1,
+                                isPublic: false,
+                                authorId: uid,
+                                audioId: '',
+                                audioSrc: '',
+                              };
+
+                              addStory(newStory);
+                              setCurrentStoryId({ currentStoryId: newStoryId });
+
+                              saveStory(newStory);
+                            }}
+                          />
+                          <OptionWithPopover
+                            disabled={storyLoading}
+                            Icon={FileCopy}
+                            initialValue=""
+                            placeholder="Duplicate's name"
+                            text="Duplicate"
+                            submitText="Duplicate"
+                            onSubmit={value => {
+                              const storyState: StoryWithId = {
+                                ...storyMonitorState,
+                                id: v4(),
+                                name: value,
+                                durations,
+                                audioId: audioElement ? audioElement.id : '',
+                                audioSrc: audioElement ? audioSrc : '',
+                                lastJumpedToActionId,
+                                isPublic: false,
+                                authorId: uid,
+                              };
+                              saveStory(storyState);
+                            }}
+                          />
                         </List>
-                        <form
-                          onSubmit={e => {
-                            e.preventDefault();
-
-                            saveStory({
-                              id: pathStoryId,
-                              name: storyName,
-                            });
-                          }}
-                        >
-                          <Flex alignItems="center" height="100%" ml={2} mr={1}>
-                            <TextField
-                              disabled={!currentStory}
-                              style={{ marginRight: 5, width: 150 }}
-                              placeholder="Story name"
-                              onMouseDown={e => {
-                                e.stopPropagation();
-                              }}
-                              value={storyName}
-                              onChange={({ target: { value } }) => {
-                                setStoryName(value);
-                              }}
-                              InputProps={{
-                                startAdornment: (
-                                  <Edit
-                                    style={{ marginRight: 5 }}
-                                    color="action"
-                                  />
-                                ),
-                              }}
-                            />
-                            <Button
-                              type="submit"
-                              disabled={
-                                !storyName ||
-                                storyLoading ||
-                                (currentStory &&
-                                  currentStory.name === storyName)
-                              }
-                            >
-                              rename
-                            </Button>
-                          </Flex>
-                        </form>
-                        <form
-                          onSubmit={e => {
-                            e.preventDefault();
-
-                            const newStoryId = v4();
-
-                            const newStory: StoryWithId = {
-                              id: newStoryId,
-                              name: newStoryName,
-                              actionsById: {},
-                              stagedActionIds: [],
-                              skippedActionIds: [],
-                              durations: [],
-                              lastJumpedToActionId: -1,
-                              isPublic: false,
-                              authorId: uid,
-                              audioId: '',
-                              audioSrc: '',
-                            };
-
-                            addStory(newStory);
-                            setCurrentStoryId({ currentStoryId: newStoryId });
-
-                            saveStory(newStory);
-                          }}
-                        >
-                          <Flex alignItems="center" height="100%" ml={2} mr={1}>
-                            <TextField
-                              style={{ marginRight: 5, width: 150 }}
-                              placeholder="New story"
-                              onMouseDown={e => {
-                                e.stopPropagation();
-                              }}
-                              value={newStoryName}
-                              onChange={({ target: { value } }) => {
-                                setNewStoryName(value);
-                              }}
-                              InputProps={{
-                                startAdornment: <NoteAdd color="action" />,
-                              }}
-                            />
-                            <Button type="submit" disabled={!newStoryName}>
-                              create
-                            </Button>
-                          </Flex>
-                        </form>
-                        <form
-                          onSubmit={e => {
-                            e.preventDefault();
-
-                            const storyState: StoryWithId = {
-                              ...storyMonitorState,
-                              id: v4(),
-                              name: storyName,
-                              durations,
-                              audioId: audioElement ? audioElement.id : '',
-                              audioSrc: audioElement ? audioSrc : '',
-                              lastJumpedToActionId,
-                              isPublic: false,
-                              authorId: uid,
-                            };
-                            saveStory(storyState);
-                          }}
-                        >
-                          <Flex alignItems="center" height="100%" ml={2} mr={1}>
-                            <TextField
-                              disabled={!currentStory}
-                              style={{ marginRight: 5, width: 150 }}
-                              placeholder="Duplicate's name"
-                              onMouseDown={e => {
-                                e.stopPropagation();
-                              }}
-                              value={duplicateStoryName}
-                              onChange={({ target: { value } }) => {
-                                setDuplicateStoryName(value);
-                              }}
-                              InputProps={{
-                                startAdornment: <FileCopy color="action" />,
-                              }}
-                            />
-                            <Button
-                              type="submit"
-                              disabled={!duplicateStoryName || storyLoading}
-                            >
-                              duplicate
-                            </Button>
-                          </Flex>
-                        </form>
                         <Loader
                           isLoading={
                             !currentStory &&
