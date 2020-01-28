@@ -184,7 +184,10 @@ const PlainChildNavItem: FC<ChildNavItemProps> = ({
   location: { pathname },
   style,
 }) => (
-  <ListItem selected={pathname === path} style={style}>
+  <ListItem
+    selected={pathname.split('/')[1] === path.split('/')[1]}
+    style={style}
+  >
     <Link
       onClick={onNavigate}
       style={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}
@@ -227,9 +230,7 @@ const PlainNavItem: FC<NavItemProps> = ({
 
   const { '/': level } = countBy(navItemProps.path);
 
-  const boxShadow = `-${theme.spacing(level)}px 0px ${
-    theme.palette.primary.main
-  }`;
+  const boxShadow = `-${theme.spacing(level)}px 0px ${theme.palette.grey.A700}`;
 
   return (
     <>
