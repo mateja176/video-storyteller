@@ -30,10 +30,10 @@ const ImageBlock: React.FC<ImageBlockProps> = ({
   });
 
   return (
-    <Box mb={mb}>
-      <Flex mb={1} justifyContent="center">
+    <Flex mb={mb} alignItems="center" flexDirection="column">
+      <Box mb={1}>
         <Typography variant="h6">{startCase(name.split('.')[0])}</Typography>
-      </Flex>
+      </Box>
       {/* eslint-disable-next-line jsx-a11y/alt-text */}
       <img
         ref={dragRef}
@@ -41,7 +41,7 @@ const ImageBlock: React.FC<ImageBlockProps> = ({
         src={downloadUrl}
         width={thumbnailWidth}
       />
-    </Box>
+    </Flex>
   );
 };
 
