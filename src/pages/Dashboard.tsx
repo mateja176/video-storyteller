@@ -72,7 +72,6 @@ const Dashboard: React.FC<DashboardProps> = () => {
                             setCurrentStoryId({ currentStoryId: id });
                           }}
                           selected={selected}
-                          disabled={selected}
                         >
                           <ListItemIcon>
                             <Tooltip
