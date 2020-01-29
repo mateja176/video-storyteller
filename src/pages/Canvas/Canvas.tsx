@@ -405,6 +405,8 @@ const Canvas: React.FC<CanvasProps> = ({
 
   const uid = useStoreSelector(selectUid);
 
+  const isAuthor = currentStory ? currentStory.authorId === uid : true;
+
   const [uploadPercentage, setUploadPercentage] = React.useState(-1);
   const uploading = uploadPercentage !== -1;
 
@@ -499,7 +501,7 @@ const Canvas: React.FC<CanvasProps> = ({
 
   const [linkInputValue, setLinkInputValue] = React.useState('');
   React.useEffect(() => {
-    setLinkInputValue(window.location.href);
+    setLinkInputValue(`${window.location.href}?theatrical=true`);
   }, []);
 
   const storyLoading = [
@@ -524,78 +526,88 @@ const Canvas: React.FC<CanvasProps> = ({
         }}
       >
         <List>
-          <ListItem
-            disabled={fetchStoriesStatus === 'in progress'}
-            button
-            onClick={() => {
-              setRightDrawerOccupant(
-                rightDrawerOccupant === 'text blocks' ? 'none' : 'text blocks',
-              );
-            }}
-          >
-            <Tooltip title="Toggle open text blocks">
-              <ListItemIcon>
-                <Title
-                  color={
-                    rightDrawerOccupant === 'text blocks'
-                      ? 'secondary'
-                      : 'inherit'
-                  }
-                />
-              </ListItemIcon>
-            </Tooltip>
-          </ListItem>
-          <ListItem
-            disabled={fetchStoriesStatus === 'in progress'}
-            button
-            onClick={() => {
-              setRightDrawerOccupant(
-                rightDrawerOccupant === 'images' ? 'none' : 'images',
-              );
-            }}
-          >
-            <Tooltip title="Toggle images open">
-              <ListItemIcon>
-                <Image
-                  color={
-                    rightDrawerOccupant === 'images' ? 'secondary' : 'inherit'
-                  }
-                />
-              </ListItemIcon>
-            </Tooltip>
-          </ListItem>
-          <ListItem
-            disabled={fetchStoriesStatus === 'in progress'}
-            button
-            onClick={() => {
-              setRightDrawerOccupant(
-                rightDrawerOccupant === 'audio' ? 'none' : 'audio',
-              );
-            }}
-          >
-            <Tooltip title="Toggle open audio">
-              <ListItemIcon>
-                <LibraryMusic
-                  color={
-                    rightDrawerOccupant === 'audio' ? 'secondary' : 'inherit'
-                  }
-                />
-              </ListItemIcon>
-            </Tooltip>
-          </ListItem>
-          <ListItem
-            disabled={fetchStoriesStatus === 'in progress'}
-            button
-            onClick={() => {
-              setDeleteModeOn(!deleteModeOn);
-            }}
-          >
-            <Tooltip title="Toggle delete mode">
-              <ListItemIcon>
-                <Delete color={deleteModeOn ? 'secondary' : 'inherit'} />
-              </ListItemIcon>
-            </Tooltip>
-          </ListItem>
+          {isAuthor && (
+            <ListItem
+              disabled={fetchStoriesStatus === 'in progress'}
+              button
+              onClick={() => {
+                setRightDrawerOccupant(
+                  rightDrawerOccupant === 'text blocks'
+                    ? 'none'
+                    : 'text blocks',
+                );
+              }}
+            >
+              <Tooltip title="Toggle open text blocks">
+                <ListItemIcon>
+                  <Title
+                    color={
+                      rightDrawerOccupant === 'text blocks'
+                        ? 'secondary'
+                        : 'inherit'
+                    }
+                  />
+                </ListItemIcon>
+              </Tooltip>
+            </ListItem>
+          )}
+          {isAuthor && (
+            <ListItem
+              disabled={fetchStoriesStatus === 'in progress'}
+              button
+              onClick={() => {
+                setRightDrawerOccupant(
+                  rightDrawerOccupant === 'images' ? 'none' : 'images',
+                );
+              }}
+            >
+              <Tooltip title="Toggle images open">
+                <ListItemIcon>
+                  <Image
+                    color={
+                      rightDrawerOccupant === 'images' ? 'secondary' : 'inherit'
+                    }
+                  />
+                </ListItemIcon>
+              </Tooltip>
+            </ListItem>
+          )}
+          {isAuthor && (
+            <ListItem
+              disabled={fetchStoriesStatus === 'in progress'}
+              button
+              onClick={() => {
+                setRightDrawerOccupant(
+                  rightDrawerOccupant === 'audio' ? 'none' : 'audio',
+                );
+              }}
+            >
+              <Tooltip title="Toggle open audio">
+                <ListItemIcon>
+                  <LibraryMusic
+                    color={
+                      rightDrawerOccupant === 'audio' ? 'secondary' : 'inherit'
+                    }
+                  />
+                </ListItemIcon>
+              </Tooltip>
+            </ListItem>
+          )}
+          {isAuthor && (
+            <ListItem
+              disabled={fetchStoriesStatus === 'in progress'}
+              button
+              onClick={() => {
+                setDeleteModeOn(!deleteModeOn);
+              }}
+            >
+              <Tooltip title="Toggle delete mode">
+                <ListItemIcon>
+                  <Delete color={deleteModeOn ? 'secondary' : 'inherit'} />
+                </ListItemIcon>
+              </Tooltip>
+            </ListItem>
+          )}
           <ListItem button onClick={toggleActionsTimelineOpen}>
             <Tooltip title="Toggle open actions timeline">
               <ListItemIcon>
@@ -603,13 +615,20 @@ const Canvas: React.FC<CanvasProps> = ({
               </ListItemIcon>
             </Tooltip>
           </ListItem>
-          <ListItem button onClick={() => setAudioUploadOpen(!audioUploadOpen)}>
-            <Tooltip title="Toggle open audio upload">
-              <ListItemIcon>
-                <Audiotrack color={audioUploadOpen ? 'secondary' : 'inherit'} />
-              </ListItemIcon>
-            </Tooltip>
-          </ListItem>
+          {isAuthor && (
+            <ListItem
+              button
+              onClick={() => setAudioUploadOpen(!audioUploadOpen)}
+            >
+              <Tooltip title="Toggle open audio upload">
+                <ListItemIcon>
+                  <Audiotrack
+                    color={audioUploadOpen ? 'secondary' : 'inherit'}
+                  />
+                </ListItemIcon>
+              </Tooltip>
+            </ListItem>
+          )}
         </List>
         <ListItem
           button
@@ -754,31 +773,33 @@ const Canvas: React.FC<CanvasProps> = ({
                             height: '100%',
                           }}
                         >
-                          <ListItem
-                            disabled={storyLoading}
-                            button
-                            onClick={() => {
-                              const storyState: StoryWithId = {
-                                ...storyMonitorState,
-                                id: pathStoryId,
-                                name: storyName,
-                                durations,
-                                audioId: audioElement ? audioElement.id : '',
-                                audioSrc: audioElement ? audioSrc : '',
-                                lastJumpedToActionId,
-                                isPublic: false,
-                                authorId: uid,
-                              };
-                              saveStory(storyState);
-                            }}
-                          >
-                            <ListItemIcon
-                              style={{ minWidth: 'auto', marginRight: 10 }}
+                          {isAuthor && (
+                            <ListItem
+                              disabled={storyLoading}
+                              button
+                              onClick={() => {
+                                const storyState: StoryWithId = {
+                                  ...storyMonitorState,
+                                  id: pathStoryId,
+                                  name: storyName,
+                                  durations,
+                                  audioId: audioElement ? audioElement.id : '',
+                                  audioSrc: audioElement ? audioSrc : '',
+                                  lastJumpedToActionId,
+                                  isPublic: false,
+                                  authorId: uid,
+                                };
+                                saveStory(storyState);
+                              }}
                             >
-                              <Save />
-                            </ListItemIcon>
-                            <ListItemText>Save</ListItemText>
-                          </ListItem>
+                              <ListItemIcon
+                                style={{ minWidth: 'auto', marginRight: 10 }}
+                              >
+                                <Save />
+                              </ListItemIcon>
+                              <ListItemText>Save</ListItemText>
+                            </ListItem>
+                          )}
                           <CopyToClipboard
                             text={linkInputValue}
                             onCopy={() => {
@@ -800,20 +821,24 @@ const Canvas: React.FC<CanvasProps> = ({
                               </ListItemText>
                             </ListItem>
                           </CopyToClipboard>
-                          <OptionWithPopover
-                            disabled={!currentStory || storyLoading}
-                            Icon={Edit}
-                            initialValue={currentStory ? currentStory.name : ''}
-                            placeholder="Story name"
-                            submitText="Rename"
-                            text="Rename"
-                            onSubmit={value => {
-                              saveStory({
-                                id: pathStoryId,
-                                name: value,
-                              });
-                            }}
-                          />
+                          {isAuthor && (
+                            <OptionWithPopover
+                              disabled={!currentStory || storyLoading}
+                              Icon={Edit}
+                              initialValue={
+                                currentStory ? currentStory.name : ''
+                              }
+                              placeholder="Story name"
+                              submitText="Rename"
+                              text="Rename"
+                              onSubmit={value => {
+                                saveStory({
+                                  id: pathStoryId,
+                                  name: value,
+                                });
+                              }}
+                            />
+                          )}
                           <OptionWithPopover
                             disabled={storyLoading}
                             Icon={NoteAdd}
@@ -867,32 +892,34 @@ const Canvas: React.FC<CanvasProps> = ({
                             }}
                           />
                         </List>
-                        <Loader
-                          isLoading={
-                            !currentStory &&
-                            fetchStoriesStatus === 'in progress'
-                          }
-                        >
-                          <FormControlLabel
-                            label="Public"
-                            labelPlacement="start"
-                            disabled={!currentStory}
-                            control={
-                              <Switch
-                                color="primary"
-                                defaultChecked={
-                                  currentStory && currentStory.isPublic
-                                }
-                                onChange={({ target: { checked } }) => {
-                                  saveStory({
-                                    id: currentStory ? currentStory.id : '',
-                                    isPublic: checked,
-                                  });
-                                }}
-                              />
+                        {isAuthor && (
+                          <Loader
+                            isLoading={
+                              !currentStory &&
+                              fetchStoriesStatus === 'in progress'
                             }
-                          />
-                        </Loader>
+                          >
+                            <FormControlLabel
+                              label="Public"
+                              labelPlacement="start"
+                              disabled={!currentStory}
+                              control={
+                                <Switch
+                                  color="primary"
+                                  defaultChecked={
+                                    currentStory && currentStory.isPublic
+                                  }
+                                  onChange={({ target: { checked } }) => {
+                                    saveStory({
+                                      id: currentStory ? currentStory.id : '',
+                                      isPublic: checked,
+                                    });
+                                  }}
+                                />
+                              }
+                            />
+                          </Loader>
+                        )}
                       </Flex>
                     );
                 }
