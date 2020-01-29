@@ -40,7 +40,13 @@ const Profile: React.FC<ProfileProps> = () => {
           style={{ display: 'grid', justifyItems: 'center', minWidth: 300 }}
         >
           <CardMedia
-            image={photoURL}
+            image={
+              photoURL ||
+              `https://eu.ui-avatars.com/api/?name=${displayName.replace(
+                ' ',
+                '+',
+              )}`
+            }
             title={displayName}
             style={{
               height: avatarWidth,
