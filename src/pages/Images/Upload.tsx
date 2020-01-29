@@ -3,8 +3,6 @@
 import {
   Divider,
   List,
-  ListItem,
-  ListItemText,
   Tooltip,
   Typography,
   useTheme,
