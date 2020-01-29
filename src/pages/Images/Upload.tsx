@@ -11,7 +11,7 @@ import {
 } from '@material-ui/core';
 import { AddToPhotos, CheckCircleOutline, Close } from '@material-ui/icons';
 import { Button, IconButton, Spinner } from 'components';
-import React, { createRef, CSSProperties, FC, useState } from 'react';
+import React, { CSSProperties, FC, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { connect, useSelector } from 'react-redux';
 import { Box, Flex } from 'rebass';
