@@ -185,7 +185,15 @@ const PlainChildNavItem: FC<ChildNavItemProps> = ({
   location: { pathname },
   style,
 }) => (
-  <ListItem selected={pathname === path} style={style} button>
+  <ListItem
+    selected={
+      pathname === path ||
+      (path === absoluteRootPaths.canvas &&
+        new RegExp(`^${absoluteRootPaths.canvas}/[\\w-]+$`).test(pathname))
+    }
+    style={style}
+    button
+  >
     <Link
       onClick={onNavigate}
       style={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}
