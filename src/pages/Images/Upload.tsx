@@ -12,6 +12,7 @@ import {
 import { AddToPhotos, CheckCircleOutline, Close } from '@material-ui/icons';
 import { Button, IconButton, Spinner } from 'components';
 import React, { createRef, CSSProperties, FC, useState } from 'react';
+import { createUseStyles } from 'react-jss';
 import { connect, useSelector } from 'react-redux';
 import { Box, Flex } from 'rebass';
 import {
@@ -31,7 +32,7 @@ import {
   selectImagesWithIds,
   State,
 } from 'store';
-import { createUseStyles } from 'react-jss';
+import { dividingBorder } from 'styles';
 
 const useStyles = createUseStyles({
   '@keyframes flicker': {
@@ -44,7 +45,9 @@ const useStyles = createUseStyles({
   },
   uploadButton: {
     animation: ({ uploadDisabled }: { uploadDisabled: boolean }) =>
-      uploadDisabled ? 'none' : '$flicker 1000ms infinite alternate ease-in-out',
+      uploadDisabled
+        ? 'none'
+        : '$flicker 1000ms infinite alternate ease-in-out',
   },
 });
 
@@ -56,17 +59,16 @@ export interface ImageProps
   boxShadow: CSSProperties['boxShadow'];
   dataUrl: Image['dataUrl'];
   name: Image['name'];
-  remove: () => void;
 }
 
 export const ImageComponent = React.forwardRef<HTMLImageElement, ImageProps>(
-  ({ boxShadow, dataUrl, name, remove, ...imageProps }, ref) => {
+  ({ boxShadow, dataUrl, name, ...imageProps }, ref) => {
     const [hovered, setHovered] = useState(false);
 
     const toggleHovered = () => setHovered(!hovered);
 
     return (
-      <Box style={{ position: 'relative', display: 'inline-block' }}>
+      <Box style={{ display: 'inline-block' }}>
         <img
           ref={ref}
           src={dataUrl}
@@ -77,17 +79,6 @@ export const ImageComponent = React.forwardRef<HTMLImageElement, ImageProps>(
           onMouseLeave={toggleHovered}
           {...imageProps}
         />
-        <IconButton
-          style={{
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            opacity: 0.7,
-          }}
-          onClick={remove}
-        >
-          <Close />
-        </IconButton>
       </Box>
     );
   },
@@ -100,8 +91,6 @@ export interface UploadProps {
   uploading: ImagesUploading;
   removeImage: CreateRemoveImage;
 }
-
-const uploadInputRef = createRef<HTMLInputElement>();
 
 const Upload: FC<UploadProps> = ({
   addImage,
@@ -122,133 +111,148 @@ const Upload: FC<UploadProps> = ({
 
   const classes = useStyles({ uploadDisabled });
 
-  return (
-    <form
-      onSubmit={e => {
-        e.preventDefault();
+  const uploadInputRef = React.useRef<HTMLInputElement>(null);
 
-        upload();
-      }}
-    >
-      <input
-        ref={uploadInputRef}
-        type="file"
-        multiple
-        accept="image/*"
-        onChange={({ target: { files } }) => {
-          if (files && files.length) {
-            Array.from(files).forEach(file => {
-              const { name } = file;
-              const reader = new FileReader();
-              reader.readAsDataURL(file);
-              // eslint-disable-next-line
-              reader.onload = () => {
-                addImage({
-                  name,
-                  dataUrl: String(reader.result),
-                  uploadStatus: 'not started',
-                  verificationStatus: 'completed',
-                });
-              };
-            });
-          }
-        }}
-        hidden
-      />
-      <Button
-        onClick={() => uploadInputRef.current!.click()}
-        variant="contained"
-      >
-        <AddToPhotos style={{ marginRight: theme.spacing(2) }} />
-        {dict.chooseImages}
-      </Button>
-      <br />
-      <br />
-      <Typography variant="h4">{dict.chosenImages}</Typography>
-      <br />
-      <Button
-        type="submit"
-        variant="contained"
-        color="primary"
-        disabled={uploadDisabled}
-        isLoading={uploading || imagesBeingVerified}
-        className={classes.uploadButton}
-      >
-        {dict.upload}
-      </Button>
-      <br />
+  const addImages = () => {
+    if (uploadInputRef.current) {
+      uploadInputRef.current.click();
+    }
+  };
+
+  return (
+    <Box>
+      <Typography variant="h2">Upload Images</Typography>
+      <Flex mt={3}>
+        <Button
+          variant="contained"
+          color="primary"
+          disabled={uploadDisabled}
+          isLoading={uploading || imagesBeingVerified}
+          className={classes.uploadButton}
+          onClick={() => {
+            upload();
+          }}
+        >
+          {dict.upload}
+        </Button>
+        <Box ml={2}>
+          <Button disabled={!images.length} onClick={addImages}>
+            Add more
+          </Button>
+        </Box>
+      </Flex>
       <br />
       <Divider />
+      {/* TODO replace with cards */}
       <List>
-        {images.map(
-          ({ name, dataUrl, uploadStatus, id, verificationStatus }) => {
-            const inappropriate =
-              verificationStatus === 'in progress' ||
-              verificationStatus === 'failed';
-            const appropriate = !inappropriate;
+        {images.length ? (
+          images.map(
+            ({ name, dataUrl, uploadStatus, id, verificationStatus }) => {
+              const inappropriate =
+                verificationStatus === 'in progress' ||
+                verificationStatus === 'failed';
+              const appropriate = !inappropriate;
 
-            return (
-              <Box key={name}>
-                <ListItem>
-                  <ListItemText>
-                    <Flex alignItems="center">
-                      <Tooltip
-                        title={
-                          appropriate
-                            ? ''
-                            : 'Image was deemed inappropriate, please choose another one.'
-                        }
-                      >
-                        <Typography
-                          variant="h5"
-                          style={{
-                            marginRight: theme.spacing(1),
-                            color: appropriate
-                              ? 'initial'
-                              : theme.palette.error.dark,
-                          }}
+              return (
+                <Box
+                  key={name}
+                  mr={2}
+                  style={{ border: dividingBorder, display: 'inline-block' }}
+                >
+                  <ListItem>
+                    <ListItemText>
+                      <Flex alignItems="center">
+                        <Tooltip
+                          title={
+                            appropriate
+                              ? ''
+                              : 'Image was deemed inappropriate, please choose another one.'
+                          }
                         >
-                          {name}
-                        </Typography>
-                      </Tooltip>
-                      {(() => {
-                        switch (uploadStatus) {
-                          case 'in progress':
-                            return <Spinner size={theme.typography.fontSize} />;
-                          case 'completed':
-                            return (
-                              <Tooltip title={dict.uploaded}>
-                                <CheckCircleOutline
-                                  style={{ color: theme.colors.success.dark }}
-                                />
-                              </Tooltip>
-                            );
-                          default:
-                            return null;
-                        }
-                      })()}
-                    </Flex>
-                  </ListItemText>
-                </ListItem>
-                <br />
-                <ImageComponent
-                  dataUrl={dataUrl}
-                  name={name}
-                  boxShadow={theme.shadows[1]}
-                  remove={() => removeImage(id)}
-                  style={{
-                    filter: appropriate ? 'none' : 'blur(5px)',
-                  }}
-                />
-                <br />
-                <br />
-                <Divider />
-              </Box>
-            );
-          },
+                          <Typography
+                            variant="h5"
+                            style={{
+                              marginRight: theme.spacing(1),
+                              color: appropriate
+                                ? 'initial'
+                                : theme.palette.error.dark,
+                            }}
+                          >
+                            {name}
+                          </Typography>
+                        </Tooltip>
+                        {(() => {
+                          switch (uploadStatus) {
+                            case 'in progress':
+                              return (
+                                <Spinner size={theme.typography.fontSize} />
+                              );
+                            case 'completed':
+                              return (
+                                <Tooltip title={dict.uploaded}>
+                                  <CheckCircleOutline
+                                    style={{ color: theme.colors.success.dark }}
+                                  />
+                                </Tooltip>
+                              );
+                            default:
+                              return (
+                                <IconButton onClick={() => removeImage(id)}>
+                                  <Close />
+                                </IconButton>
+                              );
+                          }
+                        })()}
+                      </Flex>
+                    </ListItemText>
+                  </ListItem>
+                  <ImageComponent
+                    dataUrl={dataUrl}
+                    name={name}
+                    boxShadow={theme.shadows[1]}
+                    style={{
+                      filter: appropriate ? 'none' : 'blur(5px)',
+                    }}
+                  />
+                </Box>
+              );
+            },
+          )
+        ) : (
+          <Box>
+            <input
+              ref={uploadInputRef}
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={({ target: { files } }) => {
+                if (files && files.length) {
+                  Array.from(files).forEach(file => {
+                    const { name } = file;
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    // eslint-disable-next-line
+                    reader.onload = () => {
+                      addImage({
+                        name,
+                        dataUrl: String(reader.result),
+                        uploadStatus: 'not started',
+                        verificationStatus: 'completed',
+                      });
+                    };
+                  });
+                }
+              }}
+              hidden
+            />
+            <Button onClick={addImages} variant="contained">
+              <AddToPhotos style={{ marginRight: theme.spacing(2) }} />
+              {dict.chooseImages}
+            </Button>
+          </Box>
         )}
       </List>
-    </form>
+    </Box>
   );
 };
 
