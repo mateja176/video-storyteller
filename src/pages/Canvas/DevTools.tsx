@@ -20,6 +20,7 @@ import {
   Visibility,
   VisibilityOff,
 } from '@material-ui/icons';
+import { Context } from 'App';
 import color from 'color';
 import { Button, Progress, progressHeight, Tooltip } from 'components';
 import { equals, init, insert, last, nth, pickAll, update } from 'ramda';
@@ -98,6 +99,14 @@ const StoryMonitor = ({
   computedStates,
   skippedActionIds,
 }: MonitorProps) => {
+  const { setDeleteAll } = React.useContext(Context);
+
+  React.useEffect(() => {
+    setDeleteAll(() => {
+      dispatch(ActionCreators.reset());
+    });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const {
     currentStoryId,
     currentStory,

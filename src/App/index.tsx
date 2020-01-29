@@ -7,3 +7,5 @@ export default () => (
     <App />
   </Provider>
 );
+
+export * from './Context';

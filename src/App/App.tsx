@@ -14,6 +14,7 @@ import {
   selectTheme,
   State,
 } from 'store';
+import { Context } from './Context';
 import Routes from './Routes';
 
 declare module '@material-ui/core' {
@@ -27,9 +28,17 @@ export interface AppProps {
 }
 
 const App: FC<AppProps> = ({ getAuthState, isSignedIn, themeOptions }) => {
+  const { deleteAll } = React.useContext(Context);
+
   useEffect(() => {
     getAuthState();
   }, [getAuthState]);
+
+  React.useEffect(() => {
+    if (!isSignedIn) {
+      deleteAll();
+    }
+  }, [isSignedIn]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const theme = createMuiTheme({
     ...themeOptions,

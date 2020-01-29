@@ -7,6 +7,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 // import 'react-stripe-elements'; // * fixes tests but does not fix build
 import { StripeProvider } from 'react-stripe-elements';
 import configureStore from 'store';
+import { Context, initialContext, IContext } from './Context';
 
 const store = configureStore();
 
@@ -41,11 +42,27 @@ const Provider: FC<ProviderProps> = ({ children }) => {
     }
   }, []);
 
+  const [deleteAll, _setDeleteAll] = React.useState(
+    () => initialContext.deleteAll,
+  );
+  const setDeleteAll: IContext['setDeleteAll'] = newDeleteAll => {
+    _setDeleteAll(() => newDeleteAll);
+  };
+
   return (
     // <StrictMode>
     <StripeProvider stripe={stripe}>
       <Router>
-        <StoreProvider store={store}>{children}</StoreProvider>
+        <StoreProvider store={store}>
+          <Context.Provider
+            value={{
+              deleteAll,
+              setDeleteAll,
+            }}
+          >
+            {children}
+          </Context.Provider>
+        </StoreProvider>
       </Router>
     </StripeProvider>
     // </StrictMode>
