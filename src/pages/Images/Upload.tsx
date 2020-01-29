@@ -32,7 +32,6 @@ import {
   selectImagesWithIds,
   State,
 } from 'store';
-import { dividingBorder } from 'styles';
 
 const useStyles = createUseStyles({
   '@keyframes flicker': {
@@ -156,60 +155,53 @@ const Upload: FC<UploadProps> = ({
               return (
                 <Box
                   key={name}
-                  mr={2}
-                  style={{ border: dividingBorder, display: 'inline-block' }}
+                  style={{ display: 'inline-block', textAlign: 'center' }}
                 >
-                  <ListItem>
-                    <ListItemText>
-                      <Flex alignItems="center">
-                        <Tooltip
-                          title={
-                            appropriate
-                              ? ''
-                              : 'Image was deemed inappropriate, please choose another one.'
-                          }
-                        >
-                          <Typography
-                            variant="h5"
-                            style={{
-                              marginRight: theme.spacing(1),
-                              color: appropriate
-                                ? 'initial'
-                                : theme.palette.error.dark,
-                            }}
-                          >
-                            {name}
-                          </Typography>
-                        </Tooltip>
-                        {(() => {
-                          switch (uploadStatus) {
-                            case 'in progress':
-                              return (
-                                <Spinner size={theme.typography.fontSize} />
-                              );
-                            case 'completed':
-                              return (
-                                <Tooltip title={dict.uploaded}>
-                                  <CheckCircleOutline
-                                    style={{ color: theme.colors.success.dark }}
-                                  />
-                                </Tooltip>
-                              );
-                            default:
-                              return (
-                                <IconButton onClick={() => removeImage(id)}>
-                                  <Close />
-                                </IconButton>
-                              );
-                          }
-                        })()}
-                      </Flex>
-                    </ListItemText>
-                  </ListItem>
+                  <Flex alignItems="center" ml={3} mb={2}>
+                    <Tooltip
+                      title={
+                        appropriate
+                          ? ''
+                          : 'Image was deemed inappropriate, please choose another one.'
+                      }
+                    >
+                      <Typography
+                        variant="h5"
+                        style={{
+                          marginRight: theme.spacing(1),
+                          color: appropriate
+                            ? 'initial'
+                            : theme.palette.error.dark,
+                        }}
+                      >
+                        {name}
+                      </Typography>
+                    </Tooltip>
+                    {(() => {
+                      switch (uploadStatus) {
+                        case 'in progress':
+                          return <Spinner size={theme.typography.fontSize} />;
+                        case 'completed':
+                          return (
+                            <Tooltip title={dict.uploaded}>
+                              <CheckCircleOutline
+                                style={{ color: theme.colors.success.dark }}
+                              />
+                            </Tooltip>
+                          );
+                        default:
+                          return (
+                            <IconButton onClick={() => removeImage(id)}>
+                              <Close />
+                            </IconButton>
+                          );
+                      }
+                    })()}
+                  </Flex>
                   <ImageComponent
                     dataUrl={dataUrl}
                     name={name}
-                    boxShadow={theme.shadows[1]}
+                    boxShadow="none"
                     style={{
                       filter: appropriate ? 'none' : 'blur(5px)',
                     }}
