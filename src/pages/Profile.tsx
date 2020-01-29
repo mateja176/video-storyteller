@@ -5,7 +5,8 @@ import {
   CardMedia,
   Typography,
 } from '@material-ui/core';
-import { Button } from 'components';
+import { Link } from 'components';
+import { absoluteRootPaths } from 'Layout';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Box } from 'rebass';
@@ -57,14 +58,14 @@ const Profile: React.FC<ProfileProps> = () => {
           </Typography>
         </CardContent>
         <CardActions>
-          <Button
-            size="small"
+          <Link
+            to={absoluteRootPaths.dashboard}
             onClick={() => {
               signOut();
             }}
           >
             {dict.signOut}
-          </Button>
+          </Link>
         </CardActions>
       </Card>
     </Box>
