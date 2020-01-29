@@ -101,6 +101,7 @@ import {
   initialHoveredBlockId,
   initialStoryMonitorState,
   StoryWithId,
+  initialCanvasContext,
 } from './CanvasContext';
 import DevTools, { miniDrawerWidth } from './DevTools';
 import OptionWithPopover from './OptionWithPopover';
@@ -405,7 +406,9 @@ const Canvas: React.FC<CanvasProps> = ({
 
   const uid = useStoreSelector(selectUid);
 
-  const isAuthor = currentStory ? currentStory.authorId === uid : true;
+  const isAuthor = currentStory
+    ? currentStory.authorId === uid
+    : initialCanvasContext.isAuthor;
 
   const [uploadPercentage, setUploadPercentage] = React.useState(-1);
   const uploading = uploadPercentage !== -1;
@@ -1170,6 +1173,7 @@ const Canvas: React.FC<CanvasProps> = ({
           >
             <CanvasContext.Provider
               value={{
+                isAuthor,
                 currentStoryId,
                 currentStory: currentStory || null,
                 storyMonitorState,

@@ -108,6 +108,7 @@ const StoryMonitor = ({
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const {
+    isAuthor,
     currentStoryId,
     currentStory,
     setStoryMonitorState,
@@ -444,31 +445,35 @@ const StoryMonitor = ({
             <Stop />
           </ListItemIcon>
         </ListItem>
-        <ListItem
-          button
-          disabled={!skippedActionIds.length}
-          onClick={() => {
-            dispatch(ActionCreators.sweep());
-          }}
-        >
-          <ListItemIcon>
-            <DeleteSweep />
-          </ListItemIcon>
-        </ListItem>
-        <ListItem
-          ref={deleteRef}
-          button
-          disabled={areThereNoEditableActions}
-          onClick={() => {
-            setDeletePopoverOpen(true);
-          }}
-        >
-          <Tooltip title="Delete all actions">
+        {isAuthor && (
+          <ListItem
+            button
+            disabled={!skippedActionIds.length}
+            onClick={() => {
+              dispatch(ActionCreators.sweep());
+            }}
+          >
             <ListItemIcon>
-              <DeleteForever color="secondary" />
+              <DeleteSweep />
             </ListItemIcon>
-          </Tooltip>
-        </ListItem>
+          </ListItem>
+        )}
+        {isAuthor && (
+          <ListItem
+            ref={deleteRef}
+            button
+            disabled={areThereNoEditableActions}
+            onClick={() => {
+              setDeletePopoverOpen(true);
+            }}
+          >
+            <Tooltip title="Delete all actions">
+              <ListItemIcon>
+                <DeleteForever color="secondary" />
+              </ListItemIcon>
+            </Tooltip>
+          </ListItem>
+        )}
         <Popover
           open={deletePopoverOpen}
           onClose={() => {
@@ -615,77 +620,80 @@ const StoryMonitor = ({
                     }
                   }}
                 >
-                  <Flex>
-                    <List style={{ padding: 0, display: 'flex', flexGrow: 1 }}>
-                      <ListItem
-                        {...listItemProps}
-                        onClick={e => {
-                          e.stopPropagation();
-
-                          dispatch(ActionCreators.toggleAction(id));
-
-                          if (
-                            isActive &&
-                            isLastJumpedToAction &&
-                            precedingAction
-                          ) {
-                            setLastJumpedToActionId(precedingAction.id);
-
-                            dispatch(
-                              ActionCreators.jumpToAction(precedingAction.id),
-                            );
-                          }
-                        }}
+                  {isAuthor && (
+                    <Flex>
+                      <List
+                        style={{ padding: 0, display: 'flex', flexGrow: 1 }}
                       >
-                        <ListItemIcon style={listItemIconStyle}>
-                          {isActive ? <VisibilityOff /> : <Visibility />}
-                        </ListItemIcon>
-                      </ListItem>
-                      <ListItem
-                        {...listItemProps}
-                        onClick={e => {
-                          e.stopPropagation();
+                        <ListItem
+                          {...listItemProps}
+                          onClick={e => {
+                            e.stopPropagation();
 
-                          if (isCreateAction(action)) {
-                            const actionsToDelete = editableActions
-                              .filter(
-                                actionById =>
-                                  isCudActionById(actionById) &&
-                                  actionById.action.payload.payload.id ===
-                                    hoveredActionId,
-                              )
-                              .map(actionById => actionById.id);
+                            dispatch(ActionCreators.toggleAction(id));
 
-                            deleteActions(actionsToDelete);
-                          } else {
-                            deleteAction(id);
-                          }
+                            if (
+                              isActive &&
+                              isLastJumpedToAction &&
+                              precedingAction
+                            ) {
+                              setLastJumpedToActionId(precedingAction.id);
 
-                          // TODO prefer jumping to active action
-                          // TODO handle case when "create" action is deleted
-                          if (id === currentActionId) {
-                            setLastJumpedToActionId(
-                              followingAction
-                                ? followingAction.id
-                                : precedingAction
-                                ? precedingAction.id
-                                : -1,
-                            );
-                          }
-                        }}
-                        onMouseEnter={() => {
-                          setDeleteHoveredWithCheck(true);
-                        }}
-                        onMouseLeave={() => {
-                          setDeleteHoveredWithCheck(false);
-                        }}
-                      >
-                        <ListItemIcon style={listItemIconStyle}>
-                          <Delete />
-                        </ListItemIcon>
-                      </ListItem>
-                    </List>
-                    {/* {isLastJumpedToAction && (
+                              dispatch(
+                                ActionCreators.jumpToAction(precedingAction.id),
+                              );
+                            }
+                          }}
+                        >
+                          <ListItemIcon style={listItemIconStyle}>
+                            {isActive ? <VisibilityOff /> : <Visibility />}
+                          </ListItemIcon>
+                        </ListItem>
+                        <ListItem
+                          {...listItemProps}
+                          onClick={e => {
+                            e.stopPropagation();
+
+                            if (isCreateAction(action)) {
+                              const actionsToDelete = editableActions
+                                .filter(
+                                  actionById =>
+                                    isCudActionById(actionById) &&
+                                    actionById.action.payload.payload.id ===
+                                      hoveredActionId,
+                                )
+                                .map(actionById => actionById.id);
+
+                              deleteActions(actionsToDelete);
+                            } else {
+                              deleteAction(id);
+                            }
+
+                            // TODO prefer jumping to active action
+                            // TODO handle case when "create" action is deleted
+                            if (id === currentActionId) {
+                              setLastJumpedToActionId(
+                                followingAction
+                                  ? followingAction.id
+                                  : precedingAction
+                                  ? precedingAction.id
+                                  : -1,
+                              );
+                            }
+                          }}
+                          onMouseEnter={() => {
+                            setDeleteHoveredWithCheck(true);
+                          }}
+                          onMouseLeave={() => {
+                            setDeleteHoveredWithCheck(false);
+                          }}
+                        >
+                          <ListItemIcon style={listItemIconStyle}>
+                            <Delete />
+                          </ListItemIcon>
+                        </ListItem>
+                      </List>
+                      {/* {isLastJumpedToAction && (
                       <Box mr={1} mt={1}>
                         <Chip
                           label="Cursor"
@@ -694,7 +702,8 @@ const StoryMonitor = ({
                         />
                       </Box>
                     )} */}
-                  </Flex>
+                    </Flex>
+                  )}
                   <Flex
                     flexDirection="column"
                     flex={1}
@@ -705,6 +714,7 @@ const StoryMonitor = ({
                     }}
                   >
                     <ActionCardForm
+                      isAuthor={isAuthor}
                       id={id}
                       action={action}
                       initialValues={initialValues}

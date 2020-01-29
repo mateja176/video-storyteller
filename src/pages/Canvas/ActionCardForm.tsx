@@ -23,8 +23,9 @@ import {
   isUpdateRenameImageAction,
   isUpdateResizeAction,
 } from './utils';
+import { ICanvasContext } from './CanvasContext';
 
-const textFieldProps = {
+const constantTextFieldProps = {
   margin: 'dense',
   onMouseDown: (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -43,7 +44,7 @@ interface Values
   editorState: string;
 }
 
-export interface ActionCardFormProps {
+export interface ActionCardFormProps extends Pick<ICanvasContext, 'isAuthor'> {
   handleSubmit: (values: Values) => void;
   id: number;
   initialValues: InitialValues;
@@ -51,11 +52,14 @@ export interface ActionCardFormProps {
 }
 
 const ActionCardForm: React.FC<ActionCardFormProps> = ({
+  isAuthor,
   handleSubmit,
   initialValues,
   id,
   action,
 }) => {
+  const textFieldProps = { ...constantTextFieldProps, disabled: !isAuthor };
+
   const formatedInitialValues: Values = {
     ...initialValues,
     width: isUpdateResizeAction(action) ? action.payload.payload.width : 0,
@@ -250,16 +254,18 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
                   />
                 </Flex>
               )}
-              <Flex mt="auto">
-                <Button
-                  size="small"
-                  type="submit"
-                  disabled={!isValid || equals(formatedInitialValues, values)}
-                >
-                  Save edit
-                </Button>
-                {/* <Button style={{ marginLeft: 'auto' }}>See more</Button> */}
-              </Flex>
+              {isAuthor && (
+                <Flex mt="auto">
+                  <Button
+                    size="small"
+                    type="submit"
+                    disabled={!isValid || equals(formatedInitialValues, values)}
+                  >
+                    Save edit
+                  </Button>
+                  {/* <Button style={{ marginLeft: 'auto' }}>See more</Button> */}
+                </Flex>
+              )}
             </Form>
           </Flex>
         );
