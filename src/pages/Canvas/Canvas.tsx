@@ -474,9 +474,10 @@ const Canvas: React.FC<CanvasProps> = ({
   }, [currentStory]);
 
   React.useEffect(() => {
-    if (!currentStoryId) {
+    if (!currentStoryId && pathStoryId) {
       setCurrentStoryId({ currentStoryId: pathStoryId });
-    } else {
+    }
+    if (currentStoryId && currentStoryId !== pathStoryId) {
       window.history.pushState(
         {},
         '',
