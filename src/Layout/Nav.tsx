@@ -6,6 +6,7 @@ import {
   ListItemText,
   useTheme,
 } from '@material-ui/core';
+import { ListItemProps } from '@material-ui/core/ListItem';
 import {
   Brush,
   CloudUpload,
@@ -184,10 +185,7 @@ const PlainChildNavItem: FC<ChildNavItemProps> = ({
   location: { pathname },
   style,
 }) => (
-  <ListItem
-    selected={pathname.split('/')[1] === path.split('/')[1]}
-    style={style}
-  >
+  <ListItem selected={pathname === path} style={style} button>
     <Link
       onClick={onNavigate}
       style={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}
@@ -234,7 +232,13 @@ const PlainNavItem: FC<NavItemProps> = ({
 
   return (
     <>
-      <ChildNavItem {...navItemProps} onNavigate={onNavigate}>
+      <ChildNavItem
+        {...navItemProps}
+        onNavigate={onNavigate}
+        style={{
+          boxShadow,
+        }}
+      >
         {isOpen ? (
           <Tooltip title="See less">
             <ExpandLess onClick={toggleOpen} style={expandStyles} />
@@ -250,7 +254,7 @@ const PlainNavItem: FC<NavItemProps> = ({
         timeout="auto"
         style={{
           marginLeft: theme.spacing(level),
-          boxShadow,
+          padding: 0,
         }}
       >
         <INavItems
@@ -258,6 +262,7 @@ const PlainNavItem: FC<NavItemProps> = ({
             ...childItem,
           }))}
           onNavigate={onNavigate}
+          style={{ padding: 0, boxShadow }}
         />
       </Collapse>
     </>
@@ -266,13 +271,13 @@ const PlainNavItem: FC<NavItemProps> = ({
 
 const NavItem = withRouter(PlainNavItem);
 
-interface NavItemsProps {
+interface NavItemsProps extends Pick<ListItemProps, 'style'> {
   navItems: INavItems;
   onNavigate: OnNavigate;
 }
 
-const INavItems: FC<NavItemsProps> = ({ navItems, onNavigate }) => (
-  <List>
+const INavItems: FC<NavItemsProps> = ({ navItems, onNavigate, style }) => (
+  <List style={style}>
     {navItems.map(navItem => {
       const { childNavItems, text, path } = navItem;
       const navItemProps = {
