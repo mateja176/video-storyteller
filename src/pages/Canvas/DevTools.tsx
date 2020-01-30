@@ -32,6 +32,7 @@ import {
 import { Context } from 'App';
 import color from 'color';
 import { Button, Progress, progressHeight, Tooltip } from 'components';
+import { startCase } from 'lodash';
 import { equals, init, insert, last, nth, pickAll, update } from 'ramda';
 import React from 'react';
 import GridLayout from 'react-grid-layout';
@@ -578,6 +579,8 @@ const StoryMonitor = ({
 
             const cardColor = color(actionTypeBackgroundColorMap[action.type]);
 
+            const formattedActionType = startCase(action.type);
+
             return (
               <Flex key={id} height="100%">
                 <Card
@@ -655,14 +658,20 @@ const StoryMonitor = ({
                             ...listItemStyle,
                           }}
                         >
-                          <Box mx={2}>
-                            <Typography color="textSecondary">{id}</Typography>
-                          </Box>
+                          <Tooltip title="Action id">
+                            <Box mx={2}>
+                              <Typography color="textSecondary">
+                                {id}
+                              </Typography>
+                            </Box>
+                          </Tooltip>
                         </ListItem>
                         <ListItem {...listItemProps}>
-                          <ListItemIcon style={listItemIconStyle}>
-                            {actionTypeIcon[action.type]}
-                          </ListItemIcon>
+                          <Tooltip title={formattedActionType}>
+                            <ListItemIcon style={listItemIconStyle}>
+                              {actionTypeIcon[action.type]}
+                            </ListItemIcon>
+                          </Tooltip>
                         </ListItem>
                         <ListItem
                           {...listItemProps}
@@ -684,9 +693,11 @@ const StoryMonitor = ({
                             }
                           }}
                         >
-                          <ListItemIcon style={listItemIconStyle}>
-                            {isActive ? <VisibilityOff /> : <Visibility />}
-                          </ListItemIcon>
+                          <Tooltip title="Toggle visibility">
+                            <ListItemIcon style={listItemIconStyle}>
+                              {isActive ? <VisibilityOff /> : <Visibility />}
+                            </ListItemIcon>
+                          </Tooltip>
                         </ListItem>
                         <ListItem
                           {...listItemProps}
@@ -727,9 +738,11 @@ const StoryMonitor = ({
                             setDeleteHoveredWithCheck(false);
                           }}
                         >
-                          <ListItemIcon style={listItemIconStyle}>
-                            <Delete />
-                          </ListItemIcon>
+                          <Tooltip title="Delete action">
+                            <ListItemIcon style={listItemIconStyle}>
+                              <Delete />
+                            </ListItemIcon>
+                          </Tooltip>
                         </ListItem>
                       </List>
                       {/* {isLastJumpedToAction && (
