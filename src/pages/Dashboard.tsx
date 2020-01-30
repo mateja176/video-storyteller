@@ -1,3 +1,5 @@
+/* eslint-disable indent */
+
 import {
   List,
   ListItem,
@@ -6,7 +8,7 @@ import {
   Typography,
   useTheme,
 } from '@material-ui/core';
-import { Edit, Public } from '@material-ui/icons';
+import { Edit, Public, Tv } from '@material-ui/icons';
 import { Link, Spinner, Tooltip } from 'components';
 import { absoluteRootPaths } from 'Layout';
 import { add } from 'ramda';
@@ -19,6 +21,7 @@ import {
   selectCurrentStoryId,
   selectFetchStoriesStatus,
   selectStories,
+  selectUid,
 } from 'store';
 import urlJoin from 'url-join';
 import { useActions } from 'utils';
@@ -43,6 +46,8 @@ const Dashboard: React.FC<DashboardProps> = () => {
 
   const currentStoryId = useSelector(selectCurrentStoryId);
 
+  const uid = useSelector(selectUid);
+
   const theme = useTheme();
 
   return (
@@ -58,38 +63,54 @@ const Dashboard: React.FC<DashboardProps> = () => {
               if (stories.length) {
                 return (
                   <List>
-                    {stories.map(({ id, name, isPublic, durations }) => {
-                      const duration = durations.reduce(add, 0);
-                      const time = new Date(duration);
+                    {stories.map(
+                      ({ id, name, isPublic, durations, authorId }) => {
+                        const watchOnly = uid !== authorId;
 
-                      const selected = currentStoryId === id;
+                        const duration = durations.reduce(add, 0);
+                        const time = new Date(duration);
 
-                      return (
-                        <ListItem
-                          key={id}
-                          button
-                          onClick={() => {
-                            setCurrentStoryId({ currentStoryId: id });
-                          }}
-                          selected={selected}
-                        >
-                          <ListItemIcon>
-                            <Tooltip
-                              title={isPublic ? 'Public' : 'Draft'}
-                              placement="top"
-                            >
-                              {isPublic ? <Public /> : <Edit />}
-                            </Tooltip>
-                          </ListItemIcon>
-                          <ListItemText>
-                            <Link to={urlJoin(absoluteRootPaths.canvas, id)}>
-                              {name} ({time.getMinutes()}m {time.getSeconds()}
-                              s)
-                            </Link>
-                          </ListItemText>
-                        </ListItem>
-                      );
-                    })}
+                        const selected = currentStoryId === id;
+
+                        return (
+                          <ListItem
+                            key={id}
+                            button
+                            onClick={() => {
+                              setCurrentStoryId({ currentStoryId: id });
+                            }}
+                            selected={selected}
+                          >
+                            <ListItemIcon>
+                              <Tooltip
+                                title={
+                                  watchOnly
+                                    ? 'Watch'
+                                    : isPublic
+                                    ? 'Public'
+                                    : 'Draft'
+                                }
+                                placement="top"
+                              >
+                                {watchOnly ? (
+                                  <Tv />
+                                ) : isPublic ? (
+                                  <Public />
+                                ) : (
+                                  <Edit />
+                                )}
+                              </Tooltip>
+                            </ListItemIcon>
+                            <ListItemText>
+                              <Link to={urlJoin(absoluteRootPaths.canvas, id)}>
+                                {name} ({time.getMinutes()}m {time.getSeconds()}
+                                s)
+                              </Link>
+                            </ListItemText>
+                          </ListItem>
+                        );
+                      },
+                    )}
                   </List>
                 );
               } else {

@@ -148,7 +148,7 @@ export const canvas = createReducer(initialCanvasState)<CanvasAction>({
   'canvas/fetchStories/success': (state, { payload: { stories } }) => ({
     ...state,
     fetchStoriesStatus: 'completed',
-    stories,
+    stories: state.stories.concat(stories),
   }),
   'canvas/lastJumpedToActionId/set': (state, { payload }) => ({
     ...state,
