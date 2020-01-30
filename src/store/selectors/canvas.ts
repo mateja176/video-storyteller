@@ -30,3 +30,8 @@ export const selectCurrentStoryId = createSelector(
   selectCanvas,
   ({ currentStoryId }) => currentStoryId,
 );
+export const selectCurrentStory = createSelector(
+  selectStories,
+  selectCurrentStoryId,
+  (stories, currentStoryId) => stories.find(({ id }) => id === currentStoryId),
+);

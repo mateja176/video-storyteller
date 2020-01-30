@@ -79,10 +79,12 @@ import {
   createSetLastJumpedToActionId,
   createSetSnackbar,
   createToggleTheatricalMode,
+  selectCurrentStory,
   selectCurrentStoryId,
   selectDurations,
   selectFetchStoriesStatus,
   selectFetchStoryStatus,
+  selectIsAuthor,
   selectLastJumpedToActionId,
   selectSaveStoryStatus,
   selectStories,
@@ -101,7 +103,6 @@ import {
   initialHoveredBlockId,
   initialStoryMonitorState,
   StoryWithId,
-  initialCanvasContext,
 } from './CanvasContext';
 import DevTools, { miniDrawerWidth } from './DevTools';
 import OptionWithPopover from './OptionWithPopover';
@@ -208,7 +209,7 @@ const Canvas: React.FC<CanvasProps> = ({
   const stories = useStoreSelector(selectStories);
 
   const currentStoryId = useStoreSelector(selectCurrentStoryId);
-  const currentStory = stories.find(({ id }) => id === currentStoryId);
+  const currentStory = useStoreSelector(selectCurrentStory);
 
   const fetchStoryStatus = useStoreSelector(selectFetchStoryStatus);
   const fetchStoriesStatus = useStoreSelector(selectFetchStoriesStatus);
@@ -406,9 +407,7 @@ const Canvas: React.FC<CanvasProps> = ({
 
   const uid = useStoreSelector(selectUid);
 
-  const isAuthor = currentStory
-    ? currentStory.authorId === uid
-    : initialCanvasContext.isAuthor;
+  const isAuthor = useStoreSelector(selectIsAuthor);
 
   const [uploadPercentage, setUploadPercentage] = React.useState(-1);
   const uploading = uploadPercentage !== -1;
