@@ -503,7 +503,7 @@ const Canvas: React.FC<CanvasProps> = ({
 
   const [linkInputValue, setLinkInputValue] = React.useState('');
   React.useEffect(() => {
-    setLinkInputValue(`${window.location.href}?theatrical=true`);
+    setLinkInputValue(window.location.href);
   }, []);
 
   const storyLoading = [
