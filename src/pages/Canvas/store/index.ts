@@ -1,3 +1,4 @@
+import { composeWithDevTools } from 'devtools';
 import { equals } from 'ramda';
 import { useEffect, useState } from 'react';
 import {
@@ -9,7 +10,6 @@ import {
   Dispatch,
   Reducer,
 } from 'redux';
-import { composeWithDevTools } from 'redux-devtools-extension';
 import { createSelector, Selector } from 'reselect';
 import audio, { AudioAction } from './audio';
 import blockStates, { BlockStatesAction } from './blockStates';
@@ -53,10 +53,7 @@ export const selectAudioSrc = createSelector(
   selectAudio,
   ({ downloadUrl }) => downloadUrl,
 );
-export const selectAudioId = createSelector(
-  selectAudio,
-  ({ id }) => id,
-);
+export const selectAudioId = createSelector(selectAudio, ({ id }) => id);
 
 export const useSelector = <R>(selector: Selector<State, R>) => {
   const [result, setResult] = useState(selector(store.getState()));
