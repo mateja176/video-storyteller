@@ -48,6 +48,7 @@
     "disqus-react": "^1.0.6",
     "draft-js": "^0.11.3",
     "draft-js-export-html": "^1.4.1",
+    "emotion": "^10.0.27",
     "firebase": "^7.3.0",
     "folktale": "^2.3.2",
     "formik": "^1.5.2",

@@ -1,6 +1,9 @@
+/* eslint-disable indent */
+
 import { InputAdornment, TextField } from '@material-ui/core';
 import { Button } from 'components';
 import { convertFromRaw } from 'draft-js';
+import { css, keyframes } from 'emotion';
 import { Form, Formik } from 'formik';
 import { ImageBlockState, WithDropResult } from 'models';
 import { equals } from 'ramda';
@@ -23,6 +26,15 @@ import {
   isUpdateRenameImageAction,
   isUpdateResizeAction,
 } from './utils';
+
+const flicker = keyframes`
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.7;
+  }
+`;
 
 const constantTextFieldProps = {
   margin: 'dense',
@@ -105,9 +117,10 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
       enableReinitialize
       isInitialValid
     >
-      {/* eslint-disable-next-line arrow-body-style */}
       {({ isValid, handleChange, handleBlur, values, errors }) => {
         // const formattedActionType = startCase(action.type);
+
+        const saveDisabled = !isValid || equals(formatedInitialValues, values);
 
         return (
           <Flex flexDirection="column" px={2} flex={1}>
@@ -257,9 +270,15 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
               {isAuthor && (
                 <Flex mt="auto">
                   <Button
+                    className={css`
+                      animation: ${saveDisabled
+                        ? 'none'
+                        : `${flicker} 1000ms infinite alternate
+                      ease-in-out`};
+                    `}
                     size="small"
                     type="submit"
-                    disabled={!isValid || equals(formatedInitialValues, values)}
+                    disabled={saveDisabled}
                   >
                     Save edit
                   </Button>
