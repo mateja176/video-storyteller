@@ -390,14 +390,16 @@ const StoryMonitor = ({
           store.dispatch(action.action);
         }
       });
-      setLastJumpedToActionId(currentStory.lastJumpedToActionId);
+      setLastJumpedToActionId(
+        isAuthor ? currentStory.lastJumpedToActionId : stagedActionIds[0],
+      );
       setDurations(currentStory.durations);
 
       setActionsCount(currentStory.stagedActionIds.length);
 
       setReset(false);
     }
-  }, [reset, currentStory]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [reset, currentStory, isAuthor]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const listItemStyle: React.CSSProperties = {
     width: 'auto',
@@ -527,6 +529,8 @@ const StoryMonitor = ({
         height="100%"
       >
         <GridLayout
+          isRearrangeable={isAuthor}
+          isDraggable={isAuthor}
           style={{ height: '100%', width: '100%' }}
           isResizable={false}
           width={10 + (cardWidth + 10) * editableActions.length}
