@@ -7,18 +7,27 @@ import {
   ListItem,
   ListItemIcon,
   Popover,
+  Typography,
   useTheme,
 } from '@material-ui/core';
 import {
+  AddCircle,
   ArrowDropDown,
+  Audiotrack,
   Delete,
   DeleteForever,
   DeleteSweep,
+  Edit,
+  PanTool,
   Pause,
+  PhotoSizeSelectLarge,
   PlayArrow,
+  ShortText,
   Stop,
+  Transform,
   Visibility,
   VisibilityOff,
+  ZoomIn,
 } from '@material-ui/icons';
 import { Context } from 'App';
 import color from 'color';
@@ -89,6 +98,19 @@ const actionTypeBackgroundColorMap: Record<
   'transform/position/set': 'gray',
   'transform/set': 'brown',
   'audio/set': 'black',
+};
+
+const actionTypeIcon: Record<Action['type'], React.ReactElement> = {
+  create: <AddCircle />,
+  delete: <Delete />,
+  'update/move': <PanTool />,
+  'update/resize': <PhotoSizeSelectLarge />,
+  'update/editText': <Edit />,
+  'update/renameImage': <ShortText />,
+  'transform/scale/set': <ZoomIn />,
+  'transform/position/set': <PanTool />,
+  'transform/set': <Transform />,
+  'audio/set': <Audiotrack />,
 };
 
 const StoryMonitor = ({
@@ -376,13 +398,14 @@ const StoryMonitor = ({
     }
   }, [reset, currentStory]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const listItemStyle: React.CSSProperties = {
+    width: 'auto',
+    paddingLeft: listItemPaddingX,
+    paddingRight: listItemPaddingX,
+  };
   const listItemProps: React.ComponentProps<typeof ListItem> = {
     button: true,
-    style: {
-      width: 'auto',
-      paddingLeft: listItemPaddingX,
-      paddingRight: listItemPaddingX,
-    },
+    style: listItemStyle,
   };
 
   const listItemIconStyle: React.CSSProperties = {
@@ -553,11 +576,13 @@ const StoryMonitor = ({
 
             const isLastJumpedToAction = lastJumpedToActionId === id;
 
+            const cardColor = color(actionTypeBackgroundColorMap[action.type]);
+
             return (
               <Flex key={id} height="100%">
                 <Card
                   style={{
-                    background: color(actionTypeBackgroundColorMap[action.type])
+                    background: cardColor
                       .alpha(isCurrentAction ? 0.4 : 0.2)
                       .toString(),
                     minWidth: cardWidth,
@@ -625,6 +650,20 @@ const StoryMonitor = ({
                       <List
                         style={{ padding: 0, display: 'flex', flexGrow: 1 }}
                       >
+                        <ListItem
+                          style={{
+                            ...listItemStyle,
+                          }}
+                        >
+                          <Box mx={2}>
+                            <Typography color="textSecondary">{id}</Typography>
+                          </Box>
+                        </ListItem>
+                        <ListItem {...listItemProps}>
+                          <ListItemIcon style={listItemIconStyle}>
+                            {actionTypeIcon[action.type]}
+                          </ListItemIcon>
+                        </ListItem>
                         <ListItem
                           {...listItemProps}
                           onClick={e => {

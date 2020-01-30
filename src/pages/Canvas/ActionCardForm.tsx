@@ -2,11 +2,11 @@ import { InputAdornment, TextField } from '@material-ui/core';
 import { Button } from 'components';
 import { convertFromRaw } from 'draft-js';
 import { Form, Formik } from 'formik';
-import { startCase } from 'lodash';
 import { ImageBlockState, WithDropResult } from 'models';
 import { equals } from 'ramda';
 import React from 'react';
 import { Flex } from 'rebass';
+import { ICanvasContext } from './CanvasContext';
 import { Action } from './store';
 import {
   initialState as initialTransformState,
@@ -23,7 +23,6 @@ import {
   isUpdateRenameImageAction,
   isUpdateResizeAction,
 } from './utils';
-import { ICanvasContext } from './CanvasContext';
 
 const constantTextFieldProps = {
   margin: 'dense',
@@ -106,12 +105,13 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
       enableReinitialize
       isInitialValid
     >
+      {/* eslint-disable-next-line arrow-body-style */}
       {({ isValid, handleChange, handleBlur, values, errors }) => {
-        const formattedActionType = startCase(action.type);
+        // const formattedActionType = startCase(action.type);
 
         return (
           <Flex flexDirection="column" px={2} flex={1}>
-            <Flex>
+            {/* <Flex>
               <TextField
                 {...textFieldProps}
                 label="Action Id"
@@ -136,7 +136,7 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
                 disabled
                 title={formattedActionType}
               />
-            </Flex>
+            </Flex> */}
             <Form
               style={{
                 flexGrow: 1,
@@ -230,7 +230,7 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
                 </Flex>
               )}
               {(isPositionAction(action) ||
-                // isScaleAction(action) ||
+                isScaleAction(action) ||
                 isSetTransformAction(action)) && (
                 <Flex>
                   <TextField
