@@ -145,11 +145,17 @@ export const canvas = createReducer(initialCanvasState)<CanvasAction>({
     ...state,
     fetchStoriesStatus: 'failed',
   }),
-  'canvas/fetchStories/success': (state, { payload: { stories } }) => ({
-    ...state,
-    fetchStoriesStatus: 'completed',
-    stories: state.stories.concat(stories),
-  }),
+  'canvas/fetchStories/success': (state, { payload: { stories } }) => {
+    const storyIds = state.stories.map(({ id }) => id);
+
+    return {
+      ...state,
+      fetchStoriesStatus: 'completed',
+      stories: state.stories.concat(
+        stories.filter(({ id }) => !storyIds.includes(id)),
+      ),
+    };
+  },
   'canvas/lastJumpedToActionId/set': (state, { payload }) => ({
     ...state,
     lastJumpedToActionId: payload,
