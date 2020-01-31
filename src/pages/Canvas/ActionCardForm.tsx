@@ -101,6 +101,8 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
       : '',
   };
 
+  const px = <InputAdornment position="end">px</InputAdornment>;
+
   return (
     <Formik
       initialValues={formatedInitialValues}
@@ -230,6 +232,9 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
                     onChange={handleChange}
                     value={values.left}
                     style={{ marginRight: 5 }}
+                    InputProps={{
+                      endAdornment: px,
+                    }}
                   />
                   <TextField
                     {...textFieldProps}
@@ -239,6 +244,9 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
                     onBlur={handleBlur}
                     onChange={handleChange}
                     value={values.top}
+                    InputProps={{
+                      endAdornment: px,
+                    }}
                   />
                 </Flex>
               )}
@@ -255,6 +263,9 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
                     onChange={handleChange}
                     value={values.x}
                     style={{ marginRight: 5 }}
+                    InputProps={{
+                      endAdornment: px,
+                    }}
                   />
                   <TextField
                     {...textFieldProps}
@@ -264,6 +275,9 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
                     onBlur={handleBlur}
                     onChange={handleChange}
                     value={values.y}
+                    InputProps={{
+                      endAdornment: px,
+                    }}
                   />
                 </Flex>
               )}
