@@ -1,6 +1,7 @@
 /* eslint-disable indent */
 
 import {
+  Badge,
   Card,
   Divider,
   List,
@@ -495,7 +496,9 @@ const StoryMonitor = ({
           >
             <Tooltip title="Delete all actions">
               <ListItemIcon>
-                <DeleteForever color="secondary" />
+                <Badge badgeContent={actionsCount} showZero>
+                  <DeleteForever color="secondary" />
+                </Badge>
               </ListItemIcon>
             </Tooltip>
           </ListItem>
@@ -654,6 +657,14 @@ const StoryMonitor = ({
                 >
                   {isAuthor && (
                     <Flex>
+                      {/* <ButtonGroup>
+                        <IconButton>{id}</IconButton>
+                        <IconButton>{actionTypeIcon[action.type]}</IconButton>
+                      </ButtonGroup> */}
+                      {/* <ButtonGroup variant="text">
+                        <Button>{id}</Button>
+                        <Button>{actionTypeIcon[action.type]}</Button>
+                      </ButtonGroup> */}
                       <List
                         style={{ padding: 0, display: 'flex', flexGrow: 1 }}
                       >
@@ -670,7 +681,7 @@ const StoryMonitor = ({
                             </Box>
                           </Tooltip>
                         </ListItem>
-                        <ListItem {...listItemProps}>
+                        <ListItem style={listItemStyle}>
                           <Tooltip title={formattedActionType}>
                             <ListItemIcon style={listItemIconStyle}>
                               {actionTypeIcon[action.type]}
