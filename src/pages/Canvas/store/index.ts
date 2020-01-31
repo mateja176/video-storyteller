@@ -31,7 +31,10 @@ export type Action = BlockStatesAction | TransformAction | AudioAction;
 
 const reducer: Reducer<State, Action> = combineReducers(actionReducerMap);
 
-const composeEnhancers = composeWithDevTools({ name: 'Canvas Store' });
+const composeEnhancers = composeWithDevTools({
+  name: 'Canvas Store',
+  maxAge: 1000,
+});
 
 const store = createStore(reducer, /* preloaded state */ composeEnhancers());
 
