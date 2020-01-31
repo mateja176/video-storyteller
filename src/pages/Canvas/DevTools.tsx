@@ -23,9 +23,11 @@ import {
   Pause,
   PhotoSizeSelectLarge,
   PlayArrow,
+  Redo,
   ShortText,
   Stop,
   Transform,
+  Undo,
   Visibility,
   VisibilityOff,
   ZoomIn,
@@ -160,6 +162,10 @@ const StoryMonitor = ({
 
   const editableActions = stagedActions.slice(1);
   const areThereNoEditableActions = !editableActions.length;
+  const previousActionId = nth(currentStateIndex - 1, stagedActionIds) || 0;
+  const previousAction = stagedActions.find(
+    ({ id }) => id === previousActionId,
+  );
   const currentActionId = stagedActionIds[currentStateIndex];
   const currentDuration = nth(currentStateIndex - 1, durations);
   const nextActionId = stagedActionIds[currentStateIndex + 1];
@@ -422,6 +428,29 @@ const StoryMonitor = ({
     margin: 0,
   };
 
+  const toggleAction = (isActive: boolean) => (
+    isLastJumpedToAction: boolean,
+  ) => (precedingAction?: ActionWithId) => (id: ActionWithId['id']) => {
+    dispatch(ActionCreators.toggleAction(id));
+
+    if (isActive && isLastJumpedToAction) {
+      if (precedingAction) {
+        setLastJumpedToActionId(precedingAction.id);
+
+        dispatch(ActionCreators.jumpToAction(precedingAction.id));
+      } else {
+        // * takes into account case where previous actions or actions are toggled off
+        setLastJumpedToActionId(initialCanvasState.lastJumpedToActionId);
+
+        dispatch(ActionCreators.jumpToAction(0));
+      }
+    }
+  };
+
+  const nextSkippedActionId = stagedActionIds
+    .slice(currentStateIndex)
+    .find(id => skippedActionIds.includes(id));
+
   return (
     <Flex height="100%">
       <List style={{ width: miniDrawerWidth }}>
@@ -473,35 +502,65 @@ const StoryMonitor = ({
           </ListItemIcon>
         </ListItem>
         {isAuthor && (
-          <ListItem
-            button
-            disabled={!skippedActionIds.length}
-            onClick={() => {
-              dispatch(ActionCreators.sweep());
-            }}
-          >
-            <ListItemIcon>
-              <DeleteSweep />
-            </ListItemIcon>
-          </ListItem>
-        )}
-        {isAuthor && (
-          <ListItem
-            ref={deleteRef}
-            button
-            disabled={areThereNoEditableActions}
-            onClick={() => {
-              setDeletePopoverOpen(true);
-            }}
-          >
-            <Tooltip title="Delete all actions">
+          <>
+            <ListItem
+              button
+              disabled={!currentActionId || !isCurrentActionIdActive}
+              onClick={() => {
+                toggleAction(isCurrentActionIdActive)(
+                  lastJumpedToActionId === currentActionId,
+                )(previousAction)(currentActionId);
+              }}
+            >
               <ListItemIcon>
-                <Badge badgeContent={actionsCount} showZero>
-                  <DeleteForever color="secondary" />
-                </Badge>
+                <Undo />
               </ListItemIcon>
-            </Tooltip>
-          </ListItem>
+            </ListItem>
+            <ListItem
+              button
+              disabled={!nextSkippedActionId}
+              onClick={() => {
+                if (nextSkippedActionId) {
+                  dispatch(ActionCreators.toggleAction(nextSkippedActionId));
+
+                  dispatch(ActionCreators.jumpToAction(nextSkippedActionId));
+
+                  setLastJumpedToActionId(nextSkippedActionId);
+                }
+              }}
+            >
+              <ListItemIcon>
+                <Redo />
+              </ListItemIcon>
+            </ListItem>
+            <ListItem
+              button
+              disabled={!skippedActionIds.length}
+              onClick={() => {
+                dispatch(ActionCreators.sweep());
+              }}
+            >
+              <ListItemIcon>
+                <DeleteSweep />
+              </ListItemIcon>
+            </ListItem>
+            <ListItem
+              ref={deleteRef}
+              button
+              disabled={areThereNoEditableActions}
+              onClick={() => {
+                setDeletePopoverOpen(true);
+              }}
+            >
+              <Tooltip title="Delete all actions">
+                <ListItemIcon>
+                  <Badge badgeContent={actionsCount} showZero>
+                    <DeleteForever color="secondary" />
+                  </Badge>
+                </ListItemIcon>
+              </Tooltip>
+            </ListItem>
+          </>
         )}
         <Popover
           open={deletePopoverOpen}
@@ -572,9 +631,9 @@ const StoryMonitor = ({
             };
 
             const precedingActionIndex = i - 1;
-            const precedingAction = editableActions[precedingActionIndex];
+            const precedingAction = nth(precedingActionIndex, editableActions);
             const followingActionIndex = i + 1;
-            const followingAction = editableActions[followingActionIndex];
+            const followingAction = nth(followingActionIndex, editableActions);
 
             const initialValues = {
               duration,
@@ -693,19 +752,9 @@ const StoryMonitor = ({
                           onClick={e => {
                             e.stopPropagation();
 
-                            dispatch(ActionCreators.toggleAction(id));
-
-                            if (
-                              isActive &&
-                              isLastJumpedToAction &&
-                              precedingAction
-                            ) {
-                              setLastJumpedToActionId(precedingAction.id);
-
-                              dispatch(
-                                ActionCreators.jumpToAction(precedingAction.id),
-                              );
-                            }
+                            toggleAction(isActive)(isLastJumpedToAction)(
+                              precedingAction,
+                            )(id);
                           }}
                         >
                           <Tooltip title="Toggle visibility">
