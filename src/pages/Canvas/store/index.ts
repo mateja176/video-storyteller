@@ -4,12 +4,14 @@ import { useEffect, useState } from 'react';
 import {
   ActionCreatorsMapObject,
   AnyAction,
+  applyMiddleware,
   bindActionCreators,
   combineReducers,
   createStore,
   Dispatch,
   Reducer,
 } from 'redux';
+import logger from 'redux-logger';
 import { createSelector, Selector } from 'reselect';
 import audio, { AudioAction } from './audio';
 import blockStates, { BlockStatesAction } from './blockStates';
@@ -36,7 +38,12 @@ const composeEnhancers = composeWithDevTools({
   maxAge: 1000,
 });
 
-const store = createStore(reducer, /* preloaded state */ composeEnhancers());
+const middleware = [logger];
+
+const store = createStore(
+  reducer,
+  /* preloaded state */ composeEnhancers(applyMiddleware(...middleware)),
+);
 
 export default store;
 
