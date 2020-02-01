@@ -1189,6 +1189,11 @@ const Canvas: React.FC<CanvasProps> = ({
                 setLastJumpedToActionId,
                 durations,
                 setDurations,
+                getBlockType: blockId => {
+                  const block = blockStates.find(({ payload: { id } }) => id === blockId);
+
+                  return block ? block.type : 'other';
+                },
               }}
             >
               <DevTools store={store} />

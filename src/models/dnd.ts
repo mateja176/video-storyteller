@@ -4,7 +4,7 @@ import { createAction, PayloadAction } from 'typesafe-actions';
 import { toObject } from 'utils';
 import { WithDownloadUrl } from '../store/slices/storage';
 
-export const draggables = ['text', 'image'] as const;
+export const draggables = ['text', 'image', 'other'] as const;
 
 export type Draggables = typeof draggables[number];
 

@@ -1,4 +1,4 @@
-import { BlockState, WithId } from 'models';
+import { BlockState, WithId, Draggables, draggable } from 'models';
 import { pick } from 'ramda';
 import { createContext } from 'react';
 import {
@@ -80,6 +80,7 @@ export interface ICanvasContext extends DurationsAndLastJumpedToActionId {
   setTotalElapsedTime: (elapsed: ElapsedTime) => void;
   setLastJumpedToActionId: CreateSetLastJumpedToActionId;
   setDurations: CreateSetDurations;
+  getBlockType: (blockId: BlockState['payload']['id']) => Draggables;
 }
 
 export const initialCanvasContext: ICanvasContext = {
@@ -100,6 +101,7 @@ export const initialCanvasContext: ICanvasContext = {
   setLastJumpedToActionId: createSetLastJumpedToActionId,
   durations: initialCanvasState.durations,
   setDurations: createSetDurations,
+  getBlockType: () => draggable.other,
 };
 
 export const CanvasContext = createContext<ICanvasContext>(

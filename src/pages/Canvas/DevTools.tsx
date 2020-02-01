@@ -15,10 +15,13 @@ import {
   AddCircle,
   ArrowDropDown,
   Audiotrack,
+  CropSquare,
   Delete,
   DeleteForever,
   DeleteSweep,
   Edit,
+  Fullscreen,
+  Image,
   PanTool,
   Pause,
   PhotoSizeSelectLarge,
@@ -26,6 +29,8 @@ import {
   Redo,
   ShortText,
   Stop,
+  SvgIconComponent,
+  Title,
   Transform,
   Undo,
   Visibility,
@@ -35,7 +40,8 @@ import {
 import { Context } from 'App';
 import color from 'color';
 import { Button, Progress, progressHeight, Tooltip } from 'components';
-import { startCase } from 'lodash';
+import { startCase, capitalize } from 'lodash';
+import { draggables } from 'models';
 import { equals, init, insert, last, nth, pickAll, update } from 'ramda';
 import React from 'react';
 import GridLayout from 'react-grid-layout';
@@ -43,6 +49,7 @@ import 'react-grid-layout/css/styles.css';
 import { Box, Flex } from 'rebass';
 import { createDevTools } from 'redux-devtools';
 import { initialCanvasState } from 'store';
+import { Tuple } from 'ts-toolbelt';
 import { removeNils } from 'utils';
 import ActionCardForm from './ActionCardForm';
 import {
@@ -64,16 +71,32 @@ import {
   ActionWithId,
   formatPosition,
   formatTransform,
+  isAudioAction,
   isCreateAction,
   isCudAction,
   isCudActionById,
   isPositionAction,
   isScaleAction,
   isSetTransformAction,
+  isTransformAction,
   isUpdateMoveAction,
   isUpdateRenameImageAction,
   MonitorProps,
 } from './utils';
+
+type Draggables = typeof draggables;
+
+export const editableBlockTypes = ['audio', 'canvas'] as const;
+export type EditableBlockTypes = typeof editableBlockTypes;
+export const actionBlockTypes = [
+  ...draggables,
+  ...editableBlockTypes,
+] as Tuple.Concat<Draggables, EditableBlockTypes>;
+export type ActionBlockType = typeof actionBlockTypes[number];
+export type ActionBlock = {
+  type: ActionBlockType;
+  Icon: SvgIconComponent;
+};
 
 const listItemPaddingX = 6;
 
@@ -149,6 +172,7 @@ const StoryMonitor = ({
     setLastJumpedToActionId,
     durations,
     setDurations,
+    getBlockType,
   } = React.useContext(CanvasContext);
 
   const [reset, setReset] = React.useState(false);
@@ -647,6 +671,21 @@ const StoryMonitor = ({
 
             const formattedActionType = startCase(action.type);
 
+            const actionBlock: ActionBlock = isAudioAction(action)
+              ? { type: 'audio', Icon: Audiotrack }
+              : isTransformAction(action)
+              ? { type: 'canvas', Icon: Fullscreen }
+              : isCudAction(action)
+              ? {
+                  // * used to be able to identify delete action block type
+                  type: getBlockType(action.payload.payload.id),
+                  Icon:
+                    getBlockType(action.payload.payload.id) === 'text'
+                      ? Title
+                      : Image,
+                }
+              : { type: 'other', Icon: CropSquare };
+
             return (
               <Flex key={id} height="100%">
                 <Card
@@ -744,6 +783,13 @@ const StoryMonitor = ({
                           <Tooltip title={formattedActionType}>
                             <ListItemIcon style={listItemIconStyle}>
                               {actionTypeIcon[action.type]}
+                            </ListItemIcon>
+                          </Tooltip>
+                        </ListItem>
+                        <ListItem style={listItemStyle}>
+                          <Tooltip title={capitalize(actionBlock.type)}>
+                            <ListItemIcon style={listItemIconStyle}>
+                              <actionBlock.Icon />
                             </ListItemIcon>
                           </Tooltip>
                         </ListItem>
