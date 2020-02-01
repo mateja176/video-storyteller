@@ -1,5 +1,5 @@
-import { WithDownloadUrl, StorageFile } from 'store/slices/storage';
-import { createAction } from 'typesafe-actions';
+import { StorageFile, WithDownloadUrl } from 'store/slices/storage';
+import { createAction, getType } from 'typesafe-actions';
 import { createReducer } from 'utils';
 
 export type AudioState = WithDownloadUrl & {
@@ -23,3 +23,5 @@ export type AudioAction = SetAudioAction;
 export default createReducer(initialAudioState)<AudioAction>({
   'audio/set': (state, { payload }) => ({ ...state, ...payload }),
 });
+
+export const audioActionTypes = [getType(createSetAudio)] as const;

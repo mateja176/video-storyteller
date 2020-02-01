@@ -2,7 +2,9 @@ import { Dispatch } from 'redux';
 // @ts-ignore
 import { ActionCreators as InstrumentActionCreators } from 'redux-devtools-instrument';
 import { toObject } from 'utils';
+
 import { Action, State } from './store';
+import { AudioAction, audioActionTypes } from './store/audio';
 import {
   CreateAction,
   CudAction,
@@ -95,6 +97,9 @@ export const isScaleAction = (action: Action): action is ScaleAction =>
 
 export const isPositionAction = (action: Action): action is PositionAction =>
   positionTypes.includes(action.type as PositionAction['type']);
+
+export const isAudioAction = (action: Action): action is AudioAction =>
+  audioActionTypes.includes(action.type as AudioAction['type']);
 
 export interface MonitorState {}
 
