@@ -512,6 +512,8 @@ const Canvas: React.FC<CanvasProps> = ({
     saveStoryStatus,
   ].some(equals<ExtendedLoadingStatus>('in progress'));
 
+  const canCopy = !!currentStory && currentStory.isPublic;
+
   return (
     <Flex
       style={{
@@ -775,72 +777,6 @@ const Canvas: React.FC<CanvasProps> = ({
                             height: '100%',
                           }}
                         >
-                          {isAuthor && (
-                            <ListItem
-                              disabled={storyLoading}
-                              button
-                              onClick={() => {
-                                const storyState: StoryWithId = {
-                                  ...storyMonitorState,
-                                  id: pathStoryId,
-                                  name: storyName,
-                                  durations,
-                                  audioId: audioElement ? audioElement.id : '',
-                                  audioSrc: audioElement ? audioSrc : '',
-                                  lastJumpedToActionId,
-                                  isPublic: false,
-                                  authorId: uid,
-                                };
-                                saveStory(storyState);
-                              }}
-                            >
-                              <ListItemIcon
-                                style={{ minWidth: 'auto', marginRight: 10 }}
-                              >
-                                <Save />
-                              </ListItemIcon>
-                              <ListItemText>Save</ListItemText>
-                            </ListItem>
-                          )}
-                          <CopyToClipboard
-                            text={linkInputValue}
-                            onCopy={() => {
-                              setSnackbar({
-                                variant: 'info',
-                                message: 'Link to story copied',
-                                duration: 2000,
-                              });
-                            }}
-                          >
-                            <ListItem button>
-                              <ListItemIcon
-                                style={{ minWidth: 'auto', marginRight: 10 }}
-                              >
-                                <Link />
-                              </ListItemIcon>
-                              <ListItemText style={{ whiteSpace: 'nowrap' }}>
-                                Copy link
-                              </ListItemText>
-                            </ListItem>
-                          </CopyToClipboard>
-                          {isAuthor && (
-                            <OptionWithPopover
-                              disabled={!currentStory || storyLoading}
-                              Icon={Edit}
-                              initialValue={
-                                currentStory ? currentStory.name : ''
-                              }
-                              placeholder="Story name"
-                              submitText="Rename"
-                              text="Rename"
-                              onSubmit={value => {
-                                saveStory({
-                                  id: pathStoryId,
-                                  name: value,
-                                });
-                              }}
-                            />
-                          )}
                           <OptionWithPopover
                             disabled={storyLoading}
                             Icon={NoteAdd}
@@ -893,6 +829,81 @@ const Canvas: React.FC<CanvasProps> = ({
                               saveStory(storyState);
                             }}
                           />
+                          {isAuthor && (
+                            <>
+                              <OptionWithPopover
+                                disabled={!currentStory || storyLoading}
+                                Icon={Edit}
+                                initialValue={
+                                  currentStory ? currentStory.name : ''
+                                }
+                                placeholder="Story name"
+                                submitText="Rename"
+                                text="Rename"
+                                onSubmit={value => {
+                                  saveStory({
+                                    id: pathStoryId,
+                                    name: value,
+                                  });
+                                }}
+                              />
+                              <ListItem
+                                disabled={storyLoading}
+                                button
+                                onClick={() => {
+                                  const storyState: StoryWithId = {
+                                    ...storyMonitorState,
+                                    id: pathStoryId,
+                                    name: storyName,
+                                    durations,
+                                    audioId: audioElement
+                                      ? audioElement.id
+                                      : '',
+                                    audioSrc: audioElement ? audioSrc : '',
+                                    lastJumpedToActionId,
+                                    isPublic: false,
+                                    authorId: uid,
+                                  };
+                                  saveStory(storyState);
+                                }}
+                              >
+                                <ListItemIcon
+                                  style={{ minWidth: 'auto', marginRight: 10 }}
+                                >
+                                  <Save />
+                                </ListItemIcon>
+                                <ListItemText>Save</ListItemText>
+                              </ListItem>
+                              <CopyToClipboard
+                                text={linkInputValue}
+                                onCopy={() => {
+                                  if (canCopy) {
+                                    setSnackbar({
+                                      variant: 'info',
+                                      message: 'Link to story copied',
+                                      duration: 2000,
+                                    });
+                                  }
+                                }}
+                              >
+                                <ListItem button disabled={!canCopy}>
+                                  <ListItemIcon
+                                    style={{
+                                      minWidth: 'auto',
+                                      marginRight: 10,
+                                    }}
+                                  >
+                                    <Link />
+                                  </ListItemIcon>
+                                  <ListItemText
+                                    style={{ whiteSpace: 'nowrap' }}
+                                  >
+                                    Copy link
+                                  </ListItemText>
+                                </ListItem>
+                              </CopyToClipboard>
+                            </>
+                          )}
                         </List>
                         {isAuthor && (
                           <Loader
@@ -1190,7 +1201,9 @@ const Canvas: React.FC<CanvasProps> = ({
                 durations,
                 setDurations,
                 getBlockType: blockId => {
-                  const block = blockStates.find(({ payload: { id } }) => id === blockId);
+                  const block = blockStates.find(
+                    ({ payload: { id } }) => id === blockId,
+                  );
 
                   return block ? block.type : 'other';
                 },
