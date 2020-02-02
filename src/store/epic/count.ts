@@ -3,7 +3,7 @@ import firebase from 'my-firebase';
 import { inc, isNil } from 'ramda';
 import { Epic } from 'redux-observable';
 import { docData } from 'rxfire/firestore';
-import { from, of } from 'rxjs';
+import { from, of, defer } from 'rxjs';
 import { catchError, map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { selectCountValue } from 'store/selectors';
 import { getType } from 'typesafe-actions';
@@ -56,7 +56,7 @@ const increment: Epic<
     map(inc),
     withLatestFrom(state$.pipe(map(selectUid))),
     switchMap(([value, uid]) =>
-      from(countsCollection.doc(uid).set({ value })).pipe(
+      defer(() => countsCollection.doc(uid).set({ value })).pipe(
         map(() => incrementCountAsync.success(value)),
         catchError(error =>
           of(
@@ -84,7 +84,7 @@ const decrementBy: Epic<
     map(([amount, value]) => value - amount),
     withLatestFrom(state$.pipe(map(selectUid))),
     switchMap(([value, uid]) =>
-      from(countsCollection.doc(uid).set({ value })).pipe(
+      defer(() => countsCollection.doc(uid).set({ value })).pipe(
         map(() => setCountAsync.success(value)),
         catchError(error =>
           of(
