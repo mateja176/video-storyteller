@@ -8,6 +8,7 @@ import { CreateSimpleAction, WithColors } from 'models';
 import React, { FC, useEffect } from 'react';
 import { hot } from 'react-hot-loader';
 import { connect } from 'react-redux';
+import { useHistory } from 'react-router';
 import {
   createGetAuthState,
   selectIsSignedIn,
@@ -30,6 +31,8 @@ export interface AppProps {
 const App: FC<AppProps> = ({ getAuthState, isSignedIn, themeOptions }) => {
   const { deleteAll } = React.useContext(Context);
 
+  const history = useHistory();
+
   useEffect(() => {
     getAuthState();
   }, [getAuthState]);
@@ -37,6 +40,8 @@ const App: FC<AppProps> = ({ getAuthState, isSignedIn, themeOptions }) => {
   React.useEffect(() => {
     if (!isSignedIn) {
       deleteAll();
+
+      history.push('/');
     }
   }, [isSignedIn]); // eslint-disable-line react-hooks/exhaustive-deps
 
