@@ -1,10 +1,10 @@
 import 'firebase/storage';
-import { KnowledgeGraph } from 'models/knowlegdeGraph';
+import { KnowledgeGraph } from 'models/knowledgeGraph';
 import firebase from 'my-firebase';
 import { Epic, ofType } from 'redux-observable';
 import { putString } from 'rxfire/storage';
 import { from, of } from 'rxjs';
-import { ajax } from 'rxjs/ajax';
+import { ajax, AjaxResponse } from 'rxjs/ajax';
 import {
   catchError,
   delay,
@@ -97,7 +97,7 @@ const removeUploadedImage: Epic<Action, RemoveImageAction> = action$ =>
 
 export const verifyImage: Epic<
   Action,
-  UpdateOneImageAction,
+  UpdateOneImageAction | SetSnackbarAction,
   State,
   EpicDependencies
 > = (action$, _, { mobilenet$ }) =>
@@ -120,25 +120,29 @@ export const verifyImage: Epic<
               / /g,
               '+',
             )}&key=${process.env.REACT_APP_GOOGLE_API_KEY}&limit=1`,
+          ).pipe(
+            map<AjaxResponse, KnowledgeGraph>(({ response }) => response),
+            tap(console.log), // eslint-disable-line no-console
+            map(
+              ({
+                itemListElement: [
+                  {
+                    result: { description },
+                  },
+                ],
+              }) => description,
+            ),
+            map(description =>
+              createUpdateOneImage({
+                ...img,
+                verificationStatus:
+                  description === 'Dog breed' ? 'completed' : 'failed',
+              }),
+            ),
+            catchError(({ message }: Error) =>
+              of(createSetErrorSnackbar({ message })),
+            ),
           ),
-        ),
-        map(({ response }) => response as KnowledgeGraph),
-        tap(console.log), // eslint-disable-line no-console
-        map(
-          ({
-            itemListElement: [
-              {
-                result: { description },
-              },
-            ],
-          }) => description,
-        ),
-        map(description =>
-          createUpdateOneImage({
-            ...img,
-            verificationStatus:
-              description === 'Dog breed' ? 'completed' : 'failed',
-          }),
         ),
       );
     }),
