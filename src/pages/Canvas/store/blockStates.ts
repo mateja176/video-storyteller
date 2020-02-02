@@ -7,9 +7,10 @@ import {
   TextBlockState,
   WithId,
 } from 'models';
-import { update } from 'ramda';
+import { nth, update } from 'ramda';
 import { Tuple } from 'ts-toolbelt';
 import { createAction } from 'typesafe-actions';
+import { Required } from 'utility-types';
 import { createReducer, toObject } from 'utils';
 
 export const initialState: BlockStates = [];
@@ -56,7 +57,9 @@ export type UpdateResizeAction = ReturnType<typeof createUpdateResize>;
 
 export const createUpdateEditText = createAction(
   cudActionType['update/editText'],
-  action => (payload: TextBlockState) => action(payload),
+  action => (
+    payload: Required<Partial<TextBlockState['payload']>, 'id' | 'block'>,
+  ) => action({ payload }),
 );
 export type UpdateEditTextAction = ReturnType<typeof createUpdateEditText>;
 
@@ -91,11 +94,20 @@ const updateState = (state: BlockStates, { payload }: UpdateAction) => {
     ({ payload: { id } }) => id === payload.payload.id,
   );
 
-  const updatedBlock = { ...state[blockIndex], ...payload };
+  const currentBlock = nth(blockIndex, state);
 
-  const updatedBlocks = update(blockIndex, updatedBlock, state);
+  if (currentBlock) {
+    const updatedBlock = {
+      ...currentBlock,
+      payload: { ...currentBlock.payload, ...payload },
+    } as BlockState;
 
-  return updatedBlocks;
+    const updatedBlocks = update(blockIndex, updatedBlock, state);
+
+    return updatedBlocks;
+  } else {
+    return state;
+  }
 };
 
 export default createReducer(initialState)<BlockStatesAction>({

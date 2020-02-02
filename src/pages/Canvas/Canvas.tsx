@@ -159,6 +159,11 @@ const headerAndControlsHeight = headerHeight + controlsHeight;
 
 const actionsTimelineHeight = 300;
 
+const listItemIconStyle: React.CSSProperties = {
+  minWidth: 'auto',
+  marginRight: 10,
+};
+
 const resizeDisabler: ResizeEnable = {
   bottom: false,
   top: false,
@@ -707,9 +712,6 @@ const Canvas: React.FC<CanvasProps> = ({
       >
         <Box
           bg={theme.palette.background.paper}
-          onMouseDown={e => {
-            e.preventDefault();
-          }}
           style={{
             borderBottom: dividingBorder,
           }}
@@ -720,10 +722,39 @@ const Canvas: React.FC<CanvasProps> = ({
                 switch (true) {
                   case !!focusedEditorId:
                     return (
-                      <EditorControls
-                        editorState={focusedEditorState}
-                        setEditorState={setFocusedEditorState}
-                      />
+                      <>
+                        <Box
+                          onMouseDown={e => {
+                            e.preventDefault();
+                          }}
+                        >
+                          <EditorControls
+                            editorState={focusedEditorState}
+                            setEditorState={setFocusedEditorState}
+                          />
+                        </Box>
+                        {focusedEditorId !== draggable.text && (
+                          <ListItem
+                            button
+                            style={{ width: 'auto' }}
+                            onClick={() =>
+                              updateEditText({
+                                id: focusedEditorId,
+                                block: {
+                                  editorState: convertToRaw(
+                                    focusedEditorState.getCurrentContent(),
+                                  ),
+                                },
+                              })
+                            } // eslint-disable-line react/jsx-curly-newline
+                          >
+                            <ListItemIcon style={listItemIconStyle}>
+                              <Save />
+                            </ListItemIcon>
+                            <ListItemText>Save</ListItemText>
+                          </ListItem>
+                        )}
+                      </>
                     );
 
                   case audioUploadOpen:
@@ -906,9 +937,7 @@ const Canvas: React.FC<CanvasProps> = ({
                                   saveStory(storyState);
                                 }}
                               >
-                                <ListItemIcon
-                                  style={{ minWidth: 'auto', marginRight: 10 }}
-                                >
+                                <ListItemIcon style={listItemIconStyle}>
                                   <Save />
                                 </ListItemIcon>
                                 <ListItemText>Save</ListItemText>
@@ -1145,11 +1174,8 @@ const Canvas: React.FC<CanvasProps> = ({
                                   )
                                 ) {
                                   updateEditText({
-                                    ...blockState,
-                                    payload: {
-                                      ...blockState.payload,
-                                      block: { editorState: newEditorState },
-                                    },
+                                    id,
+                                    block: { editorState: newEditorState },
                                   });
                                 }
                               }}
