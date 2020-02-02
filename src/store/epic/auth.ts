@@ -1,8 +1,9 @@
 import { auth } from 'firebase/app';
 import 'firebase/auth';
+import { not } from 'ramda';
 import { Epic, ofType } from 'redux-observable';
 import { authState } from 'rxfire/auth';
-import { empty, of, pipe } from 'rxjs';
+import { empty, of, OperatorFunction, pipe } from 'rxjs';
 import { catchError, filter, map, mergeMapTo, switchMap } from 'rxjs/operators';
 import { Action, createReset, State } from '../reducer';
 import {
@@ -19,6 +20,7 @@ import {
   SetUserAction,
   signinType,
   signoutType,
+  User,
 } from '../slices';
 
 const authState$: Epic<Action, AuthStateChangeAction, State> = action$ =>
@@ -48,16 +50,12 @@ const signIn: Epic<Action, SetAuthErrorAction, State> = action$ =>
 const userUpdated: Epic<Action, SetUserAction, State> = action$ =>
   action$.pipe(
     mapAuthStateChangeToUser,
-    filter<any>(Boolean),
+    filter(Boolean) as OperatorFunction<User | null, User>,
     map(createSetUser),
   );
 
 const signedOut: Epic = action$ =>
-  action$.pipe(
-    mapAuthStateChangeToUser,
-    filter(user => !user),
-    map(() => createReset()),
-  );
+  action$.pipe(mapAuthStateChangeToUser, filter(not), map(createReset));
 
 const signOut: Epic<Action, SetAuthErrorAction, State> = action$ =>
   action$.pipe(
