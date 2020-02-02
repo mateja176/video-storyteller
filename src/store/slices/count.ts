@@ -3,7 +3,7 @@ import { ActionType, createAsyncAction } from 'typesafe-actions';
 import { createReducer, setError, setIsLoading, setValue } from 'utils';
 
 export const initialCountState = {
-  value: 0,
+  value: Infinity,
   isLoading: false,
   error: '',
 };

@@ -3,8 +3,14 @@ import firebase from 'my-firebase';
 import { inc, prop } from 'ramda';
 import { Epic } from 'redux-observable';
 import { docData } from 'rxfire/firestore';
-import { defer, of } from 'rxjs';
-import { catchError, map, switchMap, withLatestFrom } from 'rxjs/operators';
+import { defer, of, empty } from 'rxjs';
+import {
+  catchError,
+  map,
+  switchMap,
+  withLatestFrom,
+  mergeMapTo,
+} from 'rxjs/operators';
 import { selectCountValue } from 'store/selectors';
 import { getType } from 'typesafe-actions';
 import { ofType, selectState, takeUntilSignedOut } from 'utils';
@@ -44,8 +50,7 @@ const getCount: Epic<
 
 const increment: Epic<
   Action,
-  | ReturnType<typeof incrementCountAsync.success>
-  | ReturnType<typeof incrementCountAsync.failure>,
+  ReturnType<typeof incrementCountAsync.failure>,
   State
 > = (action$, state$) =>
   action$.pipe(
@@ -55,13 +60,9 @@ const increment: Epic<
     withLatestFrom(state$.pipe(map(selectUid))),
     switchMap(([value, uid]) =>
       defer(() => countsCollection.doc(uid).set({ value })).pipe(
-        map(() => incrementCountAsync.success(value)),
-        catchError(error =>
-          of(
-            incrementCountAsync.failure(
-              (error && error.message) || 'Failed to increment count.',
-            ),
-          ),
+        mergeMapTo(empty()),
+        catchError(({ message }: Error) =>
+          of(incrementCountAsync.failure(message)),
         ),
       ),
     ),
@@ -69,8 +70,7 @@ const increment: Epic<
 
 const decrementBy: Epic<
   Action,
-  | ReturnType<typeof setCountAsync.success>
-  | ReturnType<typeof setCountAsync.failure>,
+  ReturnType<typeof setCountAsync.failure>,
   State
 > = (action$, state$) =>
   action$.pipe(
@@ -83,14 +83,8 @@ const decrementBy: Epic<
     withLatestFrom(state$.pipe(map(selectUid))),
     switchMap(([value, uid]) =>
       defer(() => countsCollection.doc(uid).set({ value })).pipe(
-        map(() => setCountAsync.success(value)),
-        catchError(error =>
-          of(
-            setCountAsync.failure(
-              (error && error.message) || 'Failed to decrement count.',
-            ),
-          ),
-        ),
+        mergeMapTo(empty()),
+        catchError(({ message }: Error) => of(setCountAsync.failure(message))),
       ),
     ),
   );

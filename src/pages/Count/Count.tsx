@@ -11,6 +11,7 @@ import {
   selectCountValue,
   selectDictionary,
   selectIsCountLoading,
+  selectIsInitialCount,
   setCountAsync,
   State,
 } from 'store';
@@ -34,8 +35,10 @@ const Count: FC<CountProps> = ({
   decrementBy,
   getCount,
 }) => {
+  const isInitialCount = useSelector(selectIsInitialCount);
+
   useEffect(() => {
-    if (!value) {
+    if (isInitialCount) {
       getCount();
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -45,7 +48,8 @@ const Count: FC<CountProps> = ({
   return (
     <>
       <Typography variant="h2">
-        {dict.count}: <Loader isLoading={isLoading}>{value}</Loader>
+        {dict.count}:{' '}
+        <Loader isLoading={isLoading}>{isInitialCount ? 0 : value}</Loader>
       </Typography>
       <br />
       <Switch>
