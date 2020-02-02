@@ -16,6 +16,7 @@ import {
   UpdateEditTextAction,
   UpdateRenameImageAction,
   UpdateResizeAction,
+  UpdateMoveAction,
 } from './store/blockStates';
 import {
   PositionAction,
@@ -65,8 +66,9 @@ export const isCreateAction = (action: Action): action is CudAction =>
 export const isUpdateAction = (action: Action): action is UpdateAction =>
   updateActionTypes.includes(action.type as UpdateActionType);
 
-export const isUpdateMoveAction = (action: Action): action is UpdateAction =>
-  action.type === 'update/move';
+export const isUpdateMoveAction = (
+  action: Action,
+): action is UpdateMoveAction => action.type === 'update/move';
 
 export const isUpdateEditAction = (
   action: Action,
