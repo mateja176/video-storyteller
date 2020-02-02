@@ -73,8 +73,8 @@ import { RouteComponentProps } from 'react-router-dom';
 import {
   FacebookIcon,
   FacebookShareButton,
-  LinkedinIcon,
-  LinkedinShareButton,
+  RedditIcon,
+  RedditShareButton,
   TwitterIcon,
   TwitterShareButton,
   ViberIcon,
@@ -990,11 +990,11 @@ const Canvas: React.FC<CanvasProps> = ({
                               }
                             />
                             <SpeedDialAction
-                              tooltipTitle="Share on LinkedIn"
+                              tooltipTitle="Share on Reddit"
                               icon={
-                                <LinkedinShareButton url={linkInputValue}>
-                                  <LinkedinIcon size={42} round crossOrigin />
-                                </LinkedinShareButton>
+                                <RedditShareButton url={linkInputValue}>
+                                  <RedditIcon size={42} round crossOrigin />
+                                </RedditShareButton>
                               }
                             />
                             <SpeedDialAction
