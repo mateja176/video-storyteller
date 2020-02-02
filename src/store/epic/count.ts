@@ -1,9 +1,9 @@
 import 'firebase/firestore';
 import firebase from 'my-firebase';
-import { inc, isNil } from 'ramda';
+import { inc, prop } from 'ramda';
 import { Epic } from 'redux-observable';
 import { docData } from 'rxfire/firestore';
-import { from, of, defer } from 'rxjs';
+import { defer, of } from 'rxjs';
 import { catchError, map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { selectCountValue } from 'store/selectors';
 import { getType } from 'typesafe-actions';
@@ -31,17 +31,15 @@ const getCount: Epic<
     selectState(selectUid)(state$),
     map(uid => countsCollection.doc(uid)),
     switchMap(doc =>
-      docData<Partial<Pick<CountState, 'value'>>>(doc).pipe(
+      docData<Pick<CountState, 'value'>>(doc).pipe(
         takeUntilSignedOut(state$),
+        map(prop('value')),
+        map(setCountAsync.success),
+        catchError(({ message }: Error) =>
+          of(createSetErrorSnackbar({ message })),
+        ),
       ),
     ),
-    map(({ value }) => {
-      if (isNil(value)) {
-        return createSetErrorSnackbar({ message: 'Failed to fetch count.' });
-      } else {
-        return setCountAsync.success(value);
-      }
-    }),
   );
 
 const increment: Epic<
