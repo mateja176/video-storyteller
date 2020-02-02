@@ -27,10 +27,12 @@ import {
   Link,
   NoteAdd,
   Save,
+  Share,
   Title,
   Tv,
   TvOff,
 } from '@material-ui/icons';
+import { SpeedDial, SpeedDialAction } from '@material-ui/lab';
 import color from 'color';
 import {
   Button,
@@ -68,6 +70,18 @@ import Dropzone from 'react-dropzone';
 import { useSelector as useStoreSelector } from 'react-redux';
 import { ResizeEnable, Rnd } from 'react-rnd';
 import { RouteComponentProps } from 'react-router-dom';
+import {
+  FacebookIcon,
+  FacebookShareButton,
+  LinkedinIcon,
+  LinkedinShareButton,
+  TwitterIcon,
+  TwitterShareButton,
+  ViberIcon,
+  ViberShareButton,
+  WhatsappIcon,
+  WhatsappShareButton,
+} from 'react-share';
 import { Box, Flex } from 'rebass';
 import { putString } from 'rxfire/storage';
 import {
@@ -512,7 +526,9 @@ const Canvas: React.FC<CanvasProps> = ({
     saveStoryStatus,
   ].some(equals<ExtendedLoadingStatus>('in progress'));
 
-  const canCopy = !!currentStory && currentStory.isPublic;
+  const canShare = !!currentStory && currentStory.isPublic;
+
+  const [shareOptionsOpen, setShareOptionsOpen] = React.useState(false);
 
   return (
     <Flex
@@ -768,7 +784,12 @@ const Canvas: React.FC<CanvasProps> = ({
 
                   default:
                     return (
-                      <Flex alignItems="center">
+                      <Flex
+                        alignItems="center"
+                        style={{
+                          height: controlsHeight,
+                        }}
+                      >
                         <List
                           style={{
                             paddingTop: 0,
@@ -874,34 +895,6 @@ const Canvas: React.FC<CanvasProps> = ({
                                 </ListItemIcon>
                                 <ListItemText>Save</ListItemText>
                               </ListItem>
-                              <CopyToClipboard
-                                text={linkInputValue}
-                                onCopy={() => {
-                                  if (canCopy) {
-                                    setSnackbar({
-                                      variant: 'info',
-                                      message: 'Link to story copied',
-                                      duration: 2000,
-                                    });
-                                  }
-                                }}
-                              >
-                                <ListItem button disabled={!canCopy}>
-                                  <ListItemIcon
-                                    style={{
-                                      minWidth: 'auto',
-                                      marginRight: 10,
-                                    }}
-                                  >
-                                    <Link />
-                                  </ListItemIcon>
-                                  <ListItemText
-                                    style={{ whiteSpace: 'nowrap' }}
-                                  >
-                                    Copy link
-                                  </ListItemText>
-                                </ListItem>
-                              </CopyToClipboard>
                             </>
                           )}
                         </List>
@@ -932,6 +925,83 @@ const Canvas: React.FC<CanvasProps> = ({
                               }
                             />
                           </Loader>
+                        )}
+                        {canShare && (
+                          <SpeedDial
+                            ariaLabel="Share options"
+                            icon={<Share />}
+                            open={shareOptionsOpen}
+                            direction="down"
+                            onMouseEnter={() => setShareOptionsOpen(true)}
+                            onMouseLeave={() => setShareOptionsOpen(false)}
+                            style={{
+                              transform: 'scale(0.8)',
+                              transformOrigin: 'top',
+                              alignSelf: 'flex-start',
+                              marginLeft: 15,
+                              marginTop: 2,
+                            }}
+                          >
+                            <SpeedDialAction
+                              tooltipTitle="Copy link"
+                              icon={
+                                <CopyToClipboard
+                                  text={linkInputValue}
+                                  onCopy={() => {
+                                    if (canShare) {
+                                      setSnackbar({
+                                        variant: 'info',
+                                        message: 'Link to story copied',
+                                        duration: 2000,
+                                      });
+                                    }
+                                  }}
+                                >
+                                  <Link />
+                                </CopyToClipboard>
+                              }
+                            />
+                            <SpeedDialAction
+                              tooltipTitle="Share on Facebook"
+                              icon={
+                                <FacebookShareButton url={linkInputValue}>
+                                  <FacebookIcon size={42} round crossOrigin />
+                                </FacebookShareButton>
+                              }
+                            />
+                            <SpeedDialAction
+                              tooltipTitle="Share on Twitter"
+                              icon={
+                                <TwitterShareButton url={linkInputValue}>
+                                  <TwitterIcon size={42} round crossOrigin />
+                                </TwitterShareButton>
+                              }
+                            />
+                            <SpeedDialAction
+                              tooltipTitle="Share on LinkedIn"
+                              icon={
+                                <LinkedinShareButton url={linkInputValue}>
+                                  <LinkedinIcon size={42} round crossOrigin />
+                                </LinkedinShareButton>
+                              }
+                            />
+                            <SpeedDialAction
+                              tooltipTitle="Share on Whatsapp"
+                              icon={
+                                <WhatsappShareButton url={linkInputValue}>
+                                  <WhatsappIcon size={42} round crossOrigin />
+                                </WhatsappShareButton>
+                              }
+                            />
+                            <SpeedDialAction
+                              tooltipTitle="Share on Viber"
+                              icon={
+                                <ViberShareButton url={linkInputValue}>
+                                  <ViberIcon size={42} round crossOrigin />
+                                </ViberShareButton>
+                              }
+                            />
+                          </SpeedDial>
                         )}
                       </Flex>
                     );

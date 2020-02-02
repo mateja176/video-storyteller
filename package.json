@@ -85,6 +85,7 @@
     "react-rnd": "^10.1.1",
     "react-router-dom": "^5.0.0",
     "react-select": "^3.0.4",
+    "react-share": "^4.0.1",
     "react-spring": "^8.0.23",
     "react-stripe-elements": "^5.1.0",
     "react-tether": "^2.0.3",
