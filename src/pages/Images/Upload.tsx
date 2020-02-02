@@ -132,11 +132,11 @@ const Upload: FC<UploadProps> = ({
         >
           {dict.upload}
         </Button>
-        <Box ml={2}>
-          <Button disabled={!images.length} onClick={addImages}>
-            Add more
-          </Button>
-        </Box>
+        {!!images.length && (
+          <Box ml={2}>
+            <Button onClick={addImages}>Add more</Button>
+          </Box>
+        )}
       </Flex>
       <br />
       <Divider />
