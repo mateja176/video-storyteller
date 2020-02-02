@@ -264,6 +264,8 @@ const Canvas: React.FC<CanvasProps> = ({
   const [, dropRef] = useDrop<DropAction, CreateAction, void>({
     accept: [...draggables],
     drop: (action, monitor): CreateAction | undefined => {
+      setRightDrawerOccupant('none'); // eslint-disable-line no-use-before-define
+
       const offset = monitor.getSourceClientOffset() || { x: 0, y: 0 };
 
       const id = v4();
@@ -401,7 +403,9 @@ const Canvas: React.FC<CanvasProps> = ({
     resume();
   }, [focusedEditorId, disableDragging]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const [actionsTimelineOpen, setActionsTimelineOpen] = React.useState(true);
+  const [actionsTimelineOpen, setActionsTimelineOpen] = React.useState(
+    !!currentStory,
+  );
 
   React.useEffect(() => {
     if (theatricalMode) {
@@ -487,6 +491,10 @@ const Canvas: React.FC<CanvasProps> = ({
   );
   React.useEffect(() => {
     if (currentStory) {
+      setActionsTimelineOpen(true);
+
+      setRightDrawerOccupant('text blocks');
+
       setStoryName(currentStory.name);
     }
   }, [currentStory]);
@@ -547,139 +555,141 @@ const Canvas: React.FC<CanvasProps> = ({
       >
         <List>
           {isAuthor && (
-            <ListItem
-              disabled={fetchStoriesStatus === 'in progress'}
-              button
-              onClick={() => {
-                setRightDrawerOccupant(
-                  rightDrawerOccupant === 'text blocks'
-                    ? 'none'
-                    : 'text blocks',
-                );
-              }}
-            >
-              <Tooltip title="Toggle open text blocks">
+            <>
+              <ListItem
+                disabled={fetchStoriesStatus === 'in progress'}
+                button
+                onClick={() => {
+                  setRightDrawerOccupant(
+                    rightDrawerOccupant === 'text blocks'
+                      ? 'none'
+                      : 'text blocks',
+                  );
+                }}
+              >
+                <Tooltip title="Toggle open text blocks">
+                  <ListItemIcon>
+                    <Title
+                      color={
+                        rightDrawerOccupant === 'text blocks'
+                          ? 'secondary'
+                          : 'inherit'
+                      }
+                    />
+                  </ListItemIcon>
+                </Tooltip>
+              </ListItem>
+              <ListItem
+                disabled={fetchStoriesStatus === 'in progress'}
+                button
+                onClick={() => {
+                  setRightDrawerOccupant(
+                    rightDrawerOccupant === 'images' ? 'none' : 'images',
+                  );
+                }}
+              >
+                <Tooltip title="Toggle images open">
+                  <ListItemIcon>
+                    <Image
+                      color={
+                        rightDrawerOccupant === 'images'
+                          ? 'secondary'
+                          : 'inherit'
+                      }
+                    />
+                  </ListItemIcon>
+                </Tooltip>
+              </ListItem>
+              <ListItem
+                disabled={fetchStoriesStatus === 'in progress'}
+                button
+                onClick={() => {
+                  setRightDrawerOccupant(
+                    rightDrawerOccupant === 'audio' ? 'none' : 'audio',
+                  );
+                }}
+              >
+                <Tooltip title="Toggle open audio">
+                  <ListItemIcon>
+                    <LibraryMusic
+                      color={
+                        rightDrawerOccupant === 'audio'
+                          ? 'secondary'
+                          : 'inherit'
+                      }
+                    />
+                  </ListItemIcon>
+                </Tooltip>
+              </ListItem>
+              <ListItem
+                disabled={fetchStoriesStatus === 'in progress'}
+                button
+                onClick={() => {
+                  setDeleteModeOn(!deleteModeOn);
+                }}
+              >
+                <Tooltip title="Toggle delete mode">
+                  <ListItemIcon>
+                    <Delete color={deleteModeOn ? 'secondary' : 'inherit'} />
+                  </ListItemIcon>
+                </Tooltip>
+              </ListItem>
+              <ListItem
+                button
+                onClick={() => setAudioUploadOpen(!audioUploadOpen)}
+              >
+                <Tooltip title="Toggle open audio upload">
+                  <ListItemIcon>
+                    <Audiotrack
+                      color={audioUploadOpen ? 'secondary' : 'inherit'}
+                    />
+                  </ListItemIcon>
+                </Tooltip>
+              </ListItem>
+            </>
+          )}
+          {currentStory && (
+            <ListItem button onClick={toggleActionsTimelineOpen}>
+              <Tooltip title="Toggle open actions timeline">
                 <ListItemIcon>
-                  <Title
-                    color={
-                      rightDrawerOccupant === 'text blocks'
-                        ? 'secondary'
-                        : 'inherit'
-                    }
+                  <Build
+                    color={actionsTimelineOpen ? 'secondary' : 'inherit'}
                   />
                 </ListItemIcon>
               </Tooltip>
             </ListItem>
           )}
-          {isAuthor && (
-            <ListItem
-              disabled={fetchStoriesStatus === 'in progress'}
-              button
-              onClick={() => {
-                setRightDrawerOccupant(
-                  rightDrawerOccupant === 'images' ? 'none' : 'images',
-                );
-              }}
-            >
-              <Tooltip title="Toggle images open">
-                <ListItemIcon>
-                  <Image
-                    color={
-                      rightDrawerOccupant === 'images' ? 'secondary' : 'inherit'
-                    }
-                  />
-                </ListItemIcon>
-              </Tooltip>
-            </ListItem>
-          )}
-          {isAuthor && (
-            <ListItem
-              disabled={fetchStoriesStatus === 'in progress'}
-              button
-              onClick={() => {
-                setRightDrawerOccupant(
-                  rightDrawerOccupant === 'audio' ? 'none' : 'audio',
-                );
-              }}
-            >
-              <Tooltip title="Toggle open audio">
-                <ListItemIcon>
-                  <LibraryMusic
-                    color={
-                      rightDrawerOccupant === 'audio' ? 'secondary' : 'inherit'
-                    }
-                  />
-                </ListItemIcon>
-              </Tooltip>
-            </ListItem>
-          )}
-          {isAuthor && (
-            <ListItem
-              disabled={fetchStoriesStatus === 'in progress'}
-              button
-              onClick={() => {
-                setDeleteModeOn(!deleteModeOn);
-              }}
-            >
-              <Tooltip title="Toggle delete mode">
-                <ListItemIcon>
-                  <Delete color={deleteModeOn ? 'secondary' : 'inherit'} />
-                </ListItemIcon>
-              </Tooltip>
-            </ListItem>
-          )}
-          <ListItem button onClick={toggleActionsTimelineOpen}>
-            <Tooltip title="Toggle open actions timeline">
+          <ListItem
+            button
+            onClick={() => {
+              toggleTheatricalMode();
+            }}
+          >
+            <Tooltip title="Toggle theatrical mode">
               <ListItemIcon>
-                <Build color={actionsTimelineOpen ? 'secondary' : 'inherit'} />
+                <Box>{theatricalMode ? <TvOff /> : <Tv />}</Box>
               </ListItemIcon>
             </Tooltip>
           </ListItem>
-          {isAuthor && (
-            <ListItem
-              button
-              onClick={() => setAudioUploadOpen(!audioUploadOpen)}
-            >
-              <Tooltip title="Toggle open audio upload">
-                <ListItemIcon>
-                  <Audiotrack
-                    color={audioUploadOpen ? 'secondary' : 'inherit'}
-                  />
-                </ListItemIcon>
-              </Tooltip>
-            </ListItem>
-          )}
+          <ListItem
+            button
+            onClick={() => {
+              if (window.document.fullscreenElement) {
+                setIsFullScreen(false);
+                window.document.exitFullscreen();
+              } else {
+                setIsFullScreen(true);
+                window.document.documentElement.requestFullscreen();
+              }
+            }}
+          >
+            <Tooltip title="Toggle full screen">
+              <ListItemIcon>
+                <Box>{isFullscreen ? <FullscreenExit /> : <Fullscreen />}</Box>
+              </ListItemIcon>
+            </Tooltip>
+          </ListItem>
         </List>
-        <ListItem
-          button
-          onClick={() => {
-            toggleTheatricalMode();
-          }}
-        >
-          <Tooltip title="Toggle theatrical mode">
-            <ListItemIcon>
-              <Box>{theatricalMode ? <TvOff /> : <Tv />}</Box>
-            </ListItemIcon>
-          </Tooltip>
-        </ListItem>
-        <ListItem
-          button
-          onClick={() => {
-            if (window.document.fullscreenElement) {
-              setIsFullScreen(false);
-              window.document.exitFullscreen();
-            } else {
-              setIsFullScreen(true);
-              window.document.documentElement.requestFullscreen();
-            }
-          }}
-        >
-          <Tooltip title="Toggle full screen">
-            <ListItemIcon>
-              <Box>{isFullscreen ? <FullscreenExit /> : <Fullscreen />}</Box>
-            </ListItemIcon>
-          </Tooltip>
-        </ListItem>
       </Drawer>
       <Flex
         flexDirection="column"
@@ -828,28 +838,30 @@ const Canvas: React.FC<CanvasProps> = ({
                               saveStory(newStory);
                             }}
                           />
-                          <OptionWithPopover
-                            disabled={storyLoading}
-                            Icon={FileCopy}
-                            initialValue=""
-                            placeholder="Duplicate's name"
-                            text="Duplicate"
-                            submitText="Duplicate"
-                            onSubmit={value => {
-                              const storyState: StoryWithId = {
-                                ...storyMonitorState,
-                                id: v4(),
-                                name: value,
-                                durations,
-                                audioId: audioElement ? audioElement.id : '',
-                                audioSrc: audioElement ? audioSrc : '',
-                                lastJumpedToActionId,
-                                isPublic: false,
-                                authorId: uid,
-                              };
-                              saveStory(storyState);
-                            }}
-                          />
+                          {currentStory && (
+                            <OptionWithPopover
+                              disabled={storyLoading}
+                              Icon={FileCopy}
+                              initialValue=""
+                              placeholder="Duplicate's name"
+                              text="Duplicate"
+                              submitText="Duplicate"
+                              onSubmit={value => {
+                                const storyState: StoryWithId = {
+                                  ...storyMonitorState,
+                                  id: v4(),
+                                  name: value,
+                                  durations,
+                                  audioId: audioElement ? audioElement.id : '',
+                                  audioSrc: audioElement ? audioSrc : '',
+                                  lastJumpedToActionId,
+                                  isPublic: false,
+                                  authorId: uid,
+                                };
+                                saveStory(storyState);
+                              }}
+                            />
+                          )}
                           {isAuthor && (
                             <>
                               <OptionWithPopover
