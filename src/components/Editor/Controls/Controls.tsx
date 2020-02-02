@@ -16,7 +16,7 @@ const Controls: React.FC<ControlsProps> = ({
   toggleBlockType,
   toggleInlineStyle,
 }) => (
-  <Flex alignItems="center">
+  <Flex alignItems="center" height="100%">
     <BlockTypeControls editorState={editorState} onToggle={toggleBlockType} />
     <InlineStylesControls
       editorState={editorState}

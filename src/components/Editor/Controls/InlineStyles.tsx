@@ -1,4 +1,4 @@
-import { useTheme } from '@material-ui/core';
+import { List, ListItem, ListItemIcon, useTheme } from '@material-ui/core';
 import { SvgIconProps } from '@material-ui/core/SvgIcon';
 import {
   FormatBold,
@@ -8,7 +8,6 @@ import {
 } from '@material-ui/icons';
 import { DraftInlineStyleType, EditorState } from 'draft-js';
 import React from 'react';
-import IconButton from '../../IconButton';
 import Tooltip from '../../Tooltip';
 
 export interface InlineStyle {
@@ -40,30 +39,33 @@ const InlineStyles: React.FC<InlineStylesControlsProps> = ({
   const currentStyle = editorState.getCurrentInlineStyle();
 
   return (
-    <div>
+    <List style={{ display: 'flex', padding: 0, height: '100%' }}>
       {INLINE_STYLES.map(({ Icon, label, style }) => {
         const active = currentStyle.has(style);
 
         return (
-          <Tooltip
+          <ListItem
+            button
+            style={{ height: '100%' }}
             key={label}
-            title={label}
             onMouseDown={e => {
               e.preventDefault();
               onToggle(style);
             }}
           >
-            <IconButton>
-              <Icon
-                style={{
-                  color: active ? theme.palette.primary.dark : 'inherit',
-                }}
-              />
-            </IconButton>
-          </Tooltip>
+            <Tooltip title={label} style={{ marginTop: 'auto' }}>
+              <ListItemIcon style={{ minWidth: 'auto' }}>
+                <Icon
+                  style={{
+                    color: active ? theme.palette.primary.dark : 'inherit',
+                  }}
+                />
+              </ListItemIcon>
+            </Tooltip>
+          </ListItem>
         );
       })}
-    </div>
+    </List>
   );
 };
 
