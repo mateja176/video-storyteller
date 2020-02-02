@@ -71,15 +71,15 @@ import { useSelector as useStoreSelector } from 'react-redux';
 import { ResizeEnable, Rnd } from 'react-rnd';
 import { RouteComponentProps } from 'react-router-dom';
 import {
-  FacebookIcon,
+  FacebookIcon as Facebook,
   FacebookShareButton,
-  RedditIcon,
+  RedditIcon as Reddit,
   RedditShareButton,
-  TwitterIcon,
+  TwitterIcon as Twitter,
   TwitterShareButton,
-  ViberIcon,
+  ViberIcon as Viber,
   ViberShareButton,
-  WhatsappIcon,
+  WhatsappIcon as Whatsapp,
   WhatsappShareButton,
 } from 'react-share';
 import { Box, Flex } from 'rebass';
@@ -138,6 +138,12 @@ import {
 } from './store/blockStates';
 import { createSetPosition, createSetScale } from './store/transform';
 import TextBlock from './TextBlock';
+
+const FacebookIcon: any = Facebook;
+const RedditIcon: any = Reddit;
+const TwitterIcon: any = Twitter;
+const ViberIcon: any = Viber;
+const WhatsappIcon: any = Whatsapp;
 
 const initialEditorState = EditorState.createWithContent(
   ContentState.createFromText('Hello World'),
@@ -977,7 +983,7 @@ const Canvas: React.FC<CanvasProps> = ({
                               tooltipTitle="Share on Facebook"
                               icon={
                                 <FacebookShareButton url={linkInputValue}>
-                                  <FacebookIcon size={42} round crossOrigin />
+                                  <FacebookIcon size={42} round />
                                 </FacebookShareButton>
                               }
                             />
@@ -985,7 +991,7 @@ const Canvas: React.FC<CanvasProps> = ({
                               tooltipTitle="Share on Twitter"
                               icon={
                                 <TwitterShareButton url={linkInputValue}>
-                                  <TwitterIcon size={42} round crossOrigin />
+                                  <TwitterIcon size={42} round />
                                 </TwitterShareButton>
                               }
                             />
@@ -993,7 +999,7 @@ const Canvas: React.FC<CanvasProps> = ({
                               tooltipTitle="Share on Reddit"
                               icon={
                                 <RedditShareButton url={linkInputValue}>
-                                  <RedditIcon size={42} round crossOrigin />
+                                  <RedditIcon size={42} round />
                                 </RedditShareButton>
                               }
                             />
@@ -1001,7 +1007,7 @@ const Canvas: React.FC<CanvasProps> = ({
                               tooltipTitle="Share on Whatsapp"
                               icon={
                                 <WhatsappShareButton url={linkInputValue}>
-                                  <WhatsappIcon size={42} round crossOrigin />
+                                  <WhatsappIcon size={42} round />
                                 </WhatsappShareButton>
                               }
                             />
@@ -1009,7 +1015,7 @@ const Canvas: React.FC<CanvasProps> = ({
                               tooltipTitle="Share on Viber"
                               icon={
                                 <ViberShareButton url={linkInputValue}>
-                                  <ViberIcon size={42} round crossOrigin />
+                                  <ViberIcon size={42} round />
                                 </ViberShareButton>
                               }
                             />
