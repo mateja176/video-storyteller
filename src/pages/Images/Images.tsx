@@ -42,7 +42,9 @@ const Images: React.FC<ImagesProps> = ({ onMouseEnter, onMouseLeave }) => {
           />
         ))
       ) : (
-        <Link to="upload">Upload your first images</Link>
+        <Link to="upload" style={{ fontStyle: 'italic' }}>
+          Upload your first images
+        </Link>
       )}
     </Box>
   );
