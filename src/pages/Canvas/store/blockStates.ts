@@ -99,7 +99,7 @@ const updateState = (state: BlockStates, { payload }: UpdateAction) => {
   if (currentBlock) {
     const updatedBlock = {
       ...currentBlock,
-      payload: { ...currentBlock.payload, ...payload },
+      payload: { ...currentBlock.payload, ...payload.payload },
     } as BlockState;
 
     const updatedBlocks = update(blockIndex, updatedBlock, state);
