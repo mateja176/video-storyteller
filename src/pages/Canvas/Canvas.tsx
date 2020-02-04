@@ -736,7 +736,6 @@ const Canvas: React.FC<CanvasProps> = ({
                           />
                           <ColorPicker
                             onSelect={newColor => {
-                              console.log('newColor', newColor);
                               setFocusedEditorState(
                                 RichUtils.toggleInlineStyle(
                                   focusedEditorState,
