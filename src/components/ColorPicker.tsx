@@ -1,8 +1,9 @@
 import {
+  ClickAwayListener,
   ListItem,
   ListItemIcon,
   ListItemText,
-  Popper,
+  Popover,
 } from '@material-ui/core';
 import React from 'react';
 import { GithubPicker } from 'react-color';
@@ -28,24 +29,35 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
 
   return (
     <>
-      <ListItem
-        ref={anchorRef}
-        button
-        onClick={() => {
-          setOpen(!open);
+      <ClickAwayListener
+        onClickAway={() => {
+          setOpen(false);
         }}
       >
-        <ListItemIcon style={{ marginRight: 10, minWidth: 'auto' }}>
-          <Box
-            width={circleWidth}
-            height={circleWidth}
-            bg={color}
-            style={{ border: '1px solid #eee', borderRadius: '50%' }}
-          />
-        </ListItemIcon>
-        <ListItemText>{label}</ListItemText>
-      </ListItem>
-      <Popper open={open} anchorEl={anchorRef.current}>
+        <ListItem
+          ref={anchorRef}
+          button
+          onClick={() => {
+            setOpen(!open);
+          }}
+        >
+          <ListItemIcon style={{ marginRight: 10, minWidth: 'auto' }}>
+            <Box
+              width={circleWidth}
+              height={circleWidth}
+              bg={color}
+              style={{ border: '1px solid #eee', borderRadius: '50%' }}
+            />
+          </ListItemIcon>
+          <ListItemText>{label}</ListItemText>
+        </ListItem>
+      </ClickAwayListener>
+      <Popover
+        anchorEl={anchorRef.current}
+        open={open}
+        disableAutoFocus
+        disableEnforceFocus
+      >
         <GithubPicker
           color={color}
           onChange={({ hex }) => {
@@ -54,7 +66,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
             onSelect(hex);
           }}
         />
-      </Popper>
+      </Popover>
     </>
   );
 };
