@@ -39,14 +39,29 @@ const useStyles = makeStyles({
 
 const tabCharacter = '  ';
 
-const styleMap: DraftStyleMap = {
-  CODE: {
-    backgroundColor: 'rgba(0, 0, 0, 0.05)',
-    fontFamily: '"Inconsolata", "Menlo", "Consolas", monospace',
-    fontSize: 16,
-    padding: 2,
-  },
-};
+const colors = [
+  '#b80000',
+  '#db3e00',
+  '#fccb00',
+  '#008b02',
+  '#006b76',
+  '#1273de',
+  '#004dcf',
+  '#5300eb',
+  '#eb9694',
+  '#fad0c3',
+  '#fef3bd',
+  '#c1e1c5',
+  '#bedadc',
+  '#c4def6',
+  '#bed3f3',
+  '#d4c4fb',
+];
+
+const styleMap: DraftStyleMap = colors.reduce(
+  (map, color) => ({ ...map, [color]: { color } }),
+  {} as DraftStyleMap,
+);
 
 const getBlockStyle = (block: ContentBlock) => {
   switch (block.getType()) {

@@ -1,5 +1,6 @@
 export * from './Button';
 export { default as Button } from './Button';
+export * from './ColorPicker';
 export * from './Disqus';
 export { default as Disqus } from './Disqus';
 export * from './Editor';

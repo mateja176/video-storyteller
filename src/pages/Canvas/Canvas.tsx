@@ -36,6 +36,7 @@ import { SpeedDial, SpeedDialAction } from '@material-ui/lab';
 import color from 'color';
 import {
   Button,
+  ColorPicker,
   Editor,
   EditorControls,
   Loader,
@@ -48,6 +49,7 @@ import {
   convertFromRaw,
   convertToRaw,
   EditorState,
+  RichUtils,
 } from 'draft-js';
 import { absoluteRootPaths } from 'Layout';
 import { debounce } from 'lodash';
@@ -723,7 +725,7 @@ const Canvas: React.FC<CanvasProps> = ({
                   case !!focusedEditorId:
                     return (
                       <>
-                        <Box
+                        <Flex
                           onMouseDown={e => {
                             e.preventDefault();
                           }}
@@ -732,28 +734,41 @@ const Canvas: React.FC<CanvasProps> = ({
                             editorState={focusedEditorState}
                             setEditorState={setFocusedEditorState}
                           />
-                        </Box>
-                        {focusedEditorId !== draggable.text && (
-                          <ListItem
-                            button
-                            style={{ width: 'auto' }}
-                            onClick={() =>
-                              updateEditText({
-                                id: focusedEditorId,
-                                block: {
-                                  editorState: convertToRaw(
-                                    focusedEditorState.getCurrentContent(),
-                                  ),
-                                },
-                              })
-                            } // eslint-disable-line react/jsx-curly-newline
-                          >
-                            <ListItemIcon style={listItemIconStyle}>
-                              <Save />
-                            </ListItemIcon>
-                            <ListItemText>Save</ListItemText>
-                          </ListItem>
-                        )}
+                          <ColorPicker
+                            onSelect={newColor => {
+                              console.log('newColor', newColor);
+                              setFocusedEditorState(
+                                RichUtils.toggleInlineStyle(
+                                  focusedEditorState,
+                                  newColor,
+                                ),
+                              );
+                            }}
+                          />
+                        </Flex>
+                        <List style={{ display: 'flex', padding: 0 }}>
+                          {focusedEditorId !== draggable.text && (
+                            <ListItem
+                              button
+                              style={{ width: 'auto' }}
+                              onClick={() =>
+                                updateEditText({
+                                  id: focusedEditorId,
+                                  block: {
+                                    editorState: convertToRaw(
+                                      focusedEditorState.getCurrentContent(),
+                                    ),
+                                  },
+                                })
+                              } // eslint-disable-line react/jsx-curly-newline
+                            >
+                              <ListItemIcon style={listItemIconStyle}>
+                                <Save />
+                              </ListItemIcon>
+                              <ListItemText>Save</ListItemText>
+                            </ListItem>
+                          )}
+                        </List>
                       </>
                     );
 
