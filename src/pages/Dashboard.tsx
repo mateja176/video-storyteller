@@ -73,9 +73,11 @@ const Dashboard: React.FC<DashboardProps> = () => {
                         const selected = currentStoryId === id;
 
                         return (
-                          <Link to={urlJoin(absoluteRootPaths.canvas, id)}>
+                          <Link
+                            key={id}
+                            to={urlJoin(absoluteRootPaths.canvas, id)}
+                          >
                             <ListItem
-                              key={id}
                               button
                               onClick={() => {
                                 setCurrentStoryId({ currentStoryId: id });
