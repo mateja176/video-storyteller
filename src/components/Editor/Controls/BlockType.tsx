@@ -1,16 +1,17 @@
 import {
-  ClickAwayListener,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
   ListSubheader,
+  Menu,
   MenuItem,
-  Paper,
-  Popper,
-  Typography,
+  ClickAwayListener,
 } from '@material-ui/core';
-import { ArrowDropDown } from '@material-ui/icons';
+import { TextFormat } from '@material-ui/icons';
 import { DraftBlockType, EditorState } from 'draft-js';
 import { find } from 'ramda';
 import React from 'react';
-import { Box, Flex } from 'rebass';
+import { Box } from 'rebass';
 
 interface BlockTypeOption {
   label: string;
@@ -75,58 +76,60 @@ const BlocType: React.FC<BlockTypeControlsProps> = ({
     setOpen(!open);
   };
 
-  const displayRef = React.useRef<HTMLDivElement>(null);
+  const anchorRef = React.useRef<HTMLDivElement | null>(null);
 
   return (
-    <ClickAwayListener
-      onClickAway={() => {
-        if (open) {
-          toggleOpen();
-        }
-      }}
-    >
-      <Box>
-        <Box
-          ref={displayRef}
-          onMouseDown={e => {
-            e.preventDefault();
+    <>
+      <ClickAwayListener
+        onClickAway={() => {
+          setOpen(false);
+        }}
+      >
+        <ListItem
+          ref={anchorRef}
+          button
+          style={{ height: '100%' }}
+          onClick={() => {
             toggleOpen();
           }}
         >
-          <MenuItem style={{ minHeight: 50, minWidth: 105 }}>
-            <Flex width="100%" justifyContent="space-between">
-              <Typography color="textSecondary">
-                {(activeType && activeType.label) || 'Block type'}
-              </Typography>{' '}
-              {<ArrowDropDown />}
-            </Flex>
-          </MenuItem>
-        </Box>
-        <Popper open={open} anchorEl={displayRef.current}>
-          <Paper>
-            {blockTypeCategories.map(({ category, options }) => (
-              <Box key={category}>
-                <ListSubheader>{category}</ListSubheader>
-                {options.map(({ label, value }) => (
-                  <MenuItem
-                    key={value}
-                    value={value}
-                    onMouseDown={e => {
-                      e.preventDefault();
+          <ListItemIcon style={{ minWidth: 'auto', marginRight: 10 }}>
+            <TextFormat />
+          </ListItemIcon>
+          <ListItemText style={{ whiteSpace: 'nowrap' }}>
+            {(activeType && activeType.label) || 'Block type'}
+          </ListItemText>
+        </ListItem>
+      </ClickAwayListener>
+      <Menu
+        anchorEl={anchorRef.current}
+        open={open}
+        autoFocus={false}
+        disableAutoFocus
+        disableEnforceFocus
+        disableAutoFocusItem
+      >
+        {blockTypeCategories.map(({ category, options }) => (
+          <Box key={category}>
+            <ListSubheader>{category}</ListSubheader>
+            {options.map(({ label, value }) => (
+              <MenuItem
+                key={value}
+                value={value}
+                onMouseDown={e => {
+                  e.preventDefault();
 
-                      onToggle(value);
-                    }}
-                    selected={activeType && activeType.value === value}
-                  >
-                    {label}
-                  </MenuItem>
-                ))}
-              </Box>
+                  onToggle(value);
+                }}
+                selected={activeType && activeType.value === value}
+              >
+                {label}
+              </MenuItem>
             ))}
-          </Paper>
-        </Popper>
-      </Box>
-    </ClickAwayListener>
+          </Box>
+        ))}
+      </Menu>
+    </>
   );
 };
 
