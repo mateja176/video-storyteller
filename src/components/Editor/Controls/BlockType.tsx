@@ -116,9 +116,7 @@ const BlocType: React.FC<BlockTypeControlsProps> = ({
               <MenuItem
                 key={value}
                 value={value}
-                onMouseDown={e => {
-                  e.preventDefault();
-
+                onMouseDown={() => {
                   onToggle(value);
                 }}
                 selected={activeType && activeType.value === value}
