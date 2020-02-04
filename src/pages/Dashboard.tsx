@@ -73,41 +73,41 @@ const Dashboard: React.FC<DashboardProps> = () => {
                         const selected = currentStoryId === id;
 
                         return (
-                          <ListItem
-                            key={id}
-                            button
-                            onClick={() => {
-                              setCurrentStoryId({ currentStoryId: id });
-                            }}
-                            selected={selected}
-                          >
-                            <ListItemIcon>
-                              <Tooltip
-                                title={
-                                  watchOnly
-                                    ? 'Watch'
-                                    : isPublic
-                                    ? 'Public'
-                                    : 'Draft'
-                                }
-                                placement="top"
-                              >
-                                {watchOnly ? (
-                                  <Tv />
-                                ) : isPublic ? (
-                                  <Public />
-                                ) : (
-                                  <Edit />
-                                )}
-                              </Tooltip>
-                            </ListItemIcon>
-                            <ListItemText>
-                              <Link to={urlJoin(absoluteRootPaths.canvas, id)}>
+                          <Link to={urlJoin(absoluteRootPaths.canvas, id)}>
+                            <ListItem
+                              key={id}
+                              button
+                              onClick={() => {
+                                setCurrentStoryId({ currentStoryId: id });
+                              }}
+                              selected={selected}
+                            >
+                              <ListItemIcon>
+                                <Tooltip
+                                  title={
+                                    watchOnly
+                                      ? 'Watch'
+                                      : isPublic
+                                      ? 'Public'
+                                      : 'Draft'
+                                  }
+                                  placement="top"
+                                >
+                                  {watchOnly ? (
+                                    <Tv />
+                                  ) : isPublic ? (
+                                    <Public />
+                                  ) : (
+                                    <Edit />
+                                  )}
+                                </Tooltip>
+                              </ListItemIcon>
+                              <ListItemText>
                                 {name} ({time.getMinutes()}m {time.getSeconds()}
                                 s)
-                              </Link>
-                            </ListItemText>
-                          </ListItem>
+                              </ListItemText>
+                            </ListItem>
+                          </Link>
                         );
                       },
                     )}
