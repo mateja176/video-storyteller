@@ -8,6 +8,8 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { StripeProvider } from 'react-stripe-elements';
 import configureStore from 'store';
 import { Context, initialContext, IContext } from './Context';
+import GoogleFontLoader from 'react-google-font-loader';
+import { fontsWithWeights } from 'components';
 
 const store = configureStore();
 
@@ -60,6 +62,7 @@ const Provider: FC<ProviderProps> = ({ children }) => {
               setDeleteAll,
             }}
           >
+            <GoogleFontLoader fonts={fontsWithWeights} />
             {children}
           </Context.Provider>
         </StoreProvider>

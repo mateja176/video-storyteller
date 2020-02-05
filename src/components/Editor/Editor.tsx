@@ -16,6 +16,7 @@ import {
 import 'draft-js/dist/Draft.css';
 import { EditorProps as BaseEditorProps, Maybe } from 'models';
 import React, { KeyboardEvent } from 'react';
+import { fontStyleMap } from '.';
 
 const useStyles = makeStyles({
   editor: {
@@ -39,7 +40,7 @@ const useStyles = makeStyles({
 
 const tabCharacter = '  ';
 
-const colors = [
+export const colors = [
   '#b80000',
   '#db3e00',
   '#fccb00',
@@ -56,12 +57,17 @@ const colors = [
   '#c4def6',
   '#bed3f3',
   '#d4c4fb',
-];
-
-const styleMap: DraftStyleMap = colors.reduce(
+] as const;
+export type Colors = typeof colors;
+export const colorStyleMap: DraftStyleMap = colors.reduce(
   (map, color) => ({ ...map, [color]: { color } }),
   {} as DraftStyleMap,
 );
+
+export const customStyleMap: DraftStyleMap = {
+  ...fontStyleMap,
+  ...colorStyleMap,
+};
 
 const getBlockStyle = (block: ContentBlock) => {
   switch (block.getType()) {
@@ -151,7 +157,7 @@ const Editor: React.FC<EditorProps> = ({
         spellCheck
         placeholder={!hasText && isUnstyled ? 'Tell a story...' : ''}
         blockStyleFn={getBlockStyle}
-        customStyleMap={styleMap}
+        customStyleMap={customStyleMap}
         handleKeyCommand={handleKeyCommand}
         keyBindingFn={mapKeyToEditorCommand}
         onFocus={onFocus}

@@ -39,6 +39,7 @@ import {
   ColorPicker,
   Editor,
   EditorControls,
+  FontPicker,
   Loader,
   Progress,
   progressHeight,
@@ -733,6 +734,16 @@ const Canvas: React.FC<CanvasProps> = ({
                           <EditorControls
                             editorState={focusedEditorState}
                             setEditorState={setFocusedEditorState}
+                          />
+                          <FontPicker
+                            onSelect={font => {
+                              setFocusedEditorState(
+                                RichUtils.toggleInlineStyle(
+                                  focusedEditorState,
+                                  font,
+                                ),
+                              );
+                            }}
                           />
                           <ColorPicker
                             onSelect={newColor => {
