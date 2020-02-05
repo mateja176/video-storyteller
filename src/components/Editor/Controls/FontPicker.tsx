@@ -86,6 +86,7 @@ export const FontPicker: React.FC<FontPickerProps> = ({ onSelect }) => {
 
               setSelectedFont(currentFont);
             }}
+            style={{ fontFamily: currentFont }}
           >
             {currentFont}
           </MenuItem>
