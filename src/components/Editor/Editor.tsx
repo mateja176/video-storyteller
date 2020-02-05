@@ -16,7 +16,7 @@ import {
 import 'draft-js/dist/Draft.css';
 import { EditorProps as BaseEditorProps, Maybe } from 'models';
 import React, { KeyboardEvent } from 'react';
-import { fontStyleMap } from '.';
+import { fontSizeStyleMap, fontStyleMap } from '.';
 
 const useStyles = makeStyles({
   editor: {
@@ -66,6 +66,7 @@ export const colorStyleMap: DraftStyleMap = colors.reduce(
 
 export const customStyleMap: DraftStyleMap = {
   ...fontStyleMap,
+  ...fontSizeStyleMap,
   ...colorStyleMap,
 };
 

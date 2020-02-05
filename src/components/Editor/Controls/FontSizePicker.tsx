@@ -6,45 +6,41 @@ import {
   Menu,
   MenuItem,
 } from '@material-ui/core';
-import { FontDownload } from '@material-ui/icons';
+import { FormatSize } from '@material-ui/icons';
 import { DraftStyleMap } from 'draft-js';
 import React from 'react';
-import { GoogleFontLoaderProps } from 'react-google-font-loader';
 
-export const fonts = [
-  'Roboto',
-  'Montserrat',
-  'Anton',
-  'Molle',
-  'Lobster',
-  'Indie Flower',
-  'Dancing Script',
-  'Pacifico',
-  'Shadows Into Light',
+export const fontSizes = [
+  'initial',
+  'xx-small',
+  'x-small',
+  'small',
+  'medium',
+  'large',
+  'x-large',
+  'xx-large',
+  'smaller',
+  'larger',
 ] as const;
-export const fontStyleMap: DraftStyleMap = fonts.reduce(
-  (map, fontFamily) => ({
+export const fontSizeStyleMap: DraftStyleMap = fontSizes.reduce(
+  (map, fontSize) => ({
     ...map,
-    [fontFamily]: { fontFamily },
+    [fontSize]: { fontSize },
   }),
   {} as DraftStyleMap,
 );
 
-export type Fonts = typeof fonts;
-export type Font = Fonts[number];
-export const fontsWithWeights: GoogleFontLoaderProps['fonts'] = fonts.map(
-  currentFont => ({
-    font: currentFont,
-    weights: [400, 700],
-  }),
-);
+export type FontSizes = typeof fontSizes;
+export type FontSize = FontSizes[number];
 
-export interface FontPickerProps {
+export interface FontSizePickerProps {
   onSelect: (font: string) => void;
 }
 
-export const FontPicker: React.FC<FontPickerProps> = ({ onSelect }) => {
-  const [selectedFont, setSelectedFont] = React.useState<Font>('Roboto');
+export const FontSizePicker: React.FC<FontSizePickerProps> = ({ onSelect }) => {
+  const [selectedFontSize, setSelectedFontSize] = React.useState<FontSize>(
+    'initial',
+  );
 
   const [open, setOpen] = React.useState(false);
 
@@ -65,10 +61,10 @@ export const FontPicker: React.FC<FontPickerProps> = ({ onSelect }) => {
           }}
         >
           <ListItemIcon style={{ minWidth: 'auto', marginRight: 10 }}>
-            <FontDownload />
+            <FormatSize />
           </ListItemIcon>
           <ListItemText style={{ whiteSpace: 'nowrap' }}>
-            {selectedFont}
+            {selectedFontSize}
           </ListItemText>
         </ListItem>
       </ClickAwayListener>
@@ -80,17 +76,16 @@ export const FontPicker: React.FC<FontPickerProps> = ({ onSelect }) => {
         disableEnforceFocus
         disableAutoFocusItem
       >
-        {fonts.map(currentFont => (
+        {fontSizes.map(currentFontSize => (
           <MenuItem
-            key={currentFont}
+            key={currentFontSize}
             onClick={() => {
-              onSelect(currentFont);
+              onSelect(currentFontSize);
 
-              setSelectedFont(currentFont);
+              setSelectedFontSize(currentFontSize);
             }}
-            style={{ fontFamily: currentFont }}
           >
-            {currentFont}
+            {currentFontSize}
           </MenuItem>
         ))}
       </Menu>

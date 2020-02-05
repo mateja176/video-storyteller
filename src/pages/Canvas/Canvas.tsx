@@ -44,6 +44,7 @@ import {
   Progress,
   progressHeight,
   Tooltip,
+  FontSizePicker,
 } from 'components';
 import {
   ContentState,
@@ -741,6 +742,16 @@ const Canvas: React.FC<CanvasProps> = ({
                                 RichUtils.toggleInlineStyle(
                                   focusedEditorState,
                                   font,
+                                ),
+                              );
+                            }}
+                          />
+                          <FontSizePicker
+                            onSelect={fontSize => {
+                              setFocusedEditorState(
+                                RichUtils.toggleInlineStyle(
+                                  focusedEditorState,
+                                  fontSize,
                                 ),
                               );
                             }}
