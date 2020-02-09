@@ -63,10 +63,13 @@ export type SaveStorySuccess = ReturnType<CreateSaveStory['success']>;
 export type SaveStoryFailure = ReturnType<CreateSaveStory['failure']>;
 export type SaveStoryAction = ActionType<CreateSaveStory>;
 
-export const subscribeToStoriesType = 'canvas/stories/subscribe';
-export const createSubscribeToStories = createAction(subscribeToStoriesType);
-export type CreateSubscribeToStories = typeof createSubscribeToStories;
-export type SubscribeToStoriesAction = ReturnType<CreateSubscribeToStories>;
+export const subscribeToStories = createAsyncAction(
+  'canvas/stories/subscribe/request',
+  'canvas/stories/subscribe/success',
+  'canvas/stories/subscribe/failure',
+)<void, void, void>();
+export type SubscribeToStories = typeof subscribeToStories;
+export type SubscribeToStoriesAction = ActionType<SubscribeToStories>;
 
 export const addStoryType = 'canvas/story/add';
 export const createAddStory = createAction(
@@ -141,9 +144,17 @@ export type CanvasAction =
   | SaveStoryAction;
 
 export const canvas = createReducer(initialCanvasState)<CanvasAction>({
-  'canvas/stories/subscribe': state => ({
+  'canvas/stories/subscribe/request': state => ({
     ...state,
     fetchStoriesStatus: 'in progress',
+  }),
+  'canvas/stories/subscribe/success': state => ({
+    ...state,
+    fetchStoriesStatus: 'completed',
+  }),
+  'canvas/stories/subscribe/failure': state => ({
+    ...state,
+    fetchStoriesStatus: 'failed',
   }),
   'canvas/story/add': (state, { payload: story }) => ({
     ...state,

@@ -5,11 +5,20 @@ import { identity } from 'ramda';
 import { Epic, ofType } from 'redux-observable';
 import { collectionChanges, collectionData, docData } from 'rxfire/firestore';
 import { defer, empty, from, of } from 'rxjs';
-import { catchError, first, map, mergeMap, switchMap } from 'rxjs/operators';
+import {
+  catchError,
+  first,
+  map,
+  mergeMap,
+  switchMap,
+  withLatestFrom,
+} from 'rxjs/operators';
+import { getType } from 'typesafe-actions';
 import { selectState } from 'utils';
 import { Action, State } from '../reducer';
 import { selectUid } from '../selectors';
 import {
+  AddStoryAction,
   createAddStory,
   createDeleteStory,
   CreateFetchStories,
@@ -18,6 +27,7 @@ import {
   createFetchStory,
   createSaveStory,
   createSetOne,
+  DeleteStoryAction,
   FetchStoriesAction,
   fetchStoriesType,
   FetchStoryAction,
@@ -25,8 +35,9 @@ import {
   SaveStoryAction,
   SaveStoryRequest,
   saveStoryType,
+  SetOneAction,
+  subscribeToStories,
   SubscribeToStoriesAction,
-  subscribeToStoriesType,
 } from '../slices/canvas';
 import { createSetErrorSnackbar, SetSnackbarAction } from '../slices/snackbar';
 
@@ -104,9 +115,19 @@ export const fetchStories: Epic<
     ),
   );
 
-export const subscribeToStories: Epic<Action, any, State> = (action$, state$) =>
+export const subscribeToStoriesEpic: Epic<
+  Action,
+  | SubscribeToStoriesAction
+  | SetSnackbarAction
+  | DeleteStoryAction
+  | AddStoryAction
+  | SetOneAction,
+  State
+> = (action$, state$) =>
   action$.pipe(
-    ofType<Action, SubscribeToStoriesAction>(subscribeToStoriesType),
+    ofType<Action, ReturnType<typeof subscribeToStories.request>>(
+      getType(subscribeToStories.request),
+    ),
     selectState(selectUid)(state$),
     switchMap(uid =>
       collectionChanges(storiesCollection.where('authorId', '==', uid)).pipe(
@@ -124,11 +145,16 @@ export const subscribeToStories: Epic<Action, any, State> = (action$, state$) =>
               return empty();
           }
         }),
+        withLatestFrom(of(subscribeToStories.success())),
+        mergeMap(identity),
         catchError(({ message }: Error) =>
-          of(createSetErrorSnackbar({ message })),
+          from([
+            subscribeToStories.failure(),
+            createSetErrorSnackbar({ message }),
+          ]),
         ),
       ),
     ),
   );
 
-export default [saveStory, fetchStory, fetchStories, subscribeToStories];
+export default [saveStory, fetchStory, fetchStories, subscribeToStoriesEpic];
