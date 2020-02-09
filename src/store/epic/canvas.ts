@@ -1,19 +1,23 @@
 import 'firebase/firestore';
 import firebase from 'my-firebase';
 import { StoryWithId } from 'pages/Canvas/CanvasContext';
+import { identity } from 'ramda';
 import { Epic, ofType } from 'redux-observable';
-import { collectionData, docData } from 'rxfire/firestore';
-import { defer, from } from 'rxjs';
-import { catchError, first, map, switchMap } from 'rxjs/operators';
+import { collectionChanges, collectionData, docData } from 'rxfire/firestore';
+import { defer, empty, from, of } from 'rxjs';
+import { catchError, first, map, mergeMap, switchMap } from 'rxjs/operators';
 import { selectState } from 'utils';
 import { Action, State } from '../reducer';
 import { selectUid } from '../selectors';
 import {
+  createAddStory,
+  createDeleteStory,
   CreateFetchStories,
   createFetchStories,
   CreateFetchStory,
   createFetchStory,
   createSaveStory,
+  createSetOne,
   FetchStoriesAction,
   fetchStoriesType,
   FetchStoryAction,
@@ -21,6 +25,8 @@ import {
   SaveStoryAction,
   SaveStoryRequest,
   saveStoryType,
+  SubscribeToStoriesAction,
+  subscribeToStoriesType,
 } from '../slices/canvas';
 import { createSetErrorSnackbar, SetSnackbarAction } from '../slices/snackbar';
 
@@ -98,4 +104,31 @@ export const fetchStories: Epic<
     ),
   );
 
-export default [saveStory, fetchStory, fetchStories];
+export const subscribeToStories: Epic<Action, any, State> = (action$, state$) =>
+  action$.pipe(
+    ofType<Action, SubscribeToStoriesAction>(subscribeToStoriesType),
+    selectState(selectUid)(state$),
+    switchMap(uid =>
+      collectionChanges(storiesCollection.where('authorId', '==', uid)).pipe(
+        mergeMap(identity),
+        mergeMap(documentChange => {
+          const documentData = documentChange.doc.data() as StoryWithId;
+          switch (documentChange.type) {
+            case 'added':
+              return of(createAddStory(documentData));
+            case 'modified':
+              return of(createSetOne(documentData));
+            case 'removed':
+              return of(createDeleteStory({ id: documentData.id }));
+            default:
+              return empty();
+          }
+        }),
+        catchError(({ message }: Error) =>
+          of(createSetErrorSnackbar({ message })),
+        ),
+      ),
+    ),
+  );
+
+export default [saveStory, fetchStory, fetchStories, subscribeToStories];

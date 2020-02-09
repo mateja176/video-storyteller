@@ -1,5 +1,6 @@
 import { ExtendedLoadingStatus } from 'models';
 import { StoryWithId } from 'pages/Canvas/CanvasContext';
+import { update } from 'ramda';
 import { ActionType, createAction, createAsyncAction } from 'typesafe-actions';
 import { Required } from 'utility-types';
 import { createReducer, toObject } from 'utils';
@@ -62,6 +63,11 @@ export type SaveStorySuccess = ReturnType<CreateSaveStory['success']>;
 export type SaveStoryFailure = ReturnType<CreateSaveStory['failure']>;
 export type SaveStoryAction = ActionType<CreateSaveStory>;
 
+export const subscribeToStoriesType = 'canvas/stories/subscribe';
+export const createSubscribeToStories = createAction(subscribeToStoriesType);
+export type CreateSubscribeToStories = typeof createSubscribeToStories;
+export type SubscribeToStoriesAction = ReturnType<CreateSubscribeToStories>;
+
 export const addStoryType = 'canvas/story/add';
 export const createAddStory = createAction(
   addStoryType,
@@ -69,6 +75,22 @@ export const createAddStory = createAction(
 );
 export type CreateAddStory = typeof createAddStory;
 export type AddStoryAction = ReturnType<CreateAddStory>;
+
+export const setOneType = 'canvas/stories/SetOne';
+export const createSetOne = createAction(
+  setOneType,
+  action => (payload: StoryWithId) => action(payload),
+);
+export type CreateSetOne = typeof createSetOne;
+export type SetOneAction = ReturnType<CreateSetOne>;
+
+export const setDeleteStoryType = 'canvas/stories/deleteOne';
+export const createDeleteStory = createAction(
+  setDeleteStoryType,
+  action => (payload: Pick<StoryWithId, 'id'>) => action(payload),
+);
+export type CreateDeleteStory = typeof createDeleteStory;
+export type DeleteStoryAction = ReturnType<CreateDeleteStory>;
 
 export const fetchStoryTypes = [
   'canvas/stories/fetchOne/request',
@@ -107,7 +129,10 @@ export type CreateSetCurrentStoryId = typeof createSetCurrentStoryId;
 export type SetCurrentStoryIdAction = ReturnType<CreateSetCurrentStoryId>;
 
 export type CanvasAction =
+  | SubscribeToStoriesAction
   | AddStoryAction
+  | SetOneAction
+  | DeleteStoryAction
   | SetCurrentStoryIdAction
   | FetchStoryAction
   | FetchStoriesAction
@@ -116,9 +141,25 @@ export type CanvasAction =
   | SaveStoryAction;
 
 export const canvas = createReducer(initialCanvasState)<CanvasAction>({
+  'canvas/stories/subscribe': state => ({
+    ...state,
+    fetchStoriesStatus: 'in progress',
+  }),
   'canvas/story/add': (state, { payload: story }) => ({
     ...state,
     stories: [story].concat(state.stories),
+  }),
+  'canvas/stories/SetOne': (state, { payload }) => ({
+    ...state,
+    stories: update(
+      state.stories.findIndex(story => story.id === payload.id),
+      payload,
+      state.stories,
+    ),
+  }),
+  'canvas/stories/deleteOne': (state, { payload: { id } }) => ({
+    ...state,
+    stories: state.stories.filter(story => story.id === id),
   }),
   'canvas/currentStoryId/set': (state, { payload: { currentStoryId } }) => ({
     ...state,

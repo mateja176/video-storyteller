@@ -16,8 +16,8 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { Box, Flex } from 'rebass';
 import {
-  createFetchStories,
   createSetCurrentStoryId,
+  createSubscribeToStories,
   selectCurrentStoryId,
   selectFetchStoriesStatus,
   selectStories,
@@ -29,9 +29,9 @@ import { useActions } from 'utils';
 export interface DashboardProps {}
 
 const Dashboard: React.FC<DashboardProps> = () => {
-  const { setCurrentStoryId, fetchStories } = useActions({
+  const { setCurrentStoryId, subscribeToStories } = useActions({
     setCurrentStoryId: createSetCurrentStoryId,
-    fetchStories: createFetchStories.request,
+    subscribeToStories: createSubscribeToStories,
   });
 
   const fetchStoriesStatus = useSelector(selectFetchStoriesStatus);
@@ -40,9 +40,9 @@ const Dashboard: React.FC<DashboardProps> = () => {
 
   React.useEffect(() => {
     if (fetchStoriesStatus === 'not started') {
-      fetchStories();
+      subscribeToStories();
     }
-  }, [fetchStories, fetchStoriesStatus, stories.length]);
+  }, [subscribeToStories, fetchStoriesStatus, stories.length]);
 
   const currentStoryId = useSelector(selectCurrentStoryId);
 
