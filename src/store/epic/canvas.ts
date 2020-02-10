@@ -14,7 +14,7 @@ import {
   withLatestFrom,
 } from 'rxjs/operators';
 import { getType } from 'typesafe-actions';
-import { selectState } from 'utils';
+import { selectState, takeUntilSignedOut } from 'utils';
 import { Action, State } from '../reducer';
 import { selectFetchStoriesStatus, selectUid } from '../selectors';
 import {
@@ -131,6 +131,7 @@ export const subscribeToStoriesEpic: Epic<
     selectState(selectUid)(state$),
     switchMap(uid =>
       collectionChanges(storiesCollection.where('authorId', '==', uid)).pipe(
+        takeUntilSignedOut(state$),
         mergeMap(identity),
         mergeMap(documentChange => {
           const documentData = documentChange.doc.data() as StoryWithId;
