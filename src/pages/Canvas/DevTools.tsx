@@ -686,6 +686,10 @@ const StoryMonitor = ({
                 }
               : { type: 'other', Icon: CropSquare };
 
+            const borderColor = deleteHovered
+              ? theme.palette.secondary.light
+              : theme.palette.primary.dark;
+
             return (
               <Flex key={id} height="100%">
                 <Card
@@ -695,17 +699,13 @@ const StoryMonitor = ({
                       .toString(),
                     minWidth: cardWidth,
                     height: '100%',
-                    border:
+                    boxShadow:
                       isCud &&
                       ((action as CudAction).payload.payload.id ===
                         hoveredActionId ||
                         (action as CudAction).payload.payload.id ===
                           hoveredBlockId)
-                        ? `1px solid ${
-                            deleteHovered
-                              ? theme.palette.secondary.light
-                              : theme.palette.primary.dark
-                          }`
+                        ? `1px 1px inset ${borderColor}, -1px -1px inset ${borderColor}`
                         : 'none',
                     position: 'relative',
                     display: 'flex',

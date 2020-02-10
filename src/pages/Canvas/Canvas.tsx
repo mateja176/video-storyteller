@@ -1123,9 +1123,9 @@ const Canvas: React.FC<CanvasProps> = ({
                     }}
                     style={{
                       overflow: 'hidden',
-                      border:
+                      boxShadow:
                         hoveredBlockId === id
-                          ? `1px solid ${theme.palette.primary.dark}`
+                          ? `1px 1px inset ${theme.palette.primary.dark}, -1px -1px inset ${theme.palette.primary.dark}`
                           : 'none',
                       display: 'inline-block',
                       padding: blockState.type === 'text' ? 15 : 0,
