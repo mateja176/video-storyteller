@@ -682,7 +682,9 @@ const Canvas: React.FC<CanvasProps> = ({
           >
             <Tooltip title="Toggle theatrical mode">
               <ListItemIcon>
-                <Box>{theatricalMode ? <TvOff /> : <Tv />}</Box>
+                <Box>
+                  {theatricalMode ? <TvOff color="secondary" /> : <Tv />}
+                </Box>
               </ListItemIcon>
             </Tooltip>
           </ListItem>
@@ -700,7 +702,13 @@ const Canvas: React.FC<CanvasProps> = ({
           >
             <Tooltip title="Toggle full screen">
               <ListItemIcon>
-                <Box>{isFullscreen ? <FullscreenExit /> : <Fullscreen />}</Box>
+                <Box>
+                  {isFullscreen ? (
+                    <FullscreenExit color="secondary" />
+                  ) : (
+                    <Fullscreen />
+                  )}
+                </Box>
               </ListItemIcon>
             </Tooltip>
           </ListItem>
