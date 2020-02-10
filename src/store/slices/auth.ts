@@ -1,13 +1,18 @@
 import { User as FirebaseUser, UserInfo } from 'firebase/app';
+import { ExtendedLoadingStatus } from 'models';
 import { combineReducers, Reducer } from 'redux';
-import { createAction } from 'typesafe-actions';
+import {
+  createAction,
+  ActionType,
+  createAsyncAction,
+  getType,
+} from 'typesafe-actions';
 
 export type User = Omit<UserInfo, 'providerId'>;
 
 export interface AuthState {
   user: User;
-  isLoading: boolean;
-  error: string;
+  status: ExtendedLoadingStatus;
 }
 
 export const initialUser: User = {
@@ -28,10 +33,13 @@ export const createSignout = createAction(signoutType);
 export type CreateSignout = typeof createSignout;
 export type SignoutAction = ReturnType<CreateSignout>;
 
-export const getAuthStateType = 'auth/state/get';
-export const createGetAuthState = createAction(getAuthStateType);
-export type CreateGetAuthState = typeof createGetAuthState;
-export type GetAuthStateAction = ReturnType<CreateGetAuthState>;
+export const createFetchAuthState = createAsyncAction(
+  'auth/request',
+  'auth/success',
+  'auth/failure',
+)<void, void, void>();
+export type CreateFetchAuthState = typeof createFetchAuthState;
+export type FetchAuthStateAction = ActionType<CreateFetchAuthState>;
 
 export const authStateChangeType = 'auth/state/change';
 export const createAuthStateChange = createAction(
@@ -53,7 +61,7 @@ export type SetUserAction = ReturnType<CreateSetUser>;
 export type UserAction =
   | SigninAction
   | SignoutAction
-  | GetAuthStateAction
+  | FetchAuthStateAction
   | AuthStateChangeAction
   | SetUserAction;
 
@@ -69,54 +77,43 @@ export const user: Reducer<User, SetUserAction> = (
   }
 };
 
-export const setAuthErrorType = 'auth/error';
-export const createSetAuthError = createAction(
-  setAuthErrorType,
-  action => (payload: string) => action(payload),
+export const setAuthStatusType = 'auth/status';
+export const createSetAuthStatus = createAction(
+  setAuthStatusType,
+  action => (payload: ExtendedLoadingStatus) => action(payload),
 );
-export type CreateSetAuthError = typeof createSetAuthError;
-export type SetAuthErrorAction = ReturnType<CreateSetAuthError>;
+export type CreateSetAuthStatus = typeof createSetAuthStatus;
+export type SetAuthStatusAction = ReturnType<CreateSetAuthStatus>;
 
-export const error: Reducer<AuthState['error'], SetAuthErrorAction> = (
-  state = '',
+type StatusSettingAction =
+  | FetchAuthStateAction
+  | SigninAction
+  | SignoutAction
+  | SetAuthStatusAction;
+
+export const status: Reducer<AuthState['status'], StatusSettingAction> = (
+  state = 'not started',
   action,
 ) => {
   switch (action.type) {
-    case setAuthErrorType:
+    case getType(createFetchAuthState.request):
+    case signinType:
+    case signoutType:
+      return 'in progress';
+    case getType(createFetchAuthState.success):
+      return 'completed';
+    case getType(createFetchAuthState.failure):
+      return 'failed';
+    case setAuthStatusType:
       return action.payload;
     default:
       return state;
   }
 };
 
-type LoadingSettingAction =
-  | GetAuthStateAction
-  | SigninAction
-  | SignoutAction
-  | SetUserAction
-  | SetAuthErrorAction;
-
-export const isLoading: Reducer<
-  AuthState['isLoading'],
-  LoadingSettingAction
-> = (state = false, action) => {
-  switch (action.type) {
-    case getAuthStateType:
-    case signinType:
-    case signoutType:
-      return true;
-    case setUserType:
-    case setAuthErrorType:
-      return false;
-    default:
-      return state;
-  }
-};
-
 export const auth = combineReducers({
-  isLoading,
-  error,
+  status,
   user,
 });
 
-export type AuthAction = UserAction | SetAuthErrorAction | LoadingSettingAction;
+export type AuthAction = UserAction | StatusSettingAction;

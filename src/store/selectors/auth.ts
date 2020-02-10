@@ -6,15 +6,9 @@ export const selectAuth = (state: State) => state.auth;
 
 export const selectUser = createDeepSelector(selectAuth, ({ user }) => user);
 
-export const selectUid = createSelector(
-  selectUser,
-  ({ uid }) => uid,
-);
+export const selectUid = createSelector(selectUser, ({ uid }) => uid);
 
-export const selectIsSignedIn = createSelector(
-  selectUid,
-  Boolean,
-);
+export const selectIsSignedIn = createSelector(selectUid, Boolean);
 
 export const selectDisplayName = createSelector(
   selectUser,
@@ -23,10 +17,7 @@ export const selectDisplayName = createSelector(
 
 export type DisplayName = ReturnType<typeof selectDisplayName>;
 
-export const selectEmail = createSelector(
-  selectUser,
-  ({ email }) => email,
-);
+export const selectEmail = createSelector(selectUser, ({ email }) => email);
 
 export const selectPhotoURL = createSelector(
   selectUser,
@@ -35,7 +26,12 @@ export const selectPhotoURL = createSelector(
 
 export type PhotoURL = ReturnType<typeof selectPhotoURL>;
 
-export const selectIsAuthLoading = createSelector(
+export const selectAuthStatus = createSelector(
   selectAuth,
-  ({ isLoading }) => isLoading,
+  ({ status }) => status,
+);
+
+export const selectIsAuthLoading = createSelector(
+  selectAuthStatus,
+  status => status === 'in progress',
 );

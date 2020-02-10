@@ -7,13 +7,14 @@ import Layout from 'Layout';
 import { CreateSimpleAction, WithColors } from 'models';
 import React, { FC, useEffect } from 'react';
 import { hot } from 'react-hot-loader';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import {
-  createGetAuthState,
+  selectAuthStatus,
   selectIsSignedIn,
   selectTheme,
   State,
+  createFetchAuthState,
 } from 'store';
 import { Context } from './Context';
 import Routes from './Routes';
@@ -37,13 +38,19 @@ const App: FC<AppProps> = ({ getAuthState, isSignedIn, themeOptions }) => {
     getAuthState();
   }, [getAuthState]);
 
+  const authStatus = useSelector(selectAuthStatus);
+
   React.useEffect(() => {
-    if (!isSignedIn) {
+    if (
+      !isSignedIn &&
+      authStatus !== 'not started' &&
+      authStatus !== 'in progress'
+    ) {
       deleteAll();
 
       history.push('/');
     }
-  }, [isSignedIn]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isSignedIn, authStatus]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const theme = createMuiTheme({
     ...themeOptions,
@@ -74,7 +81,7 @@ export default hot(module)(
       isSignedIn: selectIsSignedIn(state),
     }),
     {
-      getAuthState: createGetAuthState,
+      getAuthState: createFetchAuthState.request,
     },
   )(App),
 );

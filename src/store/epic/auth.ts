@@ -4,18 +4,27 @@ import { not } from 'ramda';
 import { Epic, ofType } from 'redux-observable';
 import { authState } from 'rxfire/auth';
 import { empty, of, OperatorFunction, pipe } from 'rxjs';
-import { catchError, filter, map, mergeMapTo, switchMap } from 'rxjs/operators';
-import { Action, createReset, State } from '../reducer';
+import {
+  catchError,
+  filter,
+  map,
+  mergeMap,
+  mergeMapTo,
+  switchMap,
+  withLatestFrom,
+} from 'rxjs/operators';
+import { getType } from 'typesafe-actions';
+import { Action, createReset, ResetAction, State } from '../reducer';
+import { selectAuthStatus } from '../selectors';
 import {
   AuthStateChangeAction,
   authStateChangeType,
   createAuthStateChange,
-  createSetAuthError,
+  createFetchAuthState,
   createSetErrorSnackbar,
   createSetUser,
-  getAuthStateType,
-  SetAuthErrorAction,
-  setAuthErrorType,
+  FetchAuthStateAction,
+  SetAuthStatusAction,
   SetSnackbarAction,
   SetUserAction,
   signinType,
@@ -23,19 +32,32 @@ import {
   User,
 } from '../slices';
 
-const authState$: Epic<Action, AuthStateChangeAction, State> = action$ =>
+type ActionWithReset = Action | ResetAction;
+
+const authState$: Epic<
+  Action,
+  AuthStateChangeAction | FetchAuthStateAction,
+  State
+> = (action$, state$) =>
   action$.pipe(
-    ofType(getAuthStateType),
+    ofType<Action, ReturnType<typeof createFetchAuthState['request']>>(
+      getType(createFetchAuthState.request),
+    ),
     switchMap(() => authState(auth())),
-    map(createAuthStateChange),
+    withLatestFrom(state$.pipe(map(selectAuthStatus))),
+    mergeMap(([state, status]) => [
+      createAuthStateChange(state),
+      ...(status === 'in progress' ? [createFetchAuthState.success()] : []),
+    ]),
+    catchError(() => of(createFetchAuthState.failure())),
   );
 
 const mapAuthStateChangeToUser = pipe(
-  ofType<Action, AuthStateChangeAction>(authStateChangeType),
+  ofType<ActionWithReset, AuthStateChangeAction>(authStateChangeType),
   map(({ payload }) => payload),
 );
 
-const signIn: Epic<Action, SetAuthErrorAction, State> = action$ =>
+const signIn: Epic<Action, SetSnackbarAction, State> = action$ =>
   action$.pipe(
     ofType(signinType),
     switchMap(() => {
@@ -44,32 +66,29 @@ const signIn: Epic<Action, SetAuthErrorAction, State> = action$ =>
       return auth().signInWithPopup(provider);
     }),
     mergeMapTo(empty()),
-    catchError(({ message }) => of(createSetAuthError(message))),
+    catchError(({ message }) => of(createSetErrorSnackbar({ message }))),
   );
 
-const userUpdated: Epic<Action, SetUserAction, State> = action$ =>
+const userUpdated: Epic<
+  Action,
+  SetUserAction | SetAuthStatusAction,
+  State
+> = action$ =>
   action$.pipe(
     mapAuthStateChangeToUser,
     filter(Boolean) as OperatorFunction<User | null, User>,
     map(createSetUser),
   );
 
-const signedOut: Epic = action$ =>
+const signedOut: Epic<ActionWithReset, ResetAction, State> = action$ =>
   action$.pipe(mapAuthStateChangeToUser, filter(not), map(createReset));
 
-const signOut: Epic<Action, SetAuthErrorAction, State> = action$ =>
+const signOut: Epic<Action, SetSnackbarAction, State> = action$ =>
   action$.pipe(
     ofType(signoutType),
     switchMap(() => auth().signOut()),
     mergeMapTo(empty()),
-    catchError(({ message }) => of(createSetAuthError(message))),
+    catchError(({ message }) => of(createSetErrorSnackbar({ message }))),
   );
 
-const authError: Epic<Action, SetSnackbarAction, State> = action$ =>
-  action$.pipe(
-    ofType<Action, SetAuthErrorAction>(setAuthErrorType),
-    map(({ payload }) => payload),
-    map(message => createSetErrorSnackbar({ message })),
-  );
-
-export default [authState$, signIn, userUpdated, signedOut, signOut, authError];
+export default [authState$, signIn, userUpdated, signedOut, signOut];
