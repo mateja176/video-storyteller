@@ -16,7 +16,7 @@ import {
 import { getType } from 'typesafe-actions';
 import { selectState } from 'utils';
 import { Action, State } from '../reducer';
-import { selectUid } from '../selectors';
+import { selectFetchStoriesStatus, selectUid } from '../selectors';
 import {
   AddStoryAction,
   createAddStory,
@@ -40,6 +40,8 @@ import {
   SubscribeToStoriesAction,
 } from '../slices/canvas';
 import { createSetErrorSnackbar, SetSnackbarAction } from '../slices/snackbar';
+
+type SADAction = SetOneAction | AddStoryAction | DeleteStoryAction;
 
 const storiesCollection = firebase.firestore().collection('stories');
 
@@ -117,14 +119,12 @@ export const fetchStories: Epic<
 
 export const subscribeToStoriesEpic: Epic<
   Action,
-  | SubscribeToStoriesAction
-  | SetSnackbarAction
-  | DeleteStoryAction
-  | AddStoryAction
-  | SetOneAction,
+  SubscribeToStoriesAction | SADAction | SetSnackbarAction,
   State
-> = (action$, state$) =>
-  action$.pipe(
+> = (action$, state$) => {
+  const status$ = state$.pipe(map(selectFetchStoriesStatus));
+
+  return action$.pipe(
     ofType<Action, ReturnType<typeof subscribeToStories.request>>(
       getType(subscribeToStories.request),
     ),
@@ -134,19 +134,29 @@ export const subscribeToStoriesEpic: Epic<
         mergeMap(identity),
         mergeMap(documentChange => {
           const documentData = documentChange.doc.data() as StoryWithId;
-          switch (documentChange.type) {
-            case 'added':
-              return of(createAddStory(documentData));
-            case 'modified':
-              return of(createSetOne(documentData));
-            case 'removed':
-              return of(createDeleteStory({ id: documentData.id }));
-            default:
-              return empty();
-          }
+
+          const newAction$ = (() => {
+            switch (documentChange.type) {
+              case 'added':
+                return of(createAddStory(documentData));
+              case 'modified':
+                return of(createSetOne(documentData));
+              case 'removed':
+                return of(createDeleteStory({ id: documentData.id }));
+              default:
+                return empty();
+            }
+          })();
+
+          return newAction$;
         }),
-        withLatestFrom(of(subscribeToStories.success())),
-        mergeMap(identity),
+        withLatestFrom(status$),
+        mergeMap(([action, status]) =>
+          from([
+            action,
+            ...(status === 'in progress' ? [subscribeToStories.success()] : []),
+          ]),
+        ),
         catchError(({ message }: Error) =>
           from([
             subscribeToStories.failure(),
@@ -156,5 +166,6 @@ export const subscribeToStoriesEpic: Epic<
       ),
     ),
   );
+};
 
 export default [saveStory, fetchStory, fetchStories, subscribeToStoriesEpic];
