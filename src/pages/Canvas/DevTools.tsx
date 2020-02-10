@@ -22,6 +22,7 @@ import {
   Edit,
   Fullscreen,
   Image,
+  LibraryMusic,
   PanTool,
   Pause,
   PhotoSizeSelectLarge,
@@ -40,7 +41,7 @@ import {
 import { Context } from 'App';
 import color from 'color';
 import { Button, Progress, progressHeight, Tooltip } from 'components';
-import { startCase, capitalize } from 'lodash';
+import { capitalize, startCase } from 'lodash';
 import { draggables } from 'models';
 import { equals, init, insert, last, nth, pickAll, update } from 'ramda';
 import React from 'react';
@@ -137,7 +138,7 @@ const actionTypeIcon: Record<Action['type'], React.ReactElement> = {
   'transform/scale/set': <ZoomIn />,
   'transform/position/set': <PanTool />,
   'transform/set': <Transform />,
-  'audio/set': <Audiotrack />,
+  'audio/set': <LibraryMusic />,
 };
 
 const StoryMonitor = ({
