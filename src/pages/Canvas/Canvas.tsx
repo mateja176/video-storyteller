@@ -982,7 +982,7 @@ const Canvas: React.FC<CanvasProps> = ({
                                 }}
                               >
                                 <ListItemIcon style={listItemIconStyle}>
-                                  <Save />
+                                  <Save color="primary" />
                                 </ListItemIcon>
                                 <ListItemText>Save</ListItemText>
                               </ListItem>
