@@ -838,7 +838,7 @@ const Canvas: React.FC<CanvasProps> = ({
                           <FontPicker onSelect={handleSelect(fonts)} />
                           <FontSizePicker onSelect={handleSelect(fontSizes)} />
                           <ColorPicker
-                            currentColor={getCurrentColor(focusedEditorState)}
+                            color={getCurrentColor(focusedEditorState)}
                             onSelect={newColor => {
                               setFocusedEditorState(
                                 RichUtils.toggleInlineStyle(

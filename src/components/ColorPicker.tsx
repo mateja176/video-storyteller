@@ -12,20 +12,16 @@ import { Box } from 'rebass';
 const circleWidth = 17;
 
 export interface ColorPickerProps {
-  currentColor?: string;
-  label?: string;
+  color: string;
   onSelect: (color: string) => void;
+  label?: string;
 }
 
 export const ColorPicker: React.FC<ColorPickerProps> = ({
-  currentColor = '#000',
-  label = 'Color',
+  color,
   onSelect,
+  label = 'Color',
 }) => {
-  const [color, setColor] = React.useState(currentColor);
-  React.useEffect(() => {
-    setColor(currentColor);
-  }, [currentColor]);
   const [open, setOpen] = React.useState(false);
 
   const anchorRef = React.useRef<HTMLDivElement>(null);
@@ -64,8 +60,6 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
         <GithubPicker
           color={color}
           onChange={({ hex }) => {
-            setColor(hex);
-
             onSelect(hex);
           }}
         />
