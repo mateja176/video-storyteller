@@ -79,6 +79,13 @@ const __REDUX_DEVTOOLS_EXTENSION__ = function(reducer, preloadedState, config) {
     actionSanitizer = actionsFilter; // eslint-disable-line no-param-reassign
   }
 
+  const relayState = throttle((liftedState, libConfig) => {
+    relayAction.cancel();
+    const state = liftedState || store.liftedStore.getState();
+    sendingActionId = state.nextActionId;
+    relay('STATE', state, undefined, undefined, libConfig);
+  }, latency);
+
   const monitor = new Monitor(relayState);
   if (config.getMonitor) {
     /* eslint-disable no-console */
@@ -141,13 +148,6 @@ const __REDUX_DEVTOOLS_EXTENSION__ = function(reducer, preloadedState, config) {
 
     toContentScript(message, serializeState, serializeAction);
   }
-
-  const relayState = throttle((liftedState, libConfig) => {
-    relayAction.cancel();
-    const state = liftedState || store.liftedStore.getState();
-    sendingActionId = state.nextActionId;
-    relay('STATE', state, undefined, undefined, libConfig);
-  }, latency);
 
   const relayAction = throttle(() => {
     const liftedState = store.liftedStore.getState();
