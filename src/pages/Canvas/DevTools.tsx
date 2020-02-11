@@ -772,6 +772,7 @@ const StoryMonitor = ({
                         <ListItem
                           style={{
                             ...listItemStyle,
+                            cursor: 'default',
                           }}
                         >
                           <Tooltip title="Action id">
@@ -782,14 +783,18 @@ const StoryMonitor = ({
                             </Box>
                           </Tooltip>
                         </ListItem>
-                        <ListItem style={listItemStyle}>
+                        <ListItem
+                          style={{ ...listItemStyle, cursor: 'default' }}
+                        >
                           <Tooltip title={formattedActionType}>
                             <ListItemIcon style={listItemIconStyle}>
                               {actionTypeIcon[action.type]}
                             </ListItemIcon>
                           </Tooltip>
                         </ListItem>
-                        <ListItem style={listItemStyle}>
+                        <ListItem
+                          style={{ ...listItemStyle, cursor: 'default' }}
+                        >
                           <Tooltip title={capitalize(actionBlock.type)}>
                             <ListItemIcon style={listItemIconStyle}>
                               <actionBlock.Icon />
