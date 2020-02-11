@@ -327,6 +327,8 @@ const StoryMonitor = ({
       }
       if (actionsCount > editableActions.length) {
         setActionsCount(actionsCount - 1);
+
+        setDurations(update(durations.length - 1, 0, durations));
       }
     }
   }, [
