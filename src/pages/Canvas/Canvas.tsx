@@ -1160,156 +1160,159 @@ const Canvas: React.FC<CanvasProps> = ({
                 } = blockState;
 
                 return (
-                  <Rnd
-                    key={id}
-                    scale={scale}
-                    size={width && height ? { width, height } : undefined}
-                    position={{
-                      x: left,
-                      y: top,
+                  <div
+                    onMouseEnter={() => {
+                      setHoveredBlockId(id);
                     }}
-                    style={{
-                      overflow: 'hidden',
-                      boxShadow:
-                        hoveredBlockId === id
-                          ? `1px 1px inset ${theme.palette.primary.dark}, -1px -1px inset ${theme.palette.primary.dark}`
-                          : 'none',
-                      display: 'inline-block',
-                      padding: blockState.type === 'text' ? 15 : 0,
-                      transition: playing ? 'all 500ms ease-in-out' : 'none',
+                    onMouseLeave={() => {
+                      setHoveredBlockId(initialHoveredBlockId);
                     }}
-                    onResizeStart={pause}
-                    onDragStart={pause}
-                    onResizeStop={(e, dir, elementRef, delta, { x, y }) => {
-                      resume();
+                  >
+                    <Rnd
+                      key={id}
+                      scale={scale}
+                      size={width && height ? { width, height } : undefined}
+                      position={{
+                        x: left,
+                        y: top,
+                      }}
+                      style={{
+                        overflow: 'hidden',
+                        boxShadow:
+                          hoveredBlockId === id
+                            ? `1px 1px inset ${theme.palette.primary.dark}, -1px -1px inset ${theme.palette.primary.dark}`
+                            : 'none',
+                        display: 'inline-block',
+                        padding: blockState.type === 'text' ? 15 : 0,
+                        transition: playing ? 'all 500ms ease-in-out' : 'none',
+                      }}
+                      onResizeStart={pause}
+                      onDragStart={pause}
+                      onResizeStop={(e, dir, elementRef, delta, { x, y }) => {
+                        resume();
 
-                      const clientRect = elementRef.getBoundingClientRect();
-                      updateResize({
-                        ...blockState,
-                        payload: {
-                          ...blockState.payload,
-                          top: y,
-                          left: x,
-                          width: clientRect.width,
-                          height: clientRect.height,
-                        },
-                      } as BlockState);
-                    }}
-                    onDragStop={(e, dragStopEvent) => {
-                      const newTop = dragStopEvent.y;
-                      const newLeft = dragStopEvent.x;
-
-                      if (top !== newTop || left !== newLeft) {
-                        updateMove({
+                        const clientRect = elementRef.getBoundingClientRect();
+                        updateResize({
                           ...blockState,
                           payload: {
                             ...blockState.payload,
-                            top: newTop,
-                            left: newLeft,
+                            top: y,
+                            left: x,
+                            width: clientRect.width,
+                            height: clientRect.height,
                           },
                         } as BlockState);
-                      }
+                      }}
+                      onDragStop={(e, dragStopEvent) => {
+                        const newTop = dragStopEvent.y;
+                        const newLeft = dragStopEvent.x;
 
-                      resume();
-                    }}
-                    disableDragging={focusedEditorId === id || disableDragging}
-                    onMouseDown={() => {
-                      if (deleteModeOn) {
-                        deleteBlockState({ payload: { id } });
-                        setDeleteModeOn(false);
-                      }
-                    }}
-                    lockAspectRatio={blockState.type === 'image'}
-                    enableResizing={
-                      blockState.type === 'text' ? resizeDisabler : undefined
-                    }
-                  >
-                    {(() => {
-                      switch (blockState.type) {
-                        case 'text': {
-                          const {
+                        if (top !== newTop || left !== newLeft) {
+                          updateMove({
+                            ...blockState,
                             payload: {
-                              block: { editorState },
+                              ...blockState.payload,
+                              top: newTop,
+                              left: newLeft,
                             },
-                          } = blockState;
+                          } as BlockState);
+                        }
 
-                          return (
-                            <Editor
-                              editorState={
-                                focusedEditorId === id
-                                  ? focusedEditorState
-                                  : EditorState.createWithContent(
-                                      convertFromRaw(editorState),
-                                    )
-                              }
-                              setEditorState={setFocusedEditorState}
-                              onFocus={() => {
-                                setFocusedEditorId(id);
+                        resume();
+                      }}
+                      disableDragging={
+                        focusedEditorId === id || disableDragging
+                      }
+                      onMouseDown={() => {
+                        if (deleteModeOn) {
+                          deleteBlockState({ payload: { id } });
+                          setDeleteModeOn(false);
+                        }
+                      }}
+                      lockAspectRatio={blockState.type === 'image'}
+                      enableResizing={
+                        blockState.type === 'text' ? resizeDisabler : undefined
+                      }
+                    >
+                      {(() => {
+                        switch (blockState.type) {
+                          case 'text': {
+                            const {
+                              payload: {
+                                block: { editorState },
+                              },
+                            } = blockState;
 
-                                setFocusedEditorState(
-                                  EditorState.createWithContent(
-                                    convertFromRaw(editorState),
-                                  ),
-                                );
-                              }}
-                              onBlur={() => {
-                                setFocusedEditorId('');
-
-                                const newEditorState = convertToRaw(
-                                  focusedEditorState.getCurrentContent(),
-                                );
-                                if (
-                                  !equals(
-                                    blockState.payload.block.editorState,
-                                    newEditorState,
-                                  )
-                                ) {
-                                  updateEditText({
-                                    id,
-                                    block: { editorState: newEditorState },
-                                  });
+                            return (
+                              <Editor
+                                editorState={
+                                  focusedEditorId === id
+                                    ? focusedEditorState
+                                    : EditorState.createWithContent(
+                                        convertFromRaw(editorState),
+                                      )
                                 }
-                              }}
-                              onMouseEnter={() => {
-                                setHoveredBlockId(id);
-                                setDisableDragging(true);
-                              }}
-                              onMouseLeave={() => {
-                                setHoveredBlockId(initialHoveredBlockId);
-                                setDisableDragging(false);
-                              }}
-                              cursor={deleteModeOn ? 'not-allowed' : 'text'}
-                            />
-                          );
-                        }
-                        case 'image': {
-                          const {
-                            payload: {
-                              block: { downloadUrl, name },
-                            },
-                          } = blockState;
+                                setEditorState={setFocusedEditorState}
+                                onFocus={() => {
+                                  setFocusedEditorId(id);
 
-                          return (
-                            <img
-                              src={downloadUrl}
-                              alt={name}
-                              draggable={false}
-                              width="100%"
-                              height="100%"
-                              onMouseEnter={() => {
-                                setHoveredBlockId(id);
-                              }}
-                              onMouseLeave={() => {
-                                setHoveredBlockId(initialHoveredBlockId);
-                              }}
-                            />
-                          );
+                                  setFocusedEditorState(
+                                    EditorState.createWithContent(
+                                      convertFromRaw(editorState),
+                                    ),
+                                  );
+                                }}
+                                onBlur={() => {
+                                  setFocusedEditorId('');
+
+                                  const newEditorState = convertToRaw(
+                                    focusedEditorState.getCurrentContent(),
+                                  );
+                                  if (
+                                    !equals(
+                                      blockState.payload.block.editorState,
+                                      newEditorState,
+                                    )
+                                  ) {
+                                    updateEditText({
+                                      id,
+                                      block: { editorState: newEditorState },
+                                    });
+                                  }
+                                }}
+                                onMouseEnter={() => {
+                                  setDisableDragging(true);
+                                }}
+                                onMouseLeave={() => {
+                                  setDisableDragging(false);
+                                }}
+                                cursor={deleteModeOn ? 'not-allowed' : 'text'}
+                              />
+                            );
+                          }
+                          case 'image': {
+                            const {
+                              payload: {
+                                block: { downloadUrl, name },
+                              },
+                            } = blockState;
+
+                            return (
+                              <img
+                                src={downloadUrl}
+                                alt={name}
+                                draggable={false}
+                                width="100%"
+                                height="100%"
+                              />
+                            );
+                          }
+                          default:
+                            return null;
                         }
-                        default:
-                          return null;
-                      }
-                    })()}
-                  </Rnd>
+                      })()}
+                    </Rnd>
+                  </div>
                 );
               })}
             </div>
