@@ -1,3 +1,5 @@
+/* eslint-disable indent */
+
 import { ExtendedLoadingStatus } from 'models';
 import { StoryWithId } from 'pages/Canvas/CanvasContext';
 import { update } from 'ramda';
@@ -156,10 +158,16 @@ export const canvas = createReducer(initialCanvasState)<CanvasAction>({
     ...state,
     fetchStoriesStatus: 'failed',
   }),
-  'canvas/story/add': (state, { payload: story }) => ({
-    ...state,
-    stories: [story].concat(state.stories),
-  }),
+  'canvas/story/add': (state, { payload: story }) => {
+    const storyIndex = state.stories.findIndex(({ id }) => id === story.id);
+
+    return storyIndex > -1
+      ? { ...state, stories: update(storyIndex, story, state.stories) }
+      : {
+          ...state,
+          stories: [story].concat(state.stories),
+        };
+  },
   'canvas/stories/SetOne': (state, { payload }) => ({
     ...state,
     stories: update(
