@@ -37,6 +37,7 @@ import { SpeedDial, SpeedDialAction } from '@material-ui/lab';
 import color from 'color';
 import {
   Button,
+  Color,
   ColorPicker,
   Editor,
   EditorControls,
@@ -854,7 +855,7 @@ const Canvas: React.FC<CanvasProps> = ({
                             onSelect={handleSelect(fontSizes)}
                           />
                           <ColorPicker
-                            color={getCurrentColor(focusedEditorState)}
+                            color={getCurrentColor(focusedEditorState) as Color}
                             onSelect={newColor => {
                               setFocusedEditorState(
                                 RichUtils.toggleInlineStyle(

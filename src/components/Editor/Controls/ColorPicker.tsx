@@ -5,15 +5,42 @@ import {
   ListItemText,
   Popover,
 } from '@material-ui/core';
+import { DraftStyleMap } from 'draft-js';
 import React from 'react';
 import { GithubPicker } from 'react-color';
 import { Box } from 'rebass';
 
+export const colors = [
+  '#b80000',
+  '#db3e00',
+  '#fccb00',
+  '#008b02',
+  '#006b76',
+  '#1273de',
+  '#004dcf',
+  '#5300eb',
+  '#eb9694',
+  '#fad0c3',
+  '#fef3bd',
+  '#c1e1c5',
+  '#bedadc',
+  '#c4def6',
+  '#bed3f3',
+  '#d4c4fb',
+] as const;
+
+export type Colors = typeof colors;
+export type Color = Colors[number];
+export const colorStyleMap: DraftStyleMap = colors.reduce(
+  (map, color) => ({ ...map, [color]: { color } }),
+  {} as DraftStyleMap,
+);
+
 const circleWidth = 17;
 
 export interface ColorPickerProps {
-  color: string;
-  onSelect: (color: string) => void;
+  color: Color;
+  onSelect: (color: Color) => void;
   label?: string;
 }
 
@@ -60,7 +87,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
         <GithubPicker
           color={color}
           onChange={({ hex }) => {
-            onSelect(hex);
+            onSelect(hex as Color);
           }}
         />
       </Popover>
