@@ -385,16 +385,6 @@ const __REDUX_DEVTOOLS_EXTENSION__ = function(reducer, preloadedState, config) {
   return createStore(reducer, preloadedState, enhance);
 };
 
-// noinspection JSAnnotator
-window.__REDUX_DEVTOOLS_EXTENSION__ = __REDUX_DEVTOOLS_EXTENSION__;
-window.__REDUX_DEVTOOLS_EXTENSION__.open = openWindow;
-window.__REDUX_DEVTOOLS_EXTENSION__.updateStore = updateStore(stores);
-window.__REDUX_DEVTOOLS_EXTENSION__.notifyErrors = notifyErrors;
-window.__REDUX_DEVTOOLS_EXTENSION__.send = sendMessage;
-window.__REDUX_DEVTOOLS_EXTENSION__.listen = setListener;
-window.__REDUX_DEVTOOLS_EXTENSION__.connect = connect;
-window.__REDUX_DEVTOOLS_EXTENSION__.disconnect = disconnect;
-
 // Deprecated
 /* eslint-disable no-console */
 let varNameDeprecatedWarned;

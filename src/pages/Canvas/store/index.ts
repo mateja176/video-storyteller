@@ -1,4 +1,4 @@
-import { composeWithDevTools } from 'devtools';
+import { composeWithDevTools as composeWithIntegratedDevTools } from 'devtools';
 import { equals } from 'ramda';
 import { useEffect, useState } from 'react';
 import {
@@ -9,9 +9,10 @@ import {
   combineReducers,
   createStore,
   Dispatch,
+  Middleware,
   Reducer,
 } from 'redux';
-import logger from 'redux-logger';
+import { composeWithDevTools as composeWithReduxDevTools } from 'redux-devtools-extension';
 import { createSelector, Selector } from 'reselect';
 import audio, { AudioAction } from './audio';
 import blockStates, { BlockStatesAction } from './blockStates';
@@ -33,12 +34,18 @@ export type Action = BlockStatesAction | TransformAction | AudioAction;
 
 const reducer: Reducer<State, Action> = combineReducers(actionReducerMap);
 
+const composeWithDevTools =
+  '__REDUX_DEVTOOLS_EXTENSION__' in window
+    ? composeWithReduxDevTools
+    : composeWithIntegratedDevTools;
+
 const composeEnhancers = composeWithDevTools({
   name: 'Canvas Store',
   maxAge: 1000,
 });
 
-const middleware = [logger];
+export type DispatchExt = {};
+const middleware: Middleware<DispatchExt, State, Dispatch>[] = [];
 
 const store = createStore(
   reducer,
