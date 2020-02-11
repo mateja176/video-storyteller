@@ -34,14 +34,14 @@ export type FontSizes = typeof fontSizes;
 export type FontSize = FontSizes[number];
 
 export interface FontSizePickerProps {
+  size: FontSize;
   onSelect: (font: FontSize) => void;
 }
 
-export const FontSizePicker: React.FC<FontSizePickerProps> = ({ onSelect }) => {
-  const [selectedFontSize, setSelectedFontSize] = React.useState<FontSize>(
-    'initial',
-  );
-
+export const FontSizePicker: React.FC<FontSizePickerProps> = ({
+  size,
+  onSelect,
+}) => {
   const [open, setOpen] = React.useState(false);
 
   const anchorRef = React.useRef<HTMLDivElement>(null);
@@ -63,9 +63,7 @@ export const FontSizePicker: React.FC<FontSizePickerProps> = ({ onSelect }) => {
           <ListItemIcon style={{ minWidth: 'auto', marginRight: 10 }}>
             <FormatSize />
           </ListItemIcon>
-          <ListItemText style={{ whiteSpace: 'nowrap' }}>
-            {selectedFontSize}
-          </ListItemText>
+          <ListItemText style={{ whiteSpace: 'nowrap' }}>{size}</ListItemText>
         </ListItem>
       </ClickAwayListener>
       <Menu
@@ -81,8 +79,6 @@ export const FontSizePicker: React.FC<FontSizePickerProps> = ({ onSelect }) => {
             key={currentFontSize}
             onClick={() => {
               onSelect(currentFontSize);
-
-              setSelectedFontSize(currentFontSize);
             }}
           >
             {currentFontSize}
