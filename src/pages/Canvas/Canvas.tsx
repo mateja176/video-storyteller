@@ -79,7 +79,7 @@ import { useDrop } from 'react-dnd';
 import Dropzone from 'react-dropzone';
 import { useSelector as useStoreSelector } from 'react-redux';
 import { ResizeEnable, Rnd } from 'react-rnd';
-import { RouteComponentProps } from 'react-router-dom';
+import { Prompt, RouteComponentProps } from 'react-router-dom';
 import {
   FacebookIcon as Facebook,
   FacebookShareButton,
@@ -154,6 +154,9 @@ const RedditIcon: any = Reddit;
 const TwitterIcon: any = Twitter;
 const ViberIcon: any = Viber;
 const WhatsappIcon: any = Whatsapp;
+
+const confirmNavigationMessage =
+  'You may have unsaved changes, are you sure you want to leave?';
 
 const initialEditorState = EditorState.createWithContent(
   ContentState.createFromText('Hello World'),
@@ -576,6 +579,18 @@ const Canvas: React.FC<CanvasProps> = ({
 
   const [shareOptionsOpen, setShareOptionsOpen] = React.useState(false);
 
+  React.useEffect(() => {
+    const eventName: keyof WindowEventMap = 'beforeunload';
+    const handleBeforeUnload = isAuthor
+      ? () => confirmNavigationMessage
+      : () => false;
+    window.addEventListener(eventName, handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener(eventName, handleBeforeUnload);
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <Flex
       style={{
@@ -583,6 +598,7 @@ const Canvas: React.FC<CanvasProps> = ({
         cursor: deleteModeOn ? 'not-allowed' : 'default',
       }}
     >
+      {isAuthor && <Prompt message={confirmNavigationMessage} />}
       <Drawer
         variant="permanent"
         open
