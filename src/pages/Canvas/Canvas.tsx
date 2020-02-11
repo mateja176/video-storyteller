@@ -17,6 +17,7 @@ import {
   ArrowDownward,
   Audiotrack,
   Build,
+  Cancel,
   Delete,
   Edit,
   FileCopy,
@@ -40,11 +41,11 @@ import {
   Editor,
   EditorControls,
   FontPicker,
+  FontSizePicker,
   Loader,
   Progress,
   progressHeight,
   Tooltip,
-  FontSizePicker,
 } from 'components';
 import {
   ContentState,
@@ -732,75 +733,6 @@ const Canvas: React.FC<CanvasProps> = ({
             <Flex style={{ minHeight: controlsHeight }}>
               {(() => {
                 switch (true) {
-                  case !!focusedEditorId:
-                    return (
-                      <>
-                        <Flex
-                          onMouseDown={e => {
-                            e.preventDefault();
-                          }}
-                        >
-                          <EditorControls
-                            editorState={focusedEditorState}
-                            setEditorState={setFocusedEditorState}
-                          />
-                          <FontPicker
-                            onSelect={font => {
-                              setFocusedEditorState(
-                                RichUtils.toggleInlineStyle(
-                                  focusedEditorState,
-                                  font,
-                                ),
-                              );
-                            }}
-                          />
-                          <FontSizePicker
-                            onSelect={fontSize => {
-                              setFocusedEditorState(
-                                RichUtils.toggleInlineStyle(
-                                  focusedEditorState,
-                                  fontSize,
-                                ),
-                              );
-                            }}
-                          />
-                          <ColorPicker
-                            onSelect={newColor => {
-                              setFocusedEditorState(
-                                RichUtils.toggleInlineStyle(
-                                  focusedEditorState,
-                                  newColor,
-                                ),
-                              );
-                            }}
-                          />
-                        </Flex>
-                        <List style={{ display: 'flex', padding: 0 }}>
-                          {focusedEditorId !== draggable.text && (
-                            <ListItem
-                              button
-                              style={{ width: 'auto' }}
-                              onClick={() =>
-                                updateEditText({
-                                  id: focusedEditorId,
-                                  block: {
-                                    editorState: convertToRaw(
-                                      focusedEditorState.getCurrentContent(),
-                                    ),
-                                  },
-                                })
-                              } // eslint-disable-line react/jsx-curly-newline
-                            >
-                              <ListItemIcon style={listItemIconStyle}>
-                                <Save />
-                              </ListItemIcon>
-                              <ListItemText>Save</ListItemText>
-                            </ListItem>
-                          )}
-                        </List>
-                      </>
-                    );
-
                   case audioUploadOpen:
                     return (
                       <Dropzone
@@ -871,6 +803,86 @@ const Canvas: React.FC<CanvasProps> = ({
                           );
                         }}
                       </Dropzone>
+                    );
+                  case !!focusedEditorId:
+                    return (
+                      <>
+                        <Flex
+                          onMouseDown={e => {
+                            e.preventDefault();
+                          }}
+                        >
+                          <EditorControls
+                            editorState={focusedEditorState}
+                            setEditorState={setFocusedEditorState}
+                          />
+                          <FontPicker
+                            onSelect={font => {
+                              setFocusedEditorState(
+                                RichUtils.toggleInlineStyle(
+                                  focusedEditorState,
+                                  font,
+                                ),
+                              );
+                            }}
+                          />
+                          <FontSizePicker
+                            onSelect={fontSize => {
+                              setFocusedEditorState(
+                                RichUtils.toggleInlineStyle(
+                                  focusedEditorState,
+                                  fontSize,
+                                ),
+                              );
+                            }}
+                          />
+                          <ColorPicker
+                            onSelect={newColor => {
+                              setFocusedEditorState(
+                                RichUtils.toggleInlineStyle(
+                                  focusedEditorState,
+                                  newColor,
+                                ),
+                              );
+                            }}
+                          />
+                          <ListItem
+                            button
+                            style={{ width: 'auto' }}
+                            onClick={() => {
+                              setFocusedEditorId('');
+                            }}
+                          >
+                            <ListItemIcon style={listItemIconStyle}>
+                              <Cancel />
+                            </ListItemIcon>
+                            <ListItemText>Cancel</ListItemText>
+                          </ListItem>
+                        </Flex>
+                        <List style={{ display: 'flex', padding: 0 }}>
+                          {focusedEditorId !== draggable.text && (
+                            <ListItem
+                              button
+                              style={{ width: 'auto' }}
+                              onClick={() =>
+                                updateEditText({
+                                  id: focusedEditorId,
+                                  block: {
+                                    editorState: convertToRaw(
+                                      focusedEditorState.getCurrentContent(),
+                                    ),
+                                  },
+                                })
+                              } // eslint-disable-line react/jsx-curly-newline
+                            >
+                              <ListItemIcon style={listItemIconStyle}>
+                                <Save />
+                              </ListItemIcon>
+                              <ListItemText>Save</ListItemText>
+                            </ListItem>
+                          )}
+                        </List>
+                      </>
                     );
 
                   default:
@@ -1284,9 +1296,6 @@ const Canvas: React.FC<CanvasProps> = ({
                     setFocusedEditorId(draggable.text);
 
                     setFocusedEditorState(initialEditorState);
-                  }}
-                  onBlur={() => {
-                    setFocusedEditorId('');
                   }}
                   onDragEnd={() => {
                     setFocusedEditorId('');
