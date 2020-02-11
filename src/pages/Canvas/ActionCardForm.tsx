@@ -75,8 +75,12 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
     ...initialValues,
     width: isUpdateResizeAction(action) ? action.payload.payload.width : 0,
     height: isUpdateResizeAction(action) ? action.payload.payload.height : 0,
-    left: isUpdateMoveAction(action) ? action.payload.payload.left : 0,
-    top: isUpdateMoveAction(action) ? action.payload.payload.top : 0,
+    left: isUpdateMoveAction(action)
+      ? formatCoordinate(action.payload.payload.left)
+      : 0,
+    top: isUpdateMoveAction(action)
+      ? formatCoordinate(action.payload.payload.top)
+      : 0,
     scale:
       isScaleAction(action) || isSetTransformAction(action)
         ? formatScale(action.payload.scale)
@@ -126,32 +130,6 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
 
         return (
           <Flex flexDirection="column" px={2} flex={1}>
-            {/* <Flex>
-              <TextField
-                {...textFieldProps}
-                label="Action Id"
-                value={id}
-                disabled
-                style={{ marginRight: 5, width: 90 }}
-                type="number"
-                title={id.toString()}
-              />
-              <TextField
-                {...textFieldProps}
-                label="Action Type"
-                style={{
-                  textOverflow: 'ellipsis',
-                }}
-                inputProps={{
-                  style: {
-                    textOverflow: 'ellipsis',
-                  },
-                }}
-                value={formattedActionType}
-                disabled
-                title={formattedActionType}
-              />
-            </Flex> */}
             <Form
               style={{
                 flexGrow: 1,
