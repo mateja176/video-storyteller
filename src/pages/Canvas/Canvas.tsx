@@ -40,6 +40,7 @@ import {
   ColorPicker,
   Editor,
   EditorControls,
+  Font,
   FontPicker,
   fonts,
   FontSizePicker,
@@ -835,7 +836,14 @@ const Canvas: React.FC<CanvasProps> = ({
                             editorState={focusedEditorState}
                             setEditorState={setFocusedEditorState}
                           />
-                          <FontPicker onSelect={handleSelect(fonts)} />
+                          <FontPicker
+                            font={
+                              (inlineStyleTypes.find(type =>
+                                fonts.includes(type as Font),
+                              ) || fonts[0]) as Font
+                            }
+                            onSelect={handleSelect(fonts)}
+                          />
                           <FontSizePicker onSelect={handleSelect(fontSizes)} />
                           <ColorPicker
                             color={getCurrentColor(focusedEditorState)}

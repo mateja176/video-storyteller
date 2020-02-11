@@ -22,6 +22,7 @@ export const fonts = [
   'Pacifico',
   'Shadows Into Light',
 ] as const;
+
 export const fontStyleMap: DraftStyleMap = fonts.reduce(
   (map, fontFamily) => ({
     ...map,
@@ -40,12 +41,11 @@ export const fontsWithWeights: GoogleFontLoaderProps['fonts'] = fonts.map(
 );
 
 export interface FontPickerProps {
+  font: Font;
   onSelect: (font: Font) => void;
 }
 
-export const FontPicker: React.FC<FontPickerProps> = ({ onSelect }) => {
-  const [selectedFont, setSelectedFont] = React.useState<Font>('Roboto');
-
+export const FontPicker: React.FC<FontPickerProps> = ({ font, onSelect }) => {
   const [open, setOpen] = React.useState(false);
 
   const anchorRef = React.useRef<HTMLDivElement>(null);
@@ -67,9 +67,7 @@ export const FontPicker: React.FC<FontPickerProps> = ({ onSelect }) => {
           <ListItemIcon style={{ minWidth: 'auto', marginRight: 10 }}>
             <FontDownload />
           </ListItemIcon>
-          <ListItemText style={{ whiteSpace: 'nowrap' }}>
-            {selectedFont}
-          </ListItemText>
+          <ListItemText style={{ whiteSpace: 'nowrap' }}>{font}</ListItemText>
         </ListItem>
       </ClickAwayListener>
       <Menu
@@ -85,8 +83,6 @@ export const FontPicker: React.FC<FontPickerProps> = ({ onSelect }) => {
             key={currentFont}
             onClick={() => {
               onSelect(currentFont);
-
-              setSelectedFont(currentFont);
             }}
             style={{ fontFamily: currentFont }}
           >
