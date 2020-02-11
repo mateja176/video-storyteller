@@ -41,7 +41,9 @@ import {
   Editor,
   EditorControls,
   FontPicker,
+  fonts,
   FontSizePicker,
+  fontSizes,
   Loader,
   Progress,
   progressHeight,
@@ -323,6 +325,23 @@ const Canvas: React.FC<CanvasProps> = ({
   const [focusedEditorState, setFocusedEditorState] = React.useState<
     EditorState
   >(EditorState.createEmpty());
+  const inlineStyleTypes = focusedEditorState.getCurrentInlineStyle();
+  const handleSelect = <StyleType extends string>(
+    styleTypes: ReadonlyArray<StyleType>,
+  ) => (styleType: StyleType) => {
+    setFocusedEditorState(
+      RichUtils.toggleInlineStyle(
+        styleTypes.reduce(
+          (state, current) =>
+            inlineStyleTypes.includes(current)
+              ? RichUtils.toggleInlineStyle(state, current)
+              : state,
+          focusedEditorState,
+        ),
+        styleType,
+      ),
+    );
+  };
 
   const [focusedEditorId, setFocusedEditorId] = React.useState('');
 
@@ -816,26 +835,8 @@ const Canvas: React.FC<CanvasProps> = ({
                             editorState={focusedEditorState}
                             setEditorState={setFocusedEditorState}
                           />
-                          <FontPicker
-                            onSelect={font => {
-                              setFocusedEditorState(
-                                RichUtils.toggleInlineStyle(
-                                  focusedEditorState,
-                                  font,
-                                ),
-                              );
-                            }}
-                          />
-                          <FontSizePicker
-                            onSelect={fontSize => {
-                              setFocusedEditorState(
-                                RichUtils.toggleInlineStyle(
-                                  focusedEditorState,
-                                  fontSize,
-                                ),
-                              );
-                            }}
-                          />
+                          <FontPicker onSelect={handleSelect(fonts)} />
+                          <FontSizePicker onSelect={handleSelect(fontSizes)} />
                           <ColorPicker
                             currentColor={getCurrentColor(focusedEditorState)}
                             onSelect={newColor => {

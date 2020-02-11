@@ -40,7 +40,7 @@ export const fontsWithWeights: GoogleFontLoaderProps['fonts'] = fonts.map(
 );
 
 export interface FontPickerProps {
-  onSelect: (font: string) => void;
+  onSelect: (font: Font) => void;
 }
 
 export const FontPicker: React.FC<FontPickerProps> = ({ onSelect }) => {

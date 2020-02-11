@@ -34,7 +34,7 @@ export type FontSizes = typeof fontSizes;
 export type FontSize = FontSizes[number];
 
 export interface FontSizePickerProps {
-  onSelect: (font: string) => void;
+  onSelect: (font: FontSize) => void;
 }
 
 export const FontSizePicker: React.FC<FontSizePickerProps> = ({ onSelect }) => {
