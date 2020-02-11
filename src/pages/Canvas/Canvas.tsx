@@ -112,7 +112,7 @@ import {
 } from 'store';
 import { dividingBorder } from 'styles';
 import urlJoin from 'url-join';
-import { useActions as useStoreActions } from 'utils';
+import { getCurrentColor, useActions as useStoreActions } from 'utils';
 import { v4 } from 'uuid';
 import Audio from './Audio';
 import { AudioElement } from './AudioBlock';
@@ -837,6 +837,7 @@ const Canvas: React.FC<CanvasProps> = ({
                             }}
                           />
                           <ColorPicker
+                            currentColor={getCurrentColor(focusedEditorState)}
                             onSelect={newColor => {
                               setFocusedEditorState(
                                 RichUtils.toggleInlineStyle(

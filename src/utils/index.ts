@@ -103,6 +103,7 @@ export const mapStateToProps = <
   return fromEntries;
 };
 
+export * from './editor';
 export * from './files';
 export * from './hooks';
 export * from './operators';
