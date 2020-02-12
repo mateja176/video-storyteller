@@ -644,7 +644,11 @@ const StoryMonitor = ({
             const canReorder: boolean = (() => {
               if (isCudAction(droppedAction.action)) {
                 const blockId = droppedAction.action.payload.payload.id;
-                const blockActions = editableActions
+                const blockActions = insert(
+                  newItem.x,
+                  droppedAction,
+                  editableActions.filter(({ id }) => id !== droppedActionId),
+                )
                   .map(({ action }) => action)
                   .filter(isCudAction)
                   .filter(({ payload }) => payload.payload.id === blockId);
@@ -654,21 +658,20 @@ const StoryMonitor = ({
                 const deleteActionIndex = blockActions.findIndex(
                   isDeleteAction,
                 );
+                const deleteIndex =
+                  deleteActionIndex < 0 ? Infinity : deleteActionIndex;
                 const firstUpdateActionIndex = blockActions.findIndex(
                   isUpdateAction,
                 );
-                const lastUpdateActionIndex = blockActions
-                  .slice()
-                  .reverse()
-                  .findIndex(isUpdateAction);
-                switch (oldItem.x) {
-                  case createActionIndex:
-                    return createActionIndex < firstUpdateActionIndex;
-                  case deleteActionIndex:
-                    return deleteActionIndex > lastUpdateActionIndex;
-                  default:
-                    return false;
-                }
+                const lastUpdateActionIndex = blockActions.reduceRight(
+                  (lastIndex, current, i) =>
+                    lastIndex < 0 && isUpdateAction(current) ? i : lastIndex,
+                  -1,
+                );
+                return (
+                  createActionIndex < firstUpdateActionIndex &&
+                  deleteIndex > lastUpdateActionIndex
+                );
               } else {
                 return true;
               }
