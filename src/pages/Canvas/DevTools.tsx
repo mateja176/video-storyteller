@@ -76,10 +76,12 @@ import {
   isCreateAction,
   isCudAction,
   isCudActionById,
+  isDeleteAction,
   isPositionAction,
   isScaleAction,
   isSetTransformAction,
   isTransformAction,
+  isUpdateAction,
   isUpdateMoveAction,
   isUpdateRenameImageAction,
   MonitorProps,
@@ -636,13 +638,45 @@ const StoryMonitor = ({
           compactType="horizontal"
           onDragStop={(layout, oldItem, newItem) => {
             const beforeAction = nth(newItem.x, editableActions);
+            const droppedActionId = Number(newItem.i);
+            const droppedAction = actionsById[droppedActionId];
 
-            if (beforeAction) {
+            const canReorder: boolean = (() => {
+              if (isCudAction(droppedAction.action)) {
+                const blockId = droppedAction.action.payload.payload.id;
+                const blockActions = editableActions
+                  .map(({ action }) => action)
+                  .filter(isCudAction)
+                  .filter(({ payload }) => payload.payload.id === blockId);
+                const createActionIndex = blockActions.findIndex(
+                  isCreateAction,
+                );
+                const deleteActionIndex = blockActions.findIndex(
+                  isDeleteAction,
+                );
+                const firstUpdateActionIndex = blockActions.findIndex(
+                  isUpdateAction,
+                );
+                const lastUpdateActionIndex = blockActions
+                  .slice()
+                  .reverse()
+                  .findIndex(isUpdateAction);
+                switch (oldItem.x) {
+                  case createActionIndex:
+                    return createActionIndex < firstUpdateActionIndex;
+                  case deleteActionIndex:
+                    return deleteActionIndex > lastUpdateActionIndex;
+                  default:
+                    return false;
+                }
+              } else {
+                return true;
+              }
+            })();
+
+            if (canReorder && beforeAction) {
               dispatch(
-                ActionCreators.reorderAction(
-                  Number(newItem.i),
-                  beforeAction.id,
-                ),
+                ActionCreators.reorderAction(droppedActionId, beforeAction.id),
               );
             }
           }}
