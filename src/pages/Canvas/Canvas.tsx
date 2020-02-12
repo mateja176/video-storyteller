@@ -390,17 +390,20 @@ const Canvas: React.FC<CanvasProps> = ({
   }, [panzoomInstance, position]);
 
   React.useEffect(() => {
-    const instance = panzoom(canvasRef.current!, {
-      maxZoom: 20,
-      minZoom: 0.1,
-      enableTextSelection: true,
-      zoomDoubleClickSpeed: 1,
-      onDoubleClick: e => {
-        e.preventDefault();
-        return false;
+    const instance = panzoom(
+      canvasRef.current || document.createElement('div'),
+      {
+        maxZoom: 20,
+        minZoom: 0.1,
+        enableTextSelection: true,
+        zoomDoubleClickSpeed: 1,
+        onDoubleClick: e => {
+          e.preventDefault();
+          return false;
+        },
+        filterKey: () => true,
       },
-      filterKey: () => true,
-    });
+    );
 
     setPanzoomInstance(instance);
 
