@@ -635,13 +635,16 @@ const StoryMonitor = ({
           maxRows={1}
           compactType="horizontal"
           onDragStop={(layout, oldItem, newItem) => {
-            const beforeAction = editableActions.find(
-              (action, i) => newItem.x === i,
-            )!;
+            const beforeAction = nth(newItem.x, editableActions);
 
-            dispatch(
-              ActionCreators.reorderAction(Number(newItem.i), beforeAction.id),
-            );
+            if (beforeAction) {
+              dispatch(
+                ActionCreators.reorderAction(
+                  Number(newItem.i),
+                  beforeAction.id,
+                ),
+              );
+            }
           }}
         >
           {editableActions.map(({ action, id }, i) => {
