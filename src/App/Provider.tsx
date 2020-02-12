@@ -1,15 +1,15 @@
+import { fontsWithWeights } from 'components';
 import LogRocket from 'logrocket';
 import setupLogRocketReact from 'logrocket-react';
 import { Stripe } from 'models';
 import React, { FC } from 'react';
+import GoogleFontLoader from 'react-google-font-loader';
 import { Provider as StoreProvider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 // import 'react-stripe-elements'; // * fixes tests but does not fix build
 import { StripeProvider } from 'react-stripe-elements';
 import configureStore from 'store';
-import { Context, initialContext, IContext } from './Context';
-import GoogleFontLoader from 'react-google-font-loader';
-import { fontsWithWeights } from 'components';
+import { Context, IContext, initialContext } from './Context';
 
 const store = configureStore();
 
