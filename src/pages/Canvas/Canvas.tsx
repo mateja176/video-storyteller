@@ -1167,6 +1167,7 @@ const Canvas: React.FC<CanvasProps> = ({
 
                 return (
                   <div
+                    key={id}
                     onMouseEnter={() => {
                       setHoveredBlockId(id);
                     }}
@@ -1175,7 +1176,6 @@ const Canvas: React.FC<CanvasProps> = ({
                     }}
                   >
                     <Rnd
-                      key={id}
                       scale={scale}
                       size={width && height ? { width, height } : undefined}
                       position={{
