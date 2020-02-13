@@ -18,6 +18,7 @@ import {
   CropSquare,
   Delete,
   DeleteForever,
+  DeleteOutlined,
   DeleteSweep,
   Edit,
   Fullscreen,
@@ -43,7 +44,16 @@ import color from 'color';
 import { Button, Progress, progressHeight, Tooltip } from 'components';
 import { capitalize, startCase } from 'lodash';
 import { draggables } from 'models';
-import { equals, init, insert, last, nth, pickAll, update } from 'ramda';
+import {
+  equals,
+  findLastIndex,
+  init,
+  insert,
+  last,
+  nth,
+  pickAll,
+  update,
+} from 'ramda';
 import React from 'react';
 import GridLayout from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
@@ -132,7 +142,7 @@ const actionTypeBackgroundColorMap: Record<
 
 const actionTypeIcon: Record<Action['type'], React.ReactElement> = {
   create: <AddCircle />,
-  delete: <Delete />,
+  delete: <DeleteOutlined />,
   'update/move': <PanTool />,
   'update/resize': <PhotoSizeSelectLarge />,
   'update/editText': <Edit />,
@@ -195,8 +205,8 @@ const StoryMonitor = ({
   );
   const currentActionId = stagedActionIds[currentStateIndex];
   const currentDuration = nth(currentStateIndex - 1, durations);
-  const nextActionId = stagedActionIds[currentStateIndex + 1];
-  const nextAction = actionsById[nextActionId];
+  const nextActionId = nth(currentStateIndex + 1, stagedActionIds);
+  const nextAction = nextActionId && actionsById[nextActionId];
   const lastEditableAction = last(editableActions);
   const lastEditableActionId = lastEditableAction ? lastEditableAction.id : -1;
 
@@ -308,9 +318,49 @@ const StoryMonitor = ({
         if (currentStateIndex < lastStateIndex) {
           setDurations(insert(currentStateIndex, 1000, durations));
 
-          dispatch(
-            ActionCreators.reorderAction(lastEditableActionId, nextActionId),
-          );
+          const lastUpdateActionIndex: number | undefined = (() => {
+            if (lastEditableAction) {
+              const lastBlockAction = lastEditableAction.action;
+
+              return isDeleteAction(lastBlockAction)
+                ? findLastIndex(
+                    ({ action }) =>
+                      isCudAction(action) &&
+                      action.payload.payload.id ===
+                        lastBlockAction.payload.payload.id &&
+                      isUpdateAction(action),
+
+                    editableActions,
+                  )
+                : undefined;
+            } else {
+              return undefined;
+            }
+          })();
+          const beforeLastUpdateAction =
+            lastUpdateActionIndex &&
+            nth(lastUpdateActionIndex + 1, editableActions);
+
+          if (beforeLastUpdateAction) {
+            dispatch(
+              ActionCreators.reorderAction(
+                lastEditableActionId,
+                beforeLastUpdateAction.id,
+              ),
+            );
+
+            if (timelineRef.current) {
+              timelineRef.current.scrollBy({
+                left:
+                  (lastUpdateActionIndex! - currentStateIndex + 1) * fullCardWidth,
+                behavior: 'smooth',
+              });
+            }
+          } else if (nextActionId) {
+            dispatch(
+              ActionCreators.reorderAction(lastEditableActionId, nextActionId),
+            );
+          }
           dispatch(ActionCreators.jumpToAction(lastEditableActionId));
         } else {
           const nextToLastEditableAction = last(init(editableActions));
