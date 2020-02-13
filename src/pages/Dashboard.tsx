@@ -59,7 +59,8 @@ const Dashboard: React.FC<DashboardProps> = () => {
           switch (fetchStoriesStatus) {
             case 'in progress':
               return <Spinner style={{ margin: 'auto' }} />;
-            case 'completed': {
+            // case 'completed': {
+            default: {
               if (stories.length) {
                 return (
                   <List>
@@ -125,8 +126,8 @@ const Dashboard: React.FC<DashboardProps> = () => {
                 );
               }
             }
-            default:
-              return null;
+            // default:
+            //   return null;
           }
         })()}
       </Flex>
