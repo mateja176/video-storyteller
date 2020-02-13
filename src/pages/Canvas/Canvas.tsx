@@ -582,9 +582,23 @@ const Canvas: React.FC<CanvasProps> = ({
 
   const [shareOptionsOpen, setShareOptionsOpen] = React.useState(false);
 
+  const storyState: StoryWithId | undefined = currentStory && {
+    ...currentStory,
+    ...storyMonitorState,
+    name: storyName,
+    durations,
+    audioId: audioElement ? audioElement.id : '',
+    audioSrc: audioElement ? audioSrc : '',
+    lastJumpedToActionId,
+  };
+
+  const hasStoryChanged = !equals(currentStory, storyState);
+
+  const shouldPromptToSave = isAuthor && hasStoryChanged;
+
   React.useEffect(() => {
     const eventName: keyof WindowEventMap = 'beforeunload';
-    const handleBeforeUnload = isAuthor
+    const handleBeforeUnload = shouldPromptToSave
       ? () => confirmNavigationMessage
       : () => false;
     window.addEventListener(eventName, handleBeforeUnload);
@@ -601,7 +615,7 @@ const Canvas: React.FC<CanvasProps> = ({
         cursor: deleteModeOn ? 'not-allowed' : 'default',
       }}
     >
-      {isAuthor && <Prompt message={confirmNavigationMessage} />}
+      {shouldPromptToSave && <Prompt message={confirmNavigationMessage} />}
       <Drawer
         variant="permanent"
         open
@@ -978,7 +992,7 @@ const Canvas: React.FC<CanvasProps> = ({
                               text="Duplicate"
                               submitText="Duplicate"
                               onSubmit={value => {
-                                const storyState: StoryWithId = {
+                                const newStoryState: StoryWithId = {
                                   ...storyMonitorState,
                                   id: v4(),
                                   name: value,
@@ -989,7 +1003,7 @@ const Canvas: React.FC<CanvasProps> = ({
                                   isPublic: false,
                                   authorId: uid,
                                 };
-                                saveStory(storyState);
+                                saveStory(newStoryState);
                               }}
                             />
                           )}
@@ -1012,23 +1026,12 @@ const Canvas: React.FC<CanvasProps> = ({
                                 }}
                               />
                               <ListItem
-                                disabled={storyLoading}
+                                disabled={storyLoading || !hasStoryChanged}
                                 button
                                 onClick={() => {
-                                  const storyState: StoryWithId = {
-                                    ...storyMonitorState,
-                                    id: pathStoryId,
-                                    name: storyName,
-                                    durations,
-                                    audioId: audioElement
-                                      ? audioElement.id
-                                      : '',
-                                    audioSrc: audioElement ? audioSrc : '',
-                                    lastJumpedToActionId,
-                                    isPublic: false,
-                                    authorId: uid,
-                                  };
-                                  saveStory(storyState);
+                                  if (storyState) {
+                                    saveStory(storyState);
+                                  }
                                 }}
                               >
                                 <ListItemIcon style={listItemIconStyle}>
