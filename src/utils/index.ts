@@ -71,7 +71,7 @@ export const toAbsolutePath = pipe(kebabCase, makeAbsolute);
 export const toObject = <A extends readonly any[]>(array: A) =>
   array.reduce((as, a) => ({ ...as, [a]: a }), {}) as { [a in A[number]]: a };
 
-export const objectMap = <V, R>(f: (v: V) => R) => <K extends string>(
+export const objectMap = <V, R>(f: (v: V) => R) => <K extends string | number>(
   o: Record<K, V>,
 ) =>
   Object.entries<V>(o).reduce(

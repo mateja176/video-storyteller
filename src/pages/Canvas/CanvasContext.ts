@@ -1,4 +1,4 @@
-import { BlockState, WithId, Draggables, draggable } from 'models';
+import { BlockState, draggable, Draggables, WithId } from 'models';
 import { pick } from 'ramda';
 import { createContext } from 'react';
 import {
@@ -8,10 +8,11 @@ import {
   createSetLastJumpedToActionId,
   CreateSetLastJumpedToActionId,
   initialCanvasState,
-  User,
   StorageFile,
+  User,
 } from 'store';
-import { ActionIds, ActionsById } from './utils';
+import { Action } from './store';
+import { ActionIds } from './utils';
 
 export type Reset = boolean;
 
@@ -24,7 +25,7 @@ export type ElapsedTime = number;
 export const initialElapsedTime: ElapsedTime = -1;
 
 export type StoryMonitorState = {
-  actionsById: ActionsById;
+  actionsById: Record<number, Action>;
   stagedActionIds: ActionIds;
   skippedActionIds: ActionIds;
 };

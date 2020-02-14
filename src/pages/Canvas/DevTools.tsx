@@ -61,7 +61,7 @@ import { Box, Flex } from 'rebass';
 import { createDevTools } from 'redux-devtools';
 import { initialCanvasState } from 'store';
 import { Tuple } from 'ts-toolbelt';
-import { removeNils } from 'utils';
+import { removeNils, objectMap } from 'utils';
 import ActionCardForm from './ActionCardForm';
 import {
   CanvasContext,
@@ -95,6 +95,7 @@ import {
   isUpdateMoveAction,
   isUpdateRenameImageAction,
   MonitorProps,
+  ActionById,
 } from './utils';
 
 type Draggables = typeof draggables;
@@ -231,7 +232,9 @@ const StoryMonitor = ({
     );
 
     setStoryMonitorState({
-      actionsById: plainActionsById,
+      actionsById: objectMap<ActionById, Action>(({ action }) => action)(
+        plainActionsById,
+      ),
       stagedActionIds: stagedActionIds.slice(1),
       skippedActionIds: skippedActionIds.slice(1),
     });
@@ -352,7 +355,8 @@ const StoryMonitor = ({
             if (timelineRef.current) {
               timelineRef.current.scrollBy({
                 left:
-                  (lastUpdateActionIndex! - currentStateIndex + 1) * fullCardWidth,
+                  (lastUpdateActionIndex! - currentStateIndex + 1) *
+                  fullCardWidth,
                 behavior: 'smooth',
               });
             }
@@ -473,7 +477,7 @@ const StoryMonitor = ({
       currentStory.stagedActionIds.forEach(actionId => {
         const action = currentStory.actionsById[actionId];
         if (action) {
-          store.dispatch(action.action);
+          store.dispatch(action);
         }
       });
       setLastJumpedToActionId(
