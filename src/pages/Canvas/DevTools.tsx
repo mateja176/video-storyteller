@@ -586,7 +586,7 @@ const StoryMonitor = ({
         </ListItem>
         {isAuthor && (
           <>
-            <ListItem
+            {/* <ListItem
               button
               disabled={!currentActionId || !isCurrentActionIdActive}
               onClick={() => {
@@ -615,7 +615,7 @@ const StoryMonitor = ({
               <ListItemIcon>
                 <Redo />
               </ListItemIcon>
-            </ListItem>
+            </ListItem> */}
             <ListItem
               button
               disabled={!skippedActionIds.length}
