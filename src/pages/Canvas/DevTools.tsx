@@ -28,13 +28,11 @@ import {
   Pause,
   PhotoSizeSelectLarge,
   PlayArrow,
-  Redo,
   ShortText,
   Stop,
   SvgIconComponent,
   Title,
   Transform,
-  Undo,
   Visibility,
   VisibilityOff,
   ZoomIn,
@@ -61,7 +59,7 @@ import { Box, Flex } from 'rebass';
 import { createDevTools } from 'redux-devtools';
 import { initialCanvasState } from 'store';
 import { Tuple } from 'ts-toolbelt';
-import { removeNils, objectMap } from 'utils';
+import { objectMap, removeNils } from 'utils';
 import ActionCardForm from './ActionCardForm';
 import {
   CanvasContext,
@@ -77,6 +75,7 @@ import {
 } from './store/blockStates';
 import { SetPositionAction, SetScaleAction } from './store/transform';
 import {
+  ActionById,
   ActionCreators,
   ActionsById,
   ActionWithId,
@@ -95,7 +94,6 @@ import {
   isUpdateMoveAction,
   isUpdateRenameImageAction,
   MonitorProps,
-  ActionById,
 } from './utils';
 
 type Draggables = typeof draggables;
@@ -200,10 +198,10 @@ const StoryMonitor = ({
 
   const editableActions = stagedActions.slice(1);
   const areThereNoEditableActions = !editableActions.length;
-  const previousActionId = nth(currentStateIndex - 1, stagedActionIds) || 0;
-  const previousAction = stagedActions.find(
-    ({ id }) => id === previousActionId,
-  );
+  // const previousActionId = nth(currentStateIndex - 1, stagedActionIds) || 0;
+  // const previousAction = stagedActions.find(
+  //   ({ id }) => id === previousActionId,
+  // );
   const currentActionId = stagedActionIds[currentStateIndex];
   const currentDuration = nth(currentStateIndex - 1, durations);
   const nextActionId = nth(currentStateIndex + 1, stagedActionIds);
@@ -530,9 +528,9 @@ const StoryMonitor = ({
     }
   };
 
-  const nextSkippedActionId = stagedActionIds
-    .slice(currentStateIndex)
-    .find(id => skippedActionIds.includes(id));
+  // const nextSkippedActionId = stagedActionIds
+  //   .slice(currentStateIndex)
+  //   .find(id => skippedActionIds.includes(id));
 
   return (
     <Flex height="100%">
