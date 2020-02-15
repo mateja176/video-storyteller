@@ -80,6 +80,7 @@ import {
   ActionsById,
   ActionWithId,
   formatPosition,
+  formatTransform,
   isAudioAction,
   isCreateAction,
   isCudAction,
@@ -1022,19 +1023,19 @@ const StoryMonitor = ({
                         }
 
                         const { scale, ...position } = transform;
-                        const newTransform = {
-                          ...position,
-                          scale: scale / 100,
-                        };
 
                         if (
                           isSetTransformAction(action) ||
                           isScaleAction(action)
                         ) {
-                          if (!equals(action.payload, newTransform)) {
+                          const currentTransform = formatTransform(
+                            action.payload,
+                          );
+
+                          if (!equals(currentTransform, transform)) {
                             store.dispatch({
                               ...action,
-                              payload: newTransform,
+                              payload: transform,
                             } as SetScaleAction);
 
                             deleteAction(id);
