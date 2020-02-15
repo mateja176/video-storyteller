@@ -80,7 +80,6 @@ import {
   ActionsById,
   ActionWithId,
   formatPosition,
-  formatTransform,
   isAudioAction,
   isCreateAction,
   isCudAction,
@@ -986,6 +985,8 @@ const StoryMonitor = ({
                         top,
                         editorState,
                         name,
+                        height,
+                        width,
                         ...transform
                       }) => {
                         if (duration !== newDuration) {
@@ -1020,21 +1021,17 @@ const StoryMonitor = ({
                           deleteAction(id);
                         }
 
-                        const { scale: zoom, ...position } = transform;
+                        const { scale, ...position } = transform;
+                        const newTransform = {
+                          ...position,
+                          scale: scale / 100,
+                        };
 
                         if (
                           isSetTransformAction(action) ||
                           isScaleAction(action)
                         ) {
-                          const currentTransform = formatTransform(
-                            action.payload,
-                          );
-
-                          const scale = zoom / 100;
-
-                          const newTransform = { ...position, scale };
-
-                          if (!equals(currentTransform, newTransform)) {
+                          if (!equals(action.payload, newTransform)) {
                             store.dispatch({
                               ...action,
                               payload: newTransform,
