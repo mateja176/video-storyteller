@@ -84,7 +84,9 @@ const Dashboard: React.FC<DashboardProps> = () => {
                           <ListItem
                             button
                             onClick={() => {
-                              setCurrentStoryId({ currentStoryId: id });
+                              if (!selected) {
+                                setCurrentStoryId({ currentStoryId: id });
+                              }
                             }}
                             selected={selected}
                           >
