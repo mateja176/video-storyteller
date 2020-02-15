@@ -53,81 +53,73 @@ const Dashboard: React.FC<DashboardProps> = () => {
   return (
     <Box>
       <Link to="canvas" />
-      <Typography variant="h2">Recent stories</Typography>
+      <Typography variant="h3">Stories</Typography>
+      <Box my={3}>
+        <Link to="canvas">
+          <i color={theme.palette.primary.main}>Create story</i>
+        </Link>
+      </Box>
       <Flex my={2} flexDirection="column">
         {(() => {
           switch (fetchStoriesStatus) {
             case 'in progress':
               return <Spinner style={{ margin: 'auto' }} />;
-            // case 'completed': {
             default: {
-              if (stories.length) {
-                return (
-                  <List>
-                    {stories.map(
-                      ({ id, name, isPublic, durations, authorId }) => {
-                        const watchOnly = uid !== authorId;
+              return (
+                <List>
+                  {stories.map(
+                    ({ id, name, isPublic, durations, authorId }) => {
+                      const watchOnly = uid !== authorId;
 
-                        const duration = durations.reduce(add, 0);
-                        const time = new Date(duration);
+                      const duration = durations.reduce(add, 0);
+                      const time = new Date(duration);
 
-                        const selected = currentStoryId === id;
+                      const selected = currentStoryId === id;
 
-                        return (
-                          <Link
-                            key={id}
-                            to={urlJoin(absoluteRootPaths.canvas, id)}
+                      return (
+                        <Link
+                          key={id}
+                          to={urlJoin(absoluteRootPaths.canvas, id)}
+                        >
+                          <ListItem
+                            button
+                            onClick={() => {
+                              setCurrentStoryId({ currentStoryId: id });
+                            }}
+                            selected={selected}
                           >
-                            <ListItem
-                              button
-                              onClick={() => {
-                                setCurrentStoryId({ currentStoryId: id });
-                              }}
-                              selected={selected}
-                            >
-                              <ListItemIcon>
-                                <Tooltip
-                                  title={
-                                    watchOnly
-                                      ? 'Watch'
-                                      : isPublic
-                                      ? 'Public'
-                                      : 'Draft'
-                                  }
-                                  placement="top"
-                                >
-                                  {watchOnly ? (
-                                    <Tv />
-                                  ) : isPublic ? (
-                                    <Public />
-                                  ) : (
-                                    <Edit />
-                                  )}
-                                </Tooltip>
-                              </ListItemIcon>
-                              <ListItemText>
-                                {name} ({time.getMinutes()}m {time.getSeconds()}
-                                s)
-                              </ListItemText>
-                            </ListItem>
-                          </Link>
-                        );
-                      },
-                    )}
-                  </List>
-                );
-              } else {
-                return (
-                  <Link to="canvas">
-                    <i color={theme.palette.primary.main}>
-                      Create your first story
-                    </i>
-                  </Link>
-                );
-              }
+                            <ListItemIcon>
+                              <Tooltip
+                                title={
+                                  watchOnly
+                                    ? 'Watch'
+                                    : isPublic
+                                    ? 'Public'
+                                    : 'Draft'
+                                }
+                                placement="top"
+                              >
+                                {watchOnly ? (
+                                  <Tv />
+                                ) : isPublic ? (
+                                  <Public />
+                                ) : (
+                                  <Edit />
+                                )}
+                              </Tooltip>
+                            </ListItemIcon>
+                            <ListItemText>
+                              {name} ({time.getMinutes()}m {time.getSeconds()}
+                              s)
+                            </ListItemText>
+                          </ListItem>
+                        </Link>
+                      );
+                    },
+                  )}
+                </List>
+              );
             }
-            // default:
-            //   return null;
           }
         })()}
       </Flex>
