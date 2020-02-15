@@ -215,7 +215,7 @@ const StoryMonitor = ({
         .map(removeNils) as Action[],
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editableActions]);
+  }, [stagedActionIds]);
 
   const [hoveredCardId, setHoveredCardId] = React.useState(
     initialHoveredCardId,
