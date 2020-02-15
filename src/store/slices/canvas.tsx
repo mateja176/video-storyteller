@@ -178,7 +178,7 @@ export const canvas = createReducer(initialCanvasState)<CanvasAction>({
   }),
   'canvas/stories/deleteOne': (state, { payload: { id } }) => ({
     ...state,
-    stories: state.stories.filter(story => story.id === id),
+    stories: state.stories.filter(story => story.id !== id),
   }),
   'canvas/currentStoryId/set': (state, { payload: { currentStoryId } }) => ({
     ...state,
