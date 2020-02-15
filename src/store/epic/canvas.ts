@@ -54,7 +54,7 @@ const saveStory: Epic<
     ofType<Action, SaveStoryRequest>(saveStoryType['canvas/saveStory/request']),
     switchMap(({ payload: storyState }) =>
       defer(() =>
-        storiesCollection.doc(storyState.id).set(storyState, { merge: true }),
+        storiesCollection.doc(storyState.id).set(storyState),
       ).pipe(
         map(() => createSaveStory.success()),
         catchError((error: Error) =>
