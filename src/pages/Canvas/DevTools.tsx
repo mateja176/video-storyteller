@@ -49,6 +49,7 @@ import { Box, Flex } from 'rebass';
 import { createDevTools } from 'redux-devtools';
 import { initialCanvasState } from 'store';
 import { Tuple } from 'ts-toolbelt';
+import { removeNils } from 'utils';
 import ActionCardForm from './ActionCardForm';
 import {
   CanvasContext,
@@ -209,10 +210,12 @@ const StoryMonitor = ({
 
   React.useEffect(() => {
     setStoryMonitorState({
-      actions: editableActions.map(({ action }) => action),
+      actions: editableActions
+        .map(({ action }) => action)
+        .map(removeNils) as Action[],
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [actionsById, stagedActionIds, skippedActionIds]);
+  }, [editableActions]);
 
   const [hoveredCardId, setHoveredCardId] = React.useState(
     initialHoveredCardId,
