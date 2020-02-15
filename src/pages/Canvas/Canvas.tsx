@@ -956,7 +956,7 @@ const Canvas: React.FC<CanvasProps> = ({
                           }}
                         >
                           <OptionWithPopover
-                            disabled={storyLoading}
+                            disabled={false}
                             Icon={NoteAdd}
                             initialValue=""
                             text="New story"

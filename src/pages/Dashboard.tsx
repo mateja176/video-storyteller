@@ -9,7 +9,7 @@ import {
   useTheme,
 } from '@material-ui/core';
 import { Edit, Public, Tv } from '@material-ui/icons';
-import { Link, Spinner, Tooltip } from 'components';
+import { Link, Tooltip } from 'components';
 import { absoluteRootPaths } from 'Layout';
 import { add } from 'ramda';
 import React from 'react';
@@ -62,8 +62,8 @@ const Dashboard: React.FC<DashboardProps> = () => {
       <Flex my={2} flexDirection="column">
         {(() => {
           switch (fetchStoriesStatus) {
-            case 'in progress':
-              return <Spinner style={{ margin: 'auto' }} />;
+            // case 'in progress':
+            //   return <Spinner style={{ margin: 'auto' }} />;
             default: {
               return (
                 <List>
