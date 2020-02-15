@@ -148,8 +148,7 @@ export type CanvasAction =
 export const canvas = createReducer(initialCanvasState)<CanvasAction>({
   'canvas/stories/subscribe/request': state => ({
     ...state,
-    // * temp fix for perpetual loading when there are no stories
-    // fetchStoriesStatus: 'in progress',
+    fetchStoriesStatus: 'in progress',
   }),
   'canvas/stories/subscribe/success': state => ({
     ...state,
