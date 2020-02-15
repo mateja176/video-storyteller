@@ -12,7 +12,6 @@ import {
   User,
 } from 'store';
 import { Action } from './store';
-import { ActionIds } from './utils';
 
 export type Reset = boolean;
 
@@ -25,14 +24,10 @@ export type ElapsedTime = number;
 export const initialElapsedTime: ElapsedTime = -1;
 
 export type StoryMonitorState = {
-  actionsById: Record<number, Action>;
-  stagedActionIds: ActionIds;
-  skippedActionIds: ActionIds;
+  actions: Action[];
 };
 export const initialStoryMonitorState: StoryMonitorState = {
-  actionsById: {},
-  stagedActionIds: [],
-  skippedActionIds: [],
+  actions: [],
 };
 
 export type DurationsAndLastJumpedToActionId = Pick<

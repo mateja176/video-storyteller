@@ -8,7 +8,6 @@ import {
   ListItem,
   ListItemIcon,
   Popover,
-  Typography,
   useTheme,
 } from '@material-ui/core';
 import {
@@ -42,16 +41,7 @@ import color from 'color';
 import { Button, Progress, progressHeight, Tooltip } from 'components';
 import { capitalize, startCase } from 'lodash';
 import { draggables } from 'models';
-import {
-  equals,
-  findLastIndex,
-  init,
-  insert,
-  last,
-  nth,
-  pickAll,
-  update,
-} from 'ramda';
+import { equals, findLastIndex, init, insert, last, nth, update } from 'ramda';
 import React from 'react';
 import GridLayout from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
@@ -59,7 +49,6 @@ import { Box, Flex } from 'rebass';
 import { createDevTools } from 'redux-devtools';
 import { initialCanvasState } from 'store';
 import { Tuple } from 'ts-toolbelt';
-import { objectMap, removeNils } from 'utils';
 import ActionCardForm from './ActionCardForm';
 import {
   CanvasContext,
@@ -75,9 +64,7 @@ import {
 } from './store/blockStates';
 import { SetPositionAction, SetScaleAction } from './store/transform';
 import {
-  ActionById,
   ActionCreators,
-  ActionsById,
   ActionWithId,
   formatPosition,
   formatTransform,
@@ -221,20 +208,8 @@ const StoryMonitor = ({
   const lastActiveActionId = lastActiveAction ? lastActiveAction.id : -1;
 
   React.useEffect(() => {
-    const actionsByIdWithoutDeleted: ActionsById = pickAll(
-      stagedActionIds.concat(skippedActionIds).map(String),
-      actionsById,
-    );
-    const { 0: zero, ...plainActionsById }: ActionsById = removeNils(
-      actionsByIdWithoutDeleted,
-    );
-
     setStoryMonitorState({
-      actionsById: objectMap<ActionById, Action>(({ action }) => action)(
-        plainActionsById,
-      ),
-      stagedActionIds: stagedActionIds.slice(1),
-      skippedActionIds: skippedActionIds.slice(1),
+      actions: editableActions.map(({ action }) => action),
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [actionsById, stagedActionIds, skippedActionIds]);
@@ -472,18 +447,15 @@ const StoryMonitor = ({
     if (reset && currentStory) {
       deleteAll();
 
-      currentStory.stagedActionIds.forEach(actionId => {
-        const action = currentStory.actionsById[actionId];
-        if (action) {
-          store.dispatch(action);
-        }
+      currentStory.actions.forEach(action => {
+        store.dispatch(action);
       });
       setLastJumpedToActionId(
         isAuthor ? currentStory.lastJumpedToActionId : stagedActionIds[0],
       );
       setDurations(currentStory.durations);
 
-      setActionsCount(currentStory.stagedActionIds.length);
+      setActionsCount(currentStory.actions.length);
 
       setReset(false);
     }
@@ -850,10 +822,6 @@ const StoryMonitor = ({
                 >
                   {isAuthor && (
                     <Flex>
-                      {/* <ButtonGroup>
-                        <IconButton>{id}</IconButton>
-                        <IconButton>{actionTypeIcon[action.type]}</IconButton>
-                      </ButtonGroup> */}
                       {/* <ButtonGroup variant="text">
                         <Button>{id}</Button>
                         <Button>{actionTypeIcon[action.type]}</Button>
@@ -861,20 +829,6 @@ const StoryMonitor = ({
                       <List
                         style={{ padding: 0, display: 'flex', flexGrow: 1 }}
                       >
-                        <ListItem
-                          style={{
-                            ...listItemStyle,
-                            cursor: 'default',
-                          }}
-                        >
-                          <Tooltip title="Action id">
-                            <Box mx={2}>
-                              <Typography color="textSecondary">
-                                {id}
-                              </Typography>
-                            </Box>
-                          </Tooltip>
-                        </ListItem>
                         <ListItem
                           style={{ ...listItemStyle, cursor: 'default' }}
                         >

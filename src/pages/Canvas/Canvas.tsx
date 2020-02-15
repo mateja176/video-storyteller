@@ -968,9 +968,7 @@ const Canvas: React.FC<CanvasProps> = ({
                               const newStory: StoryWithId = {
                                 id: newStoryId,
                                 name: value,
-                                actionsById: {},
-                                stagedActionIds: [],
-                                skippedActionIds: [],
+                                actions: [],
                                 durations: [],
                                 lastJumpedToActionId: -1,
                                 isPublic: false,
