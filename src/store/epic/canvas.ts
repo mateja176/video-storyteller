@@ -1,3 +1,5 @@
+/* eslint-disable indent */
+
 import 'firebase/firestore';
 import firebase from 'my-firebase';
 import { StoryWithId } from 'pages/Canvas/CanvasContext';
@@ -13,7 +15,7 @@ import {
   switchMap,
   withLatestFrom,
 } from 'rxjs/operators';
-import { getType } from 'typesafe-actions';
+import { ActionType, getType } from 'typesafe-actions';
 import { selectState, takeUntilSignedOut } from 'utils';
 import { Action, State } from '../reducer';
 import { selectFetchStoriesStatus, selectUid } from '../selectors';
@@ -26,15 +28,15 @@ import {
   CreateFetchStory,
   createFetchStory,
   createSaveStory,
+  CreateSaveStory,
   createSetOne,
+  CreateUpdateStory,
+  createUpdateStory,
   DeleteStoryAction,
   FetchStoriesAction,
   fetchStoriesType,
   FetchStoryAction,
   fetchStoryType,
-  SaveStoryAction,
-  SaveStoryRequest,
-  saveStoryType,
   SetOneAction,
   subscribeToStories,
   SubscribeToStoriesAction,
@@ -45,27 +47,48 @@ type SADAction = SetOneAction | AddStoryAction | DeleteStoryAction;
 
 const storiesCollection = firebase.firestore().collection('stories');
 
-const saveStory: Epic<
+const createSetStory = <
+  AsyncActionCreator extends CreateSaveStory | CreateUpdateStory
+>({
+  setOptions,
+  asyncActionCreator,
+}: {
+  setOptions?: firebase.firestore.SetOptions;
+  asyncActionCreator: AsyncActionCreator;
+}): Epic<
   Action,
-  SaveStoryAction | SetSnackbarAction,
+  ActionType<CreateSaveStory | CreateUpdateStory> | SetSnackbarAction,
   State
-> = action$ =>
+> => action$ =>
   action$.pipe(
-    ofType<Action, SaveStoryRequest>(saveStoryType['canvas/saveStory/request']),
+    ofType<Action, ReturnType<AsyncActionCreator['request']>>(
+      getType(asyncActionCreator.request),
+    ),
     switchMap(({ payload: storyState }) =>
       defer(() =>
-        storiesCollection.doc(storyState.id).set(storyState),
+        storiesCollection.doc(storyState.id).set(storyState, setOptions),
       ).pipe(
-        map(() => createSaveStory.success()),
+        map(() => asyncActionCreator.success()),
         catchError((error: Error) =>
           from([
-            createSaveStory.failure(),
+            asyncActionCreator.failure(),
             createSetErrorSnackbar({ message: error.message }),
           ]),
         ),
       ),
     ),
   );
+
+export const saveStory = createSetStory({
+  asyncActionCreator: createSaveStory,
+});
+
+export const updateStory = createSetStory({
+  asyncActionCreator: createUpdateStory,
+  setOptions: {
+    merge: true,
+  },
+});
 
 export const fetchStory: Epic<
   Action,
@@ -169,4 +192,10 @@ export const subscribeToStoriesEpic: Epic<
   );
 };
 
-export default [saveStory, fetchStory, fetchStories, subscribeToStoriesEpic];
+export default [
+  saveStory,
+  updateStory,
+  fetchStory,
+  fetchStories,
+  subscribeToStoriesEpic,
+];

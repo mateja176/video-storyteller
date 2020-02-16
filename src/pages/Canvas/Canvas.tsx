@@ -103,6 +103,7 @@ import {
   createSetLastJumpedToActionId,
   createSetSnackbar,
   createToggleTheatricalMode,
+  createUpdateStory,
   selectCurrentStory,
   selectCurrentStoryId,
   selectDurations,
@@ -229,6 +230,7 @@ const Canvas: React.FC<CanvasProps> = ({
     setLastJumpedToActionId,
     setDurations,
     saveStory,
+    updateStory,
     setSnackbar,
     setCurrentStoryId,
     addStory,
@@ -239,6 +241,7 @@ const Canvas: React.FC<CanvasProps> = ({
     setLastJumpedToActionId: createSetLastJumpedToActionId,
     setDurations: createSetDurations,
     saveStory: createSaveStory.request,
+    updateStory: createUpdateStory.request,
     setSnackbar: createSetSnackbar,
     setCurrentStoryId: createSetCurrentStoryId,
     fetchStory: createFetchStory.request,
@@ -1019,7 +1022,7 @@ const Canvas: React.FC<CanvasProps> = ({
                                 submitText="Rename"
                                 text="Rename"
                                 onSubmit={value => {
-                                  saveStory({
+                                  updateStory({
                                     id: pathStoryId,
                                     name: value,
                                   });
@@ -1060,7 +1063,7 @@ const Canvas: React.FC<CanvasProps> = ({
                                     currentStory && currentStory.isPublic
                                   }
                                   onChange={({ target: { checked } }) => {
-                                    saveStory({
+                                    updateStory({
                                       id: currentStory ? currentStory.id : '',
                                       isPublic: checked,
                                     });

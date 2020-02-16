@@ -1,10 +1,9 @@
 /* eslint-disable indent */
 
-import { ExtendedLoadingStatus } from 'models';
+import { ExtendedLoadingStatus, WithId } from 'models';
 import { StoryWithId } from 'pages/Canvas/CanvasContext';
 import { update } from 'ramda';
 import { ActionType, createAction, createAsyncAction } from 'typesafe-actions';
-import { Required } from 'utility-types';
 import { createReducer, toObject } from 'utils';
 
 export type Durations = number[];
@@ -54,7 +53,7 @@ export const saveStoryTypes = [
 ] as const;
 export const saveStoryType = toObject(saveStoryTypes);
 export const createSaveStory = createAsyncAction(...saveStoryTypes)<
-  Required<Partial<StoryWithId>, 'id'>,
+  StoryWithId,
   void,
   void
 >();
@@ -64,6 +63,14 @@ export type SaveStoryRequest = ReturnType<CreateSaveStory['request']>;
 export type SaveStorySuccess = ReturnType<CreateSaveStory['success']>;
 export type SaveStoryFailure = ReturnType<CreateSaveStory['failure']>;
 export type SaveStoryAction = ActionType<CreateSaveStory>;
+
+export const createUpdateStory = createAsyncAction(
+  'canvas/stories/updateOne/request',
+  'canvas/stories/updateOne/success',
+  'canvas/stories/updateOne/failure',
+)<Partial<Omit<StoryWithId, 'id'>> & WithId, void, void>();
+export type CreateUpdateStory = typeof createUpdateStory;
+export type UpdateStoryAction = ActionType<CreateUpdateStory>;
 
 export const subscribeToStories = createAsyncAction(
   'canvas/stories/subscribe/request',
@@ -143,7 +150,8 @@ export type CanvasAction =
   | FetchStoriesAction
   | SetLastJumpedToActionIdAction
   | SetDurationsAction
-  | SaveStoryAction;
+  | SaveStoryAction
+  | UpdateStoryAction;
 
 export const canvas = createReducer(initialCanvasState)<CanvasAction>({
   'canvas/stories/subscribe/request': state => ({
@@ -233,6 +241,18 @@ export const canvas = createReducer(initialCanvasState)<CanvasAction>({
     saveStoryStatus: 'completed',
   }),
   'canvas/saveStory/failure': state => ({
+    ...state,
+    saveStoryStatus: 'failed',
+  }),
+  'canvas/stories/updateOne/request': state => ({
+    ...state,
+    saveStoryStatus: 'in progress',
+  }),
+  'canvas/stories/updateOne/success': state => ({
+    ...state,
+    saveStoryStatus: 'completed',
+  }),
+  'canvas/stories/updateOne/failure': state => ({
     ...state,
     saveStoryStatus: 'failed',
   }),
