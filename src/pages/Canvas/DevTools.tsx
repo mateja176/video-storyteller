@@ -210,6 +210,16 @@ const StoryMonitor = ({
   );
 
   React.useEffect(() => {
+    if (
+      currentStory &&
+      currentStory.actions.length &&
+      lastJumpedToActionId === -1
+    ) {
+      setLastJumpedToActionId(lastActiveActionId);
+    }
+  }, [lastJumpedToActionId, currentStory, lastActiveActionId]);
+
+  React.useEffect(() => {
     setStoryMonitorState({
       actions: editableActions
         .map(({ action }) => action)
