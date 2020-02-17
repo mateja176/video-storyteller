@@ -62,7 +62,6 @@ import {
 import { absoluteRootPaths } from 'Layout';
 import { debounce } from 'lodash';
 import {
-  BlockState,
   draggable,
   draggables,
   DropAction,
