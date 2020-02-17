@@ -1193,15 +1193,14 @@ const Canvas: React.FC<CanvasProps> = ({
 
                         const clientRect = elementRef.getBoundingClientRect();
                         updateResize({
-                          ...blockState,
                           payload: {
-                            ...blockState.payload,
+                            id: blockState.payload.id,
                             top: y,
                             left: x,
                             width: clientRect.width,
                             height: clientRect.height,
                           },
-                        } as BlockState);
+                        });
                       }}
                       onDragStop={(e, dragStopEvent) => {
                         const newTop = dragStopEvent.y;
@@ -1209,13 +1208,12 @@ const Canvas: React.FC<CanvasProps> = ({
 
                         if (top !== newTop || left !== newLeft) {
                           updateMove({
-                            ...blockState,
                             payload: {
-                              ...blockState.payload,
+                              id: blockState.payload.id,
                               top: newTop,
                               left: newLeft,
                             },
-                          } as BlockState);
+                          });
                         }
 
                         resume();

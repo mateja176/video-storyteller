@@ -45,13 +45,20 @@ export type CreateAction = ReturnType<typeof createCreateAction>;
 
 export const createUpdateMove = createAction(
   cudActionType['update/move'],
-  action => (payload: BlockState) => action(payload),
+  action => (payload: {
+    payload: Pick<BlockState['payload'], 'id' | 'left' | 'top'>;
+  }) => action(payload),
 );
 export type UpdateMoveAction = ReturnType<typeof createUpdateMove>;
 
 export const createUpdateResize = createAction(
   cudActionType['update/resize'],
-  action => (payload: BlockState) => action(payload),
+  action => (payload: {
+    payload: Pick<
+      BlockState['payload'],
+      'id' | 'left' | 'top' | 'width' | 'height'
+    >;
+  }) => action(payload),
 );
 export type UpdateResizeAction = ReturnType<typeof createUpdateResize>;
 
