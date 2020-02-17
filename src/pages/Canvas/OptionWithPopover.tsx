@@ -78,6 +78,9 @@ const OptionWithPopover: React.FC<OptionWithPopoverProps> = ({
             onMouseDown={e => {
               e.stopPropagation();
             }}
+            style={{
+              marginRight: 5,
+            }}
           />
           <Button type="submit" disabled={!value || value === initialValue}>
             {submitText}
