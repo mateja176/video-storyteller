@@ -34,6 +34,7 @@ import {
   TvOff,
 } from '@material-ui/icons';
 import { SpeedDial, SpeedDialAction } from '@material-ui/lab';
+import { Context } from 'App';
 import color from 'color';
 import {
   Button,
@@ -496,6 +497,12 @@ const Canvas: React.FC<CanvasProps> = ({
     (theatricalMode ? 0 : headerAndControlsHeight) +
     (actionsTimelineOpen ? actionsTimelineHeight : 0)}px)`;
 
+  React.useEffect(() => {
+    if (!isAuthor) {
+      setRightDrawerOccupant('none');
+    }
+  }, [isAuthor]);
+
   const [audioElement, setAudioElement] = React.useState<AudioElement>(null);
 
   React.useEffect(() => {
@@ -525,6 +532,24 @@ const Canvas: React.FC<CanvasProps> = ({
   const [storyMonitorState, setStoryMonitorState] = React.useState(
     initialStoryMonitorState,
   );
+
+  const { deleteAll } = React.useContext(Context);
+
+  React.useEffect(() => {
+    if (!currentStory && storyMonitorState.actions.length) {
+      deleteAll();
+
+      window.history.replaceState(
+        {},
+        '',
+        window.location.pathname
+          .split('/')
+          .slice(0, -1)
+          .join('/'),
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentStory, storyMonitorState.actions.length]);
 
   const [storyName, setStoryName] = React.useState(
     currentStory ? currentStory.name : '',
