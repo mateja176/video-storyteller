@@ -617,18 +617,15 @@ const Canvas: React.FC<CanvasProps> = ({
   const shouldPromptToSave = isAuthor && hasStoryChanged;
 
   React.useEffect(() => {
-    const handleBeforeUnload = () =>
-      shouldPromptToSave && confirmNavigationMessage;
+    const handleBeforeUnload = () => confirmNavigationMessage;
 
-    // const eventName: keyof WindowEventMap = 'beforeunload';
-    // window.addEventListener(eventName, handleBeforeUnload);
-    window.onbeforeunload = handleBeforeUnload; // eslint-disable-line
+    window.onbeforeunload = shouldPromptToSave ? handleBeforeUnload : null; // eslint-disable-line
 
     return () => {
-      // window.removeEventListener(eventName, handleBeforeUnload);
       window.onbeforeunload = null; // eslint-disable-line
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shouldPromptToSave]);
 
   return (
     <Flex
