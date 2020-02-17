@@ -31,8 +31,11 @@ export type State = {
 };
 
 export type Action = BlockStatesAction | TransformAction | AudioAction;
+export type ActionWithMeta = Action & { meta?: { updated: boolean } };
 
-const reducer: Reducer<State, Action> = combineReducers(actionReducerMap);
+const reducer: Reducer<State, ActionWithMeta> = combineReducers(
+  actionReducerMap,
+);
 
 const composeWithDevTools =
   '__REDUX_DEVTOOLS_EXTENSION__' in window

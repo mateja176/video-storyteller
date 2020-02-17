@@ -179,7 +179,7 @@ const StoryMonitor = ({
 
   const elapsed = elapsedTime > initialElapsedTime ? elapsedTime : 0;
 
-  const stagedActions = stagedActionIds.map<ActionWithId>(id => ({
+  const stagedActions = stagedActionIds.map(id => ({
     ...actionsById[id],
     id,
   }));
@@ -212,6 +212,7 @@ const StoryMonitor = ({
     setStoryMonitorState({
       actions: editableActions
         .map(({ action }) => action)
+        .map(({ meta, ...action }) => action)
         .map(removeNils) as Action[],
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -294,9 +295,9 @@ const StoryMonitor = ({
 
         scrollByOneCard();
 
-        if (currentStateIndex < lastStateIndex) {
-          setDurations(insert(currentStateIndex, 1000, durations));
+        const isCursorAtLastAction = currentStateIndex < lastStateIndex;
 
+        if (isCursorAtLastAction) {
           const lastUpdateActionIndex: number | undefined = (() => {
             if (lastEditableAction) {
               const lastBlockAction = lastEditableAction.action;
@@ -342,19 +343,28 @@ const StoryMonitor = ({
             );
           }
           dispatch(ActionCreators.jumpToAction(lastEditableActionId));
-        } else {
-          const nextToLastEditableAction = last(init(editableActions));
-          setDurations(
-            durations
-              .slice(0, -1)
-              .concat(
-                lastEditableAction && nextToLastEditableAction
-                  ? lastEditableAction.timestamp -
-                      nextToLastEditableAction.timestamp
-                  : [],
-              )
-              .concat(0),
-          );
+        }
+        if (
+          lastEditableAction &&
+          lastEditableAction.action.meta &&
+          !lastEditableAction.action.meta.updated
+        ) {
+          if (isCursorAtLastAction) {
+            setDurations(insert(currentStateIndex, 1000, durations));
+          } else {
+            const nextToLastEditableAction = last(init(editableActions));
+            setDurations(
+              durations
+                .slice(0, -1)
+                .concat(
+                  lastEditableAction && nextToLastEditableAction
+                    ? lastEditableAction.timestamp -
+                        nextToLastEditableAction.timestamp
+                    : [],
+                )
+                .concat(0),
+            );
+          }
         }
       }
       if (actionsCount > editableActions.length) {
@@ -390,10 +400,6 @@ const StoryMonitor = ({
   const deleteAction = (
     id: Parameters<typeof ActionCreators.toggleAction>[0],
   ) => {
-    setDurations(
-      durations.filter((_, i) => i !== stagedActionIds.indexOf(id) - 1),
-    );
-
     const otherSkippedActionIds = skippedActionIds.filter(
       skippedActionId => skippedActionId !== id,
     );
@@ -403,6 +409,13 @@ const StoryMonitor = ({
     }
     dispatch(ActionCreators.sweep());
     toggleActions(otherSkippedActionIds);
+  };
+  const deleteActionAndDuration = (id: ActionWithId['id']) => {
+    setDurations(
+      durations.filter((_, i) => i !== stagedActionIds.indexOf(id) - 1),
+    );
+
+    deleteAction(id);
   };
   const deleteActions = (actionsToDelete: typeof stagedActionIds) => {
     const indexesToDelete = actionsToDelete.map(
@@ -883,7 +896,7 @@ const StoryMonitor = ({
 
                               deleteActions(actionsToDelete);
                             } else {
-                              deleteAction(id);
+                              deleteActionAndDuration(id);
                             }
 
                             // TODO prefer jumping to active action
@@ -951,12 +964,16 @@ const StoryMonitor = ({
                           setDurations(update(i, newDuration, durations));
                         }
 
+                        const { type } = action;
                         if (isUpdateRenameImageAction(action)) {
                           store.dispatch({
-                            ...action,
+                            type,
                             payload: {
                               ...action.payload,
                               name,
+                            },
+                            meta: {
+                              updated: true,
                             },
                           } as UpdateRenameImageAction);
 
@@ -969,10 +986,13 @@ const StoryMonitor = ({
                             action.payload.payload.top !== top)
                         ) {
                           store.dispatch({
-                            ...action,
+                            type,
                             payload: {
                               ...action.payload,
                               payload: { ...action.payload.payload, left, top },
+                            },
+                            meta: {
+                              updated: true,
                             },
                           } as UpdateMoveAction);
 
@@ -991,8 +1011,11 @@ const StoryMonitor = ({
 
                           if (!equals(currentTransform, transform)) {
                             store.dispatch({
-                              ...action,
+                              type,
                               payload: transform,
+                              meta: {
+                                updated: true,
+                              },
                             } as SetScaleAction);
 
                             deleteAction(id);
@@ -1006,8 +1029,11 @@ const StoryMonitor = ({
 
                           if (!equals(currentPosition, position)) {
                             store.dispatch({
-                              ...action,
+                              type,
                               payload: position,
+                              meta: {
+                                updated: true,
+                              },
                             } as SetPositionAction);
 
                             deleteAction(id);

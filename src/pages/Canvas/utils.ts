@@ -3,7 +3,7 @@ import { Dispatch } from 'redux';
 import { ActionCreators as InstrumentActionCreators } from 'redux-devtools-instrument';
 import { toObject } from 'utils';
 
-import { Action, State } from './store';
+import { Action, State, ActionWithMeta } from './store';
 import { AudioAction, audioActionTypes } from './store/audio';
 import {
   CreateAction,
@@ -113,13 +113,13 @@ export type ActionId = number;
 export type ActionIds = ActionId[];
 export type WithActionId = { id: ActionId };
 
-export interface CreateActionById<A extends Action> {
+export interface CreateActionById<A extends Action | ActionWithMeta> {
   type: string;
   action: A;
   timestamp: number;
 }
 
-export type ActionById = CreateActionById<Action>;
+export type ActionById = CreateActionById<ActionWithMeta>;
 export type CudActionById = CreateActionById<CreateAction>;
 export type ActionWithId = ActionById & WithActionId;
 
