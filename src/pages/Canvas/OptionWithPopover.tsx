@@ -60,6 +60,8 @@ const OptionWithPopover: React.FC<OptionWithPopoverProps> = ({
             if (value) {
               onSubmit(value);
 
+              setValue(initialValue);
+
               close();
             }
           }}
