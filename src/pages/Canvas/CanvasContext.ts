@@ -1,12 +1,9 @@
 import { BlockState, draggable, Draggables, WithId } from 'models';
-import { pick } from 'ramda';
 import { createContext } from 'react';
 import {
   CanvasState,
   createSetDurations,
   CreateSetDurations,
-  createSetLastJumpedToActionId,
-  CreateSetLastJumpedToActionId,
   initialCanvasState,
   StorageFile,
   User,
@@ -30,11 +27,6 @@ export const initialStoryMonitorState: StoryMonitorState = {
   actions: [],
 };
 
-export type DurationsAndLastJumpedToActionId = Pick<
-  CanvasState,
-  'lastJumpedToActionId' | 'durations'
->;
-
 export type StoryData = {
   name: string;
   authorId: User['uid'];
@@ -43,14 +35,14 @@ export type StoryData = {
   isPublic: boolean;
 };
 
-export type StoryState = StoryMonitorState &
-  DurationsAndLastJumpedToActionId &
-  StoryData;
+export type WithDurations = Pick<CanvasState, 'durations'>;
+
+export type StoryState = StoryMonitorState & WithDurations & StoryData;
 
 export type StoryWithId = StoryState & WithId;
 
 export const initialStoryState: StoryWithId = {
-  ...pick(['durations', 'lastJumpedToActionId'], initialCanvasState),
+  durations: initialCanvasState.durations,
   ...initialStoryMonitorState,
   id: '',
   name: '',
@@ -60,7 +52,7 @@ export const initialStoryState: StoryWithId = {
   isPublic: false,
 };
 
-export interface ICanvasContext extends DurationsAndLastJumpedToActionId {
+export interface ICanvasContext extends WithDurations {
   isAuthor: boolean;
   currentStoryId: StoryWithId['id'];
   currentStory: StoryWithId | null;
@@ -74,7 +66,6 @@ export interface ICanvasContext extends DurationsAndLastJumpedToActionId {
   setElapsedTime: (elapsed: ElapsedTime) => void;
   totalElapsedTime: ElapsedTime;
   setTotalElapsedTime: (elapsed: ElapsedTime) => void;
-  setLastJumpedToActionId: CreateSetLastJumpedToActionId;
   setDurations: CreateSetDurations;
   getBlockType: (blockId: BlockState['payload']['id']) => Draggables;
 }
@@ -93,8 +84,6 @@ export const initialCanvasContext: ICanvasContext = {
   setElapsedTime: () => {},
   totalElapsedTime: initialElapsedTime,
   setTotalElapsedTime: () => {},
-  lastJumpedToActionId: initialCanvasState.lastJumpedToActionId,
-  setLastJumpedToActionId: createSetLastJumpedToActionId,
   durations: initialCanvasState.durations,
   setDurations: createSetDurations,
   getBlockType: () => draggable.other,

@@ -100,7 +100,6 @@ import {
   createSaveStory,
   createSetCurrentStoryId,
   createSetDurations,
-  createSetLastJumpedToActionId,
   createSetSnackbar,
   createToggleTheatricalMode,
   createUpdateStory,
@@ -110,7 +109,6 @@ import {
   selectFetchStoriesStatus,
   selectFetchStoryStatus,
   selectIsAuthor,
-  selectLastJumpedToActionId,
   selectSaveStoryStatus,
   selectStories,
   selectTheatricalMode,
@@ -227,7 +225,6 @@ const Canvas: React.FC<CanvasProps> = ({
 }) => {
   const {
     toggleTheatricalMode,
-    setLastJumpedToActionId,
     setDurations,
     saveStory,
     updateStory,
@@ -238,7 +235,6 @@ const Canvas: React.FC<CanvasProps> = ({
   } = useStoreActions({
     addStory: createAddStory,
     toggleTheatricalMode: createToggleTheatricalMode,
-    setLastJumpedToActionId: createSetLastJumpedToActionId,
     setDurations: createSetDurations,
     saveStory: createSaveStory.request,
     updateStory: createUpdateStory.request,
@@ -255,8 +251,6 @@ const Canvas: React.FC<CanvasProps> = ({
   const fetchStoryStatus = useStoreSelector(selectFetchStoryStatus);
   const fetchStoriesStatus = useStoreSelector(selectFetchStoriesStatus);
   const saveStoryStatus = useStoreSelector(selectSaveStoryStatus);
-
-  const lastJumpedToActionId = useStoreSelector(selectLastJumpedToActionId);
 
   const durations = useStoreSelector(selectDurations);
 
@@ -592,7 +586,6 @@ const Canvas: React.FC<CanvasProps> = ({
     durations,
     audioId: audioElement ? audioElement.id : '',
     audioSrc: audioElement ? audioSrc : '',
-    lastJumpedToActionId,
   };
 
   const hasStoryChanged = !equals(currentStory, storyState);
@@ -973,7 +966,6 @@ const Canvas: React.FC<CanvasProps> = ({
                                 name: value,
                                 actions: [],
                                 durations: [],
-                                lastJumpedToActionId: -1,
                                 isPublic: false,
                                 authorId: uid,
                                 audioId: '',
@@ -1002,7 +994,6 @@ const Canvas: React.FC<CanvasProps> = ({
                                   durations,
                                   audioId: audioElement ? audioElement.id : '',
                                   audioSrc: audioElement ? audioSrc : '',
-                                  lastJumpedToActionId,
                                   isPublic: false,
                                   authorId: uid,
                                 };
@@ -1410,8 +1401,6 @@ const Canvas: React.FC<CanvasProps> = ({
                 setElapsedTime,
                 totalElapsedTime,
                 setTotalElapsedTime,
-                lastJumpedToActionId,
-                setLastJumpedToActionId,
                 durations,
                 setDurations,
                 getBlockType: blockId => {

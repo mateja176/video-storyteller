@@ -47,7 +47,6 @@ import GridLayout from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import { Box, Flex } from 'rebass';
 import { createDevTools } from 'redux-devtools';
-import { initialCanvasState } from 'store';
 import { Tuple } from 'ts-toolbelt';
 import { removeNils } from 'utils';
 import ActionCardForm from './ActionCardForm';
@@ -168,8 +167,6 @@ const StoryMonitor = ({
     elapsedTime,
     setElapsedTime,
     setTotalElapsedTime,
-    lastJumpedToActionId,
-    setLastJumpedToActionId,
     durations,
     setDurations,
     getBlockType,
@@ -207,6 +204,10 @@ const StoryMonitor = ({
   const nextActiveActionId = nextActiveAction && nextActiveAction.id;
   const lastActiveAction = last(activeActions);
   const lastActiveActionId = lastActiveAction ? lastActiveAction.id : -1;
+
+  const [lastJumpedToActionId, setLastJumpedToActionId] = React.useState(
+    lastActiveActionId,
+  );
 
   React.useEffect(() => {
     setStoryMonitorState({
@@ -466,9 +467,6 @@ const StoryMonitor = ({
       currentStory.actions.forEach(action => {
         store.dispatch(action);
       });
-      setLastJumpedToActionId(
-        isAuthor ? currentStory.lastJumpedToActionId : stagedActionIds[0],
-      );
       setDurations(currentStory.durations);
 
       setActionsCount(currentStory.actions.length);
@@ -508,9 +506,6 @@ const StoryMonitor = ({
 
         dispatch(ActionCreators.jumpToAction(precedingAction.id));
       } else {
-        // * takes into account case where previous actions or actions are toggled off
-        setLastJumpedToActionId(initialCanvasState.lastJumpedToActionId);
-
         dispatch(ActionCreators.jumpToAction(0));
       }
     }
@@ -642,7 +637,7 @@ const StoryMonitor = ({
             onClick={() => {
               deleteAll();
 
-              setLastJumpedToActionId(initialCanvasState.lastJumpedToActionId);
+              setLastJumpedToActionId(-1);
               setDurations([]);
             }}
             variant="contained"

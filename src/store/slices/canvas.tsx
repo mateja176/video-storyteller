@@ -10,7 +10,6 @@ export type Durations = number[];
 
 export interface CanvasState {
   saveStoryStatus: ExtendedLoadingStatus;
-  lastJumpedToActionId: number;
   durations: Durations;
   stories: StoryWithId[];
   fetchStoryStatus: ExtendedLoadingStatus;
@@ -20,24 +19,12 @@ export interface CanvasState {
 
 export const initialCanvasState: CanvasState = {
   saveStoryStatus: 'not started',
-  lastJumpedToActionId: -1,
   durations: [],
   stories: [],
   fetchStoryStatus: 'not started',
   fetchStoriesStatus: 'not started',
   currentStoryId: '',
 };
-
-export const setLastJumpedToActionIdType = 'canvas/lastJumpedToActionId/set';
-export const createSetLastJumpedToActionId = createAction(
-  setLastJumpedToActionIdType,
-  action => (payload: CanvasState['lastJumpedToActionId']) => action(payload),
-);
-export type CreateSetLastJumpedToActionId = typeof createSetLastJumpedToActionId;
-export type SetLastJumpedToActionIdAction = ReturnType<
-  CreateSetLastJumpedToActionId
->;
-
 export const setDurationsType = 'canvas/durations/set';
 export const createSetDurations = createAction(
   setDurationsType,
@@ -148,7 +135,6 @@ export type CanvasAction =
   | SetCurrentStoryIdAction
   | FetchStoryAction
   | FetchStoriesAction
-  | SetLastJumpedToActionIdAction
   | SetDurationsAction
   | SaveStoryAction
   | UpdateStoryAction;
@@ -224,10 +210,6 @@ export const canvas = createReducer(initialCanvasState)<CanvasAction>({
       ),
     };
   },
-  'canvas/lastJumpedToActionId/set': (state, { payload }) => ({
-    ...state,
-    lastJumpedToActionId: payload,
-  }),
   'canvas/durations/set': (state, { payload }) => ({
     ...state,
     durations: payload,
