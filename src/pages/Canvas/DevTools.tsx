@@ -347,8 +347,8 @@ const StoryMonitor = ({
         }
         if (
           lastEditableAction &&
-          lastEditableAction.action.meta &&
-          !lastEditableAction.action.meta.updated
+          (!lastEditableAction.action.meta ||
+            !lastEditableAction.action.meta.updated)
         ) {
           if (isCursorAtLastAction) {
             setDurations(insert(currentStateIndex, 1000, durations));
