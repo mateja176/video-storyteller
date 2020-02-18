@@ -63,10 +63,10 @@ export const selectScale = createSelector(
   selectTransform,
   ({ scale }) => scale,
 );
-export const selectPosition = createSelector(
-  selectTransform,
-  ({ scale, ...position }) => position,
-);
+export const selectPosition = createSelector(selectTransform, ({ x, y }) => ({
+  x,
+  y,
+}));
 
 export const selectAudio = (state: State) => state.audio;
 export const selectAudioSrc = createSelector(

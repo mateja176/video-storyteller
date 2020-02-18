@@ -2,22 +2,21 @@ import { Dispatch } from 'redux';
 // @ts-ignore
 import { ActionCreators as InstrumentActionCreators } from 'redux-devtools-instrument';
 import { toObject } from 'utils';
-
-import { Action, State, ActionWithMeta } from './store';
+import { Action, ActionWithMeta, State } from './store';
 import { AudioAction, audioActionTypes } from './store/audio';
 import {
   CreateAction,
   CudAction,
   CudActionType,
   cudActionTypes,
+  DeleteAction,
   UpdateAction,
   UpdateActionType,
   updateActionTypes,
   UpdateEditTextAction,
+  UpdateMoveAction,
   UpdateRenameImageAction,
   UpdateResizeAction,
-  UpdateMoveAction,
-  DeleteAction,
 } from './store/blockStates';
 import {
   PositionAction,
@@ -26,19 +25,19 @@ import {
   scaleTypes,
   SetTransformAction,
   setTransformType,
+  Transform,
   TransformAction,
   TransformActionType,
   transformActionTypes,
-  TransformState,
 } from './store/transform';
 
-export const formatScale = (scale: TransformState['scale']) =>
+export const formatScale = (scale: Transform['scale']) =>
   Number((scale * 100).toFixed(0));
 
-export const formatCoordinate = (coordinate: TransformState['x']) =>
+export const formatCoordinate = (coordinate: Transform['x']) =>
   Number(coordinate.toFixed(0));
 
-type Position = Omit<TransformState, 'scale'>;
+type Position = Omit<Transform, 'scale'>;
 export const formatPosition = (position: Position): Position => ({
   x: formatCoordinate(position.x),
   y: formatCoordinate(position.y),
@@ -47,7 +46,7 @@ export const formatPosition = (position: Position): Position => ({
 export const formatTransform = ({
   scale,
   ...position
-}: TransformState): TransformState => ({
+}: Transform): Transform => ({
   scale: formatScale(scale),
   ...formatPosition(position),
 });

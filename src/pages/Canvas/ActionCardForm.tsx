@@ -13,7 +13,7 @@ import { ICanvasContext } from './CanvasContext';
 import { Action } from './store';
 import {
   initialState as initialTransformState,
-  TransformState,
+  Transform,
 } from './store/transform';
 import {
   formatCoordinate,
@@ -50,7 +50,7 @@ type ImageBlock = ImageBlockState['payload']['block'];
 interface Values
   extends InitialValues,
     WithDropResult,
-    TransformState,
+    Transform,
     Pick<ImageBlock, 'name'> {
   editorState: string;
 }

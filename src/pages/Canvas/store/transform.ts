@@ -3,32 +3,37 @@ import { createAction } from 'typesafe-actions';
 import { createReducer } from 'utils';
 import { Tuple } from 'ts-toolbelt';
 
-export const initialState: ReturnType<PanZoom['getTransform']> = {
+export type ClientCoords = Pick<React.MouseEvent, 'clientX' | 'clientY'>;
+export type Transform = ReturnType<PanZoom['getTransform']>;
+export type Position = Pick<Transform, 'x' | 'y'>;
+export type TransformState = Transform & ClientCoords;
+
+export const initialState: TransformState = {
   scale: 1,
   x: 0,
   y: 0,
+  clientX: -1,
+  clientY: -1,
 };
-
-export type TransformState = typeof initialState;
 
 export const setTransformType = 'transform/set';
 export const createSetTransform = createAction(
   setTransformType,
-  action => (payload: TransformState) => action(payload),
+  action => (payload: Transform) => action(payload),
 );
 export type SetTransformAction = ReturnType<typeof createSetTransform>;
 
 export const scaleSetType = 'transform/scale/set';
 export const createSetScale = createAction(
   scaleSetType,
-  action => (payload: TransformState) => action(payload),
+  action => (payload: Transform) => action(payload),
 );
 export type SetScaleAction = ReturnType<typeof createSetScale>;
 
 export const positionSetType = 'transform/position/set';
 export const createSetPosition = createAction(
   positionSetType,
-  action => (payload: Pick<TransformState, 'x' | 'y'>) => action(payload),
+  action => (payload: Pick<Transform, 'x' | 'y'>) => action(payload),
 );
 export type SetPositionAction = ReturnType<typeof createSetPosition>;
 
@@ -39,8 +44,8 @@ export type PositionAction = SetPositionAction;
 export type TransformAction = SetTransformAction | ScaleAction | PositionAction;
 
 export default createReducer(initialState)<TransformAction>({
-  [setTransformType]: (_, { payload }) => payload,
-  [scaleSetType]: (_, { payload }) => payload,
+  [setTransformType]: (state, { payload }) => ({ ...state, ...payload }),
+  [scaleSetType]: (state, { payload }) => ({ ...state, ...payload }),
   [positionSetType]: (state, { payload }) => ({ ...state, ...payload }),
 });
 
