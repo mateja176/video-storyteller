@@ -62,12 +62,12 @@ import {
   UpdateMoveAction,
   UpdateRenameImageAction,
 } from './store/blockStates';
-import { SetPositionAction, SetScaleAction } from './store/transform';
+import { SetPositionAction, SetScaleAction, Zoom } from './store/transform';
 import {
   ActionCreators,
   ActionWithId,
   formatPosition,
-  formatTransform,
+  formatScale,
   isAudioAction,
   isCreateAction,
   isCudAction,
@@ -75,7 +75,6 @@ import {
   isDeleteAction,
   isPositionAction,
   isScaleAction,
-  isSetTransformAction,
   isTransformAction,
   isUpdateAction,
   isUpdateMoveAction,
@@ -963,7 +962,11 @@ const StoryMonitor = ({
                         name,
                         height,
                         width,
-                        ...transform
+                        scale,
+                        clientX,
+                        clientY,
+                        x,
+                        y,
                       }) => {
                         if (duration !== newDuration) {
                           setDurations(update(i, newDuration, durations));
@@ -1004,20 +1007,22 @@ const StoryMonitor = ({
                           deleteAction(id);
                         }
 
-                        const { scale, ...position } = transform;
+                        const zoom: Zoom = {
+                          scale,
+                          clientX,
+                          clientY,
+                        };
 
-                        if (
-                          isSetTransformAction(action) ||
-                          isScaleAction(action)
-                        ) {
-                          const currentTransform = formatTransform(
-                            action.payload,
-                          );
+                        if (isScaleAction(action)) {
+                          const currentZoom: Zoom = {
+                            ...action.payload,
+                            scale: formatScale(action.payload.scale),
+                          };
 
-                          if (!equals(currentTransform, transform)) {
+                          if (!equals(currentZoom, zoom)) {
                             store.dispatch({
                               type,
-                              payload: transform,
+                              payload: zoom,
                               meta: {
                                 updated: true,
                               },
@@ -1026,6 +1031,8 @@ const StoryMonitor = ({
                             deleteAction(id);
                           }
                         }
+
+                        const position = { x, y };
 
                         if (isPositionAction(action)) {
                           const currentPosition = formatPosition(

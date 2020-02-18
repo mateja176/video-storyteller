@@ -72,7 +72,7 @@ import firebase from 'my-firebase';
 import { storageImageWidth } from 'pages';
 import { Images } from 'pages/Images';
 import panzoom, { PanZoom } from 'panzoom';
-import { equals } from 'ramda';
+import { equals, pickAll } from 'ramda';
 import React from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { useDrop } from 'react-dnd';
@@ -145,7 +145,12 @@ import {
   createUpdateMove,
   createUpdateResize,
 } from './store/blockStates';
-import { createSetPosition, createSetScale } from './store/transform';
+import {
+  ClientCoords,
+  createSetPosition,
+  createSetScale,
+  initialTransformState,
+} from './store/transform';
 import TextBlock from './TextBlock';
 
 const FacebookIcon: any = Facebook;
@@ -355,10 +360,24 @@ const Canvas: React.FC<CanvasProps> = ({
   const scale = useSelector(selectScale);
   const position = useSelector(selectPosition);
 
+  const clientCoordsRef = React.useRef<ClientCoords>(
+    pickAll(['clientX', 'clientY'])(initialTransformState),
+  );
+  const setClientCoords = React.useCallback(
+    debounce((clientCoords: ClientCoords) => {
+      clientCoordsRef.current = clientCoords; // eslint-disable-line
+    }, 300),
+    [],
+  ); // eslint-disable-line react-hooks/exhaustive-deps
+
   const handleZoom = React.useMemo(() => {
     const setTransform = (instance: PanZoom) => {
       const transform = instance.getTransform();
-      setScale({ ...transform });
+      setScale({
+        scale: transform.scale,
+        clientX: clientCoordsRef.current.clientX,
+        clientY: clientCoordsRef.current.clientY,
+      });
     };
 
     return debounce(setTransform, 500);
@@ -1173,7 +1192,13 @@ const Canvas: React.FC<CanvasProps> = ({
           height="100%"
           style={{ overflow: 'hidden', position: 'relative' }}
         >
-          <Box ref={dropRef} flex={1}>
+          <Box
+            ref={dropRef}
+            flex={1}
+            onMouseMove={({ clientX, clientY }) => {
+              setClientCoords({ clientX, clientY });
+            }}
+          >
             <div ref={canvasRef}>
               {blockStates.map(blockState => {
                 const {

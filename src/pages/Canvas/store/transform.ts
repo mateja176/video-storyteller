@@ -6,9 +6,11 @@ import { Tuple } from 'ts-toolbelt';
 export type ClientCoords = Pick<React.MouseEvent, 'clientX' | 'clientY'>;
 export type Transform = ReturnType<PanZoom['getTransform']>;
 export type Position = Pick<Transform, 'x' | 'y'>;
+export type Scale = Pick<Transform, 'scale'>;
+export type Zoom = Scale & ClientCoords;
 export type TransformState = Transform & ClientCoords;
 
-export const initialState: TransformState = {
+export const initialTransformState: TransformState = {
   scale: 1,
   x: 0,
   y: 0,
@@ -26,7 +28,7 @@ export type SetTransformAction = ReturnType<typeof createSetTransform>;
 export const scaleSetType = 'transform/scale/set';
 export const createSetScale = createAction(
   scaleSetType,
-  action => (payload: Transform) => action(payload),
+  action => (payload: Zoom) => action(payload),
 );
 export type SetScaleAction = ReturnType<typeof createSetScale>;
 
@@ -43,7 +45,7 @@ export type PositionAction = SetPositionAction;
 
 export type TransformAction = SetTransformAction | ScaleAction | PositionAction;
 
-export default createReducer(initialState)<TransformAction>({
+export default createReducer(initialTransformState)<TransformAction>({
   [setTransformType]: (state, { payload }) => ({ ...state, ...payload }),
   [scaleSetType]: (state, { payload }) => ({ ...state, ...payload }),
   [positionSetType]: (state, { payload }) => ({ ...state, ...payload }),

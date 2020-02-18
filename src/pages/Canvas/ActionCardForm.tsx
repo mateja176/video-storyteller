@@ -11,10 +11,7 @@ import React from 'react';
 import { Flex } from 'rebass';
 import { ICanvasContext } from './CanvasContext';
 import { Action } from './store';
-import {
-  initialState as initialTransformState,
-  Transform,
-} from './store/transform';
+import { initialTransformState, TransformState } from './store/transform';
 import {
   formatCoordinate,
   formatScale,
@@ -50,7 +47,7 @@ type ImageBlock = ImageBlockState['payload']['block'];
 interface Values
   extends InitialValues,
     WithDropResult,
-    Transform,
+    TransformState,
     Pick<ImageBlock, 'name'> {
   editorState: string;
 }
@@ -85,16 +82,18 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
       isScaleAction(action) || isSetTransformAction(action)
         ? formatScale(action.payload.scale)
         : initialTransformState.scale,
+    clientX: isScaleAction(action)
+      ? action.payload.clientX
+      : initialTransformState.clientX,
+    clientY: isScaleAction(action)
+      ? action.payload.clientY
+      : initialTransformState.clientY,
     x:
-      isPositionAction(action) ||
-      isSetTransformAction(action) ||
-      isScaleAction(action)
+      isPositionAction(action) || isSetTransformAction(action)
         ? formatCoordinate(action.payload.x)
         : initialTransformState.x,
     y:
-      isPositionAction(action) ||
-      isSetTransformAction(action) ||
-      isScaleAction(action)
+      isPositionAction(action) || isSetTransformAction(action)
         ? formatCoordinate(action.payload.y)
         : initialTransformState.y,
     editorState: isUpdateEditAction(action)
@@ -228,9 +227,7 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
                   />
                 </Flex>
               )}
-              {(isPositionAction(action) ||
-                isScaleAction(action) ||
-                isSetTransformAction(action)) && (
+              {(isPositionAction(action) || isSetTransformAction(action)) && (
                 <Flex>
                   <TextField
                     {...textFieldProps}
