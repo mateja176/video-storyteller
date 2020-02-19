@@ -428,6 +428,7 @@ const Canvas: React.FC<CanvasProps> = ({
         filterKey: () => true,
       },
     );
+    (window as any).panzoom = instance; // eslint-disable-line
 
     setPanzoomInstance(instance);
 
