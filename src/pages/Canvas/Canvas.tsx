@@ -389,9 +389,17 @@ const Canvas: React.FC<CanvasProps> = ({
       if (scale !== transform.scale) {
         panzoomInstance.off('zoom', handleZoom);
 
-        panzoomInstance.zoomAbs(position.x, position.y, scale);
+        panzoomInstance.zoomAbs(
+          clientCoordsRef.current.clientX,
+          clientCoordsRef.current.clientY,
+          scale,
+        );
 
         panzoomInstance.on('zoom', handleZoom);
+
+        if (transform.x !== position.x || transform.y !== position.y) {
+          panzoomInstance.moveTo(position.x, position.y);
+        }
       }
     }
   }, [panzoomInstance, scale, position, handleZoom]);
