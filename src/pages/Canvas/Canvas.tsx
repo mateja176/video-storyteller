@@ -388,32 +388,52 @@ const Canvas: React.FC<CanvasProps> = ({
   React.useEffect(() => {
     if (panzoomInstance) {
       const transform = panzoomInstance.getTransform();
-      if (scale !== transform.scale) {
-        panzoomInstance.off('zoom', handleZoom);
 
-        panzoomInstance.zoomAbs(
-          clientCoordsRef.current.clientX,
-          clientCoordsRef.current.clientY,
-          scale,
-        );
+      const hasPositionChanged =
+        transform.x !== position.x || transform.y !== position.y;
 
-        panzoomInstance.on('zoom', handleZoom);
+      const hasScaleChanged = scale !== transform.scale;
 
-        if (transform.x !== position.x || transform.y !== position.y) {
+      switch (true) {
+        case hasScaleChanged && hasPositionChanged:
+          panzoomInstance.off('zoom', handleZoom);
+
+          panzoomInstance.zoomAbs(
+            clientCoordsRef.current.clientX,
+            clientCoordsRef.current.clientY,
+            scale,
+          );
+
+          panzoomInstance.on('zoom', handleZoom);
+
           panzoomInstance.moveTo(position.x, position.y);
-        }
+
+          break;
+        case hasScaleChanged:
+          panzoomInstance.off('zoom', handleZoom);
+
+          panzoomInstance.zoomAbs(
+            clientCoordsRef.current.clientX,
+            clientCoordsRef.current.clientY,
+            scale,
+          );
+
+          panzoomInstance.on('zoom', handleZoom);
+
+          break;
+        case hasPositionChanged:
+          panzoomInstance.moveBy(
+            position.x - transform.x,
+            position.y - transform.y,
+            true,
+          );
+
+          break;
+        default:
+          break;
       }
     }
   }, [panzoomInstance, scale, position, handleZoom]);
-
-  React.useEffect(() => {
-    if (panzoomInstance) {
-      const { x, y } = panzoomInstance.getTransform();
-      if (!equals(position, { x, y })) {
-        panzoomInstance.moveBy(position.x - x, position.y - y, true);
-      }
-    }
-  }, [panzoomInstance, position]);
 
   React.useEffect(() => {
     const instance = panzoom(
