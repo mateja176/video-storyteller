@@ -400,7 +400,7 @@ const Canvas: React.FC<CanvasProps> = ({
     if (panzoomInstance) {
       const { x, y } = panzoomInstance.getTransform();
       if (!equals(position, { x, y })) {
-        panzoomInstance.moveTo(position.x, position.y);
+        panzoomInstance.moveBy(position.x - x, position.y - y, true);
       }
     }
   }, [panzoomInstance, position]);
