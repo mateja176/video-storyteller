@@ -55,7 +55,14 @@ const Dashboard: React.FC<DashboardProps> = () => {
       <Link to="canvas" />
       <Typography variant="h3">Stories</Typography>
       <Box my={3}>
-        <Link to="canvas">
+        <Link
+          to="canvas"
+          onClick={() => {
+            if (currentStoryId) {
+              setCurrentStoryId({ currentStoryId: '' });
+            }
+          }}
+        >
           <i color={theme.palette.primary.main}>Create story</i>
         </Link>
       </Box>
