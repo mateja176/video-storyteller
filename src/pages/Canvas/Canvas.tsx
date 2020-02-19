@@ -148,7 +148,7 @@ import {
 import {
   ClientCoords,
   createSetPosition,
-  createSetScale,
+  createSetZoom,
   initialTransformState,
 } from './store/transform';
 import TextBlock from './TextBlock';
@@ -268,7 +268,7 @@ const Canvas: React.FC<CanvasProps> = ({
   const theme = useTheme();
 
   const {
-    setScale,
+    setZoom,
     setPosition,
     createBlockState,
     deleteBlockState,
@@ -276,7 +276,7 @@ const Canvas: React.FC<CanvasProps> = ({
     updateEditText,
     updateResize,
   } = useActions({
-    setScale: createSetScale,
+    setZoom: createSetZoom,
     setPosition: createSetPosition,
     createBlockState: createCreateAction,
     deleteBlockState: createDeleteAction,
@@ -373,10 +373,12 @@ const Canvas: React.FC<CanvasProps> = ({
   const handleZoom = React.useMemo(() => {
     const setTransform = (instance: PanZoom) => {
       const transform = instance.getTransform();
-      setScale({
+      setZoom({
         scale: transform.scale,
         clientX: clientCoordsRef.current.clientX,
         clientY: clientCoordsRef.current.clientY,
+        x: transform.x,
+        y: transform.y,
       });
     };
 

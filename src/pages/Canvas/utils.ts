@@ -23,6 +23,7 @@ import {
   positionTypes,
   ScaleAction,
   scaleTypes,
+  SetScaleAction,
   SetTransformAction,
   setTransformType,
   Transform,
@@ -98,7 +99,7 @@ export const isSetTransformAction = (
 ): action is SetTransformAction => action.type === setTransformType;
 
 export const isScaleAction = (action: Action): action is ScaleAction =>
-  scaleTypes.includes(action.type as ScaleAction['type']);
+  scaleTypes.includes(action.type as SetScaleAction['type']);
 
 export const isPositionAction = (action: Action): action is PositionAction =>
   positionTypes.includes(action.type as PositionAction['type']);
