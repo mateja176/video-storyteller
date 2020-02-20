@@ -165,7 +165,7 @@ const initialEditorState = EditorState.createWithContent(
   ContentState.createFromText('Hello World'),
 );
 
-const transitionDuration = 500;
+// const transitionDuration = 500;
 
 const headerHeight = 76;
 
@@ -520,17 +520,17 @@ const Canvas: React.FC<CanvasProps> = ({
   const [isPlaying, setIsPlaying] = React.useState(false);
   const [elapsedTime, setElapsedTime] = React.useState(initialElapsedTime);
 
-  const [playing, setPlaying] = React.useState(false);
+  // const [playing, setPlaying] = React.useState(false);
 
-  React.useEffect(() => {
-    if (isPlaying) {
-      setPlaying(isPlaying);
-    } else {
-      setTimeout(() => {
-        setPlaying(false);
-      }, transitionDuration);
-    }
-  }, [isPlaying]);
+  // React.useEffect(() => {
+  //   if (isPlaying) {
+  //     setPlaying(isPlaying);
+  //   } else {
+  //     setTimeout(() => {
+  //       setPlaying(false);
+  //     }, transitionDuration);
+  //   }
+  // }, [isPlaying]);
 
   const [isFullscreen, setIsFullScreen] = React.useState(false);
 
@@ -1255,7 +1255,9 @@ const Canvas: React.FC<CanvasProps> = ({
                             : 'none',
                         display: 'inline-block',
                         padding: blockState.type === 'text' ? 15 : 0,
-                        transition: playing ? 'all 500ms ease-in-out' : 'none',
+                        // transition: playing
+                        //   ? 'position 500ms ease-in-out'
+                        //   : 'none',
                       }}
                       onResizeStart={pause}
                       onDragStart={pause}
