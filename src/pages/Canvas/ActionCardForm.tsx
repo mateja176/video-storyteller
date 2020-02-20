@@ -18,6 +18,7 @@ import {
   isPositionAction,
   isScaleAction,
   isSetTransformAction,
+  isSetZoomAction,
   isUpdateEditAction,
   isUpdateMoveAction,
   isUpdateRenameImageAction,
@@ -68,7 +69,7 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
 }) => {
   const textFieldProps = { ...constantTextFieldProps, disabled: !isAuthor };
 
-  const formatedInitialValues: Values = {
+  const formattedInitialValues: Values = {
     ...initialValues,
     width: isUpdateResizeAction(action) ? action.payload.payload.width : 0,
     height: isUpdateResizeAction(action) ? action.payload.payload.height : 0,
@@ -89,11 +90,15 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
       ? action.payload.clientY
       : initialTransformState.clientY,
     x:
-      isPositionAction(action) || isSetTransformAction(action)
+      isPositionAction(action) ||
+      isSetZoomAction(action) ||
+      isSetTransformAction(action)
         ? formatCoordinate(action.payload.x)
         : initialTransformState.x,
     y:
-      isPositionAction(action) || isSetTransformAction(action)
+      isPositionAction(action) ||
+      isSetZoomAction(action) ||
+      isSetTransformAction(action)
         ? formatCoordinate(action.payload.y)
         : initialTransformState.y,
     editorState: isUpdateEditAction(action)
@@ -108,7 +113,7 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
 
   return (
     <Formik
-      initialValues={formatedInitialValues}
+      initialValues={formattedInitialValues}
       onSubmit={handleSubmit}
       validate={values => {
         if (values.duration < -1) {
@@ -125,7 +130,7 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
       {({ isValid, handleChange, handleBlur, values, errors }) => {
         // const formattedActionType = startCase(action.type);
 
-        const saveDisabled = !isValid || equals(formatedInitialValues, values);
+        const saveDisabled = !isValid || equals(formattedInitialValues, values);
 
         return (
           <Flex flexDirection="column" px={2} flex={1}>

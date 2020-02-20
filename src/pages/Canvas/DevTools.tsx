@@ -62,10 +62,18 @@ import {
   UpdateMoveAction,
   UpdateRenameImageAction,
 } from './store/blockStates';
-import { SetPositionAction, SetScaleAction, Zoom } from './store/transform';
+import {
+  Position,
+  SetPositionAction,
+  SetScaleAction,
+  SetZoomAction,
+  Zoom,
+  ZoomAndPosition,
+} from './store/transform';
 import {
   ActionCreators,
   ActionWithId,
+  formatCoordinate,
   formatPosition,
   formatScale,
   isAudioAction,
@@ -74,7 +82,8 @@ import {
   isCudActionById,
   isDeleteAction,
   isPositionAction,
-  isScaleAction,
+  isSetScaleAction,
+  isSetZoomAction,
   isTransformAction,
   isUpdateAction,
   isUpdateMoveAction,
@@ -1015,12 +1024,18 @@ const StoryMonitor = ({
                           clientY,
                         };
 
-                        if (isScaleAction(action)) {
+                        const position: Position = { x, y };
+
+                        const zoomAndPosition: ZoomAndPosition = {
+                          ...zoom,
+                          ...position,
+                        };
+
+                        if (isSetScaleAction(action)) {
                           const currentZoom: Zoom = {
                             ...action.payload,
                             scale: formatScale(action.payload.scale),
                           };
-
                           if (!equals(currentZoom, zoom)) {
                             store.dispatch({
                               type,
@@ -1034,13 +1049,10 @@ const StoryMonitor = ({
                           }
                         }
 
-                        const position = { x, y };
-
                         if (isPositionAction(action)) {
-                          const currentPosition = formatPosition(
+                          const currentPosition: Position = formatPosition(
                             action.payload,
                           );
-
                           if (!equals(currentPosition, position)) {
                             store.dispatch({
                               type,
@@ -1049,6 +1061,29 @@ const StoryMonitor = ({
                                 updated: true,
                               },
                             } as SetPositionAction);
+
+                            deleteAction(id);
+                          }
+                        }
+
+                        if (isSetZoomAction(action)) {
+                          const currentZoomAndPosition: ZoomAndPosition = {
+                            ...action.payload,
+                            scale: formatScale(action.payload.scale),
+                            x: formatCoordinate(action.payload.x),
+                            y: formatCoordinate(action.payload.y),
+                          };
+
+                          if (
+                            !equals(currentZoomAndPosition, zoomAndPosition)
+                          ) {
+                            store.dispatch({
+                              type,
+                              payload: zoomAndPosition,
+                              meta: {
+                                updated: true,
+                              },
+                            } as SetZoomAction);
 
                             deleteAction(id);
                           }

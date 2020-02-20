@@ -22,10 +22,13 @@ import {
   PositionAction,
   positionTypes,
   ScaleAction,
+  scaleSetType,
   scaleTypes,
   SetScaleAction,
   SetTransformAction,
   setTransformType,
+  SetZoomAction,
+  setZoomType,
   Transform,
   TransformAction,
   TransformActionType,
@@ -99,7 +102,13 @@ export const isSetTransformAction = (
 ): action is SetTransformAction => action.type === setTransformType;
 
 export const isScaleAction = (action: Action): action is ScaleAction =>
-  scaleTypes.includes(action.type as SetScaleAction['type']);
+  scaleTypes.includes(action.type as ScaleAction['type']);
+
+export const isSetScaleAction = (action: Action): action is SetScaleAction =>
+  action.type === scaleSetType;
+
+export const isSetZoomAction = (action: Action): action is SetZoomAction =>
+  action.type === setZoomType;
 
 export const isPositionAction = (action: Action): action is PositionAction =>
   positionTypes.includes(action.type as PositionAction['type']);
