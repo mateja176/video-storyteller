@@ -16,7 +16,7 @@ import { composeWithDevTools as composeWithReduxDevTools } from 'redux-devtools-
 import { createSelector, Selector } from 'reselect';
 import audio, { AudioAction } from './audio';
 import blockStates, { BlockStatesAction } from './blockStates';
-import transform, { TransformAction } from './transform';
+import transform, { ClientCoords, TransformAction, Zoom } from './transform';
 
 const actionReducerMap = {
   blockStates,
@@ -67,6 +67,23 @@ export const selectPosition = createSelector(selectTransform, ({ x, y }) => ({
   x,
   y,
 }));
+
+export const selectClientCoords = createSelector(
+  selectTransform,
+  ({ clientX, clientY }): ClientCoords => ({ clientX, clientY }),
+);
+
+export const selectZoom = createSelector(
+  selectScale,
+  selectClientCoords,
+  (scale, clientCoords): Zoom => ({ ...clientCoords, scale }),
+);
+
+export const selectZoomAndPosition = createSelector(
+  selectZoom,
+  selectPosition,
+  (zoom, position): Zoom => ({ ...zoom, ...position }),
+);
 
 export const selectAudio = (state: State) => state.audio;
 export const selectAudioSrc = createSelector(
