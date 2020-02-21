@@ -362,10 +362,11 @@ const Canvas: React.FC<CanvasProps> = ({
   const clientCoordsRef = React.useRef<ClientCoords>(
     pickAll(['clientX', 'clientY'])(initialTransformState),
   );
-  const setClientCoords = React.useCallback(
-    debounce((clientCoords: ClientCoords) => {
-      clientCoordsRef.current = clientCoords; // eslint-disable-line
-    }, 300),
+  const setClientCoords = React.useMemo(
+    () =>
+      debounce((clientCoords: ClientCoords) => {
+        clientCoordsRef.current = clientCoords; // eslint-disable-line
+      }, 300),
     [],
   ); // eslint-disable-line react-hooks/exhaustive-deps
 
