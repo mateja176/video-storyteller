@@ -15,8 +15,8 @@ export const initialTransformState: TransformState = {
   scale: 1,
   x: 0,
   y: 0,
-  clientX: -1,
-  clientY: -1,
+  clientX: 0,
+  clientY: 0,
 };
 
 export const setTransformType = 'transform/set';
