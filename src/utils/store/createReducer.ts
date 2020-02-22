@@ -28,10 +28,10 @@ export const createReducer = <State>(initialState: State) => <
   ReducerAction extends SimpleAction
 >(
   actionReducerMap: {
-    [key in ReducerAction['type']]: <A extends ReducerAction>(
+    [key in ReducerAction['type']]: (
       state: State,
-      action: FilterActionByType<A, key>,
-    ) => State
+      action: FilterActionByType<ReducerAction, key>,
+    ) => State;
   },
 ) => <A extends SimpleAction>(
   state: State | undefined = initialState,
