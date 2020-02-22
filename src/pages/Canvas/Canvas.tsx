@@ -1221,8 +1221,9 @@ const Canvas: React.FC<CanvasProps> = ({
           <Box
             ref={dropRef}
             flex={1}
-            onMouseMove={({ clientX, clientY }) => {
-              setClientCoords({ clientX, clientY });
+            onMouseMove={({ clientX, clientY, currentTarget }) => {
+              const { x, y } = currentTarget.getBoundingClientRect();
+              setClientCoords({ clientX: clientX - x, clientY: clientY - y });
             }}
           >
             <div ref={canvasRef}>
