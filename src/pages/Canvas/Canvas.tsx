@@ -402,10 +402,10 @@ const Canvas: React.FC<CanvasProps> = ({
           panzoomInstance.off('zoom', handleZoom);
 
           panzoomInstance.zoomAbs(clientX, clientY, scale);
+          // panzoomInstance.zoomTo(clientX, clientY, scale / transform.scale);
+          panzoomInstance.moveTo(position.x, position.y);
 
           panzoomInstance.on('zoom', handleZoom);
-
-          panzoomInstance.moveTo(position.x, position.y);
 
           break;
         case hasScaleChanged:
