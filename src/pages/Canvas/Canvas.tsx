@@ -1254,7 +1254,6 @@ const Canvas: React.FC<CanvasProps> = ({
                           hoveredBlockId === id
                             ? `1px 1px inset ${theme.palette.primary.dark}, -1px -1px inset ${theme.palette.primary.dark}`
                             : 'none',
-                        display: 'inline-block',
                         padding: blockState.type === 'text' ? 15 : 0,
                         // transition: playing
                         //   ? 'position 500ms ease-in-out'
