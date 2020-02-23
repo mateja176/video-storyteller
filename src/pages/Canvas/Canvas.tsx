@@ -78,7 +78,6 @@ import CopyToClipboard from 'react-copy-to-clipboard';
 import { useDrop } from 'react-dnd';
 import Dropzone from 'react-dropzone';
 import { useSelector as useStoreSelector } from 'react-redux';
-import { ResizeEnable, Rnd } from 'react-rnd';
 import { Prompt, RouteComponentProps } from 'react-router-dom';
 import {
   FacebookIcon as Facebook,
@@ -129,6 +128,7 @@ import {
 } from './CanvasContext';
 import DevTools, { miniDrawerWidth } from './DevTools';
 import OptionWithPopover from './OptionWithPopover';
+import Rnd from './Rnd';
 import store, {
   selectAudioSrc,
   selectBlockStates,
@@ -178,17 +178,6 @@ const actionsTimelineHeight = 300;
 const listItemIconStyle: React.CSSProperties = {
   minWidth: 'auto',
   marginRight: 10,
-};
-
-const resizeDisabler: ResizeEnable = {
-  bottom: false,
-  top: false,
-  right: false,
-  left: false,
-  topLeft: false,
-  topRight: false,
-  bottomLeft: false,
-  bottomRight: false,
 };
 
 const RightDrawer: React.FC<Pick<React.CSSProperties, 'height' | 'width'> & {
@@ -1233,53 +1222,40 @@ const Canvas: React.FC<CanvasProps> = ({
                 } = blockState;
 
                 return (
-                  <div
+                  <Rnd
                     key={id}
+                    tabIndex={0}
+                    role="button"
                     onMouseEnter={() => {
                       setHoveredBlockId(id);
                     }}
                     onMouseLeave={() => {
                       setHoveredBlockId(initialHoveredBlockId);
                     }}
-                  >
-                    <Rnd
-                      scale={scale}
-                      size={width && height ? { width, height } : undefined}
-                      position={{
-                        x: left,
-                        y: top,
-                      }}
-                      style={{
-                        boxShadow:
-                          hoveredBlockId === id
-                            ? `1px 1px inset ${theme.palette.primary.dark}, -1px -1px inset ${theme.palette.primary.dark}`
-                            : 'none',
-                        padding: blockState.type === 'text' ? 15 : 0,
-                        // transition: playing
-                        //   ? 'position 500ms ease-in-out'
-                        //   : 'none',
-                      }}
-                      onResizeStart={pause}
-                      onDragStart={pause}
-                      onResizeStop={(e, dir, elementRef, delta, { x, y }) => {
-                        resume();
+                    style={{
+                      boxShadow:
+                        hoveredBlockId === id
+                          ? `1px 1px inset ${theme.palette.primary.dark}, -1px -1px inset ${theme.palette.primary.dark}`
+                          : 'none',
+                      padding: blockState.type === 'text' ? 15 : 0,
+                      // transition: playing
+                      //   ? 'position 500ms ease-in-out'
+                      //   : 'none',
+                      position: 'absolute',
+                      left,
+                      top,
+                      ...(width && height ? { width, height } : {}),
+                      cursor: 'grab',
+                    }}
+                    begin={pause}
+                    end={(_, monitor) => {
+                      const difference = monitor.getDifferenceFromInitialOffset();
 
-                        const clientRect = elementRef.getBoundingClientRect();
-                        updateResize({
-                          payload: {
-                            id: blockState.payload.id,
-                            top: y,
-                            left: x,
-                            width: clientRect.width,
-                            height: clientRect.height,
-                          },
-                        });
-                      }}
-                      onDragStop={(e, dragStopEvent) => {
-                        const newTop = dragStopEvent.y;
-                        const newLeft = dragStopEvent.x;
-
-                        if (top !== newTop || left !== newLeft) {
+                      if (difference) {
+                        const { x, y } = difference;
+                        if (x || y) {
+                          const newLeft = left + x;
+                          const newTop = top + y;
                           updateMove({
                             payload: {
                               id: blockState.payload.id,
@@ -1288,102 +1264,96 @@ const Canvas: React.FC<CanvasProps> = ({
                             },
                           });
                         }
-
-                        resume();
-                      }}
-                      disableDragging={
-                        focusedEditorId === id || disableDragging
                       }
-                      onMouseDown={() => {
-                        if (deleteModeOn) {
-                          deleteBlockState({ payload: { id } });
-                          setDeleteModeOn(false);
-                        }
-                      }}
-                      lockAspectRatio={blockState.type === 'image'}
-                      enableResizing={
-                        blockState.type === 'text' ? resizeDisabler : undefined
+
+                      resume();
+                    }}
+                    canDrag={focusedEditorId !== id && !disableDragging}
+                    onMouseDown={() => {
+                      if (deleteModeOn) {
+                        deleteBlockState({ payload: { id } });
+                        setDeleteModeOn(false);
                       }
-                    >
-                      {(() => {
-                        switch (blockState.type) {
-                          case 'text': {
-                            const {
-                              payload: {
-                                block: { editorState },
-                              },
-                            } = blockState;
+                    }}
+                  >
+                    {(() => {
+                      switch (blockState.type) {
+                        case 'text': {
+                          const {
+                            payload: {
+                              block: { editorState },
+                            },
+                          } = blockState;
 
-                            return (
-                              <Editor
-                                editorState={
-                                  focusedEditorId === id
-                                    ? focusedEditorState
-                                    : EditorState.createWithContent(
-                                        convertFromRaw(editorState),
-                                      )
-                                }
-                                setEditorState={setFocusedEditorState}
-                                onFocus={() => {
-                                  setFocusedEditorId(id);
-
-                                  setFocusedEditorState(
-                                    EditorState.createWithContent(
+                          return (
+                            <Editor
+                              editorState={
+                                focusedEditorId === id
+                                  ? focusedEditorState
+                                  : EditorState.createWithContent(
                                       convertFromRaw(editorState),
-                                    ),
-                                  );
-                                }}
-                                onBlur={() => {
-                                  setFocusedEditorId('');
-
-                                  const newEditorState = convertToRaw(
-                                    focusedEditorState.getCurrentContent(),
-                                  );
-                                  if (
-                                    !equals(
-                                      blockState.payload.block.editorState,
-                                      newEditorState,
                                     )
-                                  ) {
-                                    updateEditText({
-                                      id,
-                                      block: { editorState: newEditorState },
-                                    });
-                                  }
-                                }}
-                                onMouseEnter={() => {
-                                  setDisableDragging(true);
-                                }}
-                                onMouseLeave={() => {
-                                  setDisableDragging(false);
-                                }}
-                                cursor={deleteModeOn ? 'not-allowed' : 'text'}
-                              />
-                            );
-                          }
-                          case 'image': {
-                            const {
-                              payload: {
-                                block: { downloadUrl, name },
-                              },
-                            } = blockState;
+                              }
+                              setEditorState={setFocusedEditorState}
+                              onFocus={() => {
+                                setFocusedEditorId(id);
 
-                            return (
-                              <img
-                                src={downloadUrl}
-                                alt={name}
-                                draggable={false}
-                                width="100%"
-                                height="100%"
-                              />
-                            );
-                          }
-                          default:
-                            return null;
+                                setFocusedEditorState(
+                                  EditorState.createWithContent(
+                                    convertFromRaw(editorState),
+                                  ),
+                                );
+                              }}
+                              onBlur={() => {
+                                setFocusedEditorId('');
+
+                                const newEditorState = convertToRaw(
+                                  focusedEditorState.getCurrentContent(),
+                                );
+                                if (
+                                  !equals(
+                                    blockState.payload.block.editorState,
+                                    newEditorState,
+                                  )
+                                ) {
+                                  updateEditText({
+                                    id,
+                                    block: { editorState: newEditorState },
+                                  });
+                                }
+                              }}
+                              onMouseEnter={() => {
+                                setDisableDragging(true);
+                              }}
+                              onMouseLeave={() => {
+                                setDisableDragging(false);
+                              }}
+                              cursor={deleteModeOn ? 'not-allowed' : 'text'}
+                            />
+                          );
                         }
-                      })()}
-                    </Rnd>
-                  </div>
+                        case 'image': {
+                          const {
+                            payload: {
+                              block: { downloadUrl, name },
+                            },
+                          } = blockState;
+
+                          return (
+                            <img
+                              src={downloadUrl}
+                              alt={name}
+                              draggable={false}
+                              width="100%"
+                              height="100%"
+                            />
+                          );
+                        }
+                        default:
+                          return null;
+                      }
+                    })()}
+                  </Rnd>
                 );
               })}
             </div>
