@@ -1250,7 +1250,6 @@ const Canvas: React.FC<CanvasProps> = ({
                         y: top,
                       }}
                       style={{
-                        overflow: 'hidden',
                         boxShadow:
                           hoveredBlockId === id
                             ? `1px 1px inset ${theme.palette.primary.dark}, -1px -1px inset ${theme.palette.primary.dark}`
