@@ -22,9 +22,17 @@ export interface RndProps
     left: number;
     top: number;
   };
+  scale: number;
 }
 
-const Rnd: React.FC<RndProps> = ({ begin, end, canDrag, style, ...props }) => {
+const Rnd: React.FC<RndProps> = ({
+  scale,
+  begin,
+  end,
+  canDrag,
+  style,
+  ...props
+}) => {
   const [, dragRef, previewRef] = useDrag({
     item: {
       type: 'updateMove',
@@ -41,8 +49,8 @@ const Rnd: React.FC<RndProps> = ({ begin, end, canDrag, style, ...props }) => {
     initialClientCoords,
   );
 
-  const left = style.left + deltaClientCoords.clientX;
-  const top = style.top + deltaClientCoords.clientY;
+  const left = style.left + deltaClientCoords.clientX / scale;
+  const top = style.top + deltaClientCoords.clientY / scale;
 
   return (
     <>

@@ -1226,6 +1226,7 @@ const Canvas: React.FC<CanvasProps> = ({
                     key={id}
                     tabIndex={0}
                     role="button"
+                    scale={scale}
                     onMouseEnter={() => {
                       setHoveredBlockId(id);
                     }}
