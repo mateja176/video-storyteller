@@ -82,6 +82,8 @@
     "matchmedia",
     "metageneration",
     "multilines",
+    "nesw",
+    "nwse",
     "overscan",
     "panend",
     "panzoom",
