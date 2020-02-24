@@ -4,7 +4,7 @@
     "javascriptreact",
     "typescript",
     "typescriptreact",
-    { "language": "html", "autoFix": true }
+    "html"
   ],
   "typescript.tsdk": "node_modules/typescript/lib",
   "cSpell.words": [
