@@ -1254,8 +1254,9 @@ const Canvas: React.FC<CanvasProps> = ({
                       if (difference) {
                         const { x, y } = difference;
                         if (x || y) {
-                          const newLeft = left + x;
-                          const newTop = top + y;
+                          const newLeft = left + x / scale;
+                          const newTop = top + y / scale;
+
                           updateMove({
                             payload: {
                               id: blockState.payload.id,
