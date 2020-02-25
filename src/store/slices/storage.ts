@@ -82,7 +82,18 @@ export const storage = createReducer(initialStorageState)<StorageReducerAction>(
         [key]: state[key].find(({ name }) => name === payload.name)
           ? state[key]
           : state[key]
-              .concat(payload)
+              .concat(
+                key === 'images'
+                  ? {
+                      ...payload,
+                      customMetadata: {
+                        ...payload.customMetadata,
+                        width: Number(payload.customMetadata.width),
+                        height: Number(payload.customMetadata.height),
+                      },
+                    }
+                  : payload,
+              )
               .sort((left, right) =>
                 new Date(left.updated).getTime() <
                 new Date(right.updated).getTime()
