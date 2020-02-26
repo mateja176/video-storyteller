@@ -1019,7 +1019,7 @@ const StoryMonitor = ({
                         }
 
                         const zoom: Zoom = {
-                          scale,
+                          scale: scale / 100,
                           clientX,
                           clientY,
                         };
@@ -1069,7 +1069,7 @@ const StoryMonitor = ({
                         if (isSetZoomAction(action)) {
                           const currentZoomAndPosition: ZoomAndPosition = {
                             ...action.payload,
-                            scale: formatScale(action.payload.scale),
+                            scale: action.payload.scale,
                             x: formatCoordinate(action.payload.x),
                             y: formatCoordinate(action.payload.y),
                           };
