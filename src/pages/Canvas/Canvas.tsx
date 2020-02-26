@@ -1236,6 +1236,7 @@ const Canvas: React.FC<CanvasProps> = ({
                         hoveredBlockId === id
                           ? `1px 1px inset ${theme.palette.primary.dark}, -1px -1px inset ${theme.palette.primary.dark}`
                           : 'none',
+                      padding: blockState.type === 'text' ? 15 : 0,
                       // transition: playing
                       //   ? 'position 500ms ease-in-out'
                       //   : 'none',
@@ -1285,52 +1286,50 @@ const Canvas: React.FC<CanvasProps> = ({
                           } = blockState;
 
                           return (
-                            <Box p={3}>
-                              <Editor
-                                editorState={
-                                  focusedEditorId === id
-                                    ? focusedEditorState
-                                    : EditorState.createWithContent(
-                                        convertFromRaw(editorState),
-                                      )
-                                }
-                                setEditorState={setFocusedEditorState}
-                                onFocus={() => {
-                                  setFocusedEditorId(id);
-
-                                  setFocusedEditorState(
-                                    EditorState.createWithContent(
+                            <Editor
+                              editorState={
+                                focusedEditorId === id
+                                  ? focusedEditorState
+                                  : EditorState.createWithContent(
                                       convertFromRaw(editorState),
-                                    ),
-                                  );
-                                }}
-                                onBlur={() => {
-                                  setFocusedEditorId('');
-
-                                  const newEditorState = convertToRaw(
-                                    focusedEditorState.getCurrentContent(),
-                                  );
-                                  if (
-                                    !equals(
-                                      blockState.payload.block.editorState,
-                                      newEditorState,
                                     )
-                                  ) {
-                                    updateEditText({
-                                      id,
-                                      block: { editorState: newEditorState },
-                                    });
-                                  }
-                                }}
-                                onMouseEnter={() => {
-                                  setDisableDragging(true);
-                                }}
-                                onMouseLeave={() => {
-                                  setDisableDragging(false);
-                                }}
-                                cursor={deleteModeOn ? 'not-allowed' : 'text'}
-                              />
-                            </Box>
+                              }
+                              setEditorState={setFocusedEditorState}
+                              onFocus={() => {
+                                setFocusedEditorId(id);
+
+                                setFocusedEditorState(
+                                  EditorState.createWithContent(
+                                    convertFromRaw(editorState),
+                                  ),
+                                );
+                              }}
+                              onBlur={() => {
+                                setFocusedEditorId('');
+
+                                const newEditorState = convertToRaw(
+                                  focusedEditorState.getCurrentContent(),
+                                );
+                                if (
+                                  !equals(
+                                    blockState.payload.block.editorState,
+                                    newEditorState,
+                                  )
+                                ) {
+                                  updateEditText({
+                                    id,
+                                    block: { editorState: newEditorState },
+                                  });
+                                }
+                              }}
+                              onMouseEnter={() => {
+                                setDisableDragging(true);
+                              }}
+                              onMouseLeave={() => {
+                                setDisableDragging(false);
+                              }}
+                              cursor={deleteModeOn ? 'not-allowed' : 'text'}
+                            />
                           );
                         }
                         case 'image': {
