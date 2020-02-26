@@ -592,8 +592,6 @@ const Canvas: React.FC<CanvasProps> = ({
     if (currentStory) {
       setActionsTimelineOpen(true);
 
-      setRightDrawerOccupant('text blocks');
-
       setStoryName(currentStory.name);
     }
   }, [currentStory]);
