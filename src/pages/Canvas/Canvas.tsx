@@ -165,7 +165,7 @@ const initialEditorState = EditorState.createWithContent(
   ContentState.createFromText('Hello World'),
 );
 
-// const transitionDuration = 500;
+const transitionDuration = 500;
 
 const headerHeight = 76;
 
@@ -1235,9 +1235,9 @@ const Canvas: React.FC<CanvasProps> = ({
                           ? `1px 1px inset ${theme.palette.primary.dark}, -1px -1px inset ${theme.palette.primary.dark}`
                           : 'none',
                       padding: blockState.type === 'text' ? 15 : 0,
-                      // transition: playing
-                      //   ? 'position 500ms ease-in-out'
-                      //   : 'none',
+                      transition: isPlaying
+                        ? `left ${transitionDuration}ms ease-in-out, top ${transitionDuration}ms ease-in-out`
+                        : 'none',
                       position: 'absolute',
                       left, // TODO add support for position changing resizing
                       top, // TODO example at https://bokuweb.github.io/react-rnd/stories
