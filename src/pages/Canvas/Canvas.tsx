@@ -1222,8 +1222,6 @@ const Canvas: React.FC<CanvasProps> = ({
                 return (
                   <Rnd
                     key={id}
-                    tabIndex={0}
-                    role="button"
                     scale={scale}
                     onMouseEnter={() => {
                       setHoveredBlockId(id);
@@ -1241,9 +1239,10 @@ const Canvas: React.FC<CanvasProps> = ({
                       //   ? 'position 500ms ease-in-out'
                       //   : 'none',
                       position: 'absolute',
-                      left,
-                      top,
-                      ...(width && height ? { width, height } : {}),
+                      left, // TODO add support for position changing resizing
+                      top, // TODO example at https://bokuweb.github.io/react-rnd/stories
+                      width,
+                      height,
                       cursor: 'grab',
                     }}
                     begin={pause}
@@ -1275,6 +1274,22 @@ const Canvas: React.FC<CanvasProps> = ({
                         setDeleteModeOn(false);
                       }
                     }}
+                    onResizeStart={pause}
+                    onResizeStop={(e, dir, elementRef, delta) => {
+                      resume();
+
+                      updateResize({
+                        payload: {
+                          id: blockState.payload.id,
+                          left,
+                          top,
+                          width: width + delta.width,
+                          height: height + delta.height,
+                        },
+                      });
+                    }}
+                    lockAspectRatio={blockState.type === 'image'}
+                    enableResizing={blockState.type !== 'text'}
                   >
                     {(() => {
                       switch (blockState.type) {
