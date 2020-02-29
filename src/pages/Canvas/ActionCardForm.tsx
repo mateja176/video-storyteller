@@ -157,6 +157,35 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
                 error={Boolean(errors.duration)}
                 helperText={errors.duration}
               />
+              {isUpdateResizeAction(action) && (
+                <Flex>
+                  <TextField
+                    name="width"
+                    label="Width"
+                    value={values.width}
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">px</InputAdornment>
+                      ),
+                    }}
+                    style={{ marginRight: 5 }}
+                  />
+                  <TextField
+                    name="height"
+                    label="Height"
+                    value={values.height}
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">px</InputAdornment>
+                      ),
+                    }}
+                  />
+                </Flex>
+              )}
               {(isScaleAction(action) || isSetTransformAction(action)) && (
                 <TextField
                   {...textFieldProps}
