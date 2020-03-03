@@ -42,9 +42,9 @@ import {
   ColorPicker,
   Editor,
   EditorControls,
-  Font,
-  FontPicker,
-  fonts,
+  fontFamilies,
+  FontFamily,
+  FontFamilyPicker,
   FontSize,
   FontSizePicker,
   fontSizes,
@@ -922,16 +922,16 @@ const Canvas: React.FC<CanvasProps> = ({
                             editorState={focusedEditorState}
                             setEditorState={setFocusedEditorState}
                           />
-                          <FontPicker
-                            font={
+                          <FontFamilyPicker
+                            selected={
                               (inlineStyleTypes.find(type =>
-                                fonts.includes(type as Font),
-                              ) || fonts[0]) as Font
+                                fontFamilies.includes(type as FontFamily),
+                              ) || fontFamilies[0]) as FontFamily
                             }
-                            onSelect={handleSelect(fonts)}
+                            onSelect={handleSelect(fontFamilies)}
                           />
                           <FontSizePicker
-                            size={
+                            selected={
                               (inlineStyleTypes.find(type =>
                                 fontSizes.includes(type as FontSize),
                               ) || 'initial') as FontSize

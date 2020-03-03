@@ -3,13 +3,13 @@ import firebase from 'my-firebase';
 import { inc, prop } from 'ramda';
 import { Epic } from 'redux-observable';
 import { docData } from 'rxfire/firestore';
-import { defer, of, empty } from 'rxjs';
+import { defer, empty, Observable, of, pipe } from 'rxjs';
 import {
   catchError,
   map,
+  mergeMapTo,
   switchMap,
   withLatestFrom,
-  mergeMapTo,
 } from 'rxjs/operators';
 import { selectCountValue } from 'store/selectors';
 import { getType } from 'typesafe-actions';
@@ -26,6 +26,21 @@ import {
 } from '../slices';
 
 const countsCollection = firebase.firestore().collection('counts');
+
+/* eslint-disable indent */
+
+const setCount = (state$: Observable<State>) => <A extends Action>(
+  createError: (message: Error['message']) => A,
+) =>
+  pipe(
+    withLatestFrom(state$.pipe(map(selectUid))),
+    switchMap(([value, uid]) =>
+      defer(() => countsCollection.doc(uid).set({ value })).pipe(
+        mergeMapTo(empty()),
+        catchError(({ message }: Error) => of(createError(message))),
+      ),
+    ),
+  );
 
 const getCount: Epic<
   Action,
@@ -57,15 +72,7 @@ const increment: Epic<
     ofType(getType(incrementCountAsync.request)),
     selectState(selectCountValue)(state$),
     map(inc),
-    withLatestFrom(state$.pipe(map(selectUid))),
-    switchMap(([value, uid]) =>
-      defer(() => countsCollection.doc(uid).set({ value })).pipe(
-        mergeMapTo(empty()),
-        catchError(({ message }: Error) =>
-          of(incrementCountAsync.failure(message)),
-        ),
-      ),
-    ),
+    setCount(state$)(incrementCountAsync.failure),
   );
 
 const decrementBy: Epic<
@@ -80,13 +87,7 @@ const decrementBy: Epic<
     map(({ payload }) => payload),
     withLatestFrom(state$.pipe(map(selectCountValue))),
     map(([amount, value]) => value - amount),
-    withLatestFrom(state$.pipe(map(selectUid))),
-    switchMap(([value, uid]) =>
-      defer(() => countsCollection.doc(uid).set({ value })).pipe(
-        mergeMapTo(empty()),
-        catchError(({ message }: Error) => of(setCountAsync.failure(message))),
-      ),
-    ),
+    setCount(state$)(setCountAsync.failure),
   );
 
 export default [getCount, increment, decrementBy];
