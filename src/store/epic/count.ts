@@ -1,5 +1,5 @@
 import 'firebase/firestore';
-import firebase from 'my-firebase';
+
 import { inc, prop } from 'ramda';
 import { Epic } from 'redux-observable';
 import { docData } from 'rxfire/firestore';
@@ -14,6 +14,9 @@ import {
 import { selectCountValue } from 'store/selectors';
 import { getType } from 'typesafe-actions';
 import { ofType, selectState, takeUntilSignedOut } from 'utils';
+
+import firebase from '@firebase';
+
 import { Action, State } from '../reducer';
 import { selectUid } from '../selectors';
 import {

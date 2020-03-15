@@ -1,11 +1,14 @@
 import 'firebase/storage';
-import firebase from 'my-firebase';
+
 import { Epic, ofType } from 'redux-observable';
-import { from, of, defer } from 'rxjs';
+import { defer, from, of } from 'rxjs';
 import { catchError, map, mergeMap, withLatestFrom } from 'rxjs/operators';
 import { selectUid } from 'store';
 import { getType } from 'typesafe-actions';
 import urlJoin from 'url-join';
+
+import firebase from '@firebase';
+
 import { Action, State } from '../reducer';
 import {
   AddFileAction,
