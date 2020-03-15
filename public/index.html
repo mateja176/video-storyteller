@@ -51,7 +51,6 @@
       defer
     ></script>
     <script src="https://js.stripe.com/v3/" async defer></script>
-    <% if (process.env.NODE_ENV === 'production') { %>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script
       async
@@ -129,6 +128,7 @@
           });
       })(addEventListener, removeEventListener);
     </script>
+    <% if (process.env.NODE_ENV === 'production') { %>
     <script>
       /* eslint-disable */
       // The perfMetrics object is created by the code that goes in <head>.
