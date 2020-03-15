@@ -45,13 +45,6 @@ export const extendedLoadingStatuses: ExtendedLoadingStatus[] = [
   'failed',
 ];
 
-export interface Drift {
-  track: (name: string, config: { sessionURL: string }) => void;
-}
-export interface WithDrift {
-  drift: Drift;
-}
-
 export type Stripe = NonUndefined<
   ReactStripeElements.StripeProviderProps['stripe']
 >;

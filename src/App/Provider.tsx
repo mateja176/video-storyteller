@@ -29,18 +29,6 @@ const Provider: FC<ProviderProps> = ({ children }) => {
       LogRocket.init(process.env.REACT_APP_LOG_ROCKET_ID || '');
 
       setupLogRocketReact(LogRocket);
-
-      LogRocket.getSessionURL(sessionURL => {
-        // * in contrary to the second condition the first one is runtime safe but not typesafe
-        // if (window.drift && typeof window.drift.track === 'function') {
-        if ('drift' in window) {
-          // * although the following is more accurate than any, it causes build to fail
-          // (window as typeof window & WithDrift).drift.track('LogRocket', {
-          (window as any).drift.track('LogRocket', {
-            sessionURL,
-          });
-        }
-      });
     }
   }, []);
 
