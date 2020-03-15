@@ -1,3 +1,4 @@
+import env from 'env';
 import 'firebase/storage';
 import { KnowledgeGraph } from 'models/knowledgeGraph';
 import firebase from 'my-firebase';
@@ -119,7 +120,7 @@ export const verifyImage: Epic<
             `https://kgsearch.googleapis.com/v1/entities:search?query=${className.replace(
               / /g,
               '+',
-            )}&key=${process.env.REACT_APP_GOOGLE_API_KEY}&limit=1`,
+            )}&key=${env.googleApiKey}&limit=1`,
           ).pipe(
             map<AjaxResponse, KnowledgeGraph>(({ response }) => response),
             tap(console.log), // eslint-disable-line no-console

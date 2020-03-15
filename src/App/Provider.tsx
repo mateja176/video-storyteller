@@ -1,4 +1,5 @@
 import { fontsWithWeights } from 'components';
+import env from 'env';
 import LogRocket from 'logrocket';
 import setupLogRocketReact from 'logrocket-react';
 import { Stripe } from 'models';
@@ -20,13 +21,13 @@ const Provider: FC<ProviderProps> = ({ children }) => {
 
   React.useEffect(() => {
     if ('Stripe' in window) {
-      setStripe((window as any).Stripe(process.env.REACT_APP_STRIPE_PUB || ''));
+      setStripe((window as any).Stripe(env.stripePub));
     }
   }, []);
 
   React.useEffect(() => {
     if (process.env.NODE_ENV === 'production') {
-      LogRocket.init(process.env.REACT_APP_LOG_ROCKET_ID || '');
+      LogRocket.init(env.logRocketId);
 
       setupLogRocketReact(LogRocket);
     }

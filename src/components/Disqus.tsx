@@ -1,11 +1,10 @@
 import { CommentCount, DiscussionEmbed } from 'disqus-react';
+import env from 'env';
 import { startCase } from 'lodash';
 import React, { ComponentProps } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Box } from 'rebass';
 import { useHref } from 'utils/hooks';
-
-const shortname = 'react-hot-starter-dev';
 
 type DisqusConfig = ComponentProps<typeof CommentCount>['config'];
 
@@ -29,8 +28,8 @@ const Disqus: React.FC<DisqusProps> = ({
 
   return (
     <Box mt={40}>
-      <CommentCount shortname={shortname} config={disqusConfig} />
-      <DiscussionEmbed shortname={shortname} config={disqusConfig} />
+      <CommentCount shortname={env.disqusShortname} config={disqusConfig} />
+      <DiscussionEmbed shortname={env.disqusShortname} config={disqusConfig} />
     </Box>
   );
 };

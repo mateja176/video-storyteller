@@ -20,6 +20,7 @@ jobs:
       - name: ci
         run: npm run ci
         env:
+          REACT_APP_DISQUS_SHORTNAME: ${{ secrets.REACT_APP_DISQUS_SHORTNAME }}
           REACT_APP_PAYPAL_CLIENT_ID: ${{ secrets.REACT_APP_PAYPAL_CLIENT_ID }}
           REACT_APP_STRIPE_PUB: ${{ secrets.REACT_APP_STRIPE_PUB }}
           REACT_APP_DRIFT_ID: ${{ secrets.REACT_APP_DRIFT_ID }}
