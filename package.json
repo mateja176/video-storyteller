@@ -17,6 +17,7 @@
     "ci": "cross-env NODE_OPTIONS=--max_old_space_size=4096 CI=true run-p cpd lint test build --print-label --print-name --aggregate-output",
     "ci:concurrently": "cross-env NODE_OPTIONS=--max_old_space_size=4096 CI=true concurrently --kill-others-on-fail --names cpd,lint,test,build --prefix-colors white,cyan,yellow,magenta npm:cpd npm:lint npm:test npm:build",
     "deploy:hosting": "firebase deploy --only hosting",
+    "deploy:hosting:ci": "npm run deploy:hosting -- --token FIREBASE_TOKEN",
     "deploy": "firebase deploy",
     "deploy:ci": "npm run deploy -- --token FIREBASE_TOKEN",
     "storybook": "start-storybook -p 6006",
