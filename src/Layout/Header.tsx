@@ -18,9 +18,7 @@ import {
 import { SpeedDial, SpeedDialAction } from '@material-ui/lab';
 import clsx from 'clsx';
 import { IconButton, Tooltip } from 'components';
-import env from 'env';
-import { startCase } from 'lodash';
-import { CreateSimpleAction } from 'models';
+import { appName, CreateSimpleAction } from 'models';
 import React, { FC } from 'react';
 import { connect, useSelector } from 'react-redux';
 import { Flex } from 'rebass';
@@ -108,7 +106,7 @@ const Header: FC<HeaderProps> = ({
         </Tooltip>
         <Flex className={expand} alignItems="center">
           <Typography variant="h6" color="inherit">
-            {isNotSmallScreen ? startCase(env.appName) : ''}
+            {isNotSmallScreen ? appName : ''}
           </Typography>
           {/* {isNotSmallScreen && isSignedIn && (
             <Flex alignItems="center">

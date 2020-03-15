@@ -11,8 +11,6 @@ const development = {
       process.env.REACT_APP_FIREBASE_CONFIG_MESSAGING_SENDER_ID,
     appId: process.env.REACT_APP_FIREBASE_CONFIG_APP_ID,
   },
-
-  appName: 'react hot starter',
 };
 
 export type Env = typeof development;
