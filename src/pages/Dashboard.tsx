@@ -14,6 +14,7 @@ import { absoluteRootPaths } from 'Layout';
 import { add } from 'ramda';
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { RouteComponentProps } from 'react-router-dom';
 import { Box, Flex } from 'rebass';
 import {
   createSetCurrentStoryId,
@@ -26,9 +27,9 @@ import {
 import urlJoin from 'url-join';
 import { useActions } from 'utils';
 
-export interface DashboardProps {}
+export interface DashboardProps extends RouteComponentProps {}
 
-const Dashboard: React.FC<DashboardProps> = () => {
+const Dashboard: React.FC<DashboardProps> = ({ history }) => {
   const { setCurrentStoryId, requestSubscribeToStories } = useActions({
     setCurrentStoryId: createSetCurrentStoryId,
     requestSubscribeToStories: subscribeToStories.request,
@@ -44,6 +45,15 @@ const Dashboard: React.FC<DashboardProps> = () => {
     }
   }, [requestSubscribeToStories, fetchStoriesStatus, stories.length]);
 
+  React.useEffect(() => {
+    if (
+      !['not started', 'loading'].includes(fetchStoriesStatus) &&
+      !stories.length
+    ) {
+      history.push(absoluteRootPaths.canvas);
+    }
+  }, [stories.length, fetchStoriesStatus, history]);
+
   const currentStoryId = useSelector(selectCurrentStoryId);
 
   const uid = useSelector(selectUid);
@@ -52,11 +62,10 @@ const Dashboard: React.FC<DashboardProps> = () => {
 
   return (
     <Box>
-      <Link to="canvas" />
       <Typography variant="h3">Stories</Typography>
       <Box my={3}>
         <Link
-          to="canvas"
+          to={absoluteRootPaths.canvas}
           onClick={() => {
             if (currentStoryId) {
               setCurrentStoryId({ currentStoryId: '' });
