@@ -1,21 +1,21 @@
 import { auth } from 'firebase/app';
 import 'firebase/auth';
+import LogRocket from 'logrocket';
 import { not } from 'ramda';
 import { Epic, ofType } from 'redux-observable';
 import { authState } from 'rxfire/auth';
-import { empty, of, OperatorFunction, pipe } from 'rxjs';
+import { empty, merge, of, OperatorFunction, pipe } from 'rxjs';
 import {
   catchError,
   filter,
+  first,
   map,
-  mergeMap,
   mergeMapTo,
   switchMap,
-  withLatestFrom,
+  tap,
 } from 'rxjs/operators';
 import { getType } from 'typesafe-actions';
 import { Action, createReset, ResetAction, State } from '../reducer';
-import { selectAuthStatus } from '../selectors';
 import {
   AuthStateChangeAction,
   authStateChangeType,
@@ -34,7 +34,7 @@ import {
 
 type ActionWithReset = Action | ResetAction;
 
-const authState$: Epic<
+const authStateEpic: Epic<
   Action,
   AuthStateChangeAction | FetchAuthStateAction,
   State
@@ -43,13 +43,24 @@ const authState$: Epic<
     ofType<Action, ReturnType<typeof createFetchAuthState['request']>>(
       getType(createFetchAuthState.request),
     ),
-    switchMap(() => authState(auth())),
-    withLatestFrom(state$.pipe(map(selectAuthStatus))),
-    mergeMap(([state, status]) => [
-      createAuthStateChange(state),
-      ...(status === 'in progress' ? [createFetchAuthState.success()] : []),
-    ]),
-    catchError(() => of(createFetchAuthState.failure())),
+    switchMap(() => {
+      // * it's assumed that authState takes care of retries
+      const authState$ = authState(auth());
+
+      const authStateFailure$ = of(createFetchAuthState.failure());
+
+      return merge(
+        authState$.pipe(
+          map(createAuthStateChange),
+          catchError(() => authStateFailure$),
+        ),
+        authState$.pipe(
+          first(),
+          map(() => createFetchAuthState.success()),
+          catchError(() => authStateFailure$),
+        ),
+      );
+    }),
   );
 
 const mapAuthStateChangeToUser = pipe(
@@ -77,6 +88,14 @@ const userUpdated: Epic<
   action$.pipe(
     mapAuthStateChangeToUser,
     filter(Boolean) as OperatorFunction<User | null, User>,
+    tap(user => {
+      LogRocket.identify(
+        user.uid,
+        Object.fromEntries(
+          Object.entries(user).map(([key, value]) => [key, value || '']),
+        ),
+      );
+    }),
     map(createSetUser),
   );
 
@@ -91,4 +110,4 @@ const signOut: Epic<Action, SetSnackbarAction, State> = action$ =>
     catchError(({ message }) => of(createSetErrorSnackbar({ message }))),
   );
 
-export default [authState$, signIn, userUpdated, signedOut, signOut];
+export default [authStateEpic, signIn, userUpdated, signedOut, signOut];
