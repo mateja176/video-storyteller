@@ -6,9 +6,10 @@ import { Stripe } from 'models';
 import React, { FC } from 'react';
 import GoogleFontLoader from 'react-google-font-loader';
 import { Provider as StoreProvider } from 'react-redux';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { Router } from 'react-router-dom';
 // import 'react-stripe-elements'; // * fixes tests but does not fix build
 import { StripeProvider } from 'react-stripe-elements';
+import { history } from 'routes';
 import configureStore from 'store';
 import { Context, IContext, initialContext } from './Context';
 
@@ -43,7 +44,7 @@ const Provider: FC<ProviderProps> = ({ children }) => {
   return (
     // <StrictMode>
     <StripeProvider stripe={stripe}>
-      <Router>
+      <Router history={history}>
         <StoreProvider store={store}>
           <Context.Provider
             value={{

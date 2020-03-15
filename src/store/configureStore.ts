@@ -4,12 +4,14 @@ import { Module } from 'models';
 import { Middleware } from 'redux';
 import { createEpicMiddleware } from 'redux-observable';
 import { configureStore } from 'redux-starter-kit';
+import { history } from 'routes';
 import { from } from 'rxjs';
 import epic from './epic';
 import reducer, { Action, State } from './reducer';
 
 const dependencies = {
   mobilenet$: from(mobilenet.load()),
+  history,
 };
 
 export type EpicDependencies = typeof dependencies;

@@ -14,6 +14,7 @@ import {
   switchMap,
   tap,
 } from 'rxjs/operators';
+import { EpicDependencies } from 'store/configureStore';
 import { getType } from 'typesafe-actions';
 import { Action, createReset, ResetAction, State } from '../reducer';
 import {
@@ -102,10 +103,17 @@ const userUpdated: Epic<
 const signedOut: Epic<ActionWithReset, ResetAction, State> = action$ =>
   action$.pipe(mapAuthStateChangeToUser, filter(not), map(createReset));
 
-const signOut: Epic<Action, SetSnackbarAction, State> = action$ =>
+const signOut: Epic<Action, SetSnackbarAction, State, EpicDependencies> = (
+  action$,
+  _,
+  { history },
+) =>
   action$.pipe(
     ofType(signoutType),
     switchMap(() => auth().signOut()),
+    tap(() => {
+      history.push('/');
+    }),
     mergeMapTo(empty()),
     catchError(({ message }) => of(createSetErrorSnackbar({ message }))),
   );
