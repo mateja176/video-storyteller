@@ -1,5 +1,4 @@
 import { Typography, useTheme } from '@material-ui/core';
-import { dataLayer } from 'analytics';
 import google from 'assets/img/google.svg';
 import { Button } from 'components';
 import React, { FC } from 'react';
