@@ -210,13 +210,16 @@ const storiesCount: Epic<Action, SetStoriesCountAction, State> = (
       getType(subscribeToStories.request),
     ),
     selectState(selectUid)(state$),
-    exhaustMap(uid => storiesCollection.where('authorId', '==', uid).get()),
-    map(({ size }) => size),
-    map(createSetStoriesCount),
-    catchError(error => {
-      console.log(error); // eslint-disable-line no-console
-      return empty();
-    }),
+    exhaustMap(uid =>
+      from(storiesCollection.where('authorId', '==', uid).get()).pipe(
+        map(({ size }) => size),
+        map(createSetStoriesCount),
+        catchError(error => {
+          console.log(error); // eslint-disable-line no-console
+          return empty();
+        }),
+      ),
+    ),
   );
 
 export default [

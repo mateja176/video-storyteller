@@ -4,16 +4,9 @@ import { FilterActionByType, SimpleAction } from 'models';
 import { pipe } from 'ramda';
 import { Selector } from 'react-redux';
 import { ofType as actionOfType, StateObservable } from 'redux-observable';
-import { Observable, of } from 'rxjs';
-import {
-  catchError,
-  filter,
-  first,
-  map,
-  mergeMap,
-  takeUntil,
-} from 'rxjs/operators';
-import { createSetErrorSnackbar, selectIsSignedIn, State } from 'store';
+import { Observable } from 'rxjs';
+import { filter, first, map, mergeMap, takeUntil } from 'rxjs/operators';
+import { selectIsSignedIn, State } from 'store';
 
 export const selectState = <R>(selector: Selector<State, R>) => (
   state$: StateObservable<State>,
@@ -32,10 +25,6 @@ export const takeUntilSignedOut = <T>(state$: StateObservable<State>) =>
       ),
     ),
   );
-
-export const snackError = pipe(
-  catchError(({ message }) => of(createSetErrorSnackbar({ message }))),
-);
 
 export const ofType = <
   Action extends SimpleAction,

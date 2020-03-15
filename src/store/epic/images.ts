@@ -77,17 +77,17 @@ const upload: Epic<Action, UpdateProgressAction | SetSnackbarAction, State> = (
             },
           ).pipe(last()),
         ),
+        map(({ metadata: { customMetadata } }) =>
+          createUpdateProgress({
+            id: customMetadata!.id,
+            uploadStatus: 'completed',
+          }),
+        ),
+        catchError(({ message }) =>
+          of(createSetErrorSnackbar({ message, duration: 3000 })),
+        ),
       );
     }),
-    map(({ metadata: { customMetadata } }) =>
-      createUpdateProgress({
-        id: customMetadata!.id,
-        uploadStatus: 'completed',
-      }),
-    ),
-    catchError(({ message }) =>
-      of(createSetErrorSnackbar({ message, duration: 3000 })),
-    ),
   );
 
 const removeUploadedImage: Epic<Action, RemoveImageAction> = action$ =>

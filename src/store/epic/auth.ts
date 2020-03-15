@@ -7,6 +7,7 @@ import { authState } from 'rxfire/auth';
 import { empty, from, merge, of, OperatorFunction, pipe } from 'rxjs';
 import {
   catchError,
+  exhaustMap,
   filter,
   first,
   map,
@@ -121,12 +122,15 @@ const signOut: Epic<Action, SetSnackbarAction, State, EpicDependencies> = (
 ) =>
   action$.pipe(
     ofType(signoutType),
-    switchMap(() => auth().signOut()),
+    exhaustMap(() =>
+      from(auth().signOut()).pipe(
+        mergeMapTo(empty()),
+        catchError(({ message }) => of(createSetErrorSnackbar({ message }))),
+      ),
+    ),
     tap(() => {
       history.push('/');
     }),
-    mergeMapTo(empty()),
-    catchError(({ message }) => of(createSetErrorSnackbar({ message }))),
   );
 
 export default [authStateEpic, signIn, userUpdated, signedOut, signOut];
