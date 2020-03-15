@@ -1,4 +1,5 @@
 import { Typography, useTheme } from '@material-ui/core';
+import { dataLayer } from 'analytics';
 import google from 'assets/img/google.svg';
 import { Button } from 'components';
 import React, { FC } from 'react';
@@ -12,7 +13,7 @@ import {
 } from 'store';
 
 export interface SigninProps {
-  signIn: CreateSignin;
+  signIn: CreateSignin['request'];
   isAuthLoading: ReturnType<typeof selectIsAuthLoading>;
 }
 
@@ -49,5 +50,5 @@ export default connect(
   (state: State) => ({
     isAuthLoading: selectIsAuthLoading(state),
   }),
-  { signIn: createSignin },
+  { signIn: createSignin.request },
 )(Signin);

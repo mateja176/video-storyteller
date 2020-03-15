@@ -2,8 +2,8 @@ import { User as FirebaseUser, UserInfo } from 'firebase/app';
 import { ExtendedLoadingStatus } from 'models';
 import { combineReducers, Reducer } from 'redux';
 import {
-  createAction,
   ActionType,
+  createAction,
   createAsyncAction,
   getType,
 } from 'typesafe-actions';
@@ -23,10 +23,16 @@ export const initialUser: User = {
   phoneNumber: '541-012-3456',
 };
 
-export const signinType = 'auth/signin';
-export const createSignin = createAction(signinType);
+export const createSignin = createAsyncAction(
+  'auth/signin/request',
+  'auth/signin/success',
+  'auth/signin/failure',
+)<void, void, void>();
 export type CreateSignin = typeof createSignin;
-export type SigninAction = ReturnType<CreateSignin>;
+export type SigninAction = ActionType<CreateSignin>;
+export type SigninRequest = ReturnType<CreateSignin['request']>;
+export type SigninSuccess = ReturnType<CreateSignin['success']>;
+export type SigninFailure = ReturnType<CreateSignin['failure']>;
 
 export const signoutType = 'auth/signout';
 export const createSignout = createAction(signoutType);
@@ -97,11 +103,13 @@ export const status: Reducer<AuthState['status'], StatusSettingAction> = (
 ) => {
   switch (action.type) {
     case getType(createFetchAuthState.request):
-    case signinType:
+    case getType(createSignin.request):
     case signoutType:
       return 'in progress';
+    case getType(createSignin.success):
     case getType(createFetchAuthState.success):
       return 'completed';
+    case getType(createSignin.failure):
     case getType(createFetchAuthState.failure):
       return 'failed';
     case setAuthStatusType:

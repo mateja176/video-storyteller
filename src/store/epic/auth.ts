@@ -4,7 +4,7 @@ import LogRocket from 'logrocket';
 import { not } from 'ramda';
 import { Epic, ofType } from 'redux-observable';
 import { authState } from 'rxfire/auth';
-import { empty, merge, of, OperatorFunction, pipe } from 'rxjs';
+import { empty, from, merge, of, OperatorFunction, pipe } from 'rxjs';
 import {
   catchError,
   filter,
@@ -24,12 +24,16 @@ import {
   createFetchAuthState,
   createSetErrorSnackbar,
   createSetUser,
+  createSignin,
   FetchAuthStateAction,
   SetAuthStatusAction,
   SetSnackbarAction,
   SetUserAction,
-  signinType,
+  SigninFailure,
+  SigninRequest,
+  SigninSuccess,
   signoutType,
+  SnackbarAction,
   User,
 } from '../slices';
 
@@ -69,16 +73,23 @@ const mapAuthStateChangeToUser = pipe(
   map(({ payload }) => payload),
 );
 
-const signIn: Epic<Action, SetSnackbarAction, State> = action$ =>
+const signIn: Epic<
+  Action,
+  SigninSuccess | SigninFailure | SnackbarAction,
+  State
+> = action$ =>
   action$.pipe(
-    ofType(signinType),
+    ofType<Action, SigninRequest>(getType(createSignin.request)),
     switchMap(() => {
       const provider = new auth.GoogleAuthProvider();
 
-      return auth().signInWithPopup(provider);
+      return from(auth().signInWithPopup(provider)).pipe(
+        map(() => createSignin.success()),
+        catchError(({ message }) =>
+          from([createSignin.failure(), createSetErrorSnackbar({ message })]),
+        ),
+      );
     }),
-    mergeMapTo(empty()),
-    catchError(({ message }) => of(createSetErrorSnackbar({ message }))),
   );
 
 const userUpdated: Epic<
