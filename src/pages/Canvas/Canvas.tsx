@@ -1005,6 +1005,7 @@ const Canvas: React.FC<CanvasProps> = ({
                           }}
                         >
                           <OptionWithPopover
+                            initiallyOpen={!currentStory}
                             disabled={false}
                             Icon={NoteAdd}
                             initialValue=""

@@ -17,6 +17,7 @@ export interface OptionWithPopoverProps {
   Icon: SvgIconComponent;
   text: string;
   submitText: string;
+  initiallyOpen?: boolean;
 }
 
 const OptionWithPopover: React.FC<OptionWithPopoverProps> = ({
@@ -27,8 +28,9 @@ const OptionWithPopover: React.FC<OptionWithPopoverProps> = ({
   Icon,
   text,
   submitText,
+  initiallyOpen = false,
 }) => {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(initiallyOpen);
   const [value, setValue] = React.useState(initialValue);
   const listItemRef = React.useRef<HTMLDivElement | null>(null);
 
