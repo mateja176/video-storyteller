@@ -15,6 +15,7 @@ export interface CanvasState {
   fetchStoryStatus: ExtendedLoadingStatus;
   fetchStoriesStatus: ExtendedLoadingStatus;
   currentStoryId: StoryWithId['id'];
+  storiesCount: number;
 }
 
 export const initialCanvasState: CanvasState = {
@@ -24,6 +25,7 @@ export const initialCanvasState: CanvasState = {
   fetchStoryStatus: 'not started',
   fetchStoriesStatus: 'not started',
   currentStoryId: '',
+  storiesCount: -1,
 };
 export const setDurationsType = 'canvas/durations/set';
 export const createSetDurations = createAction(
@@ -66,6 +68,15 @@ export const subscribeToStories = createAsyncAction(
 )<void, void, void>();
 export type SubscribeToStories = typeof subscribeToStories;
 export type SubscribeToStoriesAction = ActionType<SubscribeToStories>;
+export type SubscribeToStoriesRequest = ReturnType<
+  SubscribeToStories['request']
+>;
+export type SubscribeToStoriesSuccess = ReturnType<
+  SubscribeToStories['success']
+>;
+export type SubscribeToStoriesFailure = ReturnType<
+  SubscribeToStories['failure']
+>;
 
 export const addStoryType = 'canvas/story/add';
 export const createAddStory = createAction(
@@ -127,6 +138,13 @@ export const createSetCurrentStoryId = createAction(
 export type CreateSetCurrentStoryId = typeof createSetCurrentStoryId;
 export type SetCurrentStoryIdAction = ReturnType<CreateSetCurrentStoryId>;
 
+export const createSetStoriesCount = createAction(
+  'canvas/stories/count',
+  action => (payload: CanvasState['storiesCount']) => action(payload),
+);
+export type CreateSetStoriesCount = typeof createSetStoriesCount;
+export type SetStoriesCountAction = ReturnType<CreateSetStoriesCount>;
+
 export type CanvasAction =
   | SubscribeToStoriesAction
   | AddStoryAction
@@ -137,7 +155,8 @@ export type CanvasAction =
   | FetchStoriesAction
   | SetDurationsAction
   | SaveStoryAction
-  | UpdateStoryAction;
+  | UpdateStoryAction
+  | SetStoriesCountAction;
 
 export const canvas = createReducer(initialCanvasState)<CanvasAction>({
   'canvas/stories/subscribe/request': state => ({
@@ -237,5 +256,9 @@ export const canvas = createReducer(initialCanvasState)<CanvasAction>({
   'canvas/stories/updateOne/failure': state => ({
     ...state,
     saveStoryStatus: 'failed',
+  }),
+  'canvas/stories/count': (state, { payload }) => ({
+    ...state,
+    storiesCount: payload,
   }),
 });

@@ -9,7 +9,7 @@ import {
   useTheme,
 } from '@material-ui/core';
 import { Edit, Public, Tv } from '@material-ui/icons';
-import { Link, Tooltip } from 'components';
+import { Link, Spinner, Tooltip } from 'components';
 import { absoluteRootPaths } from 'Layout';
 import { add } from 'ramda';
 import React from 'react';
@@ -21,6 +21,7 @@ import {
   selectCurrentStoryId,
   selectFetchStoriesStatus,
   selectStories,
+  selectStoriesCount,
   selectUid,
   subscribeToStories,
 } from 'store';
@@ -39,6 +40,9 @@ const Dashboard: React.FC<DashboardProps> = ({ history }) => {
 
   const stories = useSelector(selectStories);
 
+  const storiesCount = useSelector(selectStoriesCount);
+  const areThereNoStories = storiesCount === 0;
+
   React.useEffect(() => {
     if (fetchStoriesStatus === 'not started') {
       requestSubscribeToStories();
@@ -46,13 +50,10 @@ const Dashboard: React.FC<DashboardProps> = ({ history }) => {
   }, [requestSubscribeToStories, fetchStoriesStatus, stories.length]);
 
   React.useEffect(() => {
-    if (
-      !['not started', 'loading'].includes(fetchStoriesStatus) &&
-      !stories.length
-    ) {
+    if (fetchStoriesStatus === 'in progress' && areThereNoStories) {
       history.push(absoluteRootPaths.canvas);
     }
-  }, [stories.length, fetchStoriesStatus, history]);
+  }, [fetchStoriesStatus, areThereNoStories, history]);
 
   const currentStoryId = useSelector(selectCurrentStoryId);
 
@@ -78,8 +79,12 @@ const Dashboard: React.FC<DashboardProps> = ({ history }) => {
       <Flex my={2} flexDirection="column">
         {(() => {
           switch (fetchStoriesStatus) {
-            // case 'in progress':
-            //   return <Spinner style={{ margin: 'auto' }} />;
+            case 'in progress':
+              return areThereNoStories ? (
+                'You have no stories right now.'
+              ) : (
+                <Spinner style={{ margin: 'auto' }} />
+              );
             default: {
               return (
                 <List>

@@ -9,6 +9,7 @@ import { collectionChanges, collectionData, docData } from 'rxfire/firestore';
 import { defer, empty, from, of } from 'rxjs';
 import {
   catchError,
+  exhaustMap,
   first,
   map,
   mergeMap,
@@ -33,6 +34,7 @@ import {
   createSaveStory,
   CreateSaveStory,
   createSetOne,
+  createSetStoriesCount,
   CreateUpdateStory,
   createUpdateStory,
   DeleteStoryAction,
@@ -41,8 +43,10 @@ import {
   FetchStoryAction,
   fetchStoryType,
   SetOneAction,
+  SetStoriesCountAction,
   subscribeToStories,
   SubscribeToStoriesAction,
+  SubscribeToStoriesRequest,
 } from '../slices/canvas';
 import { createSetErrorSnackbar, SetSnackbarAction } from '../slices/snackbar';
 
@@ -151,7 +155,7 @@ export const subscribeToStoriesEpic: Epic<
   const status$ = state$.pipe(map(selectFetchStoriesStatus));
 
   return action$.pipe(
-    ofType<Action, ReturnType<typeof subscribeToStories.request>>(
+    ofType<Action, SubscribeToStoriesRequest>(
       getType(subscribeToStories.request),
     ),
     selectState(selectUid)(state$),
@@ -195,10 +199,31 @@ export const subscribeToStoriesEpic: Epic<
   );
 };
 
+// * collectionChanges does not emit if there are no docs
+// * hence there's no way of knowing if the connection was established or not
+const storiesCount: Epic<Action, SetStoriesCountAction, State> = (
+  action$,
+  state$,
+) =>
+  action$.pipe(
+    ofType<Action, SubscribeToStoriesRequest>(
+      getType(subscribeToStories.request),
+    ),
+    selectState(selectUid)(state$),
+    exhaustMap(uid => storiesCollection.where('authorId', '==', uid).get()),
+    map(({ size }) => size),
+    map(createSetStoriesCount),
+    catchError(error => {
+      console.log(error); // eslint-disable-line no-console
+      return empty();
+    }),
+  );
+
 export default [
   saveStory,
   updateStory,
   fetchStory,
   fetchStories,
   subscribeToStoriesEpic,
+  storiesCount,
 ];
