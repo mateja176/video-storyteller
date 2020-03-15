@@ -63,6 +63,7 @@ type RootPathnames = typeof rootPathnames;
 type RootPathname = RootPathnames[number];
 
 const secondaryPathnames = ['increment', 'decrement', 'upload'] as const;
+export const secondaryPaths = toObject(secondaryPathnames);
 
 type SecondaryPathnames = typeof secondaryPathnames;
 type SecondaryPathname = SecondaryPathnames[number];

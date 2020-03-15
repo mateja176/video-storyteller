@@ -1,8 +1,10 @@
 import { Link } from 'components';
+import { absoluteRootPaths, secondaryPaths } from 'Layout';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Box } from 'rebass';
 import { createFetchFiles, selectStorageImages } from 'store';
+import urlJoin from 'url-join';
 import { useActions } from 'utils';
 import ImageBlock from './ImageBlock';
 
@@ -42,7 +44,10 @@ const Images: React.FC<ImagesProps> = ({ onMouseEnter, onMouseLeave }) => {
           />
         ))
       ) : (
-        <Link to="upload" style={{ fontStyle: 'italic' }}>
+        <Link
+          to={urlJoin(absoluteRootPaths.images, secondaryPaths.upload)}
+          style={{ fontStyle: 'italic' }}
+        >
           Upload your first images
         </Link>
       )}
