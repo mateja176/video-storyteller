@@ -1,6 +1,6 @@
 {
   "projects": {
-    "default": "react-hot-starter-dev",
-    "prod": "react-hot-starter"
+    "default": "video-storyteller-dev",
+    "prod": "video-storyteller"
   }
 }
