@@ -1,6 +1,5 @@
-import 'firebase/storage';
-
 import env from 'env';
+import 'firebase/storage';
 import { KnowledgeGraph } from 'models/knowledgeGraph';
 import { Epic, ofType } from 'redux-observable';
 import { putString } from 'rxfire/storage';
@@ -17,13 +16,11 @@ import {
   tap,
   withLatestFrom,
 } from 'rxjs/operators';
+import { firebase } from 'services';
 import { EpicDependencies } from 'store/configureStore';
 import { getType } from 'typesafe-actions';
 import urlJoin from 'url-join';
 import { selectState } from 'utils/operators';
-
-import firebase from '@firebase';
-
 import { Action, State } from '../reducer';
 import { selectImageEntities, selectUid } from '../selectors';
 import {

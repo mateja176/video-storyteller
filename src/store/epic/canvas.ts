@@ -1,7 +1,6 @@
 /* eslint-disable indent */
 
 import 'firebase/firestore';
-
 import { StoryWithId } from 'pages/Canvas/CanvasContext';
 import { identity } from 'ramda';
 import { Epic, ofType } from 'redux-observable';
@@ -16,11 +15,9 @@ import {
   switchMap,
   withLatestFrom,
 } from 'rxjs/operators';
+import { firebase } from 'services';
 import { ActionType, getType } from 'typesafe-actions';
 import { selectState, takeUntilSignedOut } from 'utils';
-
-import firebase from '@firebase';
-
 import { Action, State } from '../reducer';
 import { selectFetchStoriesStatus, selectUid } from '../selectors';
 import {

@@ -1,5 +1,40 @@
 /* eslint-disable indent */
 
+import {
+  Drawer,
+  FormControlLabel,
+  Icon,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  makeStyles,
+  Paper,
+  Switch,
+  Typography,
+  useTheme,
+} from '@material-ui/core';
+import {
+  ArrowDownward,
+  Audiotrack,
+  Build,
+  Cancel,
+  Delete,
+  Edit,
+  FileCopy,
+  Fullscreen,
+  FullscreenExit,
+  Image,
+  LibraryMusic,
+  Link,
+  NoteAdd,
+  Save,
+  Share,
+  Title,
+  Tv,
+  TvOff,
+} from '@material-ui/icons';
+import { SpeedDial, SpeedDialAction } from '@material-ui/lab';
 import { Context } from 'App';
 import color from 'color';
 import {
@@ -58,6 +93,7 @@ import {
 } from 'react-share';
 import { Box, Flex } from 'rebass';
 import { putString } from 'rxfire/storage';
+import { firebase } from 'services';
 import {
   createAddStory,
   createFetchStory,
@@ -82,44 +118,6 @@ import { dividingBorder } from 'styles';
 import urlJoin from 'url-join';
 import { getCurrentColor, useActions as useStoreActions } from 'utils';
 import { v4 } from 'uuid';
-
-import {
-  Drawer,
-  FormControlLabel,
-  Icon,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-  Paper,
-  Switch,
-  Typography,
-  useTheme,
-} from '@material-ui/core';
-import {
-  ArrowDownward,
-  Audiotrack,
-  Build,
-  Cancel,
-  Delete,
-  Edit,
-  FileCopy,
-  Fullscreen,
-  FullscreenExit,
-  Image,
-  LibraryMusic,
-  Link,
-  NoteAdd,
-  Save,
-  Share,
-  Title,
-  Tv,
-  TvOff,
-} from '@material-ui/icons';
-import { SpeedDial, SpeedDialAction } from '@material-ui/lab';
-
-import firebase from '@firebase';
 import Audio from './Audio';
 import { AudioElement } from './AudioBlock';
 import {

@@ -1,10 +1,10 @@
-import firebase from 'firebase/app';
+import firebaseApp from 'firebase/app';
 import 'firebase/performance';
-import env from '../env';
+import env from '../../env';
 
 const { firebaseConfig } = env;
 
-export default firebase.initializeApp(firebaseConfig);
+export const firebase = firebaseApp.initializeApp(firebaseConfig);
 
 if (process.env.NODE_ENV === 'production') {
   firebase.performance();
