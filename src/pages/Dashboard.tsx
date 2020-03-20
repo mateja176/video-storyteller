@@ -10,12 +10,14 @@ import {
 } from '@material-ui/core';
 import { Edit, Public, Tv } from '@material-ui/icons';
 import { Link, Spinner, Tooltip } from 'components';
+import 'firebase/analytics';
 import { absoluteRootPaths } from 'Layout';
 import { add } from 'ramda';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import { Box, Flex } from 'rebass';
+import { firebase } from 'services';
 import {
   createSetCurrentStoryId,
   selectCurrentStoryId,
@@ -108,6 +110,10 @@ const Dashboard: React.FC<DashboardProps> = ({ history }) => {
                               if (!selected) {
                                 setCurrentStoryId({ currentStoryId: id });
                               }
+
+                              firebase.analytics().logEvent('select_content', {
+                                storyId: id,
+                              });
                             }}
                             selected={selected}
                           >
