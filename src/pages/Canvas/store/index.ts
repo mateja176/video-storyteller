@@ -1,4 +1,3 @@
-import { composeWithDevTools as composeWithIntegratedDevTools } from 'devtools';
 import { equals } from 'ramda';
 import { useEffect, useState } from 'react';
 import {
@@ -14,6 +13,7 @@ import {
 } from 'redux';
 import { composeWithDevTools as composeWithReduxDevTools } from 'redux-devtools-extension';
 import { createSelector, Selector } from 'reselect';
+import { composeWithDevTools as composeWithIntegratedDevTools } from 'services';
 import audio, { AudioAction } from './audio';
 import blockStates, { BlockStatesAction } from './blockStates';
 import transform, { ClientCoords, TransformAction, Zoom } from './transform';
