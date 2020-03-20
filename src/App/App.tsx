@@ -3,18 +3,20 @@ import { MuiThemeProvider } from '@material-ui/core/styles';
 import { ThemeOptions } from '@material-ui/core/styles/createMuiTheme';
 import { ThemeProvider } from '@material-ui/styles';
 import { Snackbar } from 'components';
+import 'firebase/analytics';
 import Layout from 'Layout';
 import { CreateSimpleAction, WithColors } from 'models';
 import React, { FC, useEffect } from 'react';
 import { hot } from 'react-hot-loader';
 import { connect, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
+import { firebase } from 'services';
 import {
+  createFetchAuthState,
   selectAuthStatus,
   selectIsSignedIn,
   selectTheme,
   State,
-  createFetchAuthState,
 } from 'store';
 import { Context } from './Context';
 import Routes from './Routes';
@@ -61,6 +63,18 @@ const App: FC<AppProps> = ({ getAuthState, isSignedIn, themeOptions }) => {
       },
     } as WithColors['colors'],
   } as ThemeOptions);
+
+  React.useEffect(() => {
+    const logError = ({ error }: ErrorEvent) => {
+      firebase.analytics().logEvent('exception', error);
+    };
+
+    window.addEventListener('error', logError);
+
+    return () => {
+      window.removeEventListener('error', logError);
+    };
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>
