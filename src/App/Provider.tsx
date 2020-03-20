@@ -9,7 +9,7 @@ import { Provider as StoreProvider } from 'react-redux';
 import { Router } from 'react-router-dom';
 // import 'react-stripe-elements'; // * fixes tests but does not fix build
 import { StripeProvider } from 'react-stripe-elements';
-import { history } from 'routes';
+import { history } from 'services';
 import configureStore from 'store';
 import { Context, IContext, initialContext } from './Context';
 
