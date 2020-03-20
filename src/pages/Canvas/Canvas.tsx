@@ -61,6 +61,7 @@ import {
   EditorState,
   RichUtils,
 } from 'draft-js';
+import 'firebase/analytics';
 import { absoluteRootPaths } from 'Layout';
 import { debounce } from 'lodash';
 import {
@@ -1136,6 +1137,11 @@ const Canvas: React.FC<CanvasProps> = ({
                             }}
                           >
                             <SpeedDialAction
+                              onClick={() => {
+                                firebase.analytics().logEvent('share', {
+                                  method: 'copy',
+                                });
+                              }}
                               tooltipTitle="Copy link"
                               icon={
                                 <CopyToClipboard
@@ -1155,6 +1161,11 @@ const Canvas: React.FC<CanvasProps> = ({
                               }
                             />
                             <SpeedDialAction
+                              onClick={() => {
+                                firebase.analytics().logEvent('share', {
+                                  method: 'facebook',
+                                });
+                              }}
                               tooltipTitle="Share on Facebook"
                               icon={
                                 <FacebookShareButton url={linkInputValue}>
@@ -1163,6 +1174,11 @@ const Canvas: React.FC<CanvasProps> = ({
                               }
                             />
                             <SpeedDialAction
+                              onClick={() => {
+                                firebase.analytics().logEvent('share', {
+                                  method: 'twitter',
+                                });
+                              }}
                               tooltipTitle="Share on Twitter"
                               icon={
                                 <TwitterShareButton url={linkInputValue}>
@@ -1171,6 +1187,11 @@ const Canvas: React.FC<CanvasProps> = ({
                               }
                             />
                             <SpeedDialAction
+                              onClick={() => {
+                                firebase.analytics().logEvent('share', {
+                                  method: 'reddit',
+                                });
+                              }}
                               tooltipTitle="Share on Reddit"
                               icon={
                                 <RedditShareButton url={linkInputValue}>
@@ -1179,6 +1200,11 @@ const Canvas: React.FC<CanvasProps> = ({
                               }
                             />
                             <SpeedDialAction
+                              onClick={() => {
+                                firebase.analytics().logEvent('share', {
+                                  method: 'whatsapp',
+                                });
+                              }}
                               tooltipTitle="Share on Whatsapp"
                               icon={
                                 <WhatsappShareButton url={linkInputValue}>
@@ -1187,6 +1213,11 @@ const Canvas: React.FC<CanvasProps> = ({
                               }
                             />
                             <SpeedDialAction
+                              onClick={() => {
+                                firebase.analytics().logEvent('share', {
+                                  method: 'viber',
+                                });
+                              }}
                               tooltipTitle="Share on Viber"
                               icon={
                                 <ViberShareButton url={linkInputValue}>
