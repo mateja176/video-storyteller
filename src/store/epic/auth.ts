@@ -1,3 +1,4 @@
+import 'firebase/analytics';
 import { auth } from 'firebase/app';
 import 'firebase/auth';
 import LogRocket from 'logrocket';
@@ -15,6 +16,7 @@ import {
   switchMap,
   tap,
 } from 'rxjs/operators';
+import { firebase } from 'services';
 import { EpicDependencies } from 'store/configureStore';
 import { getType } from 'typesafe-actions';
 import { Action, createReset, ResetAction, State } from '../reducer';
@@ -85,6 +87,11 @@ const signIn: Epic<
       const provider = new auth.GoogleAuthProvider();
 
       return from(auth().signInWithPopup(provider)).pipe(
+        tap(() => {
+          firebase.analytics().logEvent('login', {
+            method: 'google',
+          });
+        }),
         map(() => createSignin.success()),
         catchError(({ message }) =>
           from([createSignin.failure(), createSetErrorSnackbar({ message })]),
