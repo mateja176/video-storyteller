@@ -301,18 +301,22 @@ const Canvas: React.FC<CanvasProps> = ({
               height: 0,
             },
           });
-        case 'image':
+        case 'image': {
+          const {
+            payload: { width, height, ...block },
+          } = action;
           return createBlockState({
             ...action,
             payload: {
-              block: action.payload,
+              block,
               id,
               top,
               left,
-              width: action.payload.width,
-              height: action.payload.height,
+              width,
+              height,
             },
           });
+        }
         default:
           return undefined;
       }

@@ -47,16 +47,14 @@ export interface WithId {
   id: string;
 }
 
-export interface BlockPayload<Payload extends DropPayload>
-  extends WithId,
-    WithDropResult {
+export interface BlockPayload<Payload> extends WithId, WithDropResult {
   block: Payload;
 }
 
-export type GenericBlockState<
-  Type extends Draggables,
-  Payload extends DropPayload
-> = PayloadAction<Type, BlockPayload<Payload>>;
+export type GenericBlockState<Type extends Draggables, Payload> = PayloadAction<
+  Type,
+  BlockPayload<Payload>
+>;
 
 export type TextBlockState = GenericBlockState<
   Draggable['text'],
@@ -64,7 +62,7 @@ export type TextBlockState = GenericBlockState<
 >;
 export type ImageBlockState = GenericBlockState<
   Draggable['image'],
-  DropImagePayload
+  Omit<DropImagePayload, 'width' | 'height'>
 >;
 
 export type BlockState = TextBlockState | ImageBlockState;
