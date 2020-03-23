@@ -290,6 +290,10 @@ const Canvas: React.FC<CanvasProps> = ({
 
       switch (action.type) {
         case 'text':
+          firebase.analytics().logEvent('createBlock', {
+            type: action.type,
+          });
+
           return createBlockState({
             ...action,
             payload: {
@@ -305,6 +309,13 @@ const Canvas: React.FC<CanvasProps> = ({
           const {
             payload: { width, height, ...block },
           } = action;
+
+          firebase.analytics().logEvent('createBlock', {
+            type: action.type,
+            width,
+            height,
+          });
+
           return createBlockState({
             ...action,
             payload: {
@@ -688,11 +699,13 @@ const Canvas: React.FC<CanvasProps> = ({
                 disabled={fetchStoriesStatus === 'in progress'}
                 button
                 onClick={() => {
-                  setRightDrawerOccupant(
-                    rightDrawerOccupant === 'text blocks'
-                      ? 'none'
-                      : 'text blocks',
-                  );
+                  if (rightDrawerOccupant === 'text blocks') {
+                    setRightDrawerOccupant('none');
+                  } else {
+                    setRightDrawerOccupant('text blocks');
+
+                    firebase.analytics().logEvent('openTextBlockDrawer');
+                  }
                 }}
               >
                 <Tooltip title="Toggle open text blocks">
@@ -711,9 +724,13 @@ const Canvas: React.FC<CanvasProps> = ({
                 disabled={fetchStoriesStatus === 'in progress'}
                 button
                 onClick={() => {
-                  setRightDrawerOccupant(
-                    rightDrawerOccupant === 'images' ? 'none' : 'images',
-                  );
+                  if (rightDrawerOccupant === 'images') {
+                    setRightDrawerOccupant('none');
+                  } else {
+                    setRightDrawerOccupant('images');
+
+                    firebase.analytics().logEvent('openImagesDrawer');
+                  }
                 }}
               >
                 <Tooltip title="Toggle images open">
@@ -732,9 +749,13 @@ const Canvas: React.FC<CanvasProps> = ({
                 disabled={fetchStoriesStatus === 'in progress'}
                 button
                 onClick={() => {
-                  setRightDrawerOccupant(
-                    rightDrawerOccupant === 'audio' ? 'none' : 'audio',
-                  );
+                  if (rightDrawerOccupant === 'audio') {
+                    setRightDrawerOccupant('none');
+                  } else {
+                    setRightDrawerOccupant('audio');
+
+                    firebase.analytics().logEvent('openAudioTracksDrawer');
+                  }
                 }}
               >
                 <Tooltip title="Toggle open audio">

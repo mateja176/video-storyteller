@@ -44,7 +44,13 @@ const upload: Epic<Action, UpdateProgressAction | SetSnackbarAction, State> = (
   action$.pipe(
     ofType(getType(createUpload)),
     selectState(selectImageEntities)(state$),
-    mergeMap(entities => Object.entries(entities)),
+    map(Object.entries),
+    tap(images => {
+      firebase.analytics().logEvent('upload', {
+        count: images.length,
+      });
+    }),
+    mergeMap(entities => entities),
     withLatestFrom(state$.pipe(map(selectUid))),
     mergeMap(([[id, { name, dataUrl }], uid]) => {
       const img = new Image();

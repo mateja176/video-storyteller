@@ -137,6 +137,8 @@ const signOut: Epic<Action, SetSnackbarAction, State, EpicDependencies> = (
     ),
     tap(() => {
       history.push('/');
+
+      firebase.analytics().logEvent('signOut');
     }),
   );
 

@@ -13,6 +13,7 @@ import React, { CSSProperties, FC, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { connect, useSelector } from 'react-redux';
 import { Box, Flex } from 'rebass';
+import { firebase } from 'services';
 import {
   createAddImage,
   CreateAddImage,
@@ -114,6 +115,13 @@ const Upload: FC<UploadProps> = ({
     if (uploadInputRef.current) {
       uploadInputRef.current.click();
     }
+
+    firebase.analytics().logEvent('addImages', {
+      count:
+        uploadInputRef.current &&
+        uploadInputRef.current.files &&
+        uploadInputRef.current.files.length,
+    });
   };
 
   return (
