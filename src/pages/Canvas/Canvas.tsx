@@ -775,6 +775,10 @@ const Canvas: React.FC<CanvasProps> = ({
                 button
                 onClick={() => {
                   setDeleteModeOn(!deleteModeOn);
+
+                  if (!deleteModeOn) {
+                    firebase.analytics().logEvent('toggleDeleteModeOn');
+                  }
                 }}
               >
                 <Tooltip title="Toggle delete mode">
@@ -785,7 +789,13 @@ const Canvas: React.FC<CanvasProps> = ({
               </ListItem>
               <ListItem
                 button
-                onClick={() => setAudioUploadOpen(!audioUploadOpen)}
+                onClick={() => {
+                  setAudioUploadOpen(!audioUploadOpen);
+
+                  if (!audioUploadOpen) {
+                    firebase.analytics().logEvent('toggleOpenAudioUpload');
+                  }
+                }}
               >
                 <Tooltip title="Toggle open audio upload">
                   <ListItemIcon>
@@ -812,6 +822,10 @@ const Canvas: React.FC<CanvasProps> = ({
             button
             onClick={() => {
               toggleTheatricalMode();
+
+              if (!theatricalMode) {
+                firebase.analytics().logEvent('toggleTheatricalModeOn');
+              }
             }}
           >
             <Tooltip title="Toggle theatrical mode">
@@ -831,6 +845,8 @@ const Canvas: React.FC<CanvasProps> = ({
               } else {
                 setIsFullScreen(true);
                 window.document.documentElement.requestFullscreen();
+
+                firebase.analytics().logEvent('toggleFullscreenOn');
               }
             }}
           >
