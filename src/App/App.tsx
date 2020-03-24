@@ -5,7 +5,6 @@ import { ThemeProvider } from '@material-ui/styles';
 import { Snackbar } from 'components';
 import env from 'env';
 import 'firebase/analytics';
-import Layout from 'Layout';
 import mixpanel from 'mixpanel-browser';
 import { CreateSimpleAction, WithColors } from 'models';
 import React, { FC, useEffect } from 'react';
@@ -21,6 +20,7 @@ import {
   State,
 } from 'store';
 import { Context } from './Context';
+import Layout from './Layout';
 import Routes from './Routes';
 
 declare module '@material-ui/core' {
