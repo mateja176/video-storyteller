@@ -88,7 +88,7 @@ import {
 } from 'react-share';
 import { Box, Flex } from 'rebass';
 import { putString } from 'rxfire/storage';
-import { firebase } from 'services';
+import { analytics, firebase } from 'services';
 import {
   createAddStory,
   createFetchStory,
@@ -291,8 +291,11 @@ const Canvas: React.FC<CanvasProps> = ({
 
       switch (action.type) {
         case 'text':
-          firebase.analytics().logEvent('createBlock', {
-            type: action.type,
+          analytics.logEvent({
+            type: 'createBlock',
+            payload: {
+              type: action.type,
+            },
           });
 
           return createBlockState({
@@ -311,10 +314,13 @@ const Canvas: React.FC<CanvasProps> = ({
             payload: { width, height, ...block },
           } = action;
 
-          firebase.analytics().logEvent('createBlock', {
-            type: action.type,
-            width,
-            height,
+          analytics.logEvent({
+            type: 'createBlock',
+            payload: {
+              type: action.type,
+              width,
+              height,
+            },
           });
 
           return createBlockState({
@@ -705,7 +711,7 @@ const Canvas: React.FC<CanvasProps> = ({
                   } else {
                     setRightDrawerOccupant('text blocks');
 
-                    firebase.analytics().logEvent('openTextBlockDrawer');
+                    analytics.logEvent({ type: 'openTextBlockDrawer' });
                   }
                 }}
               >
@@ -730,7 +736,7 @@ const Canvas: React.FC<CanvasProps> = ({
                   } else {
                     setRightDrawerOccupant('images');
 
-                    firebase.analytics().logEvent('openImagesDrawer');
+                    analytics.logEvent({ type: 'openImagesDrawer' });
                   }
                 }}
               >
@@ -755,7 +761,7 @@ const Canvas: React.FC<CanvasProps> = ({
                   } else {
                     setRightDrawerOccupant('audio');
 
-                    firebase.analytics().logEvent('openAudioTracksDrawer');
+                    analytics.logEvent({ type: 'openAudioTracksDrawer' });
                   }
                 }}
               >
@@ -778,7 +784,7 @@ const Canvas: React.FC<CanvasProps> = ({
                   setDeleteModeOn(!deleteModeOn);
 
                   if (!deleteModeOn) {
-                    firebase.analytics().logEvent('toggleDeleteModeOn');
+                    analytics.logEvent({ type: 'toggleDeleteModeOn' });
                   }
                 }}
               >
@@ -794,7 +800,7 @@ const Canvas: React.FC<CanvasProps> = ({
                   setAudioUploadOpen(!audioUploadOpen);
 
                   if (!audioUploadOpen) {
-                    firebase.analytics().logEvent('toggleOpenAudioUpload');
+                    analytics.logEvent({ type: 'toggleOpenAudioUpload' });
                   }
                 }}
               >
@@ -825,7 +831,7 @@ const Canvas: React.FC<CanvasProps> = ({
               toggleTheatricalMode();
 
               if (!theatricalMode) {
-                firebase.analytics().logEvent('toggleTheatricalModeOn');
+                analytics.logEvent({ type: 'toggleTheatricalModeOn' });
               }
             }}
           >
@@ -847,7 +853,7 @@ const Canvas: React.FC<CanvasProps> = ({
                 setIsFullScreen(true);
                 window.document.documentElement.requestFullscreen();
 
-                firebase.analytics().logEvent('toggleFullscreenOn');
+                analytics.logEvent({ type: 'toggleFullscreenOn' });
               }
             }}
           >
@@ -1180,8 +1186,11 @@ const Canvas: React.FC<CanvasProps> = ({
                           >
                             <SpeedDialAction
                               onClick={() => {
-                                firebase.analytics().logEvent('share', {
-                                  method: 'copy',
+                                analytics.logEvent({
+                                  type: 'share',
+                                  payload: {
+                                    method: 'copy',
+                                  },
                                 });
                               }}
                               tooltipTitle="Copy link"
@@ -1204,8 +1213,11 @@ const Canvas: React.FC<CanvasProps> = ({
                             />
                             <SpeedDialAction
                               onClick={() => {
-                                firebase.analytics().logEvent('share', {
-                                  method: 'facebook',
+                                analytics.logEvent({
+                                  type: 'share',
+                                  payload: {
+                                    method: 'facebook',
+                                  },
                                 });
                               }}
                               tooltipTitle="Share on Facebook"
@@ -1217,8 +1229,11 @@ const Canvas: React.FC<CanvasProps> = ({
                             />
                             <SpeedDialAction
                               onClick={() => {
-                                firebase.analytics().logEvent('share', {
-                                  method: 'twitter',
+                                analytics.logEvent({
+                                  type: 'share',
+                                  payload: {
+                                    method: 'twitter',
+                                  },
                                 });
                               }}
                               tooltipTitle="Share on Twitter"
@@ -1230,8 +1245,11 @@ const Canvas: React.FC<CanvasProps> = ({
                             />
                             <SpeedDialAction
                               onClick={() => {
-                                firebase.analytics().logEvent('share', {
-                                  method: 'reddit',
+                                analytics.logEvent({
+                                  type: 'share',
+                                  payload: {
+                                    method: 'reddit',
+                                  },
                                 });
                               }}
                               tooltipTitle="Share on Reddit"
@@ -1243,8 +1261,11 @@ const Canvas: React.FC<CanvasProps> = ({
                             />
                             <SpeedDialAction
                               onClick={() => {
-                                firebase.analytics().logEvent('share', {
-                                  method: 'whatsapp',
+                                analytics.logEvent({
+                                  type: 'share',
+                                  payload: {
+                                    method: 'whatsapp',
+                                  },
                                 });
                               }}
                               tooltipTitle="Share on Whatsapp"
@@ -1256,8 +1277,11 @@ const Canvas: React.FC<CanvasProps> = ({
                             />
                             <SpeedDialAction
                               onClick={() => {
-                                firebase.analytics().logEvent('share', {
-                                  method: 'viber',
+                                analytics.logEvent({
+                                  type: 'share',
+                                  payload: {
+                                    method: 'viber',
+                                  },
                                 });
                               }}
                               tooltipTitle="Share on Viber"

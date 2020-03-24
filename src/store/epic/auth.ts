@@ -17,7 +17,7 @@ import {
   switchMap,
   tap,
 } from 'rxjs/operators';
-import { firebase } from 'services';
+import { analytics } from 'services';
 import { EpicDependencies } from 'store/configureStore';
 import { getType } from 'typesafe-actions';
 import { Action, createReset, ResetAction, State } from '../reducer';
@@ -89,8 +89,11 @@ const signIn: Epic<
 
       return from(auth().signInWithPopup(provider)).pipe(
         tap(userCredentials => {
-          firebase.analytics().logEvent('login', {
-            method: 'google',
+          analytics.logEvent({
+            type: 'signin',
+            payload: {
+              method: 'google',
+            },
           });
 
           if (userCredentials.user) {
@@ -150,7 +153,7 @@ const signOut: Epic<Action, SetSnackbarAction, State, EpicDependencies> = (
     tap(() => {
       history.push('/');
 
-      firebase.analytics().logEvent('signOut');
+      analytics.logEvent({ type: 'signout' });
     }),
   );
 

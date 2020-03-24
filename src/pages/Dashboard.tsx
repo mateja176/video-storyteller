@@ -17,7 +17,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import { Box, Flex } from 'rebass';
-import { firebase } from 'services';
+import { analytics } from 'services';
 import {
   createSetCurrentStoryId,
   selectCurrentStoryId,
@@ -111,8 +111,11 @@ const Dashboard: React.FC<DashboardProps> = ({ history }) => {
                                 setCurrentStoryId({ currentStoryId: id });
                               }
 
-                              firebase.analytics().logEvent('select_content', {
-                                storyId: id,
+                              analytics.logEvent({
+                                type: 'selectStory',
+                                payload: {
+                                  id,
+                                },
                               });
 
                               mixpanel.track('selectStory', {

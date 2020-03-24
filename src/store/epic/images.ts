@@ -15,7 +15,7 @@ import {
   tap,
   withLatestFrom,
 } from 'rxjs/operators';
-import { env, firebase } from 'services';
+import { analytics, env, firebase } from 'services';
 import { EpicDependencies } from 'store/configureStore';
 import { getType } from 'typesafe-actions';
 import urlJoin from 'url-join';
@@ -45,8 +45,11 @@ const upload: Epic<Action, UpdateProgressAction | SetSnackbarAction, State> = (
     selectState(selectImageEntities)(state$),
     map(Object.entries),
     tap(images => {
-      firebase.analytics().logEvent('upload', {
-        count: images.length,
+      analytics.logEvent({
+        type: 'uploadImages',
+        payload: {
+          count: images.length,
+        },
       });
     }),
     mergeMap(entities => entities),

@@ -1,9 +1,12 @@
 import 'firebase/analytics';
 import { createBrowserHistory } from 'history';
-import { firebase } from './firebase';
+import { analytics } from './analytics';
 
 export const history = createBrowserHistory();
 
-history.listen(location =>
-  firebase.analytics().logEvent('page_view', location),
+history.listen(({ pathname, search, hash }) =>
+  analytics.logEvent({
+    type: 'navigation',
+    payload: { pathname, search, hash },
+  }),
 );

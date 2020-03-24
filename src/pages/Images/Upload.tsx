@@ -13,7 +13,6 @@ import React, { CSSProperties, FC, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { connect, useSelector } from 'react-redux';
 import { Box, Flex } from 'rebass';
-import { firebase } from 'services';
 import {
   createAddImage,
   CreateAddImage,
@@ -31,6 +30,7 @@ import {
   selectImagesWithIds,
   State,
 } from 'store';
+import { analytics } from 'services';
 
 const useStyles = createUseStyles({
   '@keyframes flicker': {
@@ -116,11 +116,15 @@ const Upload: FC<UploadProps> = ({
       uploadInputRef.current.click();
     }
 
-    firebase.analytics().logEvent('addImages', {
-      count:
-        uploadInputRef.current &&
-        uploadInputRef.current.files &&
-        uploadInputRef.current.files.length,
+    analytics.logEvent({
+      type: 'addImages',
+      payload: {
+        count:
+          (uploadInputRef.current &&
+            uploadInputRef.current.files &&
+            uploadInputRef.current.files.length) ||
+          -1,
+      },
     });
   };
 

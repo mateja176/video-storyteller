@@ -22,7 +22,7 @@ const eventTypes = [
   'openAudioTracksDrawer',
   'toggleDeleteModeOn',
   'toggleOpenAudioUpload',
-  'toggleTheatricalOn',
+  'toggleTheatricalModeOn',
   'toggleFullscreenOn',
   'share',
   'addImages',
@@ -41,7 +41,7 @@ interface WithMethod {
 type SigninEvent = PayloadAction<IEventType['signin'], WithMethod>;
 type NavigationEvent = PayloadAction<
   IEventType['navigation'],
-  Pick<Location, 'key' | 'pathname' | 'search' | 'hash'>
+  Pick<Location, 'pathname' | 'search' | 'hash'>
 >;
 type SelectStoryEvent = PayloadAction<IEventType['selectStory'], WithId>;
 type IErrorEvent = PayloadAction<
@@ -61,7 +61,7 @@ type OpenImagesDrawerEvent = Action<IEventType['openImagesDrawer']>;
 type OpenAudioTracksDrawerEvent = Action<IEventType['openAudioTracksDrawer']>;
 type ToggleDeleteModeOnEvent = Action<IEventType['toggleDeleteModeOn']>;
 type ToggleOpenAudioUploadEvent = Action<IEventType['toggleOpenAudioUpload']>;
-type ToggleTheatricalOnEvent = Action<IEventType['toggleTheatricalOn']>;
+type ToggleTheatricalOnEvent = Action<IEventType['toggleTheatricalModeOn']>;
 type ToggleFullscreenOnEvent = Action<IEventType['toggleFullscreenOn']>;
 type SignoutEvent = Action<IEventType['signout']>;
 

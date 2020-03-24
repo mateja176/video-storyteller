@@ -4,13 +4,12 @@ import { ThemeOptions } from '@material-ui/core/styles/createMuiTheme';
 import { ThemeProvider } from '@material-ui/styles';
 import { Snackbar } from 'components';
 import 'firebase/analytics';
-import mixpanel from 'mixpanel-browser';
 import { CreateSimpleAction, WithColors } from 'models';
 import React, { FC, useEffect } from 'react';
 import { hot } from 'react-hot-loader';
 import { connect, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
-import { env, firebase } from 'services';
+import { analytics, env } from 'services';
 import {
   createFetchAuthState,
   selectAuthStatus,
@@ -66,10 +65,13 @@ const App: FC<AppProps> = ({ getAuthState, isSignedIn, themeOptions }) => {
   } as ThemeOptions);
 
   React.useEffect(() => {
-    mixpanel.init(env.mixpanelToken);
+    analytics.init(env.mixpanelToken);
 
     const logError = ({ error }: ErrorEvent) => {
-      firebase.analytics().logEvent('exception', { message: error.message });
+      analytics.logEvent({
+        type: 'error',
+        payload: { message: error.message },
+      });
     };
 
     window.addEventListener('error', logError);
