@@ -1,4 +1,5 @@
 import { RawDraftContentState } from 'draft-js';
+import { WithId } from 'models';
 import { CustomMetadata } from 'store';
 import { createAction, PayloadAction } from 'typesafe-actions';
 import { WithDownloadUrl } from '../store/slices/storage';
@@ -41,10 +42,6 @@ export interface WithDropResult {
   left: number;
   width: number;
   height: number;
-}
-
-export interface WithId {
-  id: string;
 }
 
 export interface BlockPayload<Payload> extends WithId, WithDropResult {

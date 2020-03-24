@@ -1,5 +1,6 @@
 /* eslint-disable indent */
 
+import { WithId } from 'models';
 import { nth, update } from 'ramda';
 import { Tuple } from 'ts-toolbelt';
 import { createAction } from 'typesafe-actions';
@@ -11,7 +12,6 @@ import {
   ImageBlockState,
   TextBlockState,
   toObject,
-  WithId,
 } from 'utils';
 
 export const initialState: BlockStates = [];

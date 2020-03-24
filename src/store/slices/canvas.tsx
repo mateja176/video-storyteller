@@ -1,10 +1,10 @@
 /* eslint-disable indent */
 
-import { ExtendedLoadingStatus } from 'models';
+import { ExtendedLoadingStatus, WithId } from 'models';
 import { StoryWithId } from 'pages/Canvas/CanvasContext';
 import { update } from 'ramda';
 import { ActionType, createAction, createAsyncAction } from 'typesafe-actions';
-import { createReducer, toObject, WithId } from 'utils';
+import { createReducer, toObject } from 'utils';
 
 export type Durations = number[];
 

@@ -3,6 +3,10 @@ import { CSSProperties } from 'react';
 import { ReactStripeElements } from 'react-stripe-elements';
 import { NonUndefined } from 'utility-types';
 
+export interface WithId {
+  id: string;
+}
+
 export type ToObject<A extends readonly any[]> = { [a in A[number]]: a };
 
 export type Module = NodeModule & {
