@@ -68,7 +68,7 @@ const App: FC<AppProps> = ({ getAuthState, isSignedIn, themeOptions }) => {
     // mixpanel.init('d66efaad9a80dc4453a1234515e84b63');
 
     const logError = ({ error }: ErrorEvent) => {
-      firebase.analytics().logEvent('exception', error);
+      firebase.analytics().logEvent('exception', { message: error.message });
     };
 
     window.addEventListener('error', logError);
