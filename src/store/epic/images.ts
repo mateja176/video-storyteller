@@ -1,4 +1,3 @@
-import env from 'env';
 import 'firebase/storage';
 import { KnowledgeGraph } from 'models/knowledgeGraph';
 import { Epic, ofType } from 'redux-observable';
@@ -16,7 +15,7 @@ import {
   tap,
   withLatestFrom,
 } from 'rxjs/operators';
-import { firebase } from 'services';
+import { env, firebase } from 'services';
 import { EpicDependencies } from 'store/configureStore';
 import { getType } from 'typesafe-actions';
 import urlJoin from 'url-join';

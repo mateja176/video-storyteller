@@ -1,6 +1,6 @@
 import firebaseApp from 'firebase/app';
 import 'firebase/performance';
-import env from '../../env';
+import { env } from 'services';
 
 const { firebaseConfig } = env;
 

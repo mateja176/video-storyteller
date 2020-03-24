@@ -1,9 +1,9 @@
 import { CommentCount, DiscussionEmbed } from 'disqus-react';
-import env from 'env';
 import { startCase } from 'lodash';
 import React, { ComponentProps } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Box } from 'rebass';
+import { env } from 'services';
 import { useHref } from 'utils/hooks';
 
 type DisqusConfig = ComponentProps<typeof CommentCount>['config'];

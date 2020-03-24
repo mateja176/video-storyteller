@@ -53,6 +53,4 @@ const allEnvironments: AllEnvironments = {
   test: development,
 };
 
-const env = allEnvironments[process.env.NODE_ENV];
-
-export default env;
+export const env = allEnvironments[process.env.NODE_ENV];

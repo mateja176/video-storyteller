@@ -1,5 +1,4 @@
 import { fontsWithWeights } from 'components';
-import env from 'env';
 import LogRocket from 'logrocket';
 import setupLogRocketReact from 'logrocket-react';
 import { Stripe } from 'models';
@@ -9,7 +8,7 @@ import { Provider as StoreProvider } from 'react-redux';
 import { Router } from 'react-router-dom';
 // import 'react-stripe-elements'; // * fixes tests but does not fix build
 import { StripeProvider } from 'react-stripe-elements';
-import { history } from 'services';
+import { env, history } from 'services';
 import configureStore from 'store';
 import { Context, IContext, initialContext } from './Context';
 
