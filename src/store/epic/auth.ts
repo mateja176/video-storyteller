@@ -2,7 +2,6 @@ import 'firebase/analytics';
 import { auth } from 'firebase/app';
 import 'firebase/auth';
 import LogRocket from 'logrocket';
-import mixpanel from 'mixpanel-browser';
 import { not } from 'ramda';
 import { Epic, ofType } from 'redux-observable';
 import { authState } from 'rxfire/auth';
@@ -99,9 +98,9 @@ const signIn: Epic<
           if (userCredentials.user) {
             const { uid, email, displayName } = userCredentials.user;
 
-            mixpanel.identify(uid);
+            analytics.identify(uid);
 
-            mixpanel.people.set({
+            analytics.addUserProperties({
               email,
               displayName,
             });

@@ -91,9 +91,12 @@ const hasPayload = (e: AnalyticsEvent): e is AnalyticsEventWithPayload =>
   'payload' in e;
 
 const init: typeof mixpanel['init'] = token => mixpanel.init(token);
+const identify: typeof mixpanel['identify'] = token => mixpanel.identify(token);
 
 export const analytics = {
   init,
+
+  identify,
 
   logEvent: (event: AnalyticsEvent) => {
     if (hasPayload(event)) {

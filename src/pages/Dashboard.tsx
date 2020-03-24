@@ -11,7 +11,6 @@ import {
 import { Edit, Public, Tv } from '@material-ui/icons';
 import { Link, Spinner, Tooltip } from 'components';
 import 'firebase/analytics';
-import mixpanel from 'mixpanel-browser';
 import { add } from 'ramda';
 import React from 'react';
 import { useSelector } from 'react-redux';
@@ -116,10 +115,6 @@ const Dashboard: React.FC<DashboardProps> = ({ history }) => {
                                 payload: {
                                   id,
                                 },
-                              });
-
-                              mixpanel.track('selectStory', {
-                                storyId: id,
                               });
                             }}
                             selected={selected}
