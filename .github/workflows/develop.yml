@@ -34,6 +34,7 @@ jobs:
           REACT_APP_FIREBASE_CONFIG_MESSAGING_SENDER_ID: ${{ secrets.REACT_APP_FIREBASE_CONFIG_MESSAGING_SENDER_ID }}
           REACT_APP_FIREBASE_CONFIG_APP_ID: ${{ secrets.REACT_APP_FIREBASE_CONFIG_APP_ID }}
           REACT_APP_FIREBASE_CONFIG_MEASUREMENT_ID: ${{ secrets.REACT_APP_FIREBASE_CONFIG_MEASUREMENT_ID }}
+          REACT_APP_MIXPANEL_TOKEN: ${{ secrets.REACT_APP_MIXPANEL_TOKEN }}
       - name: deploy:hosting:ci
         run: npm run deploy:hosting:ci
         env:
