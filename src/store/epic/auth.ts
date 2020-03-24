@@ -2,6 +2,7 @@ import 'firebase/analytics';
 import { auth } from 'firebase/app';
 import 'firebase/auth';
 import LogRocket from 'logrocket';
+import mixpanel from 'mixpanel-browser';
 import { not } from 'ramda';
 import { Epic, ofType } from 'redux-observable';
 import { authState } from 'rxfire/auth';
@@ -92,16 +93,16 @@ const signIn: Epic<
             method: 'google',
           });
 
-          // if (userCredentials.user) {
-          //   const { uid, email, displayName } = userCredentials.user;
+          if (userCredentials.user) {
+            const { uid, email, displayName } = userCredentials.user;
 
-          //   mixpanel.identify(uid);
+            mixpanel.identify(uid);
 
-          //   mixpanel.people.set({
-          //     email,
-          //     displayName,
-          //   });
-          // }
+            mixpanel.people.set({
+              email,
+              displayName,
+            });
+          }
         }),
         map(() => createSignin.success()),
         catchError(({ message }) =>

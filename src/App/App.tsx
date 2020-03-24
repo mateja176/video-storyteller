@@ -5,6 +5,7 @@ import { ThemeProvider } from '@material-ui/styles';
 import { Snackbar } from 'components';
 import 'firebase/analytics';
 import Layout from 'Layout';
+import mixpanel from 'mixpanel-browser';
 import { CreateSimpleAction, WithColors } from 'models';
 import React, { FC, useEffect } from 'react';
 import { hot } from 'react-hot-loader';
@@ -65,7 +66,7 @@ const App: FC<AppProps> = ({ getAuthState, isSignedIn, themeOptions }) => {
   } as ThemeOptions);
 
   React.useEffect(() => {
-    // mixpanel.init('d66efaad9a80dc4453a1234515e84b63');
+    mixpanel.init('d66efaad9a80dc4453a1234515e84b63');
 
     const logError = ({ error }: ErrorEvent) => {
       firebase.analytics().logEvent('exception', { message: error.message });

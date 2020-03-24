@@ -1,5 +1,6 @@
 /* eslint-disable indent */
 
+import mixpanel from 'mixpanel-browser';
 import {
   List,
   ListItem,
@@ -112,6 +113,10 @@ const Dashboard: React.FC<DashboardProps> = ({ history }) => {
                               }
 
                               firebase.analytics().logEvent('select_content', {
+                                storyId: id,
+                              });
+
+                              mixpanel.track('selectStory', {
                                 storyId: id,
                               });
                             }}
