@@ -1,17 +1,18 @@
 /* eslint-disable indent */
 
-import {
-  BlockState,
-  BlockStates,
-  ImageBlockState,
-  TextBlockState,
-  WithId,
-} from 'models';
 import { nth, update } from 'ramda';
 import { Tuple } from 'ts-toolbelt';
 import { createAction } from 'typesafe-actions';
 import { Required } from 'utility-types';
-import { createReducer, toObject } from 'utils';
+import {
+  BlockState,
+  BlockStates,
+  createReducer,
+  ImageBlockState,
+  TextBlockState,
+  toObject,
+  WithId,
+} from 'utils';
 
 export const initialState: BlockStates = [];
 

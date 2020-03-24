@@ -1,10 +1,10 @@
 import { Typography } from '@material-ui/core';
 import { startCase } from 'lodash';
-import { createDropImage, DropImagePayload } from 'models';
 import React from 'react';
 import { useDrag } from 'react-dnd';
 import { Box, Flex } from 'rebass';
 import { dividingBorder } from 'styles';
+import { createDropImage, DropImagePayload } from 'utils';
 
 export interface ImageBlockProps
   extends DropImagePayload,

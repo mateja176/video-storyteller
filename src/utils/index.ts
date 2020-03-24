@@ -1,3 +1,4 @@
+export * from './dnd';
 export * from './editor';
 export * from './files';
 export * from './hooks';

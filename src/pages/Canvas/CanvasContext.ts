@@ -1,4 +1,3 @@
-import { BlockState, draggable, Draggables, WithId } from 'models';
 import { createContext } from 'react';
 import {
   CanvasState,
@@ -8,6 +7,7 @@ import {
   StorageFile,
   User,
 } from 'store';
+import { BlockState, draggable, Draggables, WithId } from 'utils';
 import { Action } from './store';
 
 export type Reset = boolean;

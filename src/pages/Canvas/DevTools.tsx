@@ -40,7 +40,6 @@ import { Context } from 'App';
 import color from 'color';
 import { Button, Progress, progressHeight, Tooltip } from 'components';
 import { capitalize, startCase } from 'lodash';
-import { draggables } from 'models';
 import { equals, findLastIndex, init, insert, last, nth, update } from 'ramda';
 import React from 'react';
 import GridLayout from 'react-grid-layout';
@@ -48,7 +47,7 @@ import 'react-grid-layout/css/styles.css';
 import { Box, Flex } from 'rebass';
 import { createDevTools } from 'redux-devtools';
 import { Tuple } from 'ts-toolbelt';
-import { removeNils } from 'utils';
+import { draggables, removeNils } from 'utils';
 import ActionCardForm from './ActionCardForm';
 import {
   CanvasContext,

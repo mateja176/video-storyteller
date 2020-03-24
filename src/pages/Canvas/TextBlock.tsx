@@ -1,10 +1,11 @@
 import { Editor } from 'components';
 import { convertToRaw } from 'draft-js';
-import { createDropText, EditorProps } from 'models';
+import { EditorProps } from 'models';
 import React from 'react';
 import { useDrag } from 'react-dnd';
 import { Box } from 'rebass';
 import { dividingBorder } from 'styles';
+import { createDropText } from 'utils';
 
 export interface TextBlockProps extends EditorProps {
   onDragEnd: () => void;

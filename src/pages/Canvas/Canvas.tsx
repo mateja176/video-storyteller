@@ -64,12 +64,7 @@ import {
 import 'firebase/analytics';
 import { absoluteRootPaths } from 'Layout';
 import { debounce } from 'lodash';
-import {
-  draggable,
-  draggables,
-  DropAction,
-  ExtendedLoadingStatus,
-} from 'models';
+import { ExtendedLoadingStatus } from 'models';
 import { storageImageWidth } from 'pages';
 import { Images } from 'pages/Images';
 import panzoom, { PanZoom } from 'panzoom';
@@ -117,7 +112,13 @@ import {
 } from 'store';
 import { dividingBorder } from 'styles';
 import urlJoin from 'url-join';
-import { getCurrentColor, useActions as useStoreActions } from 'utils';
+import {
+  draggable,
+  draggables,
+  DropAction,
+  getCurrentColor,
+  useActions as useStoreActions,
+} from 'utils';
 import { v4 } from 'uuid';
 import Audio from './Audio';
 import { AudioElement } from './AudioBlock';

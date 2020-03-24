@@ -1,8 +1,8 @@
 import { RawDraftContentState } from 'draft-js';
 import { CustomMetadata } from 'store';
 import { createAction, PayloadAction } from 'typesafe-actions';
-import { toObject } from 'utils';
 import { WithDownloadUrl } from '../store/slices/storage';
+import { toObject } from './utils';
 
 export const draggables = ['text', 'image', 'other'] as const;
 
