@@ -3,6 +3,7 @@ import { MuiThemeProvider } from '@material-ui/core/styles';
 import { ThemeOptions } from '@material-ui/core/styles/createMuiTheme';
 import { ThemeProvider } from '@material-ui/styles';
 import { Snackbar } from 'components';
+import env from 'env';
 import 'firebase/analytics';
 import Layout from 'Layout';
 import mixpanel from 'mixpanel-browser';
@@ -66,7 +67,7 @@ const App: FC<AppProps> = ({ getAuthState, isSignedIn, themeOptions }) => {
   } as ThemeOptions);
 
   React.useEffect(() => {
-    mixpanel.init('d66efaad9a80dc4453a1234515e84b63');
+    mixpanel.init(env.mixpanelToken);
 
     const logError = ({ error }: ErrorEvent) => {
       firebase.analytics().logEvent('exception', { message: error.message });

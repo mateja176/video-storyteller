@@ -33,6 +33,7 @@ const developmentEnv = {
   disqusShortname: process.env.REACT_APP_DISQUS_SHORTNAME,
   logRocketId: process.env.REACT_APP_LOG_ROCKET_ID,
   googleApiKey: process.env.REACT_APP_GOOGLE_API_KEY,
+  mixpanelToken: process.env.REACT_APP_MIXPANEL_TOKEN,
 };
 
 assertArePropsDefined(getNoEnvVariableMessage, developmentEnv);
