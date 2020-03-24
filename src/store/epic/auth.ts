@@ -87,10 +87,21 @@ const signIn: Epic<
       const provider = new auth.GoogleAuthProvider();
 
       return from(auth().signInWithPopup(provider)).pipe(
-        tap(() => {
+        tap(userCredentials => {
           firebase.analytics().logEvent('login', {
             method: 'google',
           });
+
+          // if (userCredentials.user) {
+          //   const { uid, email, displayName } = userCredentials.user;
+
+          //   mixpanel.identify(uid);
+
+          //   mixpanel.people.set({
+          //     email,
+          //     displayName,
+          //   });
+          // }
         }),
         map(() => createSignin.success()),
         catchError(({ message }) =>

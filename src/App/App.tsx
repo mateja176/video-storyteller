@@ -65,6 +65,8 @@ const App: FC<AppProps> = ({ getAuthState, isSignedIn, themeOptions }) => {
   } as ThemeOptions);
 
   React.useEffect(() => {
+    // mixpanel.init('d66efaad9a80dc4453a1234515e84b63');
+
     const logError = ({ error }: ErrorEvent) => {
       firebase.analytics().logEvent('exception', error);
     };
