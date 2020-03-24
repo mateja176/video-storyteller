@@ -1,6 +1,5 @@
 /* eslint-disable indent */
 
-import mixpanel from 'mixpanel-browser';
 import {
   List,
   ListItem,
@@ -12,7 +11,7 @@ import {
 import { Edit, Public, Tv } from '@material-ui/icons';
 import { Link, Spinner, Tooltip } from 'components';
 import 'firebase/analytics';
-import { absoluteRootPaths } from 'Layout';
+import mixpanel from 'mixpanel-browser';
 import { add } from 'ramda';
 import React from 'react';
 import { useSelector } from 'react-redux';
@@ -29,7 +28,7 @@ import {
   subscribeToStories,
 } from 'store';
 import urlJoin from 'url-join';
-import { useActions } from 'utils';
+import { absoluteRootPaths, useActions } from 'utils';
 
 export interface DashboardProps extends RouteComponentProps {}
 

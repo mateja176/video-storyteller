@@ -62,7 +62,6 @@ import {
   RichUtils,
 } from 'draft-js';
 import 'firebase/analytics';
-import { absoluteRootPaths } from 'Layout';
 import { debounce } from 'lodash';
 import { ExtendedLoadingStatus } from 'models';
 import { storageImageWidth } from 'pages';
@@ -113,6 +112,7 @@ import {
 import { dividingBorder } from 'styles';
 import urlJoin from 'url-join';
 import {
+  absoluteRootPaths,
   draggable,
   draggables,
   DropAction,

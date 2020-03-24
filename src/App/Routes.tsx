@@ -1,10 +1,5 @@
 import { useMediaQuery, useTheme } from '@material-ui/core';
 import { PageRoute, Switch } from 'components';
-import {
-  absoluteRootPathnames,
-  absoluteRootPaths,
-  textRootPathnames,
-} from 'Layout';
 import * as pages from 'pages';
 import React, { FC } from 'react';
 import { DndProvider } from 'react-dnd';
@@ -12,6 +7,11 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import TouchBackend from 'react-dnd-touch-backend';
 import posed, { PoseGroup } from 'react-pose';
 import { Redirect, Route } from 'react-router-dom';
+import {
+  absoluteRootPathnames,
+  absoluteRootPaths,
+  textRootPathnames,
+} from 'utils';
 
 const RouteContainer = posed.div({
   enter: { opacity: 1 },

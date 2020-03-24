@@ -17,18 +17,17 @@ import {
   Person,
 } from '@material-ui/icons';
 import { Link, Tooltip } from 'components';
-import { countBy, startCase } from 'lodash';
-import React, { CSSProperties, FC, ReactElement, useState } from 'react';
+import { countBy } from 'lodash';
+import React, { CSSProperties, FC, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { Dictionary, selectDictionary } from 'store';
-import { Tuple } from 'ts-toolbelt';
 import urlJoin from 'url-join';
-import { objectMap, toAbsolutePath, toObject } from 'utils';
+import { absolutePaths, absoluteRootPaths, paths } from 'utils';
 
 interface IChildNavItem {
   text: string;
-  icon: ReactElement;
+  icon: React.ReactElement;
   path: string;
 }
 
@@ -38,56 +37,12 @@ interface INavItem extends IChildNavItem {
 
 type INavItems = INavItem[];
 
-const rootPathnames = [
-  'signin',
-  'dashboard',
-  // 'count',
-  'images',
-  // 'store',
-  // 'checkoutForm',
-  // 'list',
-  'canvas',
-  'profile',
-] as const;
+type OnNavigate = () => void;
 
-export const absoluteRootPathnames = rootPathnames.map(toAbsolutePath);
-
-export const textRootPathnames = rootPathnames.map(s =>
-  s
-    .charAt(0)
-    .toUpperCase()
-    .concat(s.slice(1)),
-);
-
-type RootPathnames = typeof rootPathnames;
-type RootPathname = RootPathnames[number];
-
-const secondaryPathnames = ['increment', 'decrement', 'upload'] as const;
-export const secondaryPaths = toObject(secondaryPathnames);
-
-type SecondaryPathnames = typeof secondaryPathnames;
-type SecondaryPathname = SecondaryPathnames[number];
-
-type Pathnames = Tuple.Concat<RootPathnames, SecondaryPathnames>;
-type Pathname = Pathnames[number];
-
-const pathnames = [...rootPathnames, ...secondaryPathnames] as Pathnames;
-
-const toAbsolutePathObject = objectMap(toAbsolutePath);
-
-const rootPaths = toObject(rootPathnames);
-
-export const absoluteRootPaths: Record<keyof typeof rootPaths, string> = {
-  ...toAbsolutePathObject(rootPaths),
-  dashboard: '/',
-};
-
-const paths = toObject(pathnames);
-
-export const textPaths = objectMap(startCase)(paths);
-
-const absolutePaths = toAbsolutePathObject(paths);
-
+interface ChildNavItemProps extends IChildNavItem, RouteComponentProps {
+  onNavigate: OnNavigate;
+  style?: React.CSSProperties;
+}
 type GetNavItems = (dict: Dictionary) => INavItems;
 
 const getPublicNavItems: GetNavItems = dict => [
@@ -169,13 +124,6 @@ const getPrivateNavItems: GetNavItems = dict => [
     childNavItems: [],
   },
 ];
-
-type OnNavigate = () => void;
-
-interface ChildNavItemProps extends IChildNavItem, RouteComponentProps {
-  onNavigate: OnNavigate;
-  style?: React.CSSProperties;
-}
 
 const PlainChildNavItem: FC<ChildNavItemProps> = ({
   onNavigate,
@@ -266,7 +214,7 @@ const PlainNavItem: FC<NavItemProps> = ({
           padding: 0,
         }}
       >
-        <INavItems
+        <NavItems
           navItems={mappedChildNavItems.map(childItem => ({
             ...childItem,
           }))}
@@ -285,7 +233,7 @@ interface NavItemsProps extends Pick<ListItemProps, 'style'> {
   onNavigate: OnNavigate;
 }
 
-const INavItems: FC<NavItemsProps> = ({ navItems, onNavigate, style }) => (
+const NavItems: FC<NavItemsProps> = ({ navItems, onNavigate, style }) => (
   <List style={style}>
     {navItems.map(navItem => {
       const { childNavItems, text, path } = navItem;
@@ -321,7 +269,7 @@ const Nav: FC<NavProps> = ({ isSignedIn, onNavigate }) => {
 
   return (
     <nav>
-      <INavItems onNavigate={onNavigate} navItems={navItems} />
+      <NavItems onNavigate={onNavigate} navItems={navItems} />
     </nav>
   );
 };

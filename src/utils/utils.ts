@@ -1,5 +1,5 @@
 /* eslint-disable indent */
-import { isEqual, kebabCase } from 'lodash';
+import { isEqual } from 'lodash';
 import {
   either,
   equals,
@@ -15,7 +15,6 @@ import {
 import { Selector } from 'react-redux';
 import { createSelectorCreator, defaultMemoize } from 'reselect';
 import { State } from 'store';
-import urlJoin from 'url-join';
 import { RequiredKeys } from 'utility-types';
 
 /**
@@ -63,10 +62,6 @@ const prefixActionTypeWithSeparator = (separator: string) => (
 ) => (actionType: string) => prefix.concat(separator).concat(actionType);
 
 export const prefixActionType = prefixActionTypeWithSeparator('/');
-
-export const makeAbsolute = (path: string) => urlJoin('/', path);
-
-export const toAbsolutePath = pipe(kebabCase, makeAbsolute);
 
 export const toObject = <A extends readonly any[]>(array: A) =>
   array.reduce((as, a) => ({ ...as, [a]: a }), {}) as { [a in A[number]]: a };
