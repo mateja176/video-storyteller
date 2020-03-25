@@ -2,6 +2,7 @@ import 'firebase/analytics';
 import { auth } from 'firebase/app';
 import 'firebase/auth';
 import LogRocket from 'logrocket';
+import { User, UserProperties } from 'models';
 import { not } from 'ramda';
 import { Epic, ofType } from 'redux-observable';
 import { authState } from 'rxfire/auth';
@@ -19,6 +20,7 @@ import {
 import { analytics } from 'services';
 import { EpicDependencies } from 'store/configureStore';
 import { getType } from 'typesafe-actions';
+import { removeNils } from 'utils';
 import { Action, createReset, ResetAction, State } from '../reducer';
 import {
   AuthStateChangeAction,
@@ -37,7 +39,6 @@ import {
   SigninSuccess,
   signoutType,
   SnackbarAction,
-  User,
 } from '../slices';
 
 type ActionWithReset = Action | ResetAction;
@@ -96,14 +97,7 @@ const signIn: Epic<
           });
 
           if (userCredentials.user) {
-            const { uid, email, displayName } = userCredentials.user;
-
-            analytics.identify(uid);
-
-            analytics.addUserProperties({
-              email,
-              displayName,
-            });
+            analytics.identify(userCredentials.user.uid);
           }
         }),
         map(() => createSignin.success()),
@@ -122,13 +116,15 @@ const userUpdated: Epic<
   action$.pipe(
     mapAuthStateChangeToUser,
     filter(Boolean) as OperatorFunction<User | null, User>,
-    tap(user => {
-      LogRocket.identify(
-        user.uid,
-        Object.fromEntries(
-          Object.entries(user).map(([key, value]) => [key, value || '']),
-        ),
-      );
+    tap(({ uid, email, displayName }) => {
+      const userProperties: UserProperties = {
+        email,
+        displayName,
+      };
+
+      LogRocket.identify(uid, removeNils(userProperties));
+
+      analytics.setUserProperties(userProperties);
     }),
     map(createSetUser),
   );

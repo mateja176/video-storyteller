@@ -1,5 +1,5 @@
-import { User as FirebaseUser, UserInfo } from 'firebase/app';
-import { ExtendedLoadingStatus } from 'models';
+import { User as FirebaseUser } from 'firebase/app';
+import { ExtendedLoadingStatus, User } from 'models';
 import { combineReducers, Reducer } from 'redux';
 import {
   ActionType,
@@ -7,8 +7,6 @@ import {
   createAsyncAction,
   getType,
 } from 'typesafe-actions';
-
-export type User = Omit<UserInfo, 'providerId'>;
 
 export interface AuthState {
   user: User;

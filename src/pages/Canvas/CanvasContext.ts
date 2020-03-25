@@ -1,11 +1,10 @@
-import { StorageFile, WithId } from 'models';
+import { StoryData, WithId } from 'models';
 import { createContext } from 'react';
 import {
   CanvasState,
   createSetDurations,
   CreateSetDurations,
   initialCanvasState,
-  User,
 } from 'store';
 import { BlockState, draggable, Draggables } from 'utils';
 import { Action } from './store';
@@ -25,14 +24,6 @@ export type StoryMonitorState = {
 };
 export const initialStoryMonitorState: StoryMonitorState = {
   actions: [],
-};
-
-export type StoryData = {
-  name: string;
-  authorId: User['uid'];
-  audioId: StorageFile['name'];
-  audioSrc: StorageFile['downloadUrl'];
-  isPublic: boolean;
 };
 
 export type WithDurations = Pick<CanvasState, 'durations'>;

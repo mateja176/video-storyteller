@@ -1,8 +1,7 @@
 import { Location } from 'history';
 import mixpanel from 'mixpanel-browser';
-import { WithId } from 'models';
+import { StoryData, UserProperties, WithId } from 'models';
 import { Action } from 'redux';
-import { User } from 'store';
 import { PayloadAction } from 'typesafe-actions';
 import {
   DropImageAction,
@@ -16,6 +15,7 @@ const eventTypes = [
   'navigation',
   'selectStory',
   'error',
+  'createStory',
   'createBlock',
   'openTextBlockDrawer',
   'openImagesDrawer',
@@ -48,6 +48,10 @@ type IErrorEvent = PayloadAction<
   IEventType['error'],
   Pick<ErrorEvent, 'message'>
 >;
+type CreateStoryEvent = PayloadAction<
+  IEventType['createStory'],
+  Pick<StoryData, 'name'>
+>;
 type CreateBlockEvent = PayloadAction<
   IEventType['createBlock'],
   | Pick<DropTextAction, 'type'>
@@ -70,6 +74,7 @@ type AnalyticsEventWithPayload =
   | NavigationEvent
   | SelectStoryEvent
   | IErrorEvent
+  | CreateStoryEvent
   | CreateBlockEvent
   | ShareEvent
   | AddImagesEvent
@@ -106,7 +111,7 @@ export const analytics = {
     }
   },
 
-  addUserProperties: (props: Partial<Omit<User, 'id'>>) => {
+  setUserProperties: (props: UserProperties) => {
     mixpanel.people.set(props);
   },
 };

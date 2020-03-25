@@ -13,7 +13,6 @@ import {
   pipe,
 } from 'ramda';
 import { createSelectorCreator, defaultMemoize } from 'reselect';
-import { RequiredKeys } from 'utility-types';
 
 /**
  * @example
@@ -26,7 +25,9 @@ import { RequiredKeys } from 'utility-types';
  * };
  */
 type RemoveNils<A extends object> = {
-  [key in RequiredKeys<A>]: A[key] extends object ? RemoveNils<A[key]> : A[key];
+  [key in keyof A]: A[key] extends object
+    ? RemoveNils<A[key]>
+    : NonNullable<A[key]>;
 };
 
 export const removeNils: <A extends object>(a: A) => RemoveNils<A> = ifElse(
