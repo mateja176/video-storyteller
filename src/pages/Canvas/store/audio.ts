@@ -1,4 +1,4 @@
-import { StorageFile, WithDownloadUrl } from 'store/slices/storage';
+import { StorageFile, WithDownloadUrl } from 'models';
 import { createAction, getType } from 'typesafe-actions';
 import { createReducer } from 'utils';
 

@@ -1,4 +1,5 @@
 import 'firebase/storage';
+import { DownloadUrl, MetaData } from 'models';
 import { Epic, ofType } from 'redux-observable';
 import { defer, from, of } from 'rxjs';
 import { catchError, map, mergeMap, withLatestFrom } from 'rxjs/operators';
@@ -11,10 +12,8 @@ import {
   AddFileAction,
   createFetchFiles,
   createFile,
-  DownloadUrl,
   FetchFilesFailureAction,
   FetchFilesRequestAction,
-  MetaData,
 } from '../slices';
 
 const fetchFiles: Epic<

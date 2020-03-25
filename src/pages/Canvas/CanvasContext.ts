@@ -1,11 +1,10 @@
-import { WithId } from 'models';
+import { StorageFile, WithId } from 'models';
 import { createContext } from 'react';
 import {
   CanvasState,
   createSetDurations,
   CreateSetDurations,
   initialCanvasState,
-  StorageFile,
   User,
 } from 'store';
 import { BlockState, draggable, Draggables } from 'utils';

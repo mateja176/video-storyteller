@@ -1,8 +1,8 @@
 import { Typography } from '@material-ui/core';
 import { startCase } from 'lodash';
+import { StorageFile } from 'models';
 import React from 'react';
 import { Box, Flex } from 'rebass';
-import { StorageFile } from 'store';
 import { CreateSetAudio } from './store/audio';
 
 export type AudioElement = HTMLAudioElement | null;
