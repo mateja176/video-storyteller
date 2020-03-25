@@ -13,7 +13,6 @@ import {
 import { firebase } from 'services';
 import { selectCountValue } from 'store/selectors';
 import { getType } from 'typesafe-actions';
-import { ofType, selectState, takeUntilSignedOut } from 'utils';
 import { Action, State } from '../reducer';
 import { selectUid } from '../selectors';
 import {
@@ -24,6 +23,7 @@ import {
   setCountAsync,
   SetSnackbarAction,
 } from '../slices';
+import { ofType, selectState, takeUntilSignedOut } from './operators';
 
 const countsCollection = firebase.firestore().collection('counts');
 

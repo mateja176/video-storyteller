@@ -12,9 +12,7 @@ import {
   not,
   pipe,
 } from 'ramda';
-import { Selector } from 'react-redux';
 import { createSelectorCreator, defaultMemoize } from 'reselect';
-import { State } from 'store';
 import { RequiredKeys } from 'utility-types';
 
 /**
@@ -79,21 +77,4 @@ export const getPathFromComponent = <Component extends React.FC<any>>(
 ) => {
   const { name, displayName } = component;
   return (name || displayName!).toLowerCase();
-};
-
-export const mapStateToProps = <
-  Map extends Record<string, Selector<State, any>>
->(
-  m: Map,
-) => (state: State) => {
-  const entries = Object.entries(m).map(([prop, selector]) => [
-    prop,
-    selector(state),
-  ]);
-
-  const fromEntries: {
-    [prop in keyof Map]: ReturnType<Map[prop]>;
-  } = Object.fromEntries(entries);
-
-  return fromEntries;
 };

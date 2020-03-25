@@ -17,7 +17,6 @@ import {
 } from 'rxjs/operators';
 import { firebase } from 'services';
 import { ActionType, getType } from 'typesafe-actions';
-import { selectState, takeUntilSignedOut } from 'utils';
 import { Action, State } from '../reducer';
 import { selectFetchStoriesStatus, selectUid } from '../selectors';
 import {
@@ -46,6 +45,7 @@ import {
   SubscribeToStoriesRequest,
 } from '../slices/canvas';
 import { createSetErrorSnackbar, SetSnackbarAction } from '../slices/snackbar';
+import { selectState, takeUntilSignedOut } from './operators';
 
 type SADAction = SetOneAction | AddStoryAction | DeleteStoryAction;
 
