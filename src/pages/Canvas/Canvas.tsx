@@ -1013,7 +1013,7 @@ const Canvas: React.FC<CanvasProps> = ({
                             }}
                           >
                             <ListItemIcon style={listItemIconStyle}>
-                              <Cancel />
+                              <Cancel color="secondary" />
                             </ListItemIcon>
                             <ListItemText>Cancel</ListItemText>
                           </ListItem>
