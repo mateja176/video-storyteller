@@ -109,7 +109,7 @@ import {
   selectTheatricalMode,
   selectUid,
 } from 'store';
-import { dividingBorder } from 'styles';
+import { dividingBorder, referencePointStyle } from 'styles';
 import urlJoin from 'url-join';
 import {
   absoluteRootPaths,
@@ -683,6 +683,10 @@ const Canvas: React.FC<CanvasProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shouldPromptToSave]);
 
+  const isThereABlockInTheStory = storyMonitorState.actions.find(
+    ({ type }) => type === 'create',
+  );
+
   return (
     <Flex
       style={{
@@ -881,7 +885,6 @@ const Canvas: React.FC<CanvasProps> = ({
         flexDirection="column"
         style={{
           flexGrow: 1,
-          background: theme.palette.background.paper,
           position: 'relative',
         }}
       >
@@ -1318,7 +1321,10 @@ const Canvas: React.FC<CanvasProps> = ({
               setClientCoords({ clientX: clientX - x, clientY: clientY - y });
             }}
           >
-            <div ref={canvasRef}>
+            <div
+              ref={canvasRef}
+              style={isThereABlockInTheStory ? {} : referencePointStyle}
+            >
               {blockStates.map(blockState => {
                 const {
                   payload: { id, top, left, width, height },
