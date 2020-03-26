@@ -17,8 +17,7 @@ const eventTypes = [
   'error',
   'createStory',
   'createBlock',
-  'openTextBlockDrawer',
-  'openImagesDrawer',
+  'openBlockDrawer',
   'openAudioTracksDrawer',
   'toggleDeleteModeOn',
   'toggleOpenAudioUpload',
@@ -60,8 +59,10 @@ type CreateBlockEvent = PayloadAction<
 type ShareEvent = PayloadAction<IEventType['share'], WithMethod>;
 type AddImagesEvent = PayloadAction<IEventType['addImages'], { count: number }>;
 type UploadImagesEvent = PayloadAction<IEventType['uploadImages'], any>;
-type OpenTextBlockDrawerEvent = Action<IEventType['openTextBlockDrawer']>;
-type OpenImagesDrawerEvent = Action<IEventType['openImagesDrawer']>;
+type OpenBlockDrawerEvent = PayloadAction<
+  IEventType['openBlockDrawer'],
+  Pick<DropTextAction | DropImageAction, 'type'>
+>;
 type OpenAudioTracksDrawerEvent = Action<IEventType['openAudioTracksDrawer']>;
 type ToggleDeleteModeOnEvent = Action<IEventType['toggleDeleteModeOn']>;
 type ToggleOpenAudioUploadEvent = Action<IEventType['toggleOpenAudioUpload']>;
@@ -81,8 +82,7 @@ type AnalyticsEventWithPayload =
   | UploadImagesEvent;
 
 type AnalyticsEventWithoutPayload =
-  | OpenTextBlockDrawerEvent
-  | OpenImagesDrawerEvent
+  | OpenBlockDrawerEvent
   | OpenAudioTracksDrawerEvent
   | ToggleDeleteModeOnEvent
   | ToggleOpenAudioUploadEvent

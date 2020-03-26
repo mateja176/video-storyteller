@@ -711,7 +711,10 @@ const Canvas: React.FC<CanvasProps> = ({
                   } else {
                     setRightDrawerOccupant('text blocks');
 
-                    analytics.logEvent({ type: 'openTextBlockDrawer' });
+                    analytics.logEvent({
+                      type: 'openBlockDrawer',
+                      payload: { type: 'text' },
+                    });
                   }
                 }}
               >
@@ -736,7 +739,10 @@ const Canvas: React.FC<CanvasProps> = ({
                   } else {
                     setRightDrawerOccupant('images');
 
-                    analytics.logEvent({ type: 'openImagesDrawer' });
+                    analytics.logEvent({
+                      type: 'openBlockDrawer',
+                      payload: { type: 'image' },
+                    });
                   }
                 }}
               >
