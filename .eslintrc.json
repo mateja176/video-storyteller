@@ -1,8 +1,13 @@
 {
   "extends": ["react-app", "airbnb"],
   "plugins": ["immutable", "prefer-arrow", "prettier", "html", "cypress"],
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
   "rules": {
     "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars-experimental": "warn",
     "no-nested-ternary": "off",
     "arrow-parens": "off",
     "object-curly-newline": "off",
