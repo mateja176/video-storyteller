@@ -109,7 +109,7 @@ import {
   selectTheatricalMode,
   selectUid,
 } from 'store';
-import { dividingBorder, referencePointStyle } from 'styles';
+import { dividingBorder, getReferencePointStyle } from 'styles';
 import urlJoin from 'url-join';
 import {
   absoluteRootPaths,
@@ -1323,7 +1323,11 @@ const Canvas: React.FC<CanvasProps> = ({
           >
             <div
               ref={canvasRef}
-              style={isThereABlockInTheStory ? {} : referencePointStyle}
+              style={
+                isThereABlockInTheStory
+                  ? {}
+                  : getReferencePointStyle(theme.palette.primary.main)
+              }
             >
               {blockStates.map(blockState => {
                 const {
