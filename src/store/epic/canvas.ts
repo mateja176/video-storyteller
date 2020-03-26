@@ -13,9 +13,10 @@ import {
   map,
   mergeMap,
   switchMap,
+  tap,
   withLatestFrom,
 } from 'rxjs/operators';
-import { firebase } from 'services';
+import { analytics, firebase } from 'services';
 import { ActionType, getType } from 'typesafe-actions';
 import { Action, State } from '../reducer';
 import { selectFetchStoriesStatus, selectUid } from '../selectors';
@@ -73,6 +74,14 @@ const createSetStory = <
         storiesCollection.doc(storyState.id).set(storyState, setOptions),
       ).pipe(
         map(() => asyncActionCreator.success()),
+        tap(() => {
+          if (storyState.name) {
+            analytics.logEvent({
+              type: 'createStory',
+              payload: { name: storyState.name },
+            });
+          }
+        }),
         catchError((error: Error) =>
           from([
             asyncActionCreator.failure(),
