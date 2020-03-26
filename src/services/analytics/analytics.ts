@@ -1,6 +1,6 @@
 import { Location } from 'history';
 import mixpanel from 'mixpanel-browser';
-import { StoryData, UserProperties, WithId } from 'models';
+import { StoryEventData, UserProperties, WithId } from 'models';
 import { Action } from 'redux';
 import { PayloadAction } from 'typesafe-actions';
 import {
@@ -16,6 +16,7 @@ const eventTypes = [
   'selectStory',
   'error',
   'createStory',
+  'saveStory',
   'createBlock',
   'openBlockDrawer',
   'openAudioTracksDrawer',
@@ -49,8 +50,9 @@ type IErrorEvent = PayloadAction<
 >;
 type CreateStoryEvent = PayloadAction<
   IEventType['createStory'],
-  Pick<StoryData, 'name'>
+  StoryEventData
 >;
+type SaveStoryEvent = PayloadAction<IEventType['saveStory'], WithId>;
 type CreateBlockEvent = PayloadAction<
   IEventType['createBlock'],
   | Pick<DropTextAction, 'type'>
@@ -76,6 +78,7 @@ type AnalyticsEventWithPayload =
   | SelectStoryEvent
   | IErrorEvent
   | CreateStoryEvent
+  | SaveStoryEvent
   | CreateBlockEvent
   | ShareEvent
   | AddImagesEvent

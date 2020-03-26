@@ -78,7 +78,12 @@ const createSetStory = <
           if (storyState.name) {
             analytics.logEvent({
               type: 'createStory',
-              payload: { name: storyState.name },
+              payload: { id: storyState.id, name: storyState.name },
+            });
+          } else {
+            analytics.logEvent({
+              type: 'saveStory',
+              payload: { id: storyState.id },
             });
           }
         }),
