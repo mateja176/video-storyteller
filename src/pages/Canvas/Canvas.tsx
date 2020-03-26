@@ -1063,34 +1063,38 @@ const Canvas: React.FC<CanvasProps> = ({
                             height: '100%',
                           }}
                         >
-                          <OptionWithPopover
-                            initiallyOpen={!currentStory}
-                            disabled={false}
-                            Icon={NoteAdd}
-                            initialValue=""
-                            text="New story"
-                            submitText="Create"
-                            placeholder="New story"
-                            onSubmit={value => {
-                              const newStoryId = v4();
+                          {!storyLoading && (
+                            <OptionWithPopover
+                              initiallyOpen={!currentStory}
+                              disabled={false}
+                              Icon={NoteAdd}
+                              initialValue=""
+                              text="New story"
+                              submitText="Create"
+                              placeholder="New story"
+                              onSubmit={value => {
+                                const newStoryId = v4();
 
-                              const newStory: StoryWithId = {
-                                id: newStoryId,
-                                name: value,
-                                actions: [],
-                                durations: [],
-                                isPublic: false,
-                                authorId: uid,
-                                audioId: '',
-                                audioSrc: '',
-                              };
+                                const newStory: StoryWithId = {
+                                  id: newStoryId,
+                                  name: value,
+                                  actions: [],
+                                  durations: [],
+                                  isPublic: false,
+                                  authorId: uid,
+                                  audioId: '',
+                                  audioSrc: '',
+                                };
 
-                              addStory(newStory);
-                              setCurrentStoryId({ currentStoryId: newStoryId });
+                                addStory(newStory);
+                                setCurrentStoryId({
+                                  currentStoryId: newStoryId,
+                                });
 
-                              saveStory(newStory);
-                            }}
-                          />
+                                saveStory(newStory);
+                              }}
+                            />
+                          )}
                           {currentStory && (
                             <OptionWithPopover
                               disabled={storyLoading}
