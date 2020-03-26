@@ -17,6 +17,8 @@ export type Module = NodeModule & {
 
 export type Maybe<A> = null | A;
 
+export type GetStyle = (theme: Theme) => React.CSSProperties;
+
 export interface WithColors {
   colors: {
     success: { light: CSSProperties['color']; dark: CSSProperties['color'] };
