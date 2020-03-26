@@ -1482,26 +1482,48 @@ const Canvas: React.FC<CanvasProps> = ({
             open={rightDrawerOccupant === 'text blocks'}
             height={rightDrawerHeight}
           >
-            <Box px={2}>
-              <Box pt={2} pb={2}>
-                <TextBlock
-                  editorState={
-                    focusedEditorId === draggable.text
-                      ? focusedEditorState
-                      : initialEditorState
-                  }
-                  setEditorState={setFocusedEditorState}
-                  onFocus={() => {
-                    setFocusedEditorId(draggable.text);
+            <Flex p={2} flexDirection="column" height="100%">
+              <Box style={{ display: 'inline-block' }}>
+                <Tooltip
+                  placement="top"
+                  title="You can drag the block by grabbing the area around the text or you can edit the text by clicking directly on it"
+                >
+                  <TextBlock
+                    editorState={
+                      focusedEditorId === draggable.text
+                        ? focusedEditorState
+                        : initialEditorState
+                    }
+                    setEditorState={setFocusedEditorState}
+                    onFocus={() => {
+                      setFocusedEditorId(draggable.text);
 
-                    setFocusedEditorState(initialEditorState);
-                  }}
-                  onDragEnd={() => {
-                    setFocusedEditorId('');
-                  }}
-                />
+                      setFocusedEditorState(initialEditorState);
+                    }}
+                    onDragEnd={() => {
+                      setFocusedEditorId('');
+                    }}
+                  />
+                </Tooltip>
               </Box>
-            </Box>
+              {/* <Box alignSelf="center" mt="auto">
+                <FormControlLabel
+                  label="Enable editing in sidebar"
+                  labelPlacement="end"
+                  control={
+                    <Switch
+                      defaultChecked
+                      onChange={({ target: { checked } }) => {
+                        updateStory({
+                          id: currentStory ? currentStory.id : '',
+                          isPublic: checked,
+                        });
+                      }}
+                    />
+                  }
+                />
+              </Box> */}
+            </Flex>
           </RightDrawer>
           <RightDrawer
             open={rightDrawerOccupant === 'images'}
