@@ -553,17 +553,27 @@ const StoryMonitor = ({
             </ListItemIcon>
           </ListItem>
         ) : (
-          <ListItem
-            button
-            disabled={!canPlay}
-            onClick={() => {
-              setIsPlaying(true);
-            }}
+          <Tooltip
+            placement="top"
+            title={
+              !canPlay
+                ? // * TODO add link to docs
+                  'There has to be at least one active action following the current'
+                : ''
+            }
           >
-            <ListItemIcon>
-              <PlayArrow />
-            </ListItemIcon>
-          </ListItem>
+            <ListItem
+              button
+              disabled={!canPlay}
+              onClick={() => {
+                setIsPlaying(true);
+              }}
+            >
+              <ListItemIcon>
+                <PlayArrow />
+              </ListItemIcon>
+            </ListItem>
+          </Tooltip>
         )}
         <ListItem
           button
