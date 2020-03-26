@@ -700,7 +700,7 @@ const StoryMonitor = ({
           cols={editableActions.length}
           maxRows={1}
           compactType="horizontal"
-          onDragStop={(layout, oldItem, newItem) => {
+          onDragStop={(_layout, _oldItem, newItem) => {
             const beforeAction = nth(newItem.x, editableActions);
             const droppedActionId = Number(newItem.i);
             const droppedAction = actionsById[droppedActionId];
@@ -978,10 +978,7 @@ const StoryMonitor = ({
                         duration: newDuration,
                         left,
                         top,
-                        editorState,
                         name,
-                        height,
-                        width,
                         scale,
                         clientX,
                         clientY,

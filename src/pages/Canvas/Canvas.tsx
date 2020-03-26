@@ -202,7 +202,7 @@ const RightDrawer: React.FC<Pick<React.CSSProperties, 'height' | 'width'> & {
   </Paper>
 );
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
   drawer: {
     width: miniDrawerWidth,
   },
@@ -1380,7 +1380,7 @@ const Canvas: React.FC<CanvasProps> = ({
                       }
                     }}
                     onResizeStart={pause}
-                    onResizeStop={(e, dir, elementRef, delta) => {
+                    onResizeStop={(_e, _dir, _elementRef, delta) => {
                       resume();
 
                       updateResize({
