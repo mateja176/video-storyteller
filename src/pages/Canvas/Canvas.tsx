@@ -548,18 +548,38 @@ const Canvas: React.FC<CanvasProps> = ({
 
   const [isFullscreen, setIsFullScreen] = React.useState(false);
 
+  const [storyMonitorState, setStoryMonitorState] = React.useState(
+    initialStoryMonitorState,
+  );
+
+  const isThereABlockInTheStory =
+    (currentStory &&
+      currentStory.actions.find(({ type }) => type === 'create')) ||
+    storyMonitorState.actions.find(({ type }) => type === 'create');
+
+  const storyLoading = [
+    fetchStoryStatus,
+    fetchStoriesStatus,
+    saveStoryStatus,
+  ].some(equals<ExtendedLoadingStatus>('in progress'));
+
   const [rightDrawerOccupant, setRightDrawerOccupant] = React.useState<
-    'none' | 'images' | 'text blocks' | 'audio'
-  >('none');
+    'initial' | 'none' | 'images' | 'text blocks' | 'audio'
+  >('initial');
   const rightDrawerHeight = `calc(100vh - ${2 + // * 2px less presumably because of the paper's shadow
     (theatricalMode ? 0 : headerAndControlsHeight) +
     (actionsTimelineOpen ? actionsTimelineHeight : 0)}px)`;
 
   React.useEffect(() => {
-    if (!isAuthor) {
-      setRightDrawerOccupant('none');
+    if (
+      !storyLoading &&
+      isAuthor &&
+      !isThereABlockInTheStory &&
+      rightDrawerOccupant === 'initial'
+    ) {
+      setRightDrawerOccupant('text blocks');
     }
-  }, [isAuthor]);
+  }, [rightDrawerOccupant, storyLoading, isAuthor, isThereABlockInTheStory]);
 
   const [audioElement, setAudioElement] = React.useState<AudioElement>(null);
 
@@ -586,10 +606,6 @@ const Canvas: React.FC<CanvasProps> = ({
   }, [totalElapsedTime, audioElement]);
 
   const audioSrc = useSelector(selectAudioSrc);
-
-  const [storyMonitorState, setStoryMonitorState] = React.useState(
-    initialStoryMonitorState,
-  );
 
   const { deleteAll } = React.useContext(Context);
 
@@ -649,12 +665,6 @@ const Canvas: React.FC<CanvasProps> = ({
     setLinkInputValue(window.location.href);
   }, []);
 
-  const storyLoading = [
-    fetchStoryStatus,
-    fetchStoriesStatus,
-    saveStoryStatus,
-  ].some(equals<ExtendedLoadingStatus>('in progress'));
-
   const canShare = !!currentStory && currentStory.isPublic;
 
   const [shareOptionsOpen, setShareOptionsOpen] = React.useState(false);
@@ -682,10 +692,6 @@ const Canvas: React.FC<CanvasProps> = ({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shouldPromptToSave]);
-
-  const isThereABlockInTheStory = storyMonitorState.actions.find(
-    ({ type }) => type === 'create',
-  );
 
   return (
     <Flex
