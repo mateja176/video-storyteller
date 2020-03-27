@@ -35,3 +35,8 @@ export const selectStoriesCount = createSelector(
   selectCanvas,
   ({ storiesCount }) => storiesCount,
 );
+
+export const selectAreThereNoStories = createSelector(
+  selectStoriesCount,
+  count => count === 0,
+);

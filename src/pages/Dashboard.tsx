@@ -19,10 +19,10 @@ import { Box, Flex } from 'rebass';
 import { analytics } from 'services';
 import {
   createSetCurrentStoryId,
+  selectAreThereNoStories,
   selectCurrentStoryId,
   selectFetchStoriesStatus,
   selectStories,
-  selectStoriesCount,
   selectUid,
   subscribeToStories,
 } from 'store';
@@ -41,8 +41,7 @@ const Dashboard: React.FC<DashboardProps> = ({ history }) => {
 
   const stories = useSelector(selectStories);
 
-  const storiesCount = useSelector(selectStoriesCount);
-  const areThereNoStories = storiesCount === 0;
+  const areThereNoStories = useSelector(selectAreThereNoStories);
 
   React.useEffect(() => {
     if (fetchStoriesStatus === 'not started') {
@@ -51,7 +50,7 @@ const Dashboard: React.FC<DashboardProps> = ({ history }) => {
   }, [requestSubscribeToStories, fetchStoriesStatus, stories.length]);
 
   React.useEffect(() => {
-    if (fetchStoriesStatus === 'in progress' && areThereNoStories) {
+    if (areThereNoStories) {
       history.push(absoluteRootPaths.canvas);
     }
   }, [fetchStoriesStatus, areThereNoStories, history]);

@@ -260,5 +260,6 @@ export const canvas = createReducer(initialCanvasState)<CanvasAction>({
   'canvas/stories/count': (state, { payload }) => ({
     ...state,
     storiesCount: payload,
+    fetchStoriesStatus: payload === 0 ? 'completed' : state.fetchStoriesStatus,
   }),
 });
