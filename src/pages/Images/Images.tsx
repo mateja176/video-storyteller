@@ -1,4 +1,5 @@
 import { Link } from 'components';
+import { storageImageWidth } from 'models';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Box } from 'rebass';
@@ -6,8 +7,6 @@ import { createFetchFiles, selectStorageImages } from 'store';
 import urlJoin from 'url-join';
 import { absoluteRootPaths, secondaryPaths, useActions } from 'utils';
 import ImageBlock from './ImageBlock';
-
-export const storageImageWidth = 300;
 
 const spacing = 10;
 

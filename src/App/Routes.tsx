@@ -55,8 +55,9 @@ const Routes: FC<RoutesProps> = ({ isSignedIn }) => {
                   <PageRoute
                     key={path}
                     path={path}
-                    // @ts-ignore
-                    component={pages[textRootPathnames[i]]}
+                    component={
+                      pages[textRootPathnames[i] as keyof typeof pages]
+                    }
                   />
                 ))}
               </Switch>

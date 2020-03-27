@@ -1,5 +1,6 @@
 import { User } from './auth';
 import { StorageFile } from './storage';
+import { WithId } from './models';
 
 export type StoryData = {
   name: string;
@@ -8,3 +9,7 @@ export type StoryData = {
   audioSrc: StorageFile['downloadUrl'];
   isPublic: boolean;
 };
+
+export interface WithStoryId {
+  storyId: WithId['id'];
+}

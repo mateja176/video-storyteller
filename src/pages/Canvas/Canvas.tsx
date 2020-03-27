@@ -63,8 +63,7 @@ import {
 } from 'draft-js';
 import 'firebase/analytics';
 import { debounce } from 'lodash';
-import { ExtendedLoadingStatus } from 'models';
-import { storageImageWidth } from 'pages';
+import { ExtendedLoadingStatus, storageImageWidth, WithStoryId } from 'models';
 import { Images } from 'pages/Images';
 import panzoom, { PanZoom } from 'panzoom';
 import { equals, pickAll } from 'ramda';
@@ -212,7 +211,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export interface CanvasProps extends RouteComponentProps<{ storyId: string }> {}
+export interface CanvasProps extends RouteComponentProps<WithStoryId> {}
 
 const Canvas: React.FC<CanvasProps> = ({
   match: {
