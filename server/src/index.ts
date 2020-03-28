@@ -1,3 +1,4 @@
+import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 import request from 'request';
@@ -5,6 +6,12 @@ import request from 'request';
 dotenv.config();
 
 const app = express();
+
+app.use(
+  cors({
+    origin: ['http://localhost:3000', 'https://video-storyteller-dev.web.app'],
+  }),
+);
 
 app.get('/token', (req, res) => {
   request.post(

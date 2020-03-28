@@ -13,11 +13,13 @@
   "author": "Mateja Petrovic <mateja176@gmail.com> (https://github.com/mateja176)",
   "license": "MIT",
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "request": "^2.88.2"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.6",
     "@types/express": "^4.17.3",
     "@types/node": "^13.9.5",
     "@types/request": "^2.48.4",
