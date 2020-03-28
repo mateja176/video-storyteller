@@ -1,8 +1,5 @@
-import * as dotenv from 'dotenv';
 import * as functions from 'firebase-functions';
 import * as request from 'request';
-
-dotenv.config();
 
 // Start writing Firebase Functions
 // https://firebase.google.com/docs/functions/typescript
@@ -13,8 +10,8 @@ export const iconfinderToken = functions.https.onRequest((req, res) => {
     {
       form: {
         grant_type: 'jwt_bearer',
-        client_id: process.env.ICONFINDER_CLIENT_ID,
-        client_secret: process.env.ICONFINDER_CLIENT_SECRET,
+        client_id: functions.config().iconfinder.client_id,
+        client_secret: functions.config().iconfinder.client_secret,
       },
     },
     (error, response, body) => {
