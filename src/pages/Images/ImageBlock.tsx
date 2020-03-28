@@ -1,5 +1,3 @@
-import { Typography } from '@material-ui/core';
-import { startCase } from 'lodash';
 import React from 'react';
 import { useDrag } from 'react-dnd';
 import { Box, Flex } from 'rebass';
@@ -31,11 +29,9 @@ const ImageBlock: React.FC<ImageBlockProps> = ({
 
   return (
     <Flex mb={mb} alignItems="center" flexDirection="column">
-      <Box mb={1}>
-        <Typography variant="h6">{startCase(name.split('.')[0])}</Typography>
-      </Box>
-      {/* eslint-disable-next-line jsx-a11y/alt-text */}
       <img
+        title={name}
+        alt={name}
         ref={dragRef}
         style={{ border: dividingBorder, cursor: 'grab' }}
         src={downloadUrl}
