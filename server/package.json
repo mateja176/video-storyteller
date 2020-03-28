@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "lint": "tslint --project tsconfig.json",
+    "prebuild": "npm run lint",
     "build": "tsc",
     "start": "node lib/index.js"
   },
@@ -13,11 +15,12 @@
   "dependencies": {
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "request": "^2.88.2",
-    "typescript": "^3.8.3"
+    "request": "^2.88.2"
   },
   "devDependencies": {
     "@types/express": "^4.17.3",
-    "@types/node": "^13.9.5"
+    "@types/node": "^13.9.5",
+    "tslint": "^6.1.0",
+    "typescript": "^3.8.3"
   }
 }
