@@ -29,19 +29,18 @@ const Images: React.FC<ImagesProps> = ({ onMouseEnter, onMouseLeave }) => {
 
   return (
     <Box p={spacing} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-      {images.length ? (
-        images.map(({ name, customMetadata, downloadUrl }) => (
-          <ImageBlock
-            key={name}
-            mb={spacing}
-            downloadUrl={downloadUrl}
-            name={customMetadata.name}
-            height={customMetadata.height}
-            width={customMetadata.width}
-            thumbnailWidth={storageImageWidth - 2 * spacing}
-          />
-        ))
-      ) : (
+      {images.map(({ name, customMetadata, downloadUrl }) => (
+        <ImageBlock
+          key={name}
+          mb={spacing}
+          downloadUrl={downloadUrl}
+          name={customMetadata.name}
+          height={customMetadata.height}
+          width={customMetadata.width}
+          thumbnailWidth={storageImageWidth - 2 * spacing}
+        />
+      ))}
+      {!images.length && (
         <Link
           to={urlJoin(absoluteRootPaths.images, secondaryPaths.upload)}
           style={{ fontStyle: 'italic' }}
