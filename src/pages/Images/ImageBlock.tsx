@@ -30,7 +30,7 @@ const ImageBlock: React.FC<ImageBlockProps> = ({
   return (
     <Flex mb={mb} alignItems="center" flexDirection="column">
       <img
-        title={name}
+        title={`${name} ${width}x${height}`}
         alt={name}
         ref={dragRef}
         style={{ border: dividingBorder, cursor: 'grab' }}
