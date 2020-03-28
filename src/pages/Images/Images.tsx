@@ -40,7 +40,7 @@ const Images: React.FC<ImagesProps> = ({ onMouseEnter, onMouseLeave }) => {
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      <ExpansionPanel>
+      <ExpansionPanel defaultExpanded>
         <ExpansionPanelSummary expandIcon={<ExpandMore />}>
           Uploaded images
         </ExpansionPanelSummary>
