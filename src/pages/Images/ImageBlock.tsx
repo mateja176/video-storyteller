@@ -1,7 +1,6 @@
 import React from 'react';
 import { useDrag } from 'react-dnd';
 import { Box, Flex } from 'rebass';
-import { dividingBorder } from 'styles';
 import { createDropImage, DropImagePayload } from 'utils';
 
 export interface ImageBlockProps
@@ -33,7 +32,7 @@ const ImageBlock: React.FC<ImageBlockProps> = ({
         title={`${name} ${width}x${height}`}
         alt={name}
         ref={dragRef}
-        style={{ border: dividingBorder, cursor: 'grab' }}
+        style={{ cursor: 'grab' }}
         src={downloadUrl}
         width={thumbnailWidth}
       />

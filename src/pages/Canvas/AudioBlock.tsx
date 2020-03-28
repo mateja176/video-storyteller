@@ -39,6 +39,7 @@ const AudioBlock: React.FC<AudioBlockProps> = ({
     <Box
       mb={2}
       pb={2}
+      title="Choose audio track"
       onClick={() => {
         if (!isActive) {
           setAudioElement(audioRef.current);

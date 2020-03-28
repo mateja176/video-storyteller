@@ -29,7 +29,7 @@ const Audio: React.FC<AudioProps> = ({ setAudioElement, openAudioUpload }) => {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <Box p={3}>
+    <Box py={3}>
       {audio.length ? (
         audio.map(({ name: id, downloadUrl, customMetadata: { name } }) => (
           <AudioBlock

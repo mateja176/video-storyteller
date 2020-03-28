@@ -1,9 +1,15 @@
+import {
+  ExpansionPanel,
+  ExpansionPanelDetails,
+  ExpansionPanelSummary,
+} from '@material-ui/core';
+import { ExpandMore } from '@material-ui/icons';
 import { Link } from 'components';
-import { storageImageWidth } from 'models';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Box } from 'rebass';
 import { createFetchFiles, selectStorageImages } from 'store';
+import { storageImageWidthMinusScroll } from 'styles';
 import urlJoin from 'url-join';
 import { absoluteRootPaths, secondaryPaths, useActions } from 'utils';
 import ImageBlock from './ImageBlock';
@@ -28,18 +34,30 @@ const Images: React.FC<ImagesProps> = ({ onMouseEnter, onMouseLeave }) => {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <Box p={spacing} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-      {images.map(({ name, customMetadata, downloadUrl }) => (
-        <ImageBlock
-          key={name}
-          mb={spacing}
-          downloadUrl={downloadUrl}
-          name={customMetadata.name}
-          height={customMetadata.height}
-          width={customMetadata.width}
-          thumbnailWidth={storageImageWidth - 2 * spacing}
-        />
-      ))}
+    <Box
+      width={storageImageWidthMinusScroll}
+      style={{ position: 'absolute' }}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
+      <ExpansionPanel>
+        <ExpansionPanelSummary expandIcon={<ExpandMore />}>
+          Uploaded images
+        </ExpansionPanelSummary>
+        <ExpansionPanelDetails style={{ padding: 0, display: 'block' }}>
+          {images.map(({ name, customMetadata, downloadUrl }) => (
+            <ImageBlock
+              key={name}
+              mb={spacing}
+              downloadUrl={downloadUrl}
+              name={customMetadata.name}
+              height={customMetadata.height}
+              width={customMetadata.width}
+              thumbnailWidth={storageImageWidthMinusScroll}
+            />
+          ))}
+        </ExpansionPanelDetails>
+      </ExpansionPanel>
       {!images.length && (
         <Link
           to={urlJoin(absoluteRootPaths.images, secondaryPaths.upload)}

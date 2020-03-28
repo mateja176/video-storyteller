@@ -63,7 +63,7 @@ import {
 } from 'draft-js';
 import 'firebase/analytics';
 import { debounce } from 'lodash';
-import { ExtendedLoadingStatus, storageImageWidth, WithStoryId } from 'models';
+import { ExtendedLoadingStatus, WithStoryId } from 'models';
 import { Images } from 'pages/Images';
 import panzoom, { PanZoom } from 'panzoom';
 import { equals, pickAll } from 'ramda';
@@ -108,7 +108,11 @@ import {
   selectTheatricalMode,
   selectUid,
 } from 'store';
-import { dividingBorder, getReferencePointStyle } from 'styles';
+import {
+  dividingBorder,
+  getReferencePointStyle,
+  storageImageWidth,
+} from 'styles';
 import urlJoin from 'url-join';
 import {
   absoluteRootPaths,
@@ -1553,7 +1557,6 @@ const Canvas: React.FC<CanvasProps> = ({
           <RightDrawer
             open={rightDrawerOccupant === 'audio'}
             height={rightDrawerHeight}
-            width={storageImageWidth + 32}
           >
             <Audio
               setAudioElement={setAudioElement}

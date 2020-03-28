@@ -8,3 +8,5 @@ export const createToolbarStyles = (theme: EnhancedTheme) => ({
 });
 
 export const dividingBorder = '1px solid #ddd';
+
+export const scrollTrackWidth = 10;

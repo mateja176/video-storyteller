@@ -31,5 +31,3 @@ export interface WithDownloadUrl {
 export type StorageFile = MetaData & WithDownloadUrl;
 
 export type StorageFiles = Array<StorageFile>;
-
-export const storageImageWidth = 300;
