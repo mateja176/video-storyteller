@@ -27,7 +27,7 @@ const ImageBlock: React.FC<ImageBlockProps> = ({
   });
 
   return (
-    <Flex mb={mb} alignItems="center" flexDirection="column">
+    <Flex mb={mb} flexDirection="column">
       <img
         title={`${name} ${width}x${height}`}
         alt={name}
