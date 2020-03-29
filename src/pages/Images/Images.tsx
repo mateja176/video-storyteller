@@ -11,9 +11,15 @@ import { ExpandMore, Image as ImageIcon } from '@material-ui/icons';
 import { Link } from 'components';
 import { debounce, startCase } from 'lodash';
 import { Icon, IconfinderResponse } from 'models';
-import { init, last } from 'ramda';
+import { init, last, nth, range } from 'ramda';
 import React from 'react';
 import { useSelector } from 'react-redux';
+import {
+  AutoSizer,
+  InfiniteLoader,
+  InfiniteLoaderProps,
+  List,
+} from 'react-virtualized';
 import { Box, Flex } from 'rebass';
 import { createFetchFiles, selectStorageImages } from 'store';
 import { storageImageWidth, storageImageWidthMinusScroll } from 'styles';
@@ -21,19 +27,27 @@ import urlJoin from 'url-join';
 import { absoluteRootPaths, secondaryPaths, useActions } from 'utils';
 import ImageBlock from './ImageBlock';
 
+type Item = Icon | 'loading';
+
 const spacing = 10;
+
+const limit = 10;
+
+const initialTotal = limit * 10; // * arbitrarily high number
 
 const findIcons = ({
   query,
+  offset,
   token,
   cb,
 }: {
+  offset: number;
   query: string;
   token: string;
   cb: (res: IconfinderResponse) => void;
 }) =>
   fetch(
-    `https://api.iconfinder.com/v3/icons/search?premium=false&license=commercial&vector=1&query=${query}`,
+    `https://api.iconfinder.com/v3/icons/search?premium=false&license=commercial&size_minimum=256&query=${query}&$limit=${limit}&offset=${offset}`,
     {
       headers: { authorization: `jwt ${token}` },
     },
@@ -42,6 +56,41 @@ const findIcons = ({
     .then(cb);
 
 const debouncedFindIcons = debounce(findIcons, 500);
+
+const RenderItem: React.FC<Icon> = ({
+  icon_id,
+  vector_sizes,
+  raster_sizes,
+  tags,
+}) => {
+  const {
+    formats: [{ preview_url }],
+  } = last(raster_sizes)!;
+
+  const name = startCase(
+    init(last(preview_url.split('/'))!.split('.'))
+      .join('.')
+      .replace(/\d+/g, '')
+      .replace(/_/g, ' ')
+      .replace(/-/g, ' ')
+      .trim() || tags.join(' '),
+  );
+
+  const [size] = vector_sizes || raster_sizes;
+
+  return (
+    <ImageBlock
+      key={icon_id}
+      width={size.size_width}
+      height={size.size_height}
+      thumbnailWidth={storageImageWidthMinusScroll}
+      name={name}
+      downloadUrl={preview_url}
+    />
+  );
+};
+
+const Empty = () => <Box>No results</Box>;
 
 export interface ImagesProps
   extends Pick<
@@ -61,9 +110,11 @@ const Images: React.FC<ImagesProps> = ({ onMouseEnter, onMouseLeave }) => {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [token, setToken] = React.useState('');
-  const [query, setQuery] = React.useState('');
-  const [images, setImages] = React.useState<Icon[]>([]);
-  const [loading, setLoading] = React.useState(false);
+  const [query, setQuery] = React.useState('dog');
+  const [items, setItems] = React.useState<Item[]>([]);
+  const [total, setTotal] = React.useState(initialTotal);
+
+  const loading = items.some(item => item === 'loading');
 
   React.useEffect(() => {
     fetch('https://video-storyteller-dev.herokuapp.com/token')
@@ -74,24 +125,42 @@ const Images: React.FC<ImagesProps> = ({ onMouseEnter, onMouseLeave }) => {
       });
   }, []);
 
-  React.useEffect(() => {
-    if (query) {
-      setLoading(true);
+  const loadMoreRows = React.useCallback<InfiniteLoaderProps['loadMoreRows']>(
+    ({ startIndex, stopIndex }) => {
+      const increment = stopIndex - startIndex + 1;
 
-      debouncedFindIcons({
+      setItems(currentImages => {
+        const newItems = currentImages.concat(
+          range(0, increment).map(() => 'loading'),
+        );
+
+        return newItems;
+      });
+
+      return findIcons({
         token,
         query,
-        cb: ({ icons }) => {
-          setImages(icons);
+        offset: startIndex,
+        cb: ({ icons, total_count }) => {
+          setTotal(total_count);
 
-          setLoading(false);
+          setItems(currentImages => {
+            const newItems = currentImages.slice();
+
+            newItems.splice(startIndex, limit, ...icons);
+
+            return newItems;
+          });
         },
       });
-    }
-  }, [token, query]);
+    },
+    [token, query],
+  );
 
   return (
-    <Box
+    <Flex
+      flexDirection="column"
+      height="100%"
       width={storageImageWidth}
       style={{ position: 'absolute' }}
       onMouseEnter={onMouseEnter}
@@ -144,30 +213,47 @@ const Images: React.FC<ImagesProps> = ({ onMouseEnter, onMouseLeave }) => {
           marginTop: spacing * 2,
         }}
       />
-      {images.map(({ icon_id, vector_sizes: [size], raster_sizes, tags }) => {
-        const {
-          formats: [{ preview_url }],
-        } = last(raster_sizes)!;
+      <Box flex={1}>
+        {token && (
+          <InfiniteLoader
+            loadMoreRows={loadMoreRows}
+            isRowLoaded={({ index }) => !!nth(index)(items)}
+            rowCount={total}
+            threshold={1}
+          >
+            {({ onRowsRendered, registerChild }) => (
+              <AutoSizer>
+                {({ height, width }) => (
+                  <List
+                    onRowsRendered={onRowsRendered}
+                    registerChild={registerChild}
+                    height={height}
+                    width={width}
+                    rowRenderer={({ key, index, style }) => {
+                      const item = nth(index)(items);
 
-        return (
-          <ImageBlock
-            key={icon_id}
-            width={size.size_width}
-            height={size.size_height}
-            thumbnailWidth={storageImageWidthMinusScroll}
-            name={startCase(
-              init(last(preview_url.split('/'))!.split('.'))
-                .join('.')
-                .replace(/\d+/g, '')
-                .replace(/_/g, ' ')
-                .replace(/-/g, ' ')
-                .trim() || tags.join(' '),
+                      return !item || item === 'loading' ? (
+                        <Box
+                          key={key}
+                          style={{ background: '#eee', ...style }}
+                        />
+                      ) : (
+                        <Box key={key} style={style}>
+                          <RenderItem {...item} />
+                        </Box>
+                      );
+                    }}
+                    rowHeight={storageImageWidth}
+                    rowCount={total}
+                    noRowsRenderer={Empty}
+                  />
+                )}
+              </AutoSizer>
             )}
-            downloadUrl={preview_url}
-          />
-        );
-      })}
-    </Box>
+          </InfiniteLoader>
+        )}
+      </Box>
+    </Flex>
   );
 };
 

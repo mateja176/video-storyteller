@@ -60,7 +60,7 @@ export interface Icon {
   containers: Container[];
   is_premium: boolean;
   raster_sizes: RasterSize[];
-  vector_sizes: VectorSize[];
+  vector_sizes?: VectorSize[]; // * required prop when vector=1
   published_at: Date;
   styles: Style[];
   icon_id: number;
