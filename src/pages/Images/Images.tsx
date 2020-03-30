@@ -47,7 +47,7 @@ const findIcons = ({
   cb: (res: IconfinderResponse) => void;
 }) =>
   fetch(
-    `https://api.iconfinder.com/v3/icons/search?premium=false&license=commercial&size_minimum=256&query=${query}&$limit=${limit}&offset=${offset}`,
+    `https://api.iconfinder.com/v3/icons/search?premium=false&license=commercial&size_minimum=256&size_maximum=1024&query=${query}&$limit=${limit}&offset=${offset}`,
     {
       headers: { authorization: `jwt ${token}` },
     },
