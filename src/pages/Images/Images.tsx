@@ -232,14 +232,16 @@ const Images: React.FC<ImagesProps> = ({ onMouseEnter, onMouseLeave }) => {
                     rowRenderer={({ key, index, style }) => {
                       const item = nth(index)(items);
 
-                      return !item || item === 'loading' ? (
-                        <Box
-                          key={key}
-                          style={{ background: '#eee', ...style }}
-                        />
-                      ) : (
+                      return (
                         <Box key={key} style={style}>
-                          <RenderItem {...item} />
+                          {!item || item === 'loading' ? (
+                            <Box
+                              bg="#eee"
+                              height={storageImageWidthMinusScroll}
+                            />
+                          ) : (
+                            <RenderItem {...item} />
+                          )}
                         </Box>
                       );
                     }}
