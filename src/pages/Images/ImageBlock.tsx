@@ -6,11 +6,13 @@ import { createDropImage, DropImagePayload } from 'utils';
 export interface ImageBlockProps
   extends DropImagePayload,
     Pick<React.ComponentProps<typeof Box>, 'mb'> {
-  thumbnailWidth: React.CSSProperties['width'];
+  thumbnailWidth?: React.CSSProperties['width'];
+  thumbnailHeight?: React.CSSProperties['height'];
 }
 
 const ImageBlock: React.FC<ImageBlockProps> = ({
   thumbnailWidth,
+  thumbnailHeight,
   mb,
   downloadUrl,
   name,
@@ -27,7 +29,7 @@ const ImageBlock: React.FC<ImageBlockProps> = ({
   });
 
   return (
-    <Flex mb={mb} flexDirection="column">
+    <Flex mb={mb} flexDirection="column" alignItems="center">
       <img
         title={`${name} ${width}x${height}`}
         alt={name}
@@ -35,6 +37,7 @@ const ImageBlock: React.FC<ImageBlockProps> = ({
         style={{ cursor: 'grab' }}
         src={downloadUrl}
         width={thumbnailWidth}
+        height={thumbnailHeight}
       />
     </Flex>
   );

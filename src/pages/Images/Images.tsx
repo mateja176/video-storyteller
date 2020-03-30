@@ -83,7 +83,7 @@ const RenderItem: React.FC<Icon> = ({
       key={icon_id}
       width={size.size_width}
       height={size.size_height}
-      thumbnailWidth={storageImageWidthMinusScroll}
+      thumbnailHeight={storageImageWidthMinusScroll}
       name={name}
       downloadUrl={preview_url}
     />
@@ -207,7 +207,7 @@ const Images: React.FC<ImagesProps> = ({ onMouseEnter, onMouseLeave }) => {
               name={customMetadata.name}
               height={customMetadata.height}
               width={customMetadata.width}
-              thumbnailWidth={storageImageWidthMinusScroll}
+              thumbnailHeight={storageImageWidthMinusScroll}
             />
           ))}
         </ExpansionPanelDetails>
