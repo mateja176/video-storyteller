@@ -109,8 +109,10 @@ const Images: React.FC<ImagesProps> = ({ onMouseEnter, onMouseLeave }) => {
     fetchFiles({ path: 'images' });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const infiniteLoaderRef = React.useRef<InfiniteLoader | null>(null);
+
   const [token, setToken] = React.useState('');
-  const [query, setQuery] = React.useState('dog');
+  const [query, setQuery] = React.useState('');
   const [items, setItems] = React.useState<Item[]>([]);
   const [total, setTotal] = React.useState(initialTotal);
 
@@ -124,6 +126,14 @@ const Images: React.FC<ImagesProps> = ({ onMouseEnter, onMouseLeave }) => {
         setToken(accessToken);
       });
   }, []);
+
+  React.useEffect(() => {
+    if (infiniteLoaderRef.current && query) {
+      setItems([]);
+      setTotal(initialTotal);
+      infiniteLoaderRef.current.resetLoadMoreRowsCache(true);
+    }
+  }, [query]);
 
   const loadMoreRows = React.useCallback<InfiniteLoaderProps['loadMoreRows']>(
     ({ startIndex, stopIndex }) => {
@@ -214,8 +224,9 @@ const Images: React.FC<ImagesProps> = ({ onMouseEnter, onMouseLeave }) => {
         }}
       />
       <Box flex={1}>
-        {token && (
+        {token && query && (
           <InfiniteLoader
+            ref={infiniteLoaderRef}
             loadMoreRows={loadMoreRows}
             isRowLoaded={({ index }) => !!nth(index)(items)}
             rowCount={total}
