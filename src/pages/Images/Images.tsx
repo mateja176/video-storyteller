@@ -10,7 +10,7 @@ import {
 import { ExpandMore, Image as ImageIcon } from '@material-ui/icons';
 import { Link } from 'components';
 import { debounce, startCase } from 'lodash';
-import { Icon, IconfinderResponse } from 'models';
+import { Icon } from 'models';
 import { init, last, nth, range } from 'ramda';
 import React from 'react';
 import { useSelector } from 'react-redux';
@@ -39,23 +39,17 @@ const findIcons = ({
   query,
   offset,
   token,
-  cb,
 }: {
   offset: number;
   query: string;
   token: string;
-  cb: (res: IconfinderResponse) => void;
 }) =>
   fetch(
     `https://api.iconfinder.com/v3/icons/search?premium=false&license=commercial&size_minimum=256&size_maximum=1024&query=${query}&$limit=${limit}&offset=${offset}`,
     {
       headers: { authorization: `jwt ${token}` },
     },
-  )
-    .then(res => res.json())
-    .then(cb);
-
-const debouncedFindIcons = debounce(findIcons, 500);
+  ).then(res => res.json());
 
 const RenderItem: React.FC<Icon> = ({
   icon_id,
@@ -161,17 +155,16 @@ const Images: React.FC<ImagesProps> = ({ onMouseEnter, onMouseLeave }) => {
         token,
         query,
         offset: startIndex,
-        cb: ({ icons, total_count }) => {
-          setTotal(total_count);
+      }).then(({ icons, total_count }) => {
+        setTotal(total_count);
 
-          setItems(currentImages => {
-            const newItems = currentImages.slice();
+        setItems(currentImages => {
+          const newItems = currentImages.slice();
 
-            newItems.splice(startIndex, limit, ...icons);
+          newItems.splice(startIndex, limit, ...icons);
 
-            return newItems;
-          });
-        },
+          return newItems;
+        });
       });
     },
     [token, query],
