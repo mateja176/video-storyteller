@@ -127,13 +127,23 @@ const Images: React.FC<ImagesProps> = ({ onMouseEnter, onMouseLeave }) => {
       });
   }, []);
 
+  const reset = React.useMemo(() => {
+    const resetItems = () => {
+      if (infiniteLoaderRef.current) {
+        setItems([]);
+        setTotal(initialTotal);
+        infiniteLoaderRef.current.resetLoadMoreRowsCache(true);
+      }
+    };
+
+    return debounce(resetItems, 500);
+  }, []);
+
   React.useEffect(() => {
-    if (infiniteLoaderRef.current && query) {
-      setItems([]);
-      setTotal(initialTotal);
-      infiniteLoaderRef.current.resetLoadMoreRowsCache(true);
+    if (query) {
+      reset();
     }
-  }, [query]);
+  }, [query, reset]);
 
   const loadMoreRows = React.useCallback<InfiniteLoaderProps['loadMoreRows']>(
     ({ startIndex, stopIndex }) => {
