@@ -31,21 +31,30 @@ type Item = Icon | 'loading';
 
 const spacing = 10;
 
-const limit = 10;
+const defaultCount = 10; // * equal to the default minimum batch size
 
-const initialTotal = limit * 10; // * arbitrarily high number
+const initialTotal = defaultCount * 10; // * arbitrarily high number
 
 const findIcons = ({
+  token,
   query,
   offset,
-  token,
+  count,
 }: {
-  offset: number;
-  query: string;
   token: string;
+  query: string;
+  offset: number;
+  count: number;
 }) =>
   fetch(
-    `https://api.iconfinder.com/v3/icons/search?premium=false&license=commercial&size_minimum=256&size_maximum=1024&query=${query}&$limit=${limit}&offset=${offset}`,
+    `https://api.iconfinder.com/v3/icons/search
+    ?premium=false
+    &license=commercial
+    &size_minimum=256
+    &size_maximum=1024
+    &query=${query}
+    &count=${count}
+    &offset=${offset}`.replace(/\s+/g, ''),
     {
       headers: { authorization: `jwt ${token}` },
     },
@@ -145,7 +154,7 @@ const Images: React.FC<ImagesProps> = ({ onMouseEnter, onMouseLeave }) => {
 
       setItems(currentImages => {
         const newItems = currentImages.concat(
-          range(0, increment).map(() => 'loading'),
+          range(startIndex, stopIndex + 1).map(() => 'loading'),
         );
 
         return newItems;
@@ -155,13 +164,14 @@ const Images: React.FC<ImagesProps> = ({ onMouseEnter, onMouseLeave }) => {
         token,
         query,
         offset: startIndex,
+        count: increment,
       }).then(({ icons, total_count }) => {
         setTotal(total_count);
 
         setItems(currentImages => {
           const newItems = currentImages.slice();
 
-          newItems.splice(startIndex, limit, ...icons);
+          newItems.splice(startIndex, increment, ...icons);
 
           return newItems;
         });
@@ -231,9 +241,13 @@ const Images: React.FC<ImagesProps> = ({ onMouseEnter, onMouseLeave }) => {
           <InfiniteLoader
             ref={infiniteLoaderRef}
             loadMoreRows={loadMoreRows}
-            isRowLoaded={({ index }) => !!nth(index)(items)}
+            isRowLoaded={({ index }) => {
+              const row = nth(index)(items);
+
+              return !!row;
+            }}
             rowCount={total}
-            threshold={1}
+            threshold={10}
           >
             {({ onRowsRendered, registerChild }) => (
               <AutoSizer>
