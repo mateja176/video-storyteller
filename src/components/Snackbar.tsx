@@ -7,7 +7,7 @@ import { StyleRules } from '@material-ui/core/styles';
 import { Close } from '@material-ui/icons';
 import { CreateSimpleAction, EnhancedTheme } from 'models';
 import React, { FC, useEffect } from 'react';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import {
   createCloseSnackbar,
   selectSnackbar,
@@ -48,6 +48,8 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const Snackbar: FC<SnackbarProps> = ({ open, closeSnackbar, queue }) => {
+  const dispatch = useDispatch();
+
   const classes = useStyles();
 
   const [
@@ -90,7 +92,7 @@ const Snackbar: FC<SnackbarProps> = ({ open, closeSnackbar, queue }) => {
       }}
     >
       <SnackbarContent
-        message={message}
+        message={typeof message === 'function' ? message(dispatch) : message}
         className={classes[variant]}
         action={[
           <IconButton
@@ -107,7 +109,6 @@ const Snackbar: FC<SnackbarProps> = ({ open, closeSnackbar, queue }) => {
   );
 };
 
-export default connect(
-  (state: State) => selectSnackbar(state),
-  { closeSnackbar: createCloseSnackbar },
-)(Snackbar);
+export default connect((state: State) => selectSnackbar(state), {
+  closeSnackbar: createCloseSnackbar,
+})(Snackbar);

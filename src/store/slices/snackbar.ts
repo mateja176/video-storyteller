@@ -1,4 +1,5 @@
-import { Reducer } from 'redux';
+import React from 'react';
+import { Dispatch, Reducer } from 'redux';
 import { createAction, getType } from 'typesafe-actions';
 
 export const variants = ['default', 'error', 'success', 'info'] as const;
@@ -6,7 +7,7 @@ export const variants = ['default', 'error', 'success', 'info'] as const;
 export type Variant = typeof variants[number];
 
 export interface SimpleSnackbarConfig {
-  message: string;
+  message: string | ((dispatch: Dispatch) => React.ReactElement);
   duration?: number;
 }
 
