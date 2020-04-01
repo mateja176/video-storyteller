@@ -117,6 +117,7 @@
     "redux-slider-monitor": "^2.0.0-2",
     "redux-starter-kit": "^0.4.3",
     "remotedev-utils": "^0.1.6",
+    "reselect": "^4.0.0",
     "rxfire": "^3.5.1",
     "rxjs": "^6.4.0",
     "sanctuary": "^2.0.0",
