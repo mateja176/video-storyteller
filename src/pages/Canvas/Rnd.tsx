@@ -135,7 +135,7 @@ const Rnd: React.FC<RndProps> = ({
 
             onResizeStart(...args);
           }}
-          onResize={(e, dir, elementRef, delta) => {
+          onResize={(_e, _dir, _elementRef, delta) => {
             setDeltaSize(delta);
           }}
           onResizeStop={(...args) => {

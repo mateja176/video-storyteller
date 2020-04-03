@@ -55,7 +55,6 @@ interface Values
 
 export interface ActionCardFormProps extends Pick<ICanvasContext, 'isAuthor'> {
   handleSubmit: (values: Values) => void;
-  id: number;
   initialValues: InitialValues;
   action: Action;
 }
@@ -64,7 +63,6 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
   isAuthor,
   handleSubmit,
   initialValues,
-  id,
   action,
 }) => {
   const textFieldProps = { ...constantTextFieldProps, disabled: !isAuthor };

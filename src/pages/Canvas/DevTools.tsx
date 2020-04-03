@@ -971,7 +971,6 @@ const StoryMonitor = ({
                   >
                     <ActionCardForm
                       isAuthor={isAuthor}
-                      id={id}
                       action={action}
                       initialValues={initialValues}
                       handleSubmit={({
