@@ -1,5 +1,6 @@
 import { useMediaQuery, useTheme } from '@material-ui/core';
-import { PageRoute, Switch } from 'components';
+import { PageRoute } from 'components';
+import { Switch } from 'containers';
 import * as pages from 'pages';
 import React, { FC } from 'react';
 import { DndProvider } from 'react-dnd';

@@ -1,5 +1,5 @@
 import { Typography } from '@material-ui/core';
-import { Switch } from 'components';
+import { Switch } from 'containers';
 import React, { FC } from 'react';
 import { Route, RouteComponentProps } from 'react-router-dom';
 import { Box, Flex } from 'rebass';

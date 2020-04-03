@@ -1,10 +1,10 @@
 import { Typography } from '@material-ui/core';
+import { Link } from 'components';
 import React, { useEffect } from 'react';
 import { Ghost } from 'react-kawaii';
 import { Box } from 'rebass';
 import { createTogglePageFound } from 'store';
 import { useActions } from 'utils';
-import Link from './Link';
 
 export interface NotFoundProps {}
 

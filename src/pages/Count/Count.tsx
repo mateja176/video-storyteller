@@ -1,5 +1,6 @@
 import { Typography } from '@material-ui/core';
-import { Disqus, Link, Loader, Switch } from 'components';
+import { Disqus, Link, Loader } from 'components';
+import { Switch } from 'containers';
 import { CreateSimpleAction } from 'models';
 import React, { FC, useEffect } from 'react';
 import { connect, useSelector } from 'react-redux';
