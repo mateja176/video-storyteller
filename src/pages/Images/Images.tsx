@@ -1,4 +1,5 @@
 /* eslint-disable camelcase */
+/* eslint-disable react/jsx-curly-newline */
 
 import {
   CircularProgress,
@@ -8,92 +9,38 @@ import {
   TextField,
 } from '@material-ui/core';
 import { ExpandMore, Image as ImageIcon } from '@material-ui/icons';
-import { Link } from 'components';
-import { debounce, startCase } from 'lodash';
-import { Icon } from 'models';
-import { init, last, nth, range } from 'ramda';
+import { Button, Link } from 'components';
+import { debounce } from 'lodash';
+import { LibraryImage } from 'models';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import {
-  AutoSizer,
-  InfiniteLoader,
-  InfiniteLoaderProps,
-  List,
-} from 'react-virtualized';
+import { AutoSizer, IndexRange, InfiniteLoader, List } from 'react-virtualized';
 import { Box, Flex } from 'rebass';
-import { createFetchFiles, selectStorageImages } from 'store';
+import {
+  createFetchFiles,
+  createFetchImageLibraryToken,
+  createFetchLibraryImages,
+  createResetImageLibrary,
+  fetchLibraryImagesThunk,
+  selectAreImagesOrTokenLoading,
+  selectIconFinderToken,
+  selectLibraryImages,
+  selectLibraryImageTotal,
+  selectStorageImages,
+} from 'store';
 import { storageImageWidth, storageImageWidthMinusScroll } from 'styles';
 import urlJoin from 'url-join';
-import { absoluteRootPaths, secondaryPaths, useActions } from 'utils';
+import {
+  absoluteRootPaths,
+  isLibraryImagesRequestParams,
+  secondaryPaths,
+  useActions,
+} from 'utils';
+import { Empty } from './Empty';
 import ImageBlock from './ImageBlock';
-
-type Item = Icon | 'loading';
+import { ImageRow } from './ImageRow';
 
 const spacing = 10;
-
-const defaultCount = 10; // * equal to the default minimum batch size
-
-const initialTotal = defaultCount * 10; // * arbitrarily high number
-
-const findIcons = ({
-  token,
-  query,
-  offset,
-  count,
-}: {
-  token: string;
-  query: string;
-  offset: number;
-  count: number;
-}) =>
-  fetch(
-    `https://api.iconfinder.com/v3/icons/search
-    ?premium=false
-    &license=commercial
-    &size_minimum=256
-    &size_maximum=1024
-    &query=${query}
-    &count=${count}
-    &offset=${offset}`.replace(/\s+/g, ''),
-    {
-      headers: { authorization: `jwt ${token}` },
-    },
-  ).then(res => res.json());
-
-const RenderItem: React.FC<Icon> = ({
-  icon_id,
-  vector_sizes,
-  raster_sizes,
-  tags,
-}) => {
-  const {
-    formats: [{ preview_url }],
-  } = last(raster_sizes)!;
-
-  const name = startCase(
-    init(last(preview_url.split('/'))!.split('.'))
-      .join('.')
-      .replace(/\d+/g, '')
-      .replace(/_/g, ' ')
-      .replace(/-/g, ' ')
-      .trim() || tags.join(' '),
-  );
-
-  const [size] = vector_sizes || raster_sizes;
-
-  return (
-    <ImageBlock
-      key={icon_id}
-      width={size.size_width}
-      height={size.size_height}
-      thumbnailHeight={storageImageWidthMinusScroll}
-      name={name}
-      downloadUrl={preview_url}
-    />
-  );
-};
-
-const Empty = () => <Box>No results</Box>;
 
 export interface ImagesProps
   extends Pick<
@@ -114,70 +61,55 @@ const Images: React.FC<ImagesProps> = ({ onMouseEnter, onMouseLeave }) => {
 
   const infiniteLoaderRef = React.useRef<InfiniteLoader | null>(null);
 
-  const [token, setToken] = React.useState('');
+  const {
+    fetchImageLibraryToken,
+    fetchLibraryImages,
+    requestLibraryImages,
+    resetImageLibrary,
+  } = useActions({
+    fetchImageLibraryToken: createFetchImageLibraryToken.request,
+    fetchLibraryImages: fetchLibraryImagesThunk,
+    requestLibraryImages: createFetchLibraryImages.request,
+    resetImageLibrary: createResetImageLibrary,
+  });
+
+  const token = useSelector(selectIconFinderToken);
+  const total = useSelector(selectLibraryImageTotal);
+  const libraryImages = useSelector(selectLibraryImages);
+  const loading = useSelector(selectAreImagesOrTokenLoading);
+
   const [query, setQuery] = React.useState('');
-  const [items, setItems] = React.useState<Item[]>([]);
-  const [total, setTotal] = React.useState(initialTotal);
-
-  const loading = items.some(item => item === 'loading');
 
   React.useEffect(() => {
-    fetch('https://video-storyteller-dev.herokuapp.com/token')
-      .then(res => res.json())
-      .then(({ access_token }) => access_token)
-      .then(accessToken => {
-        setToken(accessToken);
-      });
-  }, []);
+    fetchImageLibraryToken({});
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const reset = React.useMemo(() => {
-    const resetItems = () => {
-      if (infiniteLoaderRef.current) {
-        setItems([]);
-        setTotal(initialTotal);
-        infiniteLoaderRef.current.resetLoadMoreRowsCache(true);
-      }
-    };
-
-    return debounce(resetItems, 500);
-  }, []);
+  const reset = React.useMemo(
+    () =>
+      debounce(() => {
+        resetImageLibrary();
+        if (infiniteLoaderRef.current) {
+          infiniteLoaderRef.current.resetLoadMoreRowsCache(true);
+        }
+      }, 500),
+    [], // eslint-disable-line react-hooks/exhaustive-deps
+  );
 
   React.useEffect(() => {
-    if (query) {
-      reset();
-    }
+    reset();
   }, [query, reset]);
 
-  const loadMoreRows = React.useCallback<InfiniteLoaderProps['loadMoreRows']>(
-    ({ startIndex, stopIndex }) => {
-      const increment = stopIndex - startIndex + 1;
-
-      setItems(currentImages => {
-        const newItems = currentImages.concat(
-          range(startIndex, stopIndex + 1).map(() => 'loading'),
-        );
-
-        return newItems;
-      });
-
-      return findIcons({
-        token,
-        query,
-        offset: startIndex,
-        count: increment,
-      }).then(({ icons, total_count }) => {
-        setTotal(total_count);
-
-        setItems(currentImages => {
-          const newItems = currentImages.slice();
-
-          newItems.splice(startIndex, increment, ...icons);
-
-          return newItems;
-        });
-      });
+  React.useEffect(
+    () => () => {
+      resetImageLibrary();
     },
-    [token, query],
+    [], // eslint-disable-line react-hooks/exhaustive-deps
+  );
+
+  const loadMoreRows = React.useCallback(
+    (indexRange: IndexRange) =>
+      query ? fetchLibraryImages({ ...indexRange, query }) : Promise.resolve(),
+    [query, fetchLibraryImages],
   );
 
   return (
@@ -237,12 +169,12 @@ const Images: React.FC<ImagesProps> = ({ onMouseEnter, onMouseLeave }) => {
         }}
       />
       <Box flex={1}>
-        {token && query && (
+        {token && (
           <InfiniteLoader
             ref={infiniteLoaderRef}
             loadMoreRows={loadMoreRows}
             isRowLoaded={({ index }) => {
-              const row = nth(index)(items);
+              const row: LibraryImage | undefined = libraryImages[index];
 
               return !!row;
             }}
@@ -258,17 +190,32 @@ const Images: React.FC<ImagesProps> = ({ onMouseEnter, onMouseLeave }) => {
                     height={height}
                     width={width}
                     rowRenderer={({ key, index, style }) => {
-                      const item = nth(index)(items);
+                      const libraryImage: LibraryImage | undefined =
+                        libraryImages[index];
 
                       return (
                         <Box key={key} style={style}>
-                          {!item || item === 'loading' ? (
+                          {!libraryImage ? null : libraryImage === 'loading' ? (
                             <Box
                               bg="#eee"
                               height={storageImageWidthMinusScroll}
                             />
+                          ) : isLibraryImagesRequestParams(libraryImage) ? (
+                            <Box>
+                              Failed to fetch.{' '}
+                              <Button
+                                onClick={() => {
+                                  requestLibraryImages({
+                                    ...libraryImage,
+                                    query,
+                                  });
+                                }}
+                              >
+                                Retry
+                              </Button>
+                            </Box>
                           ) : (
-                            <RenderItem {...item} />
+                            <ImageRow {...libraryImage} />
                           )}
                         </Box>
                       );

@@ -18,7 +18,6 @@ import {
   tap,
 } from 'rxjs/operators';
 import { analytics } from 'services';
-import { EpicDependencies } from 'store/configureStore';
 import { getType } from 'typesafe-actions';
 import { removeNils } from 'utils';
 import { Action, createReset, ResetAction, State } from '../reducer';
@@ -40,6 +39,7 @@ import {
   signoutType,
   SnackbarAction,
 } from '../slices';
+import { EpicDependencies } from './dependencies';
 
 type ActionWithReset = Action | ResetAction;
 
@@ -47,7 +47,7 @@ const authStateEpic: Epic<
   Action,
   AuthStateChangeAction | FetchAuthStateAction,
   State
-> = (action$, state$) =>
+> = action$ =>
   action$.pipe(
     ofType<Action, ReturnType<typeof createFetchAuthState['request']>>(
       getType(createFetchAuthState.request),

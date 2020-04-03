@@ -16,7 +16,6 @@ import {
   withLatestFrom,
 } from 'rxjs/operators';
 import { analytics, env, firebase } from 'services';
-import { EpicDependencies } from 'store/configureStore';
 import { getType } from 'typesafe-actions';
 import urlJoin from 'url-join';
 import { Action, State } from '../reducer';
@@ -34,6 +33,7 @@ import {
   UpdateOneImageAction,
   UpdateProgressAction,
 } from '../slices';
+import { EpicDependencies } from './dependencies';
 import { selectState } from './operators';
 
 const upload: Epic<Action, UpdateProgressAction | SetSnackbarAction, State> = (

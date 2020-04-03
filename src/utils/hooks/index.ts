@@ -5,6 +5,7 @@ import { equals } from 'ramda';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { ThunkAction } from 'redux-thunk';
 
 export const useHref = () => {
   const [href, setHref] = React.useState('');
@@ -35,5 +36,11 @@ export const useActions = <
 ) => {
   const dispatch = useDispatch();
 
-  return bindActionCreators(actions, dispatch);
+  return bindActionCreators(actions, dispatch) as {
+    [key in keyof Actions]: Actions[key] extends (
+      ...params: any
+    ) => ThunkAction<Promise<infer R>, any, any, any>
+      ? (...params: Parameters<Actions[key]>) => Promise<R>
+      : Actions[key];
+  };
 };

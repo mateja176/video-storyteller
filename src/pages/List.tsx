@@ -8,10 +8,10 @@ import { useSelector } from 'react-redux';
 import {
   AutoSizer,
   InfiniteLoader,
-  InfiniteLoaderProps,
   List,
   ListRowRenderer,
   WindowScroller,
+  IndexRange,
 } from 'react-virtualized';
 import { Box } from 'rebass';
 import { selectDictionary } from 'store';
@@ -84,8 +84,6 @@ const initialScrollButtonStyle: ScrollButtonStyle = {
   top: 'auto',
 };
 
-type LoadMoreRows = InfiniteLoaderProps['loadMoreRows'];
-
 const loadMore = (getName: () => Person['name']) => (
   rangeToLoad: ReturnType<ReturnType<typeof range>>,
 ) =>
@@ -133,7 +131,7 @@ const ListPage: React.FC<ListPageProps> = () => {
 
   const rowRenderer = createRowRenderer(list);
 
-  const loadMoreRows: LoadMoreRows = ({ startIndex, stopIndex }) => {
+  const loadMoreRows = ({ startIndex, stopIndex }: IndexRange) => {
     const log = () =>
       console.log('load rows from', startIndex, 'to', stopIndex); // eslint-disable-line no-console
     log();

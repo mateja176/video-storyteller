@@ -7,6 +7,8 @@ import {
   CanvasAction,
   count,
   CountAction,
+  imageLibrary,
+  ImageLibraryAction,
   images,
   ImagesAction,
   lang,
@@ -17,10 +19,11 @@ import {
   SnackbarAction,
   storage,
   StorageAction,
+  theatricalMode,
+  TheatricalModeAction,
   theme,
   ThemeAction,
 } from './slices';
-import { theatricalMode, TheatricalModeAction } from './slices/theatricalMode';
 
 export type Action =
   | CountAction
@@ -32,7 +35,8 @@ export type Action =
   | LangAction
   | TheatricalModeAction
   | StorageAction
-  | CanvasAction;
+  | CanvasAction
+  | ImageLibraryAction;
 
 const actionReducerMap = {
   count,
@@ -45,6 +49,7 @@ const actionReducerMap = {
   theatricalMode,
   storage,
   canvas,
+  imageLibrary,
 };
 
 const reducer = combineReducers(actionReducerMap);

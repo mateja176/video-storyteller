@@ -5,5 +5,7 @@ export * from './auth';
 export * from './canvas';
 export * from './components';
 export * from './iconFinder';
+export * from './infiniteLoader';
 export * from './models';
 export * from './storage';
+export * from './store';

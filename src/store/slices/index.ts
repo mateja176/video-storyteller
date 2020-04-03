@@ -1,6 +1,7 @@
 export * from './auth';
 export * from './canvas';
 export * from './count';
+export * from './imageLibrary';
 export * from './images';
 export * from './lang';
 export * from './router';

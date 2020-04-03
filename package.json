@@ -116,6 +116,7 @@
     "redux-observable": "^1.1.0",
     "redux-slider-monitor": "^2.0.0-2",
     "redux-starter-kit": "^0.4.3",
+    "redux-thunk": "^2.3.0",
     "remotedev-utils": "^0.1.6",
     "reselect": "^4.0.0",
     "rxfire": "^3.5.1",

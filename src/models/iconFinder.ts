@@ -1,5 +1,7 @@
 /* eslint-disable camelcase */
 
+import { IndexRange } from 'react-virtualized';
+
 export interface Container {
   download_url: string;
   format: string;
@@ -70,7 +72,43 @@ export interface Icon {
   is_purchased: boolean;
 }
 
+export type Icons = Icon[];
+
 export interface IconfinderResponse {
-  icons: Icon[];
+  icons: Icons;
   total_count: number;
 }
+
+export interface WithQuery {
+  query: string;
+}
+
+export const iconFinderTokenUrl =
+  'https://video-storyteller-dev.herokuapp.com/token';
+
+export interface OffsetAndCount {
+  offset: number;
+  count: number;
+}
+
+export interface IconFinderSearchParams extends WithQuery, OffsetAndCount {}
+export const createIconFinderSearchUrl = ({
+  query,
+  offset,
+  count,
+}: IconFinderSearchParams) =>
+  `
+https://api.iconfinder.com/v3/icons/search
+?premium=false
+&license=commercial
+&size_minimum=256
+&size_maximum=1024
+&query=${query}
+&offset=${offset}
+&count=${count}
+`.replace(/\s+/g, '');
+
+export type LibraryImage = Icon | 'loading' | IndexRange;
+export type LibraryImages = Record<string, LibraryImage>;
+
+export type LibraryImagesRequestParams = IndexRange & WithQuery;
