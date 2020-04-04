@@ -133,7 +133,7 @@ const Editor: React.FC<EditorProps> = ({
         editorState={editorState}
         onChange={setEditorState}
         spellCheck
-        placeholder={!hasText && isUnstyled ? 'Tell a story...' : ''}
+        placeholder={!hasText && isUnstyled ? 'Text...' : ''}
         blockStyleFn={getBlockStyle}
         customStyleMap={customStyleMap}
         handleKeyCommand={handleKeyCommand}
