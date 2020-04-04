@@ -1,6 +1,10 @@
 /* eslint-disable indent */
 
-import { InputAdornment, TextField } from '@material-ui/core';
+import {
+  ClickAwayListener,
+  InputAdornment,
+  TextField,
+} from '@material-ui/core';
 import { Button } from 'components';
 import { convertFromRaw } from 'draft-js';
 import { css, keyframes } from 'emotion';
@@ -125,189 +129,212 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
       enableReinitialize
       isInitialValid
     >
-      {({ isValid, handleChange, handleBlur, values, errors }) => {
+      {({
+        isValid,
+        handleChange,
+        handleBlur,
+        values,
+        errors,
+        resetForm,
+        submitForm,
+      }) => {
         // const formattedActionType = startCase(action.type);
 
-        const saveDisabled = !isValid || equals(formattedInitialValues, values);
+        const areValuesEqual = equals(formattedInitialValues, values);
+        const saveDisabled = !isValid || areValuesEqual;
 
         return (
-          <Flex flexDirection="column" px={2} flex={1}>
-            <Form
-              style={{
-                flexGrow: 1,
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              <TextField
-                {...textFieldProps}
-                name="duration"
-                value={values.duration}
-                onBlur={handleBlur}
-                onChange={handleChange}
-                label="Duration"
-                type="number"
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">ms</InputAdornment>
-                  ),
+          <ClickAwayListener
+            onClickAway={() => {
+              submitForm();
+            }}
+          >
+            <Flex flexDirection="column" px={2} flex={1}>
+              <Form
+                style={{
+                  flexGrow: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
                 }}
-                error={Boolean(errors.duration)}
-                helperText={errors.duration}
-              />
-              {isUpdateResizeAction(action) && (
-                <Flex>
-                  <TextField
-                    name="width"
-                    label="Width"
-                    value={values.width}
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">px</InputAdornment>
-                      ),
-                    }}
-                    style={{ marginRight: 5 }}
-                  />
-                  <TextField
-                    name="height"
-                    label="Height"
-                    value={values.height}
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">px</InputAdornment>
-                      ),
-                    }}
-                  />
-                </Flex>
-              )}
-              {(isScaleAction(action) || isSetTransformAction(action)) && (
+              >
                 <TextField
                   {...textFieldProps}
-                  type="number"
-                  name="scale"
-                  label="Zoom"
+                  name="duration"
+                  value={values.duration}
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  value={values.scale}
+                  label="Duration"
+                  type="number"
                   InputProps={{
                     endAdornment: (
-                      <InputAdornment position="end">%</InputAdornment>
+                      <InputAdornment position="end">ms</InputAdornment>
                     ),
                   }}
+                  error={Boolean(errors.duration)}
+                  helperText={errors.duration}
                 />
-              )}
-              {isUpdateEditAction(action) && (
-                <TextField
-                  {...textFieldProps}
-                  type="text"
-                  name="editorState"
-                  label="Editor State"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.editorState}
-                  multiline
-                  rows={2}
-                  rowsMax={2}
-                  disabled
-                />
-              )}
-              {isUpdateRenameImageAction(action) && (
-                <TextField
-                  {...textFieldProps}
-                  type="text"
-                  name="name"
-                  label="Image Name"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.name}
-                  multiline
-                  rows={3}
-                  rowsMax={3}
-                  disabled
-                />
-              )}
-              {isUpdateMoveAction(action) && (
-                <Flex>
+                {isUpdateResizeAction(action) && (
+                  <Flex>
+                    <TextField
+                      name="width"
+                      label="Width"
+                      value={values.width}
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">px</InputAdornment>
+                        ),
+                      }}
+                      style={{ marginRight: 5 }}
+                    />
+                    <TextField
+                      name="height"
+                      label="Height"
+                      value={values.height}
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">px</InputAdornment>
+                        ),
+                      }}
+                    />
+                  </Flex>
+                )}
+                {(isScaleAction(action) || isSetTransformAction(action)) && (
                   <TextField
                     {...textFieldProps}
                     type="number"
-                    name="left"
-                    label="Left"
+                    name="scale"
+                    label="Zoom"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={values.left}
-                    style={{ marginRight: 5 }}
+                    value={values.scale}
                     InputProps={{
-                      endAdornment: px,
+                      endAdornment: (
+                        <InputAdornment position="end">%</InputAdornment>
+                      ),
                     }}
                   />
+                )}
+                {isUpdateEditAction(action) && (
                   <TextField
                     {...textFieldProps}
-                    type="number"
-                    name="top"
-                    label="Top"
+                    type="text"
+                    name="editorState"
+                    label="Editor State"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={values.top}
-                    InputProps={{
-                      endAdornment: px,
-                    }}
+                    value={values.editorState}
+                    multiline
+                    rows={2}
+                    rowsMax={2}
+                    disabled
                   />
-                </Flex>
-              )}
-              {(isPositionAction(action) || isSetTransformAction(action)) && (
-                <Flex>
+                )}
+                {isUpdateRenameImageAction(action) && (
                   <TextField
                     {...textFieldProps}
-                    type="number"
-                    name="x"
-                    label="X Coordinate"
+                    type="text"
+                    name="name"
+                    label="Image Name"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={values.x}
-                    style={{ marginRight: 5 }}
-                    InputProps={{
-                      endAdornment: px,
-                    }}
+                    value={values.name}
+                    multiline
+                    rows={3}
+                    rowsMax={3}
+                    disabled
                   />
-                  <TextField
-                    {...textFieldProps}
-                    type="number"
-                    name="y"
-                    label="Y Coordinate"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.y}
-                    InputProps={{
-                      endAdornment: px,
-                    }}
-                  />
-                </Flex>
-              )}
-              {isAuthor && (
-                <Flex mt="auto">
-                  <Button
-                    className={css`
-                      animation: ${saveDisabled
-                        ? 'none'
-                        : `${flicker} 1000ms infinite alternate
-                      ease-in-out`};
-                    `}
-                    size="small"
-                    type="submit"
-                    disabled={saveDisabled}
-                  >
-                    Save edit
-                  </Button>
-                  {/* <Button style={{ marginLeft: 'auto' }}>See more</Button> */}
-                </Flex>
-              )}
-            </Form>
-          </Flex>
+                )}
+                {isUpdateMoveAction(action) && (
+                  <Flex>
+                    <TextField
+                      {...textFieldProps}
+                      type="number"
+                      name="left"
+                      label="Left"
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      value={values.left}
+                      style={{ marginRight: 5 }}
+                      InputProps={{
+                        endAdornment: px,
+                      }}
+                    />
+                    <TextField
+                      {...textFieldProps}
+                      type="number"
+                      name="top"
+                      label="Top"
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      value={values.top}
+                      InputProps={{
+                        endAdornment: px,
+                      }}
+                    />
+                  </Flex>
+                )}
+                {(isPositionAction(action) || isSetTransformAction(action)) && (
+                  <Flex>
+                    <TextField
+                      {...textFieldProps}
+                      type="number"
+                      name="x"
+                      label="X Coordinate"
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      value={values.x}
+                      style={{ marginRight: 5 }}
+                      InputProps={{
+                        endAdornment: px,
+                      }}
+                    />
+                    <TextField
+                      {...textFieldProps}
+                      type="number"
+                      name="y"
+                      label="Y Coordinate"
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      value={values.y}
+                      InputProps={{
+                        endAdornment: px,
+                      }}
+                    />
+                  </Flex>
+                )}
+                {isAuthor && (
+                  <Flex mt="auto">
+                    <Button
+                      className={css`
+                        animation: ${saveDisabled
+                          ? 'none'
+                          : `${flicker} 1000ms infinite alternate
+                        ease-in-out`};
+                      `}
+                      size="small"
+                      type="submit"
+                      disabled={saveDisabled}
+                    >
+                      Save edit
+                    </Button>
+                    <Button
+                      disabled={areValuesEqual}
+                      size="small"
+                      onClick={() => {
+                        resetForm();
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </Flex>
+                )}
+              </Form>
+            </Flex>
+          </ClickAwayListener>
         );
       }}
     </Formik>
