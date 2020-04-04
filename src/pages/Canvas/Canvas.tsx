@@ -289,8 +289,10 @@ const Canvas: React.FC<CanvasProps> = ({
       const offset = monitor.getSourceClientOffset() || { x: 0, y: 0 };
 
       const id = v4();
-      const left = offset.x - miniDrawerWidth;
-      const top = offset.y - headerAndControlsHeight;
+      // eslint-disable-next-line no-use-before-define
+      const left = offset.x - miniDrawerWidth - transformState.x / scale;
+      // eslint-disable-next-line no-use-before-define
+      const top = offset.y - headerAndControlsHeight - transformState.y / scale;
 
       switch (action.type) {
         case 'text':
