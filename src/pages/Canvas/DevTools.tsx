@@ -273,7 +273,7 @@ const StoryMonitor = ({
 
   React.useEffect(
     () => {
-      if (nextActiveActionId && isPlaying && currentDuration) {
+      if (nextActiveActionId && isPlaying && currentDuration !== undefined) {
         const timeout = setTimeout(() => {
           if (elapsed) {
             setElapsedTime(initialElapsedTime);
