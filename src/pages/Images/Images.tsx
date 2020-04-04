@@ -121,32 +121,35 @@ const Images: React.FC<ImagesProps> = ({ onMouseEnter, onMouseLeave }) => {
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {!uploadedImages.length && (
-        <Link
-          to={urlJoin(absoluteRootPaths.images, secondaryPaths.upload)}
-          style={{ fontStyle: 'italic' }}
-        >
-          Upload your first images
-        </Link>
+      {uploadedImages.length ? (
+        <ExpansionPanel>
+          <ExpansionPanelSummary expandIcon={<ExpandMore />}>
+            Uploaded images
+          </ExpansionPanelSummary>
+          <ExpansionPanelDetails style={{ padding: 0, display: 'block' }}>
+            {uploadedImages.map(({ name, customMetadata, downloadUrl }) => (
+              <ImageBlock
+                key={name}
+                mb={spacing}
+                downloadUrl={downloadUrl}
+                name={customMetadata.name}
+                height={customMetadata.height}
+                width={customMetadata.width}
+                thumbnailHeight={storageImageWidthMinusScroll}
+              />
+            ))}
+          </ExpansionPanelDetails>
+        </ExpansionPanel>
+      ) : (
+        <Flex justifyContent="center" my={2}>
+          <Link
+            to={urlJoin(absoluteRootPaths.images, secondaryPaths.upload)}
+            style={{ fontStyle: 'italic' }}
+          >
+            Upload your first images
+          </Link>
+        </Flex>
       )}
-      <ExpansionPanel>
-        <ExpansionPanelSummary expandIcon={<ExpandMore />}>
-          Uploaded images
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails style={{ padding: 0, display: 'block' }}>
-          {uploadedImages.map(({ name, customMetadata, downloadUrl }) => (
-            <ImageBlock
-              key={name}
-              mb={spacing}
-              downloadUrl={downloadUrl}
-              name={customMetadata.name}
-              height={customMetadata.height}
-              width={customMetadata.width}
-              thumbnailHeight={storageImageWidthMinusScroll}
-            />
-          ))}
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
       <TextField
         value={query}
         onChange={({ target: { value } }) => setQuery(value)}
