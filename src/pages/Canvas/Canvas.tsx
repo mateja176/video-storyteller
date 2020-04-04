@@ -981,7 +981,11 @@ const Canvas: React.FC<CanvasProps> = ({
                   case !!focusedEditorId:
                     return (
                       <>
-                        <Flex
+                        <List
+                          style={{
+                            display: 'flex',
+                            padding: 0,
+                          }}
                           onMouseDown={e => {
                             e.preventDefault();
                           }}
@@ -1017,20 +1021,20 @@ const Canvas: React.FC<CanvasProps> = ({
                               );
                             }}
                           />
-                          <ListItem
-                            button
-                            style={{ width: 'auto' }}
-                            onClick={() => {
-                              setFocusedEditorId('');
-                            }}
-                          >
-                            <ListItemIcon style={listItemIconStyle}>
-                              <Cancel color="secondary" />
-                            </ListItemIcon>
-                            <ListItemText>Cancel</ListItemText>
-                          </ListItem>
-                        </Flex>
-                        <List style={{ display: 'flex', padding: 0 }}>
+                          <Tooltip title="Cancel text editing">
+                            <ListItem
+                              button
+                              style={{ width: 'auto' }}
+                              onClick={() => {
+                                setFocusedEditorId('');
+                              }}
+                            >
+                              <ListItemIcon style={listItemIconStyle}>
+                                <Cancel color="secondary" />
+                              </ListItemIcon>
+                              <ListItemText>Cancel</ListItemText>
+                            </ListItem>
+                          </Tooltip>
                           {focusedEditorId !== draggable.text && (
                             <ListItem
                               button
