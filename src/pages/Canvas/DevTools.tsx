@@ -71,7 +71,7 @@ import {
   ActionWithId,
   formatCoordinate,
   formatPosition,
-  formatScaleToPercentage,
+  formatUpTo2Decimals,
   isAudioAction,
   isCreateAction,
   isCudAction,
@@ -1026,9 +1026,7 @@ const StoryMonitor = ({
                           case 'transform/scale/set': {
                             const currentZoom: Zoom = {
                               ...action.payload,
-                              scale: formatScaleToPercentage(
-                                action.payload.scale,
-                              ),
+                              scale: formatUpTo2Decimals(action.payload.scale),
                             };
                             if (!equals(currentZoom, zoom)) {
                               store.dispatch({
@@ -1065,7 +1063,7 @@ const StoryMonitor = ({
                           case 'transform/zoom/set': {
                             const currentZoomAndPosition: ZoomAndPosition = {
                               ...action.payload,
-                              scale: action.payload.scale,
+                              scale: formatUpTo2Decimals(action.payload.scale),
                               x: formatCoordinate(action.payload.x),
                               y: formatCoordinate(action.payload.y),
                             };

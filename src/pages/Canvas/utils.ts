@@ -39,6 +39,9 @@ import {
 export const formatScaleToPercentage = (scale: Transform['scale']) =>
   Number((scale * 100).toFixed(0));
 
+export const formatUpTo2Decimals = (scale: Transform['scale']) =>
+  Number(scale.toFixed(2));
+
 export const formatCoordinate = (coordinate: Transform['x']) =>
   Number(coordinate.toFixed(0));
 
