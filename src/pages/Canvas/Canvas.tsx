@@ -143,27 +143,24 @@ import {
 import DevTools, { miniDrawerWidth } from './DevTools';
 import OptionWithPopover from './OptionWithPopover';
 import Rnd from './Rnd';
-import store, {
-  selectAudioSrc,
-  selectBlockStates,
-  selectTransform,
-  useActions,
-  useSelector,
-} from './store';
 import {
+  ClientCoords,
   CreateAction,
   createCreateAction,
   createDeleteAction,
+  createSetPosition,
+  createSetZoom,
   createUpdateEditText,
   createUpdateMove,
   createUpdateResize,
-} from './store/blockStates';
-import {
-  ClientCoords,
-  createSetPosition,
-  createSetZoom,
   initialTransformState,
-} from './store/transform';
+  selectAudioSrc,
+  selectBlockStates,
+  selectTransform,
+  store,
+  useActions,
+  useSelector,
+} from './store';
 import TextBlock from './TextBlock';
 
 const FacebookIcon: any = Facebook;

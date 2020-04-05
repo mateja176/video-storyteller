@@ -3,10 +3,7 @@ import { ActionsObservable, StateObservable } from 'redux-observable';
 import { ThunkAction } from 'redux-thunk';
 import { of, Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import {
-  createFetchLibraryImages,
-  CreateFetchLibraryImages,
-} from 'store/slices';
+import { createFetchLibraryImages, CreateFetchLibraryImages } from 'store';
 import { epicDependencies, fetchImages, FetchImagesEpic } from '../epic';
 import { Action, State } from '../reducer';
 

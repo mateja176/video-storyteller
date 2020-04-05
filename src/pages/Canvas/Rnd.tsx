@@ -5,7 +5,7 @@ import { SimpleAction } from 'models';
 import { Resizable, ResizableProps } from 're-resizable';
 import React from 'react';
 import { DragPreviewImage, DragSourceHookSpec, useDrag } from 'react-dnd';
-import { UpdateAction } from './store/blockStates';
+import { UpdateAction } from './store';
 
 export type DragSourceSpec = DragSourceHookSpec<
   SimpleAction,

@@ -14,8 +14,7 @@ import React from 'react';
 import { Flex } from 'rebass';
 import { ImageBlockState, WithDropResult } from 'utils';
 import { ICanvasContext } from './CanvasContext';
-import { Action } from './store';
-import { initialTransformState, TransformState } from './store/transform';
+import { Action, initialTransformState, TransformState } from './store';
 import {
   formatCoordinate,
   formatScaleToPercentage,

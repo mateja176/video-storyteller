@@ -57,9 +57,15 @@ import {
   initialElapsedTime,
   initialHoveredBlockId,
 } from './CanvasContext';
-import store, { Action } from './store';
-import { CudAction, cudActionType } from './store/blockStates';
-import { Position, Zoom, ZoomAndPosition } from './store/transform';
+import {
+  Action,
+  CudAction,
+  cudActionType,
+  Position,
+  store,
+  Zoom,
+  ZoomAndPosition,
+} from './store';
 import {
   ActionCreators,
   ActionWithId,

@@ -3,7 +3,7 @@ import { startCase } from 'lodash';
 import { StorageFile } from 'models';
 import React from 'react';
 import { Box, Flex } from 'rebass';
-import { CreateSetAudio } from './store/audio';
+import { CreateSetAudio } from './store';
 
 export type AudioElement = HTMLAudioElement | null;
 

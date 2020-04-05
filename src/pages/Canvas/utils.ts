@@ -2,23 +2,16 @@ import { Dispatch } from 'redux';
 // @ts-ignore
 import { ActionCreators as InstrumentActionCreators } from 'redux-devtools-instrument';
 import { toObject } from 'utils';
-import { Action, ActionWithMeta, State } from './store';
-import { AudioAction, audioActionTypes } from './store/audio';
 import {
+  Action,
+  ActionWithMeta,
+  AudioAction,
+  audioActionTypes,
   CreateAction,
   CudAction,
   CudActionType,
   cudActionTypes,
   DeleteAction,
-  UpdateAction,
-  UpdateActionType,
-  updateActionTypes,
-  UpdateEditTextAction,
-  UpdateMoveAction,
-  UpdateRenameImageAction,
-  UpdateResizeAction,
-} from './store/blockStates';
-import {
   PositionAction,
   positionTypes,
   ScaleAction,
@@ -29,11 +22,19 @@ import {
   setTransformType,
   SetZoomAction,
   setZoomType,
+  State,
   Transform,
   TransformAction,
   TransformActionType,
   transformActionTypes,
-} from './store/transform';
+  UpdateAction,
+  UpdateActionType,
+  updateActionTypes,
+  UpdateEditTextAction,
+  UpdateMoveAction,
+  UpdateRenameImageAction,
+  UpdateResizeAction,
+} from './store';
 
 export const formatScaleToPercentage = (scale: Transform['scale']) =>
   Number((scale * 100).toFixed(0));

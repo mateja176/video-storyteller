@@ -5,8 +5,12 @@ import { Box } from 'rebass';
 import { createFetchFiles, selectAudio } from 'store';
 import { useActions as useStoreActions } from 'utils';
 import AudioBlock, { AudioElement } from './AudioBlock';
-import { selectAudioId, useActions, useSelector } from './store';
-import { createSetAudio } from './store/audio';
+import {
+  createSetAudio,
+  selectAudioId,
+  useActions,
+  useSelector,
+} from './store';
 
 export interface AudioProps {
   setAudioElement: (element: AudioElement) => void;

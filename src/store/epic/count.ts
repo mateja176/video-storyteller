@@ -11,7 +11,7 @@ import {
   withLatestFrom,
 } from 'rxjs/operators';
 import { firebase } from 'services';
-import { selectCountValue } from 'store/selectors';
+import { selectCountValue } from 'store';
 import { getType } from 'typesafe-actions';
 import { Action, State } from '../reducer';
 import { selectUid } from '../selectors';
