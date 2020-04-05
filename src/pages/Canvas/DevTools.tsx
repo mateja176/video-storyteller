@@ -973,19 +973,26 @@ const StoryMonitor = ({
 
                         switch (action.type) {
                           case 'update/renameImage':
-                            store.dispatch({
-                              type: action.type,
-                              payload: {
-                                ...action.payload,
-                                name,
-                              },
-                              meta: {
-                                updated: true,
-                              },
-                            });
+                            if (action.payload.payload.block.name !== name) {
+                              store.dispatch({
+                                type: action.type,
+                                payload: {
+                                  ...action.payload,
+                                  payload: {
+                                    ...action.payload.payload,
+                                    block: {
+                                      ...action.payload.payload.block,
+                                      name,
+                                    },
+                                  },
+                                },
+                                meta: {
+                                  updated: true,
+                                },
+                              });
 
-                            deleteAction(id);
-
+                              deleteAction(id);
+                            }
                             break;
                           case 'update/move':
                             if (
