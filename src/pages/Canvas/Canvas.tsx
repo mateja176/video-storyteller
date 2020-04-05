@@ -63,12 +63,7 @@ import {
 } from 'draft-js';
 import 'firebase/analytics';
 import { debounce } from 'lodash';
-import {
-  ExtendedLoadingStatus,
-  WithStoryId,
-  workspaceClassName,
-  workspaceSelector,
-} from 'models';
+import { ExtendedLoadingStatus, WithStoryId, workspaceClassName } from 'models';
 import { Images } from 'pages/Images';
 import panzoom, { PanZoom } from 'panzoom';
 import { listItemProps } from 'props';
@@ -77,7 +72,6 @@ import React from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { useDrop } from 'react-dnd';
 import Dropzone from 'react-dropzone';
-import JoyRide, { CallBackProps, Step } from 'react-joyride';
 import { useSelector as useStoreSelector } from 'react-redux';
 import { Prompt, RouteComponentProps } from 'react-router-dom';
 import {
@@ -162,6 +156,7 @@ import {
   useSelector,
 } from './store';
 import TextBlock from './TextBlock';
+import { Tour } from './Tour';
 
 const FacebookIcon: any = Facebook;
 const RedditIcon: any = Reddit;
@@ -711,71 +706,6 @@ const Canvas: React.FC<CanvasProps> = ({
 
   const displaySidebar = !theatricalMode;
 
-  const [shouldRunTour, setShouldRunTour] = React.useState(false);
-
-  React.useEffect(() => {
-    const shouldRunString = localStorage.getItem('shouldRunTour');
-    const shouldRun = shouldRunString ? JSON.parse(shouldRunString) : true;
-
-    if (shouldRun) {
-      setShouldRunTour(shouldRun);
-    }
-  }, []);
-
-  const handleTourRan = React.useCallback(({ action }: CallBackProps) => {
-    if (action === 'skip' || action === 'stop') {
-      setShouldRunTour(false);
-      localStorage.setItem('shouldRunTour', false.toString());
-    }
-  }, []);
-
-  const steps: Step[] = [
-    {
-      title: 'Welcome',
-      content: 'Would you like take a tour of the workspace?',
-      target: 'body',
-      placement: 'center',
-    },
-    {
-      title: 'Main menu',
-      content:
-        'Visit the main menu when you want to perform an action on the story. As you will see, the menu is also home to the text editor controls and audio upload dropzone.',
-      target: workspaceSelector.mainMenu,
-    },
-    {
-      title: 'Sidebar',
-      content:
-        "Here you'll find actions you can perform in a story, like creating and deleting blocks.",
-      target: workspaceSelector.sidebar,
-      placement: 'right',
-    },
-    {
-      title: 'Right Drawer',
-      content:
-        'The drawer contains blocks you can drop into the canvas. Importantly, you can also edit the blocks before you drag and drop them.',
-      target: workspaceSelector.rightDrawer,
-      placement: 'left',
-    },
-    {
-      title: 'Canvas',
-      content:
-        'The state of the canvas depends entirely on the actions you performed up until that moment. For example, once you drop a block, it will be visible on the canvas.',
-      target: workspaceSelector.canvasWrapper,
-    },
-    {
-      title: 'Actions Timeline',
-      content:
-        "All actions you perform, like creating blocks and moving them, are recorded chronologically so that you can replay them from any point! You can also reorder the actions, just make sure not to place a block's create action after the same block's update action and vice versa.",
-      target: workspaceSelector.actionsTimeline,
-    },
-    {
-      title: 'Story Controls',
-      content:
-        'Play, pause, resume, stop, all of which you can do using story controls. Excluding sweeping and deleting, the controls are also going to be available to your audience.',
-      target: workspaceSelector.storyControls,
-    },
-  ];
-
   return (
     <Flex
       height="100%"
@@ -783,21 +713,7 @@ const Canvas: React.FC<CanvasProps> = ({
         cursor: deleteModeOn ? 'not-allowed' : 'default',
       }}
     >
-      <JoyRide
-        run={shouldRunTour}
-        steps={steps}
-        continuous
-        scrollToFirstStep
-        showProgress
-        showSkipButton
-        spotlightPadding={0}
-        styles={{
-          options: {
-            zIndex: 1101,
-          },
-        }}
-        callback={handleTourRan}
-      />
+      <Tour />
       {shouldPromptToSave && <Prompt message={confirmNavigationMessage} />}
       <Drawer
         className={workspaceClassName.sidebar}
