@@ -32,7 +32,6 @@ const eventTypes = [
   'toggleFullscreenOn',
   'play',
   'pause',
-  'resume',
   'stop',
   'share',
   'addImages',
@@ -98,6 +97,9 @@ type ToggleDeleteModeOnEvent = Action<IEventType['toggleDeleteModeOn']>;
 type ToggleOpenAudioUploadEvent = Action<IEventType['toggleOpenAudioUpload']>;
 type ToggleTheatricalOnEvent = Action<IEventType['toggleTheatricalModeOn']>;
 type ToggleFullscreenOnEvent = Action<IEventType['toggleFullscreenOn']>;
+type PlayEvent = Action<IEventType['play']>;
+type PauseEvent = Action<IEventType['pause']>;
+type StopEvent = Action<IEventType['stop']>;
 type SignoutEvent = Action<IEventType['signout']>;
 
 type AnalyticsEventWithoutPayload =
@@ -107,6 +109,9 @@ type AnalyticsEventWithoutPayload =
   | ToggleOpenAudioUploadEvent
   | ToggleTheatricalOnEvent
   | ToggleFullscreenOnEvent
+  | PlayEvent
+  | PauseEvent
+  | StopEvent
   | SignoutEvent;
 
 type AnalyticsEvent = AnalyticsEventWithoutPayload | AnalyticsEventWithPayload;

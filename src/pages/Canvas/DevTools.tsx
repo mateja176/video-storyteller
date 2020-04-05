@@ -48,6 +48,7 @@ import GridLayout from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import { Box, Flex } from 'rebass';
 import { createDevTools } from 'redux-devtools';
+import { analytics } from 'services';
 import { createListItemIconStyle, listItemStyle } from 'styles';
 import { Tuple } from 'ts-toolbelt';
 import { draggables, removeNils } from 'utils';
@@ -520,6 +521,8 @@ const StoryMonitor = ({
               setIsPlaying(false);
 
               clearTimeout(playTimeout);
+
+              analytics.logEvent({ type: 'pause' });
             }}
           >
             <ListItemIcon>
@@ -541,6 +544,8 @@ const StoryMonitor = ({
               disabled={!canPlay}
               onClick={() => {
                 setIsPlaying(true);
+
+                analytics.logEvent({ type: 'play' });
               }}
             >
               <ListItemIcon>
@@ -562,6 +567,8 @@ const StoryMonitor = ({
             setPlayTimeout(initialPlayTimeout);
 
             setTimeoutStart(initialTimeoutStart);
+
+            analytics.logEvent({ type: 'stop' });
           }}
         >
           <ListItemIcon>
