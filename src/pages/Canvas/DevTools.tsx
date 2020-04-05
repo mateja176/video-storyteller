@@ -840,6 +840,8 @@ const StoryMonitor = ({
                       );
 
                       setTotalElapsedTime(newTotalElapsedTime);
+
+                      analytics.logEvent({ type: 'jumpToAction' });
                     }
                   }}
                 >

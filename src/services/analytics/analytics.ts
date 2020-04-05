@@ -33,6 +33,7 @@ const eventTypes = [
   'play',
   'pause',
   'stop',
+  'jumpToAction',
   'share',
   'addImages',
   'uploadImages',
@@ -100,6 +101,7 @@ type ToggleFullscreenOnEvent = Action<IEventType['toggleFullscreenOn']>;
 type PlayEvent = Action<IEventType['play']>;
 type PauseEvent = Action<IEventType['pause']>;
 type StopEvent = Action<IEventType['stop']>;
+type JumpToActionEvent = Action<IEventType['jumpToAction']>;
 type SignoutEvent = Action<IEventType['signout']>;
 
 type AnalyticsEventWithoutPayload =
@@ -112,6 +114,7 @@ type AnalyticsEventWithoutPayload =
   | PlayEvent
   | PauseEvent
   | StopEvent
+  | JumpToActionEvent
   | SignoutEvent;
 
 type AnalyticsEvent = AnalyticsEventWithoutPayload | AnalyticsEventWithPayload;
