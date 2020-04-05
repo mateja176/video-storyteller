@@ -58,20 +58,8 @@ import {
   initialHoveredBlockId,
 } from './CanvasContext';
 import store, { Action } from './store';
-import {
-  CudAction,
-  cudActionType,
-  UpdateMoveAction,
-  UpdateRenameImageAction,
-} from './store/blockStates';
-import {
-  Position,
-  SetPositionAction,
-  SetScaleAction,
-  SetZoomAction,
-  Zoom,
-  ZoomAndPosition,
-} from './store/transform';
+import { CudAction, cudActionType } from './store/blockStates';
+import { Position, Zoom, ZoomAndPosition } from './store/transform';
 import {
   ActionCreators,
   ActionWithId,
@@ -970,8 +958,6 @@ const StoryMonitor = ({
                           setDurations(update(i, newDuration, durations));
                         }
 
-                        const { type } = action;
-
                         const zoom: Zoom = {
                           scale: scale / 100,
                           clientX,
@@ -988,7 +974,7 @@ const StoryMonitor = ({
                         switch (action.type) {
                           case 'update/renameImage':
                             store.dispatch({
-                              type,
+                              type: action.type,
                               payload: {
                                 ...action.payload,
                                 name,
@@ -996,7 +982,7 @@ const StoryMonitor = ({
                               meta: {
                                 updated: true,
                               },
-                            } as UpdateRenameImageAction);
+                            });
 
                             deleteAction(id);
 
@@ -1007,7 +993,7 @@ const StoryMonitor = ({
                               action.payload.payload.top !== top
                             ) {
                               store.dispatch({
-                                type,
+                                type: action.type,
                                 payload: {
                                   ...action.payload,
                                   payload: {
@@ -1019,7 +1005,7 @@ const StoryMonitor = ({
                                 meta: {
                                   updated: true,
                                 },
-                              } as UpdateMoveAction);
+                              });
 
                               deleteAction(id);
                             }
@@ -1031,12 +1017,12 @@ const StoryMonitor = ({
                             };
                             if (!equals(currentZoom, zoom)) {
                               store.dispatch({
-                                type,
+                                type: action.type,
                                 payload: zoom,
                                 meta: {
                                   updated: true,
                                 },
-                              } as SetScaleAction);
+                              });
 
                               deleteAction(id);
                             }
@@ -1049,12 +1035,12 @@ const StoryMonitor = ({
                             );
                             if (!equals(currentPosition, position)) {
                               store.dispatch({
-                                type,
+                                type: action.type,
                                 payload: position,
                                 meta: {
                                   updated: true,
                                 },
-                              } as SetPositionAction);
+                              });
 
                               deleteAction(id);
                             }
@@ -1073,12 +1059,12 @@ const StoryMonitor = ({
                               !equals(currentZoomAndPosition, zoomAndPosition)
                             ) {
                               store.dispatch({
-                                type,
+                                type: action.type,
                                 payload: zoomAndPosition,
                                 meta: {
                                   updated: true,
                                 },
-                              } as SetZoomAction);
+                              });
 
                               deleteAction(id);
                             }
