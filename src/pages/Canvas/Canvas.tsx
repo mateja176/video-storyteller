@@ -189,6 +189,8 @@ const headerAndControlsHeight = headerHeight + controlsHeight;
 
 const actionsTimelineHeight = 300;
 
+const dropZoneHeight = 100;
+
 const listItemIconStyle: React.CSSProperties = {
   minWidth: 'auto',
   marginRight: 10,
@@ -723,7 +725,7 @@ const Canvas: React.FC<CanvasProps> = ({
     {
       title: 'Main menu',
       content:
-        'Visit the main menu when you want to perform an action on the story. As you will see, the menu is also home to the text editor controls.',
+        'Visit the main menu when you want to perform an action on the story. As you will see, the menu is also home to the text editor controls and audio upload dropzone.',
       target: workspaceSelector.mainMenu,
     },
     {
@@ -749,7 +751,7 @@ const Canvas: React.FC<CanvasProps> = ({
     {
       title: 'Actions Timeline',
       content:
-        "All actions you perform, like creating blocks and moving them, are recorded chronologically so that you can replay them for any point! You can also reorder the actions, just make sure not to place a block's create action after the same block's update action and vice versa.",
+        "All actions you perform, like creating blocks and moving them, are recorded chronologically so that you can replay them from any point! You can also reorder the actions, just make sure not to place a block's create action after the same block's update action and vice versa.",
       target: workspaceSelector.actionsTimeline,
     },
     {
@@ -857,6 +859,23 @@ const Canvas: React.FC<CanvasProps> = ({
                 disabled={fetchStoriesStatus === 'in progress'}
                 button
                 onClick={() => {
+                  setDeleteModeOn(!deleteModeOn);
+
+                  if (!deleteModeOn) {
+                    analytics.logEvent({ type: 'toggleDeleteModeOn' });
+                  }
+                }}
+              >
+                <Tooltip title="Toggle delete mode">
+                  <ListItemIcon>
+                    <Delete color={deleteModeOn ? 'secondary' : 'inherit'} />
+                  </ListItemIcon>
+                </Tooltip>
+              </ListItem>
+              <ListItem
+                disabled={fetchStoriesStatus === 'in progress'}
+                button
+                onClick={() => {
                   if (rightDrawerOccupant === 'audio') {
                     setRightDrawerOccupant('none');
                   } else {
@@ -875,23 +894,6 @@ const Canvas: React.FC<CanvasProps> = ({
                           : 'inherit'
                       }
                     />
-                  </ListItemIcon>
-                </Tooltip>
-              </ListItem>
-              <ListItem
-                disabled={fetchStoriesStatus === 'in progress'}
-                button
-                onClick={() => {
-                  setDeleteModeOn(!deleteModeOn);
-
-                  if (!deleteModeOn) {
-                    analytics.logEvent({ type: 'toggleDeleteModeOn' });
-                  }
-                }}
-              >
-                <Tooltip title="Toggle delete mode">
-                  <ListItemIcon>
-                    <Delete color={deleteModeOn ? 'secondary' : 'inherit'} />
                   </ListItemIcon>
                 </Tooltip>
               </ListItem>
@@ -931,7 +933,12 @@ const Canvas: React.FC<CanvasProps> = ({
             borderBottom: dividingBorder,
           }}
         >
-          <Flex style={{ minHeight: controlsHeight }}>
+          <Flex
+            style={{
+              height: audioUploadOpen ? dropZoneHeight : controlsHeight,
+              transition: 'height 250ms ease-out',
+            }}
+          >
             {(() => {
               switch (true) {
                 case audioUploadOpen:
@@ -973,7 +980,7 @@ const Canvas: React.FC<CanvasProps> = ({
                           <Flex
                             {...(rootProps as any)}
                             width="100%"
-                            height={100}
+                            height={dropZoneHeight}
                             justifyContent="center"
                             alignItems="center"
                           >
