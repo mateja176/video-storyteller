@@ -77,7 +77,7 @@ import React from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { useDrop } from 'react-dnd';
 import Dropzone from 'react-dropzone';
-import JoyRide, { Step } from 'react-joyride';
+import JoyRide, { CallBackProps, Step } from 'react-joyride';
 import { useSelector as useStoreSelector } from 'react-redux';
 import { Prompt, RouteComponentProps } from 'react-router-dom';
 import {
@@ -711,6 +711,24 @@ const Canvas: React.FC<CanvasProps> = ({
 
   const displaySidebar = !theatricalMode;
 
+  const [shouldRunTour, setShouldRunTour] = React.useState(false);
+
+  React.useEffect(() => {
+    const shouldRunString = localStorage.getItem('shouldRunTour');
+    const shouldRun = shouldRunString ? JSON.parse(shouldRunString) : true;
+
+    if (shouldRun) {
+      setShouldRunTour(shouldRun);
+    }
+  }, []);
+
+  const handleTourRan = React.useCallback(({ action }: CallBackProps) => {
+    if (action === 'skip' || action === 'stop') {
+      setShouldRunTour(false);
+      localStorage.setItem('shouldRunTour', false.toString());
+    }
+  }, []);
+
   const steps: Step[] = [
     {
       title: 'Welcome',
@@ -766,7 +784,7 @@ const Canvas: React.FC<CanvasProps> = ({
       }}
     >
       <JoyRide
-        run={false}
+        run={shouldRunTour}
         steps={steps}
         continuous
         scrollToFirstStep
@@ -778,6 +796,7 @@ const Canvas: React.FC<CanvasProps> = ({
             zIndex: 1101,
           },
         }}
+        callback={handleTourRan}
       />
       {shouldPromptToSave && <Prompt message={confirmNavigationMessage} />}
       <Drawer
