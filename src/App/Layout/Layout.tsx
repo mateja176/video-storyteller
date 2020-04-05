@@ -21,6 +21,10 @@ const useStyles = makeStyles(theme => ({
     width: drawerWidth,
   },
   toolbar: createToolbarStyles(theme),
+  hidden: {
+    height: 0,
+    overflow: 'hidden',
+  },
 }));
 
 export interface LayoutProps extends RouteComponentProps {
@@ -47,7 +51,7 @@ const Layout: FC<LayoutProps> = ({
     }
   }, [search]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const { drawer, toolbar } = useStyles();
+  const { drawer, toolbar, hidden } = useStyles();
 
   const [open, setOpen] = useState(false);
 
@@ -72,7 +76,10 @@ const Layout: FC<LayoutProps> = ({
       }}
     >
       <CssBaseline />
-      {!theatricalMode && <Header toggle={handleDrawerToggle} />}
+      <Header
+        className={theatricalMode ? hidden : ''}
+        toggle={handleDrawerToggle}
+      />
       <Drawer
         open={open}
         onClose={handleDrawerToggle}

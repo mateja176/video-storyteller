@@ -43,6 +43,8 @@ interface Language {
 const useStyles = makeStyles(() => ({
   header: {
     width: 'auto',
+    height: 76,
+    transition: 'height 500ms ease-in-out',
   },
   expand: {
     flexGrow: 1,
