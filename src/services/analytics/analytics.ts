@@ -61,16 +61,6 @@ type CreateBlockEvent = PayloadAction<
 type ShareEvent = PayloadAction<IEventType['share'], WithMethod>;
 type AddImagesEvent = PayloadAction<IEventType['addImages'], { count: number }>;
 type UploadImagesEvent = PayloadAction<IEventType['uploadImages'], any>;
-type OpenBlockDrawerEvent = PayloadAction<
-  IEventType['openBlockDrawer'],
-  Pick<DropTextAction | DropImageAction, 'type'>
->;
-type OpenAudioTracksDrawerEvent = Action<IEventType['openAudioTracksDrawer']>;
-type ToggleDeleteModeOnEvent = Action<IEventType['toggleDeleteModeOn']>;
-type ToggleOpenAudioUploadEvent = Action<IEventType['toggleOpenAudioUpload']>;
-type ToggleTheatricalOnEvent = Action<IEventType['toggleTheatricalModeOn']>;
-type ToggleFullscreenOnEvent = Action<IEventType['toggleFullscreenOn']>;
-type SignoutEvent = Action<IEventType['signout']>;
 
 type AnalyticsEventWithPayload =
   | SigninEvent
@@ -83,6 +73,17 @@ type AnalyticsEventWithPayload =
   | ShareEvent
   | AddImagesEvent
   | UploadImagesEvent;
+
+type OpenBlockDrawerEvent = PayloadAction<
+  IEventType['openBlockDrawer'],
+  Pick<DropTextAction | DropImageAction, 'type'>
+>;
+type OpenAudioTracksDrawerEvent = Action<IEventType['openAudioTracksDrawer']>;
+type ToggleDeleteModeOnEvent = Action<IEventType['toggleDeleteModeOn']>;
+type ToggleOpenAudioUploadEvent = Action<IEventType['toggleOpenAudioUpload']>;
+type ToggleTheatricalOnEvent = Action<IEventType['toggleTheatricalModeOn']>;
+type ToggleFullscreenOnEvent = Action<IEventType['toggleFullscreenOn']>;
+type SignoutEvent = Action<IEventType['signout']>;
 
 type AnalyticsEventWithoutPayload =
   | OpenBlockDrawerEvent
