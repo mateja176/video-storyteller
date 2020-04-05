@@ -21,6 +21,7 @@ export const workspaceClassName = {
   canvasWrapper: 'canvas-wrapper',
   actionsTimeline: 'actions-timeline',
   storyControls: 'story-controls',
+  actionCard: 'action-card',
 };
 
 export const workspaceSelector = Object.fromEntries(

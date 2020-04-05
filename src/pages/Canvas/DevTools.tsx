@@ -786,6 +786,7 @@ const StoryMonitor = ({
             return (
               <Flex key={id} height="100%">
                 <Card
+                  className={workspaceClassName.actionCard}
                   style={{
                     background: cardColor
                       .alpha(isCurrentAction ? 0.4 : 0.2)
