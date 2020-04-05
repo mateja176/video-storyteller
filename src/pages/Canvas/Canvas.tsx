@@ -36,7 +36,6 @@ import {
 } from '@material-ui/icons';
 import { SpeedDial, SpeedDialAction } from '@material-ui/lab';
 import { Context } from 'App';
-import clsx from 'clsx';
 import color from 'color';
 import {
   Button,
@@ -72,6 +71,7 @@ import {
 } from 'models';
 import { Images } from 'pages/Images';
 import panzoom, { PanZoom } from 'panzoom';
+import { listItemProps } from 'props';
 import { equals, pickAll } from 'ramda';
 import React from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
@@ -116,6 +116,7 @@ import {
   selectUid,
 } from 'store';
 import {
+  createListItemIconStyle,
   createReferencePointStyle,
   dividingBorder,
   storageImageWidth,
@@ -213,9 +214,6 @@ const RightDrawer: React.FC<Pick<React.CSSProperties, 'height' | 'width'> & {
 );
 
 const useStyles = makeStyles(() => ({
-  drawer: {
-    width: miniDrawerWidth,
-  },
   paper: {
     position: 'static',
     overflow: 'hidden',
@@ -518,9 +516,18 @@ const Canvas: React.FC<CanvasProps> = ({
     !!currentStory,
   );
 
+  const [rightDrawerOccupant, setRightDrawerOccupant] = React.useState<
+    'initial' | 'none' | 'images' | 'text blocks' | 'audio'
+  >('initial');
+  const rightDrawerHeight = `calc(100vh - ${2 + // * 2px less presumably because of the paper's shadow
+    (theatricalMode ? 0 : headerAndControlsHeight) +
+    (actionsTimelineOpen ? actionsTimelineHeight : 0)}px)`;
+
   React.useEffect(() => {
     if (theatricalMode) {
       setActionsTimelineOpen(false);
+
+      setRightDrawerOccupant('none');
     }
   }, [theatricalMode]);
 
@@ -574,13 +581,6 @@ const Canvas: React.FC<CanvasProps> = ({
     fetchStoriesStatus,
     saveStoryStatus,
   ].some(equals<ExtendedLoadingStatus>('in progress'));
-
-  const [rightDrawerOccupant, setRightDrawerOccupant] = React.useState<
-    'initial' | 'none' | 'images' | 'text blocks' | 'audio'
-  >('initial');
-  const rightDrawerHeight = `calc(100vh - ${2 + // * 2px less presumably because of the paper's shadow
-    (theatricalMode ? 0 : headerAndControlsHeight) +
-    (actionsTimelineOpen ? actionsTimelineHeight : 0)}px)`;
 
   React.useEffect(() => {
     if (
@@ -705,6 +705,14 @@ const Canvas: React.FC<CanvasProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shouldPromptToSave]);
 
+  const rowListItemIconStyle = {
+    ...createListItemIconStyle(theme),
+    paddingLeft: 10,
+    paddingRight: 10,
+  };
+
+  const displaySidebar = !theatricalMode;
+
   const steps: Step[] = [
     {
       title: 'Welcome',
@@ -775,9 +783,13 @@ const Canvas: React.FC<CanvasProps> = ({
       />
       {shouldPromptToSave && <Prompt message={confirmNavigationMessage} />}
       <Drawer
-        className={clsx(classes.drawer, workspaceClassName.sidebar)}
-        variant="permanent"
-        open
+        className={workspaceClassName.sidebar}
+        variant="persistent"
+        open={displaySidebar}
+        style={{
+          width: displaySidebar ? miniDrawerWidth : 0,
+          transition: 'width 500ms ease-in-out',
+        }}
         classes={{
           paper: classes.paper,
         }}
@@ -903,61 +915,6 @@ const Canvas: React.FC<CanvasProps> = ({
               </ListItem>
             </>
           )}
-          {currentStory && (
-            <ListItem button onClick={toggleActionsTimelineOpen}>
-              <Tooltip title="Toggle open actions timeline">
-                <ListItemIcon>
-                  <Build
-                    color={actionsTimelineOpen ? 'secondary' : 'inherit'}
-                  />
-                </ListItemIcon>
-              </Tooltip>
-            </ListItem>
-          )}
-          <ListItem
-            button
-            onClick={() => {
-              toggleTheatricalMode();
-
-              if (!theatricalMode) {
-                analytics.logEvent({ type: 'toggleTheatricalModeOn' });
-              }
-            }}
-          >
-            <Tooltip title="Toggle theatrical mode">
-              <ListItemIcon>
-                <Box>
-                  {theatricalMode ? <TvOff color="secondary" /> : <Tv />}
-                </Box>
-              </ListItemIcon>
-            </Tooltip>
-          </ListItem>
-          <ListItem
-            button
-            onClick={() => {
-              if (window.document.fullscreenElement) {
-                setIsFullScreen(false);
-                window.document.exitFullscreen();
-              } else {
-                setIsFullScreen(true);
-                window.document.documentElement.requestFullscreen();
-
-                analytics.logEvent({ type: 'toggleFullscreenOn' });
-              }
-            }}
-          >
-            <Tooltip title="Toggle full screen">
-              <ListItemIcon>
-                <Box>
-                  {isFullscreen ? (
-                    <FullscreenExit color="secondary" />
-                  ) : (
-                    <Fullscreen />
-                  )}
-                </Box>
-              </ListItemIcon>
-            </Tooltip>
-          </ListItem>
         </List>
       </Drawer>
       <Flex
@@ -974,429 +931,497 @@ const Canvas: React.FC<CanvasProps> = ({
             borderBottom: dividingBorder,
           }}
         >
-          {!theatricalMode && (
-            <Flex style={{ minHeight: controlsHeight }}>
-              {(() => {
-                switch (true) {
-                  case audioUploadOpen:
-                    return (
-                      <Dropzone
-                        onDrop={([audioFile]) => {
-                          const { name } = audioFile;
-                          const id = v4();
-                          const reader = new FileReader();
-                          reader.readAsDataURL(audioFile);
-                          // eslint-disable-next-line
-                          reader.onload = () => {
-                            putString(
-                              firebase.storage().ref(urlJoin('audio', uid, id)),
-                              String(reader.result),
-                              'data_url',
-                              { customMetadata: { name, id } },
-                            ).subscribe(({ bytesTransferred, totalBytes }) => {
-                              const percentage = Number(
-                                ((bytesTransferred / totalBytes) * 100).toFixed(
-                                  0,
-                                ),
-                              );
+          <Flex style={{ minHeight: controlsHeight }}>
+            {(() => {
+              switch (true) {
+                case audioUploadOpen:
+                  return (
+                    <Dropzone
+                      onDrop={([audioFile]) => {
+                        const { name } = audioFile;
+                        const id = v4();
+                        const reader = new FileReader();
+                        reader.readAsDataURL(audioFile);
+                        // eslint-disable-next-line
+                        reader.onload = () => {
+                          putString(
+                            firebase.storage().ref(urlJoin('audio', uid, id)),
+                            String(reader.result),
+                            'data_url',
+                            { customMetadata: { name, id } },
+                          ).subscribe(({ bytesTransferred, totalBytes }) => {
+                            const percentage = Number(
+                              ((bytesTransferred / totalBytes) * 100).toFixed(
+                                0,
+                              ),
+                            );
 
-                              setUploadPercentage(percentage);
+                            setUploadPercentage(percentage);
 
-                              if (percentage === 100) {
-                                setUploadPercentage(-1);
-                              }
-                            });
-                          };
-                        }}
-                        accept={['audio/*']}
-                        disabled={uploading}
-                      >
-                        {({ getRootProps, getInputProps }) => {
-                          const rootProps = getRootProps();
-                          return (
-                            <Flex
-                              {...(rootProps as any)}
-                              width="100%"
-                              height={100}
-                              justifyContent="center"
-                              alignItems="center"
-                            >
-                              <input {...getInputProps()} />
-                              <Flex alignItems="center">
-                                <Box mr={10}>
-                                  {uploading ? (
-                                    `${uploadPercentage} %`
-                                  ) : (
-                                    <Icon>
-                                      <ArrowDownward />
-                                    </Icon>
-                                  )}
-                                </Box>
-                                <Typography
-                                  style={{
-                                    display: 'inline-block',
-                                    marginRight: 5,
-                                  }}
-                                >
-                                  Drop audio track here or
-                                </Typography>
-                                <Button disabled={uploading}>
-                                  click to select
-                                </Button>
-                              </Flex>
+                            if (percentage === 100) {
+                              setUploadPercentage(-1);
+                            }
+                          });
+                        };
+                      }}
+                      accept={['audio/*']}
+                      disabled={uploading}
+                    >
+                      {({ getRootProps, getInputProps }) => {
+                        const rootProps = getRootProps();
+                        return (
+                          <Flex
+                            {...(rootProps as any)}
+                            width="100%"
+                            height={100}
+                            justifyContent="center"
+                            alignItems="center"
+                          >
+                            <input {...getInputProps()} />
+                            <Flex alignItems="center">
+                              <Box mr={10}>
+                                {uploading ? (
+                                  `${uploadPercentage} %`
+                                ) : (
+                                  <Icon>
+                                    <ArrowDownward />
+                                  </Icon>
+                                )}
+                              </Box>
+                              <Typography
+                                style={{
+                                  display: 'inline-block',
+                                  marginRight: 5,
+                                }}
+                              >
+                                Drop audio track here or
+                              </Typography>
+                              <Button disabled={uploading}>
+                                click to select
+                              </Button>
                             </Flex>
-                          );
+                          </Flex>
+                        );
+                      }}
+                    </Dropzone>
+                  );
+                case !!focusedEditorId:
+                  return (
+                    <>
+                      <List
+                        style={{
+                          display: 'flex',
+                          padding: 0,
                         }}
-                      </Dropzone>
-                    );
-                  case !!focusedEditorId:
-                    return (
-                      <>
-                        <List
-                          style={{
-                            display: 'flex',
-                            padding: 0,
+                        onMouseDown={e => {
+                          e.preventDefault();
+                        }}
+                      >
+                        <EditorControls
+                          editorState={focusedEditorState}
+                          setEditorState={setFocusedEditorState}
+                        />
+                        <FontFamilyPicker
+                          selected={
+                            (inlineStyleTypes.find(type =>
+                              fontFamilies.includes(type as FontFamily),
+                            ) || fontFamilies[0]) as FontFamily
+                          }
+                          onSelect={handleSelect(fontFamilies)}
+                        />
+                        <FontSizePicker
+                          selected={
+                            (inlineStyleTypes.find(type =>
+                              fontSizes.includes(type as FontSize),
+                            ) || 'initial') as FontSize
+                          }
+                          onSelect={handleSelect(fontSizes)}
+                        />
+                        <ColorPicker
+                          color={getCurrentColor(focusedEditorState) as Color}
+                          onSelect={newColor => {
+                            setFocusedEditorState(
+                              RichUtils.toggleInlineStyle(
+                                focusedEditorState,
+                                newColor,
+                              ),
+                            );
                           }}
-                          onMouseDown={e => {
-                            e.preventDefault();
-                          }}
-                        >
-                          <EditorControls
-                            editorState={focusedEditorState}
-                            setEditorState={setFocusedEditorState}
-                          />
-                          <FontFamilyPicker
-                            selected={
-                              (inlineStyleTypes.find(type =>
-                                fontFamilies.includes(type as FontFamily),
-                              ) || fontFamilies[0]) as FontFamily
-                            }
-                            onSelect={handleSelect(fontFamilies)}
-                          />
-                          <FontSizePicker
-                            selected={
-                              (inlineStyleTypes.find(type =>
-                                fontSizes.includes(type as FontSize),
-                              ) || 'initial') as FontSize
-                            }
-                            onSelect={handleSelect(fontSizes)}
-                          />
-                          <ColorPicker
-                            color={getCurrentColor(focusedEditorState) as Color}
-                            onSelect={newColor => {
-                              setFocusedEditorState(
-                                RichUtils.toggleInlineStyle(
-                                  focusedEditorState,
-                                  newColor,
-                                ),
-                              );
+                        />
+                        <Tooltip title="Cancel text editing">
+                          <ListItem
+                            button
+                            style={{ width: 'auto' }}
+                            onClick={() => {
+                              setFocusedEditorId('');
+                            }}
+                          >
+                            <ListItemIcon style={listItemIconStyle}>
+                              <Cancel color="secondary" />
+                            </ListItemIcon>
+                            <ListItemText>Cancel</ListItemText>
+                          </ListItem>
+                        </Tooltip>
+                        {focusedEditorId !== draggable.text && (
+                          <ListItem
+                            button
+                            style={{ width: 'auto' }}
+                            onClick={() =>
+                              updateEditText({
+                                id: focusedEditorId,
+                                block: {
+                                  editorState: convertToRaw(
+                                    focusedEditorState.getCurrentContent(),
+                                  ),
+                                },
+                              })
+                            } // eslint-disable-line react/jsx-curly-newline
+                          >
+                            <ListItemIcon style={listItemIconStyle}>
+                              <Save />
+                            </ListItemIcon>
+                            <ListItemText>Save</ListItemText>
+                          </ListItem>
+                        )}
+                      </List>
+                    </>
+                  );
+
+                default:
+                  return (
+                    <Flex
+                      className={workspaceClassName.mainMenu}
+                      alignItems="center"
+                      style={{
+                        height: controlsHeight,
+                      }}
+                    >
+                      <List
+                        style={{
+                          paddingTop: 0,
+                          paddingBottom: 0,
+                          display: 'flex',
+                          height: '100%',
+                        }}
+                      >
+                        {!storyLoading && (
+                          <OptionWithPopover
+                            initiallyOpen={!currentStory}
+                            disabled={false}
+                            Icon={NoteAdd}
+                            initialValue=""
+                            text="New story"
+                            submitText="Create"
+                            placeholder="New story"
+                            onSubmit={value => {
+                              const newStoryId = v4();
+
+                              const newStory: StoryWithId = {
+                                id: newStoryId,
+                                name: value,
+                                actions: [],
+                                durations: [],
+                                isPublic: false,
+                                authorId: uid,
+                                audioId: '',
+                                audioSrc: '',
+                              };
+
+                              addStory(newStory);
+                              setCurrentStoryId({
+                                currentStoryId: newStoryId,
+                              });
+
+                              saveStory(newStory);
                             }}
                           />
-                          <Tooltip title="Cancel text editing">
+                        )}
+                        {currentStory && (
+                          <OptionWithPopover
+                            disabled={storyLoading}
+                            Icon={FileCopy}
+                            initialValue=""
+                            placeholder="Duplicate's name"
+                            text="Duplicate"
+                            submitText="Duplicate"
+                            onSubmit={value => {
+                              const newStoryState: StoryWithId = {
+                                ...storyMonitorState,
+                                id: v4(),
+                                name: value,
+                                durations,
+                                audioId: audioElement ? audioElement.id : '',
+                                audioSrc: audioElement ? audioSrc : '',
+                                isPublic: false,
+                                authorId: uid,
+                              };
+                              saveStory(newStoryState);
+                            }}
+                          />
+                        )}
+                        {isAuthor && (
+                          <>
+                            <OptionWithPopover
+                              disabled={!currentStory || storyLoading}
+                              Icon={Edit}
+                              initialValue={
+                                currentStory ? currentStory.name : ''
+                              }
+                              placeholder="Story name"
+                              submitText="Rename"
+                              text="Rename"
+                              onSubmit={value => {
+                                updateStory({
+                                  id: pathStoryId,
+                                  name: value,
+                                });
+                              }}
+                            />
                             <ListItem
+                              disabled={storyLoading || !hasStoryChanged}
                               button
-                              style={{ width: 'auto' }}
                               onClick={() => {
-                                setFocusedEditorId('');
+                                if (storyState) {
+                                  saveStory(storyState);
+                                }
                               }}
                             >
                               <ListItemIcon style={listItemIconStyle}>
-                                <Cancel color="secondary" />
-                              </ListItemIcon>
-                              <ListItemText>Cancel</ListItemText>
-                            </ListItem>
-                          </Tooltip>
-                          {focusedEditorId !== draggable.text && (
-                            <ListItem
-                              button
-                              style={{ width: 'auto' }}
-                              onClick={() =>
-                                updateEditText({
-                                  id: focusedEditorId,
-                                  block: {
-                                    editorState: convertToRaw(
-                                      focusedEditorState.getCurrentContent(),
-                                    ),
-                                  },
-                                })
-                              } // eslint-disable-line react/jsx-curly-newline
-                            >
-                              <ListItemIcon style={listItemIconStyle}>
-                                <Save />
+                                <Save color="primary" />
                               </ListItemIcon>
                               <ListItemText>Save</ListItemText>
                             </ListItem>
-                          )}
-                        </List>
-                      </>
-                    );
+                          </>
+                        )}
+                        {currentStory && (
+                          <ListItem
+                            {...listItemProps}
+                            onClick={toggleActionsTimelineOpen}
+                          >
+                            <Tooltip title="Toggle open actions timeline">
+                              <ListItemIcon style={rowListItemIconStyle}>
+                                <Build
+                                  color={
+                                    actionsTimelineOpen
+                                      ? 'secondary'
+                                      : 'inherit'
+                                  }
+                                />
+                              </ListItemIcon>
+                            </Tooltip>
+                          </ListItem>
+                        )}
+                        <ListItem
+                          {...listItemProps}
+                          onClick={() => {
+                            toggleTheatricalMode();
 
-                  default:
-                    return (
-                      <Flex
-                        className={workspaceClassName.mainMenu}
-                        alignItems="center"
-                        style={{
-                          height: controlsHeight,
-                        }}
-                      >
-                        <List
-                          style={{
-                            paddingTop: 0,
-                            paddingBottom: 0,
-                            display: 'flex',
-                            height: '100%',
+                            if (!theatricalMode) {
+                              analytics.logEvent({
+                                type: 'toggleTheatricalModeOn',
+                              });
+                            }
                           }}
                         >
-                          {!storyLoading && (
-                            <OptionWithPopover
-                              initiallyOpen={!currentStory}
-                              disabled={false}
-                              Icon={NoteAdd}
-                              initialValue=""
-                              text="New story"
-                              submitText="Create"
-                              placeholder="New story"
-                              onSubmit={value => {
-                                const newStoryId = v4();
+                          <Tooltip title="Toggle theatrical mode">
+                            <ListItemIcon style={rowListItemIconStyle}>
+                              <Box>
+                                {theatricalMode ? (
+                                  <TvOff color="secondary" />
+                                ) : (
+                                  <Tv />
+                                )}
+                              </Box>
+                            </ListItemIcon>
+                          </Tooltip>
+                        </ListItem>
+                        <ListItem
+                          {...listItemProps}
+                          onClick={() => {
+                            if (window.document.fullscreenElement) {
+                              setIsFullScreen(false);
+                              window.document.exitFullscreen();
+                            } else {
+                              setIsFullScreen(true);
+                              window.document.documentElement.requestFullscreen();
 
-                                const newStory: StoryWithId = {
-                                  id: newStoryId,
-                                  name: value,
-                                  actions: [],
-                                  durations: [],
-                                  isPublic: false,
-                                  authorId: uid,
-                                  audioId: '',
-                                  audioSrc: '',
-                                };
-
-                                addStory(newStory);
-                                setCurrentStoryId({
-                                  currentStoryId: newStoryId,
-                                });
-
-                                saveStory(newStory);
-                              }}
-                            />
-                          )}
-                          {currentStory && (
-                            <OptionWithPopover
-                              disabled={storyLoading}
-                              Icon={FileCopy}
-                              initialValue=""
-                              placeholder="Duplicate's name"
-                              text="Duplicate"
-                              submitText="Duplicate"
-                              onSubmit={value => {
-                                const newStoryState: StoryWithId = {
-                                  ...storyMonitorState,
-                                  id: v4(),
-                                  name: value,
-                                  durations,
-                                  audioId: audioElement ? audioElement.id : '',
-                                  audioSrc: audioElement ? audioSrc : '',
-                                  isPublic: false,
-                                  authorId: uid,
-                                };
-                                saveStory(newStoryState);
-                              }}
-                            />
-                          )}
-                          {isAuthor && (
-                            <>
-                              <OptionWithPopover
-                                disabled={!currentStory || storyLoading}
-                                Icon={Edit}
-                                initialValue={
-                                  currentStory ? currentStory.name : ''
+                              analytics.logEvent({
+                                type: 'toggleFullscreenOn',
+                              });
+                            }
+                          }}
+                        >
+                          <Tooltip title="Toggle full screen">
+                            <ListItemIcon style={rowListItemIconStyle}>
+                              <Box>
+                                {isFullscreen ? (
+                                  <FullscreenExit color="secondary" />
+                                ) : (
+                                  <Fullscreen />
+                                )}
+                              </Box>
+                            </ListItemIcon>
+                          </Tooltip>
+                        </ListItem>
+                      </List>
+                      {isAuthor && (
+                        <Loader
+                          isLoading={
+                            !currentStory &&
+                            fetchStoriesStatus === 'in progress'
+                          }
+                        >
+                          <FormControlLabel
+                            label="Public"
+                            labelPlacement="start"
+                            disabled={!currentStory}
+                            control={
+                              <Switch
+                                color="primary"
+                                defaultChecked={
+                                  currentStory && currentStory.isPublic
                                 }
-                                placeholder="Story name"
-                                submitText="Rename"
-                                text="Rename"
-                                onSubmit={value => {
+                                onChange={({ target: { checked } }) => {
                                   updateStory({
-                                    id: pathStoryId,
-                                    name: value,
+                                    id: currentStory ? currentStory.id : '',
+                                    isPublic: checked,
                                   });
                                 }}
                               />
-                              <ListItem
-                                disabled={storyLoading || !hasStoryChanged}
-                                button
-                                onClick={() => {
-                                  if (storyState) {
-                                    saveStory(storyState);
+                            }
+                          />
+                        </Loader>
+                      )}
+                      {canShare && (
+                        <SpeedDial
+                          ariaLabel="Share options"
+                          icon={<Share />}
+                          open={shareOptionsOpen}
+                          direction="down"
+                          onMouseEnter={() => setShareOptionsOpen(true)}
+                          onMouseLeave={() => setShareOptionsOpen(false)}
+                          style={{
+                            transform: 'scale(0.8)',
+                            transformOrigin: 'top',
+                            alignSelf: 'flex-start',
+                            marginLeft: 15,
+                            marginTop: 2,
+                          }}
+                        >
+                          <SpeedDialAction
+                            onClick={() => {
+                              analytics.logEvent({
+                                type: 'share',
+                                payload: {
+                                  method: 'copy',
+                                },
+                              });
+                            }}
+                            tooltipTitle="Copy link"
+                            icon={
+                              <CopyToClipboard
+                                text={linkInputValue}
+                                onCopy={() => {
+                                  if (canShare) {
+                                    setSnackbar({
+                                      variant: 'info',
+                                      message: 'Link to story copied',
+                                      duration: 2000,
+                                    });
                                   }
                                 }}
                               >
-                                <ListItemIcon style={listItemIconStyle}>
-                                  <Save color="primary" />
-                                </ListItemIcon>
-                                <ListItemText>Save</ListItemText>
-                              </ListItem>
-                            </>
-                          )}
-                        </List>
-                        {isAuthor && (
-                          <Loader
-                            isLoading={
-                              !currentStory &&
-                              fetchStoriesStatus === 'in progress'
+                                <Link />
+                              </CopyToClipboard>
                             }
-                          >
-                            <FormControlLabel
-                              label="Public"
-                              labelPlacement="start"
-                              disabled={!currentStory}
-                              control={
-                                <Switch
-                                  color="primary"
-                                  defaultChecked={
-                                    currentStory && currentStory.isPublic
-                                  }
-                                  onChange={({ target: { checked } }) => {
-                                    updateStory({
-                                      id: currentStory ? currentStory.id : '',
-                                      isPublic: checked,
-                                    });
-                                  }}
-                                />
-                              }
-                            />
-                          </Loader>
-                        )}
-                        {canShare && (
-                          <SpeedDial
-                            ariaLabel="Share options"
-                            icon={<Share />}
-                            open={shareOptionsOpen}
-                            direction="down"
-                            onMouseEnter={() => setShareOptionsOpen(true)}
-                            onMouseLeave={() => setShareOptionsOpen(false)}
-                            style={{
-                              transform: 'scale(0.8)',
-                              transformOrigin: 'top',
-                              alignSelf: 'flex-start',
-                              marginLeft: 15,
-                              marginTop: 2,
+                          />
+                          <SpeedDialAction
+                            onClick={() => {
+                              analytics.logEvent({
+                                type: 'share',
+                                payload: {
+                                  method: 'facebook',
+                                },
+                              });
                             }}
-                          >
-                            <SpeedDialAction
-                              onClick={() => {
-                                analytics.logEvent({
-                                  type: 'share',
-                                  payload: {
-                                    method: 'copy',
-                                  },
-                                });
-                              }}
-                              tooltipTitle="Copy link"
-                              icon={
-                                <CopyToClipboard
-                                  text={linkInputValue}
-                                  onCopy={() => {
-                                    if (canShare) {
-                                      setSnackbar({
-                                        variant: 'info',
-                                        message: 'Link to story copied',
-                                        duration: 2000,
-                                      });
-                                    }
-                                  }}
-                                >
-                                  <Link />
-                                </CopyToClipboard>
-                              }
-                            />
-                            <SpeedDialAction
-                              onClick={() => {
-                                analytics.logEvent({
-                                  type: 'share',
-                                  payload: {
-                                    method: 'facebook',
-                                  },
-                                });
-                              }}
-                              tooltipTitle="Share on Facebook"
-                              icon={
-                                <FacebookShareButton url={linkInputValue}>
-                                  <FacebookIcon size={42} round />
-                                </FacebookShareButton>
-                              }
-                            />
-                            <SpeedDialAction
-                              onClick={() => {
-                                analytics.logEvent({
-                                  type: 'share',
-                                  payload: {
-                                    method: 'twitter',
-                                  },
-                                });
-                              }}
-                              tooltipTitle="Share on Twitter"
-                              icon={
-                                <TwitterShareButton url={linkInputValue}>
-                                  <TwitterIcon size={42} round />
-                                </TwitterShareButton>
-                              }
-                            />
-                            <SpeedDialAction
-                              onClick={() => {
-                                analytics.logEvent({
-                                  type: 'share',
-                                  payload: {
-                                    method: 'reddit',
-                                  },
-                                });
-                              }}
-                              tooltipTitle="Share on Reddit"
-                              icon={
-                                <RedditShareButton url={linkInputValue}>
-                                  <RedditIcon size={42} round />
-                                </RedditShareButton>
-                              }
-                            />
-                            <SpeedDialAction
-                              onClick={() => {
-                                analytics.logEvent({
-                                  type: 'share',
-                                  payload: {
-                                    method: 'whatsapp',
-                                  },
-                                });
-                              }}
-                              tooltipTitle="Share on Whatsapp"
-                              icon={
-                                <WhatsappShareButton url={linkInputValue}>
-                                  <WhatsappIcon size={42} round />
-                                </WhatsappShareButton>
-                              }
-                            />
-                            <SpeedDialAction
-                              onClick={() => {
-                                analytics.logEvent({
-                                  type: 'share',
-                                  payload: {
-                                    method: 'viber',
-                                  },
-                                });
-                              }}
-                              tooltipTitle="Share on Viber"
-                              icon={
-                                <ViberShareButton url={linkInputValue}>
-                                  <ViberIcon size={42} round />
-                                </ViberShareButton>
-                              }
-                            />
-                          </SpeedDial>
-                        )}
-                      </Flex>
-                    );
-                }
-              })()}
-            </Flex>
-          )}
+                            tooltipTitle="Share on Facebook"
+                            icon={
+                              <FacebookShareButton url={linkInputValue}>
+                                <FacebookIcon size={42} round />
+                              </FacebookShareButton>
+                            }
+                          />
+                          <SpeedDialAction
+                            onClick={() => {
+                              analytics.logEvent({
+                                type: 'share',
+                                payload: {
+                                  method: 'twitter',
+                                },
+                              });
+                            }}
+                            tooltipTitle="Share on Twitter"
+                            icon={
+                              <TwitterShareButton url={linkInputValue}>
+                                <TwitterIcon size={42} round />
+                              </TwitterShareButton>
+                            }
+                          />
+                          <SpeedDialAction
+                            onClick={() => {
+                              analytics.logEvent({
+                                type: 'share',
+                                payload: {
+                                  method: 'reddit',
+                                },
+                              });
+                            }}
+                            tooltipTitle="Share on Reddit"
+                            icon={
+                              <RedditShareButton url={linkInputValue}>
+                                <RedditIcon size={42} round />
+                              </RedditShareButton>
+                            }
+                          />
+                          <SpeedDialAction
+                            onClick={() => {
+                              analytics.logEvent({
+                                type: 'share',
+                                payload: {
+                                  method: 'whatsapp',
+                                },
+                              });
+                            }}
+                            tooltipTitle="Share on Whatsapp"
+                            icon={
+                              <WhatsappShareButton url={linkInputValue}>
+                                <WhatsappIcon size={42} round />
+                              </WhatsappShareButton>
+                            }
+                          />
+                          <SpeedDialAction
+                            onClick={() => {
+                              analytics.logEvent({
+                                type: 'share',
+                                payload: {
+                                  method: 'viber',
+                                },
+                              });
+                            }}
+                            tooltipTitle="Share on Viber"
+                            icon={
+                              <ViberShareButton url={linkInputValue}>
+                                <ViberIcon size={42} round />
+                              </ViberShareButton>
+                            }
+                          />
+                        </SpeedDial>
+                      )}
+                    </Flex>
+                  );
+              }
+            })()}
+          </Flex>
         </Box>
         <Flex
           className={workspaceClassName.canvasWrapper}
