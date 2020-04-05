@@ -148,7 +148,7 @@ const Images: React.FC<ImagesProps> = ({ onMouseEnter, onMouseLeave }) => {
                   name={customMetadata.name}
                   height={customMetadata.height}
                   width={customMetadata.width}
-                  thumbnailHeight={storageImageWidthMinusScroll}
+                  thumbnailWidth={storageImageWidthMinusScroll}
                 />
               ))}
             </ExpansionPanelDetails>
