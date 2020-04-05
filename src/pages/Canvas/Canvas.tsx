@@ -36,6 +36,7 @@ import {
 } from '@material-ui/icons';
 import { SpeedDial, SpeedDialAction } from '@material-ui/lab';
 import { Context } from 'App';
+import clsx from 'clsx';
 import color from 'color';
 import {
   Button,
@@ -115,8 +116,8 @@ import {
   selectUid,
 } from 'store';
 import {
+  createReferencePointStyle,
   dividingBorder,
-  getReferencePointStyle,
   storageImageWidth,
 } from 'styles';
 import urlJoin from 'url-join';
@@ -163,7 +164,6 @@ import {
   initialTransformState,
 } from './store/transform';
 import TextBlock from './TextBlock';
-import clsx from 'clsx';
 
 const FacebookIcon: any = Facebook;
 const RedditIcon: any = Reddit;
@@ -1416,7 +1416,7 @@ const Canvas: React.FC<CanvasProps> = ({
               style={
                 isThereABlockInTheStory
                   ? {}
-                  : getReferencePointStyle(theme.palette.primary.main)
+                  : createReferencePointStyle(theme.palette.primary.main)
               }
             >
               {blockStates.map(blockState => {

@@ -41,12 +41,14 @@ import color from 'color';
 import { Button, Progress, progressHeight, Tooltip } from 'components';
 import { capitalize, startCase } from 'lodash';
 import { workspaceClassName } from 'models';
+import { listItemProps } from 'props';
 import { equals, findLastIndex, init, insert, last, nth, update } from 'ramda';
 import React from 'react';
 import GridLayout from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import { Box, Flex } from 'rebass';
 import { createDevTools } from 'redux-devtools';
+import { createListItemIconStyle, listItemStyle } from 'styles';
 import { Tuple } from 'ts-toolbelt';
 import { draggables, removeNils } from 'utils';
 import ActionCardForm from './ActionCardForm';
@@ -104,9 +106,6 @@ export type ActionBlock = {
   type: ActionBlockType;
   Icon: SvgIconComponent;
 };
-
-const listItemPaddingX = 6;
-
 export const miniDrawerWidth = 55;
 
 const initialHoveredCardId: number = -1;
@@ -495,25 +494,7 @@ const StoryMonitor = ({
     }
   }, [reset, currentStory, isAuthor]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const listItemStyle: React.CSSProperties = {
-    width: 'auto',
-    paddingLeft: listItemPaddingX,
-    paddingRight: listItemPaddingX,
-  };
-  const listItemProps: React.ComponentProps<typeof ListItem> = {
-    button: true,
-    style: listItemStyle,
-  };
-
-  const listItemIconStyle: React.CSSProperties = {
-    marginRight: 4,
-    color: theme.palette.grey.A700,
-    width: 'auto',
-    minWidth: 30,
-    display: 'flex',
-    justifyContent: 'center',
-    margin: 0,
-  };
+  const listItemIconStyle = createListItemIconStyle(theme);
 
   const toggleAction = (isActive: boolean) => (
     isLastJumpedToAction: boolean,
