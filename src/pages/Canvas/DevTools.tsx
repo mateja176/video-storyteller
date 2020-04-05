@@ -83,13 +83,8 @@ import {
   isCudAction,
   isCudActionById,
   isDeleteAction,
-  isPositionAction,
-  isSetScaleAction,
-  isSetZoomAction,
   isTransformAction,
   isUpdateAction,
-  isUpdateMoveAction,
-  isUpdateRenameImageAction,
   MonitorProps,
 } from './utils';
 
@@ -976,39 +971,6 @@ const StoryMonitor = ({
                         }
 
                         const { type } = action;
-                        if (isUpdateRenameImageAction(action)) {
-                          store.dispatch({
-                            type,
-                            payload: {
-                              ...action.payload,
-                              name,
-                            },
-                            meta: {
-                              updated: true,
-                            },
-                          } as UpdateRenameImageAction);
-
-                          deleteAction(id);
-                        }
-
-                        if (
-                          isUpdateMoveAction(action) &&
-                          (action.payload.payload.left !== left ||
-                            action.payload.payload.top !== top)
-                        ) {
-                          store.dispatch({
-                            type,
-                            payload: {
-                              ...action.payload,
-                              payload: { ...action.payload.payload, left, top },
-                            },
-                            meta: {
-                              updated: true,
-                            },
-                          } as UpdateMoveAction);
-
-                          deleteAction(id);
-                        }
 
                         const zoom: Zoom = {
                           scale: scale / 100,
@@ -1023,62 +985,108 @@ const StoryMonitor = ({
                           ...position,
                         };
 
-                        if (isSetScaleAction(action)) {
-                          const currentZoom: Zoom = {
-                            ...action.payload,
-                            scale: formatScale(action.payload.scale),
-                          };
-                          if (!equals(currentZoom, zoom)) {
+                        switch (action.type) {
+                          case 'update/renameImage':
                             store.dispatch({
                               type,
-                              payload: zoom,
+                              payload: {
+                                ...action.payload,
+                                name,
+                              },
                               meta: {
                                 updated: true,
                               },
-                            } as SetScaleAction);
+                            } as UpdateRenameImageAction);
 
                             deleteAction(id);
+
+                            break;
+                          case 'update/move':
+                            if (
+                              action.payload.payload.left !== left ||
+                              action.payload.payload.top !== top
+                            ) {
+                              store.dispatch({
+                                type,
+                                payload: {
+                                  ...action.payload,
+                                  payload: {
+                                    ...action.payload.payload,
+                                    left,
+                                    top,
+                                  },
+                                },
+                                meta: {
+                                  updated: true,
+                                },
+                              } as UpdateMoveAction);
+
+                              deleteAction(id);
+                            }
+                            break;
+                          case 'transform/scale/set': {
+                            const currentZoom: Zoom = {
+                              ...action.payload,
+                              scale: formatScale(action.payload.scale),
+                            };
+                            if (!equals(currentZoom, zoom)) {
+                              store.dispatch({
+                                type,
+                                payload: zoom,
+                                meta: {
+                                  updated: true,
+                                },
+                              } as SetScaleAction);
+
+                              deleteAction(id);
+                            }
+
+                            break;
                           }
-                        }
+                          case 'transform/position/set': {
+                            const currentPosition: Position = formatPosition(
+                              action.payload,
+                            );
+                            if (!equals(currentPosition, position)) {
+                              store.dispatch({
+                                type,
+                                payload: position,
+                                meta: {
+                                  updated: true,
+                                },
+                              } as SetPositionAction);
 
-                        if (isPositionAction(action)) {
-                          const currentPosition: Position = formatPosition(
-                            action.payload,
-                          );
-                          if (!equals(currentPosition, position)) {
-                            store.dispatch({
-                              type,
-                              payload: position,
-                              meta: {
-                                updated: true,
-                              },
-                            } as SetPositionAction);
+                              deleteAction(id);
+                            }
 
-                            deleteAction(id);
+                            break;
                           }
-                        }
+                          case 'transform/zoom/set': {
+                            const currentZoomAndPosition: ZoomAndPosition = {
+                              ...action.payload,
+                              scale: action.payload.scale,
+                              x: formatCoordinate(action.payload.x),
+                              y: formatCoordinate(action.payload.y),
+                            };
 
-                        if (isSetZoomAction(action)) {
-                          const currentZoomAndPosition: ZoomAndPosition = {
-                            ...action.payload,
-                            scale: action.payload.scale,
-                            x: formatCoordinate(action.payload.x),
-                            y: formatCoordinate(action.payload.y),
-                          };
+                            if (
+                              !equals(currentZoomAndPosition, zoomAndPosition)
+                            ) {
+                              store.dispatch({
+                                type,
+                                payload: zoomAndPosition,
+                                meta: {
+                                  updated: true,
+                                },
+                              } as SetZoomAction);
 
-                          if (
-                            !equals(currentZoomAndPosition, zoomAndPosition)
-                          ) {
-                            store.dispatch({
-                              type,
-                              payload: zoomAndPosition,
-                              meta: {
-                                updated: true,
-                              },
-                            } as SetZoomAction);
+                              deleteAction(id);
+                            }
 
-                            deleteAction(id);
+                            break;
                           }
+                          default:
+                            break;
                         }
                       }}
                     />
