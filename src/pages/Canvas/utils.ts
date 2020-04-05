@@ -1,3 +1,4 @@
+import { updateActionTypes } from 'models';
 import { Dispatch } from 'redux';
 // @ts-ignore
 import { ActionCreators as InstrumentActionCreators } from 'redux-devtools-instrument';
@@ -29,7 +30,6 @@ import {
   transformActionTypes,
   UpdateAction,
   UpdateActionType,
-  updateActionTypes,
   UpdateEditTextAction,
   UpdateMoveAction,
   UpdateRenameImageAction,

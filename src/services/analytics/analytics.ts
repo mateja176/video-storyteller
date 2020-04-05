@@ -1,6 +1,11 @@
 import { Location } from 'history';
 import mixpanel from 'mixpanel-browser';
-import { StoryEventData, UserProperties, WithId } from 'models';
+import {
+  StoryEventData,
+  UpdateActionType,
+  UserProperties,
+  WithId,
+} from 'models';
 import { Action } from 'redux';
 import { PayloadAction } from 'typesafe-actions';
 import {
@@ -18,12 +23,17 @@ const eventTypes = [
   'createStory',
   'saveStory',
   'createBlock',
+  'updateBlock',
   'openBlockDrawer',
   'openAudioTracksDrawer',
   'toggleDeleteModeOn',
   'toggleOpenAudioUpload',
   'toggleTheatricalModeOn',
   'toggleFullscreenOn',
+  'play',
+  'pause',
+  'resume',
+  'stop',
   'share',
   'addImages',
   'uploadImages',
@@ -58,6 +68,10 @@ type CreateBlockEvent = PayloadAction<
   | Pick<DropTextAction, 'type'>
   | (Pick<DropImageAction, 'type'> & Pick<WithDropResult, 'width' | 'height'>)
 >;
+type UpdateBlockEvent = PayloadAction<
+  IEventType['updateBlock'],
+  Action<UpdateActionType>
+>;
 type ShareEvent = PayloadAction<IEventType['share'], WithMethod>;
 type AddImagesEvent = PayloadAction<IEventType['addImages'], { count: number }>;
 type UploadImagesEvent = PayloadAction<IEventType['uploadImages'], any>;
@@ -70,6 +84,7 @@ type AnalyticsEventWithPayload =
   | CreateStoryEvent
   | SaveStoryEvent
   | CreateBlockEvent
+  | UpdateBlockEvent
   | ShareEvent
   | AddImagesEvent
   | UploadImagesEvent;

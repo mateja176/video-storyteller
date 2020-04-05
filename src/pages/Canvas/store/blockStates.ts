@@ -1,6 +1,6 @@
 /* eslint-disable indent */
 
-import { WithId } from 'models';
+import { updateActionTypes, WithId } from 'models';
 import { nth, update } from 'ramda';
 import { Tuple } from 'ts-toolbelt';
 import { createAction } from 'typesafe-actions';
@@ -16,13 +16,6 @@ import {
 
 export const initialState: BlockStates = [];
 
-// * the name "update" was chosen over "set" for mnemonic purposes
-export const updateActionTypes = [
-  'update/move',
-  'update/resize',
-  'update/editText',
-  'update/renameImage',
-] as const;
 export type UpdateActionTypes = typeof updateActionTypes;
 export type UpdateActionType = UpdateActionTypes[number];
 

@@ -16,6 +16,7 @@ import { createSelector, Selector } from 'reselect';
 import { composeWithDevTools as composeWithIntegratedDevTools } from 'services';
 import audio, { AudioAction } from './audio';
 import blockStates, { BlockStatesAction } from './blockStates';
+import { analyticsMiddleware } from './middleware';
 import transform, { ClientCoords, TransformAction, Zoom } from './transform';
 
 const actionReducerMap = {
@@ -48,7 +49,9 @@ const composeEnhancers = composeWithDevTools({
 });
 
 export type DispatchExt = {};
-const middleware: Middleware<DispatchExt, State, Dispatch>[] = [];
+const middleware: Middleware<DispatchExt, State, Dispatch>[] = [
+  analyticsMiddleware,
+];
 
 export const store = createStore(
   reducer,
