@@ -43,7 +43,9 @@ const Audio: React.FC<AudioProps> = ({ setAudioElement, openAudioUpload }) => {
           />
         ))
       ) : (
-        <Button onClick={openAudioUpload}>Open audio upload</Button>
+        <Box mx={3}>
+          <Button onClick={openAudioUpload}>Open audio upload</Button>
+        </Box>
       )}
     </Box>
   );
