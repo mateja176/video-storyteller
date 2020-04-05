@@ -1228,6 +1228,10 @@ const Canvas: React.FC<CanvasProps> = ({
                                       id: currentStory ? currentStory.id : '',
                                       isPublic: checked,
                                     });
+
+                                    if (checked) {
+                                      analytics.logEvent({ type: 'publish' });
+                                    }
                                   }}
                                 />
                               }

@@ -34,6 +34,7 @@ const eventTypes = [
   'pause',
   'stop',
   'jumpToAction',
+  'publish',
   'share',
   'addImages',
   'uploadImages',
@@ -102,6 +103,7 @@ type PlayEvent = Action<IEventType['play']>;
 type PauseEvent = Action<IEventType['pause']>;
 type StopEvent = Action<IEventType['stop']>;
 type JumpToActionEvent = Action<IEventType['jumpToAction']>;
+type PublishEvent = Action<IEventType['publish']>;
 type SignoutEvent = Action<IEventType['signout']>;
 
 type AnalyticsEventWithoutPayload =
@@ -115,6 +117,7 @@ type AnalyticsEventWithoutPayload =
   | PauseEvent
   | StopEvent
   | JumpToActionEvent
+  | PublishEvent
   | SignoutEvent;
 
 type AnalyticsEvent = AnalyticsEventWithoutPayload | AnalyticsEventWithPayload;
