@@ -148,6 +148,8 @@ const signOut: Epic<Action, SetSnackbarAction, State, EpicDependencies> = (
     tap(() => {
       history.push('/');
 
+      localStorage.clear();
+
       analytics.logEvent({ type: 'signout' });
     }),
   );
