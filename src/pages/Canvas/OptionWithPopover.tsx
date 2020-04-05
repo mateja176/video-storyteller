@@ -4,12 +4,14 @@ import {
   ListItemText,
   Popover,
   TextField,
+  Tooltip,
 } from '@material-ui/core';
 import { SvgIconComponent } from '@material-ui/icons';
 import { Button } from 'components';
 import React from 'react';
 
 export interface OptionWithPopoverProps {
+  title: string;
   disabled: boolean;
   onSubmit: (value: string) => void;
   placeholder: string;
@@ -21,6 +23,7 @@ export interface OptionWithPopoverProps {
 }
 
 const OptionWithPopover: React.FC<OptionWithPopoverProps> = ({
+  title,
   disabled,
   onSubmit,
   initialValue,
@@ -40,19 +43,22 @@ const OptionWithPopover: React.FC<OptionWithPopoverProps> = ({
 
   return (
     <>
-      <ListItem
-        disabled={disabled}
-        ref={listItemRef}
-        button
-        onClick={() => {
-          setOpen(true);
-        }}
-      >
-        <ListItemIcon style={{ minWidth: 'auto', marginRight: 10 }}>
-          <Icon color={open ? 'secondary' : 'action'} />
-        </ListItemIcon>
-        <ListItemText style={{ whiteSpace: 'nowrap' }}>{text}</ListItemText>
-      </ListItem>
+      <Tooltip title={title}>
+        <ListItem
+          disabled={disabled}
+          ref={listItemRef}
+          button
+          onClick={() => {
+            setOpen(true);
+          }}
+        >
+          <ListItemIcon style={{ minWidth: 'auto', marginRight: 10 }}>
+            <Icon color={open ? 'secondary' : 'action'} />
+          </ListItemIcon>
+          <ListItemText style={{ whiteSpace: 'nowrap' }}>{text}</ListItemText>
+        </ListItem>
+      </Tooltip>
+
       <Popover open={open} anchorEl={listItemRef.current} onClose={close}>
         <form
           style={{ margin: 10 }}

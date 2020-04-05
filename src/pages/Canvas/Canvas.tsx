@@ -1113,6 +1113,7 @@ const Canvas: React.FC<CanvasProps> = ({
                       >
                         {!storyLoading && (
                           <OptionWithPopover
+                            title="Click to enter new story name"
                             initiallyOpen={!currentStory}
                             disabled={false}
                             Icon={NoteAdd}
@@ -1145,6 +1146,7 @@ const Canvas: React.FC<CanvasProps> = ({
                         )}
                         {currentStory && (
                           <OptionWithPopover
+                            title="Click to enter duplicate's name"
                             disabled={storyLoading}
                             Icon={FileCopy}
                             initialValue=""
@@ -1169,6 +1171,7 @@ const Canvas: React.FC<CanvasProps> = ({
                         {isAuthor && (
                           <>
                             <OptionWithPopover
+                              title="Click to enter new story name"
                               disabled={!currentStory || storyLoading}
                               Icon={Edit}
                               initialValue={
@@ -1278,25 +1281,27 @@ const Canvas: React.FC<CanvasProps> = ({
                             fetchStoriesStatus === 'in progress'
                           }
                         >
-                          <FormControlLabel
-                            label="Public"
-                            labelPlacement="start"
-                            disabled={!currentStory}
-                            control={
-                              <Switch
-                                color="primary"
-                                defaultChecked={
-                                  currentStory && currentStory.isPublic
-                                }
-                                onChange={({ target: { checked } }) => {
-                                  updateStory({
-                                    id: currentStory ? currentStory.id : '',
-                                    isPublic: checked,
-                                  });
-                                }}
-                              />
-                            }
-                          />
+                          <Tooltip title="If your story is public you can share it with others">
+                            <FormControlLabel
+                              label="Public"
+                              labelPlacement="start"
+                              disabled={!currentStory}
+                              control={
+                                <Switch
+                                  color="primary"
+                                  defaultChecked={
+                                    currentStory && currentStory.isPublic
+                                  }
+                                  onChange={({ target: { checked } }) => {
+                                    updateStory({
+                                      id: currentStory ? currentStory.id : '',
+                                      isPublic: checked,
+                                    });
+                                  }}
+                                />
+                              }
+                            />
+                          </Tooltip>
                         </Loader>
                       )}
                       {canShare && (
