@@ -8,7 +8,7 @@ export interface LoaderProps {
 const Loader: React.FC<LoaderProps> = ({ children, isLoading }) =>
   isLoading ? (
     <div style={{ display: 'inline-block', position: 'relative' }}>
-      {children}
+      <div style={{ visibility: 'hidden' }}>{children}</div>
       <ContentLoader
         style={{
           width: '100%',

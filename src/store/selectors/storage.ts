@@ -8,7 +8,9 @@ export const selectStorageImages = createSelector(
   ({ images }) => images,
 );
 
-export const selectAudio = createSelector(
+export const selectAudio = createSelector(selectStorage, ({ audio }) => audio);
+
+export const selectStorageFilesLoading = createSelector(
   selectStorage,
-  ({ audio }) => audio,
+  ({ filesLoading }) => filesLoading,
 );

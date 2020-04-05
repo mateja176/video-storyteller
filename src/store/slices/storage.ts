@@ -5,11 +5,13 @@ import { ActionType, createAction, createAsyncAction } from 'typesafe-actions';
 import { createReducer } from 'utils';
 
 export interface StorageState {
+  filesLoading: boolean;
   images: StorageFiles;
   audio: StorageFiles;
 }
 
 export const initialStorageState: StorageState = {
+  filesLoading: false,
   images: [],
   audio: [],
 };
@@ -36,16 +38,18 @@ export type FetchFilesFailureAction = ReturnType<CreateFetchFilesFailure>;
 export type FetchFilesAction = ActionType<CreateFetchFiles>;
 
 export type StorageAction = AddFileAction | FetchFilesAction;
-export type StorageReducerAction = AddFileAction;
+export type StorageReducerAction = AddFileAction | FetchFilesRequestAction;
 
 export const storage = createReducer(initialStorageState)<StorageReducerAction>(
   {
+    'storage/file/fetch/request': state => ({ ...state, filesLoading: true }),
     'storage/file/add': (state, { payload }) => {
       const [type] = payload.contentType.split('/');
       const key: keyof StorageState = type === 'audio' ? 'audio' : 'images';
 
       return {
         ...state,
+        filesLoading: false,
         [key]: state[key].find(({ name }) => name === payload.name)
           ? state[key]
           : state[key]

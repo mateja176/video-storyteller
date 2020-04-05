@@ -9,7 +9,7 @@ import {
   TextField,
 } from '@material-ui/core';
 import { ExpandMore, Image as ImageIcon } from '@material-ui/icons';
-import { Button, Link } from 'components';
+import { Button, Link, Loader } from 'components';
 import { debounce } from 'lodash';
 import { LibraryImage } from 'models';
 import React from 'react';
@@ -26,6 +26,7 @@ import {
   selectIconFinderToken,
   selectLibraryImages,
   selectLibraryImageTotal,
+  selectStorageFilesLoading,
   selectStorageImages,
 } from 'store';
 import { storageImageWidth, storageImageWidthMinusScroll } from 'styles';
@@ -53,6 +54,7 @@ const Images: React.FC<ImagesProps> = ({ onMouseEnter, onMouseLeave }) => {
     fetchFiles: createFetchFiles.request,
   });
 
+  const storageFilesLoading = useSelector(selectStorageFilesLoading);
   const uploadedImages = useSelector(selectStorageImages);
 
   React.useEffect(() => {
@@ -121,26 +123,7 @@ const Images: React.FC<ImagesProps> = ({ onMouseEnter, onMouseLeave }) => {
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {uploadedImages.length ? (
-        <ExpansionPanel>
-          <ExpansionPanelSummary expandIcon={<ExpandMore />}>
-            Uploaded images
-          </ExpansionPanelSummary>
-          <ExpansionPanelDetails style={{ padding: 0, display: 'block' }}>
-            {uploadedImages.map(({ name, customMetadata, downloadUrl }) => (
-              <ImageBlock
-                key={name}
-                mb={spacing}
-                downloadUrl={downloadUrl}
-                name={customMetadata.name}
-                height={customMetadata.height}
-                width={customMetadata.width}
-                thumbnailHeight={storageImageWidthMinusScroll}
-              />
-            ))}
-          </ExpansionPanelDetails>
-        </ExpansionPanel>
-      ) : (
+      {!storageFilesLoading && uploadedImages.length === 0 && (
         <Flex justifyContent="center" my={2}>
           <Link
             to={urlJoin(absoluteRootPaths.images, secondaryPaths.upload)}
@@ -149,6 +132,28 @@ const Images: React.FC<ImagesProps> = ({ onMouseEnter, onMouseLeave }) => {
             Upload your first images
           </Link>
         </Flex>
+      )}
+      {(storageFilesLoading || uploadedImages.length) && (
+        <Loader isLoading={storageFilesLoading}>
+          <ExpansionPanel>
+            <ExpansionPanelSummary expandIcon={<ExpandMore />}>
+              Uploaded images
+            </ExpansionPanelSummary>
+            <ExpansionPanelDetails style={{ padding: 0, display: 'block' }}>
+              {uploadedImages.map(({ name, customMetadata, downloadUrl }) => (
+                <ImageBlock
+                  key={name}
+                  mb={spacing}
+                  downloadUrl={downloadUrl}
+                  name={customMetadata.name}
+                  height={customMetadata.height}
+                  width={customMetadata.width}
+                  thumbnailHeight={storageImageWidthMinusScroll}
+                />
+              ))}
+            </ExpansionPanelDetails>
+          </ExpansionPanel>
+        </Loader>
       )}
       <TextField
         value={query}
