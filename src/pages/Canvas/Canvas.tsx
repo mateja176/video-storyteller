@@ -204,7 +204,6 @@ const RightDrawer: React.FC<Pick<React.CSSProperties, 'height' | 'width'> & {
       position: 'absolute',
       right: 0,
       transition: 'all 500ms ease-in-out',
-      overflowX: 'hidden',
       width: open ? width : 0,
       whiteSpace: 'nowrap',
       zIndex: 1,
@@ -521,9 +520,9 @@ const Canvas: React.FC<CanvasProps> = ({
   const [rightDrawerOccupant, setRightDrawerOccupant] = React.useState<
     'initial' | 'none' | 'images' | 'text blocks' | 'audio'
   >('initial');
-  const rightDrawerHeight = `calc(100vh - ${2 + // * 2px less presumably because of the paper's shadow
+  const rightDrawerHeightExpression = `100vh - ${2 + // * 2px less presumably because of the paper's shadow
     (theatricalMode ? 0 : headerAndControlsHeight) +
-    (actionsTimelineOpen ? actionsTimelineHeight : 0)}px)`;
+    (actionsTimelineOpen ? actionsTimelineHeight : 0)}px`;
 
   React.useEffect(() => {
     if (theatricalMode) {
@@ -1620,7 +1619,7 @@ const Canvas: React.FC<CanvasProps> = ({
               rightDrawerOccupant !== 'none' &&
               rightDrawerOccupant !== 'initial'
             }
-            height={rightDrawerHeight}
+            height={`calc(${rightDrawerHeightExpression})`}
           >
             <Box className={workspaceClassName.rightDrawer} height="100%">
               {/* eslint-disable-next-line consistent-return */}
@@ -1673,7 +1672,9 @@ const Canvas: React.FC<CanvasProps> = ({
                       </Flex>
                     );
                   case 'images':
-                    return <Images />;
+                    return (
+                      <Images heightExpression={rightDrawerHeightExpression} />
+                    );
                   case 'audio':
                     return (
                       <Audio

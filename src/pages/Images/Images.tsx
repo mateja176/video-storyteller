@@ -43,13 +43,21 @@ import { ImageRow } from './ImageRow';
 
 const spacing = 10;
 
+const expansionPanelHeight = 64;
+
 export interface ImagesProps
   extends Pick<
     React.HTMLProps<HTMLDivElement>,
     'onMouseEnter' | 'onMouseLeave'
-  > {}
+  > {
+  heightExpression?: string;
+}
 
-const Images: React.FC<ImagesProps> = ({ onMouseEnter, onMouseLeave }) => {
+const Images: React.FC<ImagesProps> = ({
+  onMouseEnter,
+  onMouseLeave,
+  heightExpression,
+}) => {
   const { fetchFiles } = useActions({
     fetchFiles: createFetchFiles.request,
   });
@@ -139,7 +147,14 @@ const Images: React.FC<ImagesProps> = ({ onMouseEnter, onMouseLeave }) => {
             <ExpansionPanelSummary expandIcon={<ExpandMore />}>
               Uploaded images
             </ExpansionPanelSummary>
-            <ExpansionPanelDetails style={{ padding: 0, display: 'block' }}>
+            <ExpansionPanelDetails
+              style={{
+                padding: 0,
+                display: 'block',
+                height: `calc((${heightExpression}) - ${expansionPanelHeight}px)`,
+                overflow: 'auto',
+              }}
+            >
               {uploadedImages.map(({ name, customMetadata, downloadUrl }) => (
                 <ImageBlock
                   key={name}
