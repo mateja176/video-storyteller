@@ -210,7 +210,7 @@ const Images: React.FC<ImagesProps> = ({
                   <List
                     onRowsRendered={onRowsRendered}
                     registerChild={registerChild}
-                    height={height}
+                    height={query ? height : 0}
                     width={width}
                     rowRenderer={({ key, index, style }) => {
                       const libraryImage: LibraryImage | undefined =
