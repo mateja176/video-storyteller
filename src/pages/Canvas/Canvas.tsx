@@ -921,7 +921,7 @@ const Canvas: React.FC<CanvasProps> = ({
           flexGrow: 1,
           position: 'relative',
         }}
-        bg="#fafafa"
+        bg="inherit"
       >
         <Box
           bg={theme.palette.background.paper}
