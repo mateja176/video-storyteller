@@ -288,6 +288,8 @@ const StoryMonitor = ({
         setPlayTimeout(initialPlayTimeout);
 
         setTimeoutStart(initialTimeoutStart);
+
+        analytics.logEvent({ type: 'completeStory' });
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
