@@ -18,7 +18,7 @@ import { Action } from './store';
 import { initialTransformState, TransformState } from './store/transform';
 import {
   formatCoordinate,
-  formatScale,
+  formatScaleToPercentage,
   isPositionAction,
   isScaleAction,
   isSetTransformAction,
@@ -83,7 +83,7 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
       : 0,
     scale:
       isScaleAction(action) || isSetTransformAction(action)
-        ? formatScale(action.payload.scale)
+        ? formatScaleToPercentage(action.payload.scale)
         : initialTransformState.scale,
     clientX: isScaleAction(action)
       ? action.payload.clientX

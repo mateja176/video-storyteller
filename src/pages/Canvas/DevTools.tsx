@@ -65,7 +65,7 @@ import {
   ActionWithId,
   formatCoordinate,
   formatPosition,
-  formatScale,
+  formatScaleToPercentage,
   isAudioAction,
   isCreateAction,
   isCudAction,
@@ -1020,7 +1020,9 @@ const StoryMonitor = ({
                           case 'transform/scale/set': {
                             const currentZoom: Zoom = {
                               ...action.payload,
-                              scale: formatScale(action.payload.scale),
+                              scale: formatScaleToPercentage(
+                                action.payload.scale,
+                              ),
                             };
                             if (!equals(currentZoom, zoom)) {
                               store.dispatch({

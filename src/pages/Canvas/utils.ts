@@ -35,7 +35,7 @@ import {
   transformActionTypes,
 } from './store/transform';
 
-export const formatScale = (scale: Transform['scale']) =>
+export const formatScaleToPercentage = (scale: Transform['scale']) =>
   Number((scale * 100).toFixed(0));
 
 export const formatCoordinate = (coordinate: Transform['x']) =>
@@ -51,7 +51,7 @@ export const formatTransform = ({
   scale,
   ...position
 }: Transform): Transform => ({
-  scale: formatScale(scale),
+  scale: formatScaleToPercentage(scale),
   ...formatPosition(position),
 });
 
