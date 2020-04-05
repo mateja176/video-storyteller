@@ -1,6 +1,6 @@
 import { User } from './auth';
-import { StorageFile } from './storage';
 import { WithId } from './models';
+import { StorageFile } from './storage';
 
 export type StoryData = {
   name: string;
@@ -13,3 +13,19 @@ export type StoryData = {
 export interface WithStoryId {
   storyId: WithId['id'];
 }
+
+export const workspaceClassName = {
+  mainMenu: 'main-menu',
+  sidebar: 'sidebar',
+  rightDrawer: 'right-drawer',
+  canvasWrapper: 'canvas-wrapper',
+  actionsTimeline: 'actions-timeline',
+  storyControls: 'story-controls',
+};
+
+export const workspaceSelector = Object.fromEntries(
+  Object.entries(workspaceClassName).map(([name, className]) => [
+    name,
+    `.${className}`,
+  ]),
+);

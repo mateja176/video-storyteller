@@ -63,7 +63,12 @@ import {
 } from 'draft-js';
 import 'firebase/analytics';
 import { debounce } from 'lodash';
-import { ExtendedLoadingStatus, WithStoryId } from 'models';
+import {
+  ExtendedLoadingStatus,
+  WithStoryId,
+  workspaceClassName,
+  workspaceSelector,
+} from 'models';
 import { Images } from 'pages/Images';
 import panzoom, { PanZoom } from 'panzoom';
 import { equals, pickAll } from 'ramda';
@@ -71,6 +76,7 @@ import React from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { useDrop } from 'react-dnd';
 import Dropzone from 'react-dropzone';
+import JoyRide, { Step } from 'react-joyride';
 import { useSelector as useStoreSelector } from 'react-redux';
 import { Prompt, RouteComponentProps } from 'react-router-dom';
 import {
@@ -157,6 +163,7 @@ import {
   initialTransformState,
 } from './store/transform';
 import TextBlock from './TextBlock';
+import clsx from 'clsx';
 
 const FacebookIcon: any = Facebook;
 const RedditIcon: any = Reddit;
@@ -698,18 +705,79 @@ const Canvas: React.FC<CanvasProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shouldPromptToSave]);
 
+  const steps: Step[] = [
+    {
+      title: 'Welcome',
+      content: 'Would you like take a tour of the workspace?',
+      target: 'body',
+      placement: 'center',
+    },
+    {
+      title: 'Main menu',
+      content:
+        'Visit the main menu when you want to perform an action on the story. As you will see, the menu is also home to the text editor controls.',
+      target: workspaceSelector.mainMenu,
+    },
+    {
+      title: 'Sidebar',
+      content:
+        "Here you'll find actions you can perform in a story, like creating and deleting blocks.",
+      target: workspaceSelector.sidebar,
+      placement: 'right',
+    },
+    {
+      title: 'Right Drawer',
+      content:
+        'The drawer contains blocks you can drop into the canvas. Importantly, you can also edit the blocks before you drag and drop them.',
+      target: workspaceSelector.rightDrawer,
+      placement: 'left',
+    },
+    {
+      title: 'Canvas',
+      content:
+        'The state of the canvas depends entirely on the actions you performed up until that moment. For example, once you drop a block, it will be visible on the canvas.',
+      target: workspaceSelector.canvasWrapper,
+    },
+    {
+      title: 'Actions Timeline',
+      content:
+        "All actions you perform, like creating blocks and moving them, are recorded chronologically so that you can replay them for any point! You can also reorder the actions, just make sure not to place a block's create action after the same block's update action and vice versa.",
+      target: workspaceSelector.actionsTimeline,
+    },
+    {
+      title: 'Story Controls',
+      content:
+        'Play, pause, resume, stop, all of which you can do using story controls. Excluding sweeping and deleting, the controls are also going to be available to your audience.',
+      target: workspaceSelector.storyControls,
+    },
+  ];
+
   return (
     <Flex
+      height="100%"
       style={{
-        height: '100%',
         cursor: deleteModeOn ? 'not-allowed' : 'default',
       }}
     >
+      <JoyRide
+        run={false}
+        steps={steps}
+        continuous
+        scrollToFirstStep
+        showProgress
+        showSkipButton
+        spotlightPadding={0}
+        styles={{
+          options: {
+            zIndex: 1101,
+          },
+        }}
+      />
       {shouldPromptToSave && <Prompt message={confirmNavigationMessage} />}
       <Drawer
+        className={clsx(classes.drawer, workspaceClassName.sidebar)}
         variant="permanent"
         open
-        className={classes.drawer}
         classes={{
           paper: classes.paper,
         }}
@@ -898,6 +966,7 @@ const Canvas: React.FC<CanvasProps> = ({
           flexGrow: 1,
           position: 'relative',
         }}
+        bg="#fafafa"
       >
         <Box
           bg={theme.palette.background.paper}
@@ -1065,6 +1134,7 @@ const Canvas: React.FC<CanvasProps> = ({
                   default:
                     return (
                       <Flex
+                        className={workspaceClassName.mainMenu}
                         alignItems="center"
                         style={{
                           height: controlsHeight,
@@ -1329,6 +1399,7 @@ const Canvas: React.FC<CanvasProps> = ({
           )}
         </Box>
         <Flex
+          className={workspaceClassName.canvasWrapper}
           height="100%"
           style={{ overflow: 'hidden', position: 'relative' }}
         >
@@ -1508,68 +1579,76 @@ const Canvas: React.FC<CanvasProps> = ({
             </div>
           </Box>
           <RightDrawer
-            open={rightDrawerOccupant === 'text blocks'}
+            open={
+              rightDrawerOccupant !== 'none' &&
+              rightDrawerOccupant !== 'initial'
+            }
             height={rightDrawerHeight}
           >
-            <Flex p={2} flexDirection="column" height="100%">
-              <Box style={{ display: 'inline-block' }}>
-                <Tooltip
-                  placement="top"
-                  title="You can drag the block by grabbing the area around the text or you can edit the text by clicking directly on it"
-                >
-                  <TextBlock
-                    editorState={
-                      focusedEditorId === draggable.text
-                        ? focusedEditorState
-                        : initialEditorState
-                    }
-                    setEditorState={setFocusedEditorState}
-                    onFocus={() => {
-                      setFocusedEditorId(draggable.text);
+            <Box className={workspaceClassName.rightDrawer} height="100%">
+              {/* eslint-disable-next-line consistent-return */}
+              {(() => {
+                // eslint-disable-next-line default-case
+                switch (rightDrawerOccupant) {
+                  case 'text blocks':
+                    return (
+                      <Flex p={2} flexDirection="column" height="100%">
+                        <Box style={{ display: 'inline-block' }}>
+                          <Tooltip
+                            placement="top"
+                            title="You can drag the block by grabbing the area around the text or you can edit the text by clicking directly on it"
+                          >
+                            <TextBlock
+                              editorState={
+                                focusedEditorId === draggable.text
+                                  ? focusedEditorState
+                                  : initialEditorState
+                              }
+                              setEditorState={setFocusedEditorState}
+                              onFocus={() => {
+                                setFocusedEditorId(draggable.text);
 
-                      setFocusedEditorState(initialEditorState);
-                    }}
-                    onDragEnd={() => {
-                      setFocusedEditorId('');
-                    }}
-                  />
-                </Tooltip>
-              </Box>
-              {/* <Box alignSelf="center" mt="auto">
-                <FormControlLabel
-                  label="Enable editing in sidebar"
-                  labelPlacement="end"
-                  control={
-                    <Switch
-                      defaultChecked
-                      onChange={({ target: { checked } }) => {
-                        updateStory({
-                          id: currentStory ? currentStory.id : '',
-                          isPublic: checked,
-                        });
-                      }}
+                                setFocusedEditorState(initialEditorState);
+                              }}
+                              onDragEnd={() => {
+                                setFocusedEditorId('');
+                              }}
+                            />
+                          </Tooltip>
+                        </Box>
+                        {/* <Box alignSelf="center" mt="auto">
+                    <FormControlLabel
+                      label="Enable editing in sidebar"
+                      labelPlacement="end"
+                      control={
+                        <Switch
+                          defaultChecked
+                          onChange={({ target: { checked } }) => {
+                            updateStory({
+                              id: currentStory ? currentStory.id : '',
+                              isPublic: checked,
+                            });
+                          }}
+                        />
+                      }
                     />
-                  }
-                />
-              </Box> */}
-            </Flex>
-          </RightDrawer>
-          <RightDrawer
-            open={rightDrawerOccupant === 'images'}
-            height={rightDrawerHeight}
-          >
-            <Images />
-          </RightDrawer>
-          <RightDrawer
-            open={rightDrawerOccupant === 'audio'}
-            height={rightDrawerHeight}
-          >
-            <Audio
-              setAudioElement={setAudioElement}
-              openAudioUpload={() => {
-                setAudioUploadOpen(true);
-              }}
-            />
+                  </Box> */}
+                      </Flex>
+                    );
+                  case 'images':
+                    return <Images />;
+                  case 'audio':
+                    return (
+                      <Audio
+                        setAudioElement={setAudioElement}
+                        openAudioUpload={() => {
+                          setAudioUploadOpen(true);
+                        }}
+                      />
+                    );
+                }
+              })()}
+            </Box>
           </RightDrawer>
         </Flex>
         <Box>

@@ -162,7 +162,6 @@
     "@testing-library/jest-dom": "^4.2.3",
     "@testing-library/react": "^8.0.4",
     "@types/algoliasearch": "^3.30.18",
-    "@types/classnames": "^2.2.8",
     "@types/color": "^3.0.0",
     "@types/dashify": "^1.0.0",
     "@types/draft-js": "^0.10.37",

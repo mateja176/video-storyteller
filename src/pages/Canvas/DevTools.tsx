@@ -40,6 +40,7 @@ import { Context } from 'App';
 import color from 'color';
 import { Button, Progress, progressHeight, Tooltip } from 'components';
 import { capitalize, startCase } from 'lodash';
+import { workspaceClassName } from 'models';
 import { equals, findLastIndex, init, insert, last, nth, update } from 'ramda';
 import React from 'react';
 import GridLayout from 'react-grid-layout';
@@ -536,7 +537,10 @@ const StoryMonitor = ({
 
   return (
     <Flex height="100%">
-      <List style={{ width: miniDrawerWidth }}>
+      <List
+        className={workspaceClassName.storyControls}
+        style={{ width: miniDrawerWidth }}
+      >
         {isPlaying ? (
           <ListItem
             button
@@ -678,6 +682,7 @@ const StoryMonitor = ({
       </List>
       <Divider orientation="vertical" />
       <Flex
+        className={workspaceClassName.actionsTimeline}
         ref={timelineRef}
         style={{ overflowX: 'auto' }}
         width="100%"
