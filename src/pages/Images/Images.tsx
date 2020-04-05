@@ -8,7 +8,7 @@ import {
   ExpansionPanelSummary,
   TextField,
 } from '@material-ui/core';
-import { ExpandMore, Image as ImageIcon } from '@material-ui/icons';
+import { ExpandMore } from '@material-ui/icons';
 import { Button, Link, Loader } from 'components';
 import { debounce } from 'lodash';
 import { LibraryImage } from 'models';
