@@ -146,7 +146,9 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
         return (
           <ClickAwayListener
             onClickAway={() => {
-              submitForm();
+              if (!areValuesEqual) {
+                submitForm();
+              }
             }}
           >
             <Flex flexDirection="column" px={2} flex={1}>
