@@ -173,12 +173,7 @@ const Images: React.FC<ImagesProps> = ({
       <TextField
         value={query}
         onChange={({ target: { value } }) => setQuery(value)}
-        label={
-          <Flex alignItems="center">
-            <ImageIcon fontSize="small" style={{ marginRight: 5 }} /> Search
-            library
-          </Flex>
-        }
+        label="Search available images"
         variant="outlined"
         InputProps={{
           endAdornment: loading ? (
