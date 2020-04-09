@@ -17,7 +17,10 @@
     "no-confusing-arrow": "off",
     "implicit-arrow-linebreak": "off",
     "function-paren-newline": "off",
-    "react/jsx-filename-extension": ["error", { "extensions": [".tsx"] }],
+    "react/jsx-filename-extension": [
+      "error",
+      { "extensions": [".tsx", ".ts"] }
+    ],
     "react/jsx-wrap-multilines": "off",
     "react/prop-types": "off",
     "react/jsx-one-expression-per-line": "off",
