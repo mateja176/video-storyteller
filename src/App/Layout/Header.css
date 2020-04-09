@@ -2,9 +2,11 @@
 #Actions-actions {
   position: absolute;
   top: 40px;
-  svg {
-    fill: grey;
-  }
+}
+
+#Language-actions svg,
+#Actions-actions svg {
+  fill: grey;
 }
 
 #Language-actions {

@@ -33,7 +33,7 @@ import {
   State,
 } from 'store';
 import { useActions } from 'utils';
-import './Header.scss';
+import './Header.css';
 
 interface Language {
   value: Lang;

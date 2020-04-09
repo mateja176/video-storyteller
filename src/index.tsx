@@ -3,7 +3,7 @@ import 'matchmedia-polyfill/matchMedia.addListener';
 import React from 'react';
 import { hydrate, render } from 'react-dom';
 import App from './App';
-import './index.scss';
+import './index.css';
 import * as serviceWorker from './serviceWorker';
 
 const root = document.getElementById('root');
