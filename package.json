@@ -93,7 +93,6 @@
   "devDependencies": {
     "@commitlint/cli": "^8.0.0",
     "@commitlint/config-conventional": "^8.0.0",
-    "@commitlint/travis-cli": "^8.0.0",
     "@semantic-release/changelog": "^3.0.6",
     "@semantic-release/commit-analyzer": "^6.3.3",
     "@semantic-release/git": "^7.0.18",
@@ -200,7 +199,6 @@
     "react-redux",
     "react-router",
     "react-starter-kit",
-    "travis",
     "react-hot-loader"
   ],
   "bit": {
