@@ -29,6 +29,7 @@
     "import/no-extraneous-dependencies": "off",
     "import/prefer-default-export": "off",
     "import/no-unresolved": "off",
+    "import/extensions": "off",
     "immutable/no-let": 2,
     "immutable/no-this": 2,
     "immutable/no-mutation": 2,
