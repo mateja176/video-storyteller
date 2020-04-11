@@ -1,5 +1,5 @@
 import React from 'react';
-import { useDrag } from 'react-dnd';
+import { useDrag } from 'react-dnd-cjs';
 import { Box, Flex } from 'rebass';
 import { createDropImage, DropImagePayload } from 'utils';
 

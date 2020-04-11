@@ -2,7 +2,7 @@ import { Editor } from 'components';
 import { convertToRaw } from 'draft-js';
 import { EditorProps } from 'models';
 import React from 'react';
-import { useDrag } from 'react-dnd';
+import { useDrag } from 'react-dnd-cjs';
 import { Box } from 'rebass';
 import { dividingBorder } from 'styles';
 import { createDropText } from 'utils';

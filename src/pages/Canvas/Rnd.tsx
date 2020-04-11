@@ -4,7 +4,7 @@ import rndDragPreview from 'assets/img/rnd-drag-preview.png';
 import { SimpleAction } from 'models';
 import { Resizable, ResizableProps } from 're-resizable';
 import React from 'react';
-import { DragPreviewImage, DragSourceHookSpec, useDrag } from 'react-dnd';
+import { DragPreviewImage, DragSourceHookSpec, useDrag } from 'react-dnd-cjs';
 import { UpdateAction } from './store';
 
 export type DragSourceSpec = DragSourceHookSpec<

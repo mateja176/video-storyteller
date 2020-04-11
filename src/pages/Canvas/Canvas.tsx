@@ -70,7 +70,7 @@ import { listItemProps } from 'props';
 import { equals, pickAll } from 'ramda';
 import React from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
-import { useDrop } from 'react-dnd';
+import { useDrop } from 'react-dnd-cjs';
 import Dropzone from 'react-dropzone';
 import { useSelector as useStoreSelector } from 'react-redux';
 import { Prompt, RouteComponentProps } from 'react-router-dom';

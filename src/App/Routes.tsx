@@ -3,9 +3,9 @@ import { PageRoute } from 'components';
 import { Switch } from 'containers';
 import * as pages from 'pages';
 import React, { FC } from 'react';
-import { DndProvider } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
-import TouchBackend from 'react-dnd-touch-backend';
+import { DndProvider } from 'react-dnd-cjs';
+import HTML5Backend from 'react-dnd-html5-backend-cjs';
+import TouchBackend from 'react-dnd-touch-backend-cjs';
 import posed, { PoseGroup } from 'react-pose';
 import { Redirect, Route } from 'react-router-dom';
 import {
