@@ -1,4 +1,4 @@
-# React Hot Starter
+# Video Storyteller
 
 ## Conventions
 

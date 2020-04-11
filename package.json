@@ -1,5 +1,5 @@
 {
-  "name": "react-hot-starter",
+  "name": "video-storyteller",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -26,7 +26,7 @@
     "cypress:run": "cypress run",
     "cypress:open": "cypress open",
     "docs": "typedoc --out docs src",
-    "docs:deploy": "surge docs --domain https://react-hot-starter-docs.surge.sh",
+    "docs:deploy": "surge docs --domain https://video-storyteller-docs.surge.sh",
     "semantic-release": "semantic-release"
   },
   "dependencies": {
@@ -181,10 +181,10 @@
   "description": "Create React App based starter project with Hot Reloading for Components and Redux Reducers",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mateja176/react-hot-starter.git"
+    "url": "https://github.com/mateja176/video-storyteller.git"
   },
   "bugs": {
-    "url": "https://github.com/mateja176/react-hot-starter/issues"
+    "url": "https://github.com/mateja176/video-storyteller/issues"
   },
   "keywords": [
     "react",
