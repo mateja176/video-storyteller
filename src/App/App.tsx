@@ -21,7 +21,7 @@ import { Context } from './Context';
 import Layout from './Layout';
 import Routes from './Routes';
 
-declare module '@material-ui/core' {
+declare module '@material-ui/core/styles' {
   interface Theme extends WithColors {}
 }
 

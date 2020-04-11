@@ -2,10 +2,11 @@ import {
   makeStyles,
   Snackbar as MaterialSnackbar,
   SnackbarContent,
+  StyleRules,
+  Theme,
 } from '@material-ui/core';
-import { StyleRules } from '@material-ui/core/styles';
 import { Close } from '@material-ui/icons';
-import { CreateSimpleAction, EnhancedTheme } from 'models';
+import { CreateSimpleAction } from 'models';
 import React, { FC, useEffect } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import {
@@ -25,7 +26,7 @@ export interface SnackbarProps extends SnackbarState {
   closeSnackbar: CreateSimpleAction;
 }
 
-type GetVariants = (theme: EnhancedTheme) => StyleRules<Variant>;
+type GetVariants = (theme: Theme) => StyleRules<Variant>;
 
 const getVariants: GetVariants = ({ palette, colors }) => ({
   default: {},

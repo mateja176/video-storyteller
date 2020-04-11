@@ -1,7 +1,6 @@
 import { Theme } from '@material-ui/core';
-import { EnhancedTheme } from 'models';
 
-export const createToolbarStyles = (theme: EnhancedTheme) => ({
+export const createToolbarStyles = (theme: Theme) => ({
   ...theme.mixins.toolbar,
   display: 'flex',
   alignItems: 'center',
