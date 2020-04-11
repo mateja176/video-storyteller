@@ -1,7 +1,9 @@
-import { colors, createMuiTheme } from '@material-ui/core';
-import { MuiThemeProvider } from '@material-ui/core/styles';
-import { ThemeOptions } from '@material-ui/core/styles/createMuiTheme';
-import { ThemeProvider } from '@material-ui/styles';
+import {
+  colors,
+  createMuiTheme,
+  ThemeOptions,
+  ThemeProvider,
+} from '@material-ui/core';
 import { Snackbar } from 'components';
 import 'firebase/analytics';
 import { CreateSimpleAction, WithColors } from 'models';
@@ -83,12 +85,10 @@ const App: FC<AppProps> = ({ getAuthState, isSignedIn, themeOptions }) => {
 
   return (
     <ThemeProvider theme={theme}>
-      <MuiThemeProvider theme={theme}>
-        <Layout isSignedIn={isSignedIn}>
-          <Routes isSignedIn={isSignedIn} />
-        </Layout>
-      </MuiThemeProvider>
-      <Snackbar />
+      <Layout isSignedIn={isSignedIn}>
+        <Routes isSignedIn={isSignedIn} />
+        <Snackbar />
+      </Layout>
     </ThemeProvider>
   );
 };
