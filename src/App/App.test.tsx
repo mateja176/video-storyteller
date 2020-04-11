@@ -1,6 +1,4 @@
 import * as RTL from '@testing-library/react';
-import 'matchmedia-polyfill';
-import 'matchmedia-polyfill/matchMedia.addListener';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from '.';

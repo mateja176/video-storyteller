@@ -1,5 +1,3 @@
-import 'matchmedia-polyfill';
-import 'matchmedia-polyfill/matchMedia.addListener';
 import React from 'react';
 import { hydrate, render } from 'react-dom';
 import App from './App';
