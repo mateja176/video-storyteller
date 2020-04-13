@@ -1,7 +1,7 @@
+import { Box } from '@material-ui/core';
 import { Button } from 'components';
 import React from 'react';
 import { useSelector as useStoreSelector } from 'react-redux';
-import { Box } from 'rebass';
 import { createFetchFiles, selectAudio } from 'store';
 import { useActions as useStoreActions } from 'utils';
 import AudioBlock, { AudioElement } from './AudioBlock';

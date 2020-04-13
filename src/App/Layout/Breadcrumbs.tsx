@@ -1,4 +1,5 @@
 import {
+  Box,
   Breadcrumbs as MaterialBreadcrumbs,
   useTheme,
 } from '@material-ui/core';
@@ -9,7 +10,6 @@ import { take } from 'ramda';
 import React, { FC } from 'react';
 import { useSelector } from 'react-redux';
 import { RouteComponentProps, withRouter } from 'react-router';
-import { Box, Flex } from 'rebass';
 import { selectDictionary, selectPageFound } from 'store';
 import urlJoin from 'url-join';
 
@@ -37,7 +37,7 @@ const Breadcrumbs: FC<BreadcrumbsProps> = ({ location: { pathname } }) => {
   const color = theme.palette.primary.light;
 
   return (
-    <Flex alignItems="center">
+    <Box display="flex" alignItems="center">
       <Box flex={1}>
         <MaterialBreadcrumbs separator="›">
           <Link to="/" color={color}>
@@ -60,7 +60,7 @@ const Breadcrumbs: FC<BreadcrumbsProps> = ({ location: { pathname } }) => {
           ))}
         </MaterialBreadcrumbs>
       </Box>
-    </Flex>
+    </Box>
   );
 };
 

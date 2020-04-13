@@ -1,4 +1,5 @@
 import {
+  Box,
   Card,
   CardActions,
   CardContent,
@@ -8,7 +9,6 @@ import {
 import { Button } from 'components';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { Box } from 'rebass';
 import {
   createSignout,
   selectDictionary,

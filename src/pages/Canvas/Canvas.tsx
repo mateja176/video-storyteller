@@ -1,6 +1,7 @@
 /* eslint-disable indent */
 
 import {
+  Box,
   Drawer,
   FormControlLabel,
   Icon,
@@ -86,7 +87,6 @@ import {
   WhatsappIcon as Whatsapp,
   WhatsappShareButton,
 } from 'react-share';
-import { Box, Flex } from 'rebass';
 import { putString } from 'rxfire/storage';
 import { analytics, firebase } from 'services';
 import {
@@ -707,7 +707,8 @@ const Canvas: React.FC<CanvasProps> = ({
   const displaySidebar = !theatricalMode;
 
   return (
-    <Flex
+    <Box
+      display="flex"
       height="100%"
       style={{
         cursor: deleteModeOn ? 'not-allowed' : 'default',
@@ -850,21 +851,23 @@ const Canvas: React.FC<CanvasProps> = ({
           )}
         </List>
       </Drawer>
-      <Flex
+      <Box
+        display="flex"
         flexDirection="column"
         style={{
           flexGrow: 1,
           position: 'relative',
         }}
-        bg="inherit"
+        bgcolor="inherit"
       >
         <Box
-          bg={theme.palette.background.paper}
+          bgcolor={theme.palette.background.paper}
           style={{
             borderBottom: dividingBorder,
           }}
         >
-          <Flex
+          <Box
+            display="flex"
             style={{
               height: audioUploadOpen ? dropZoneHeight : controlsHeight,
               transition: 'height 250ms ease-out',
@@ -908,7 +911,8 @@ const Canvas: React.FC<CanvasProps> = ({
                       {({ getRootProps, getInputProps }) => {
                         const rootProps = getRootProps();
                         return (
-                          <Flex
+                          <Box
+                            display="flex"
                             {...(rootProps as any)}
                             width="100%"
                             height={dropZoneHeight}
@@ -916,7 +920,7 @@ const Canvas: React.FC<CanvasProps> = ({
                             alignItems="center"
                           >
                             <input {...getInputProps()} />
-                            <Flex alignItems="center">
+                            <Box display="flex" alignItems="center">
                               <Box mr={10}>
                                 {uploading ? (
                                   `${uploadPercentage} %`
@@ -937,8 +941,8 @@ const Canvas: React.FC<CanvasProps> = ({
                               <Button disabled={uploading}>
                                 click to select
                               </Button>
-                            </Flex>
-                          </Flex>
+                            </Box>
+                          </Box>
                         );
                       }}
                     </Dropzone>
@@ -1027,7 +1031,8 @@ const Canvas: React.FC<CanvasProps> = ({
 
                 default:
                   return (
-                    <Flex
+                    <Box
+                      display="flex"
                       className={workspaceClassName.mainMenu}
                       alignItems="center"
                       style={{
@@ -1364,20 +1369,21 @@ const Canvas: React.FC<CanvasProps> = ({
                           />
                         </SpeedDial>
                       )}
-                    </Flex>
+                    </Box>
                   );
               }
             })()}
-          </Flex>
+          </Box>
         </Box>
-        <Flex
+        <Box
+          display="flex"
           className={workspaceClassName.canvasWrapper}
           height="100%"
           style={{ overflow: 'hidden', position: 'relative' }}
         >
-          <Box
+          <div
             ref={dropRef}
-            flex={1}
+            style={{ flex: 1 }}
             onMouseMove={({ clientX, clientY, currentTarget }) => {
               const { x, y } = currentTarget.getBoundingClientRect();
               setClientCoords({ clientX: clientX - x, clientY: clientY - y });
@@ -1549,7 +1555,7 @@ const Canvas: React.FC<CanvasProps> = ({
                 );
               })}
             </div>
-          </Box>
+          </div>
           <RightDrawer
             open={
               rightDrawerOccupant !== 'none' &&
@@ -1564,7 +1570,12 @@ const Canvas: React.FC<CanvasProps> = ({
                 switch (rightDrawerOccupant) {
                   case 'text blocks':
                     return (
-                      <Flex p={2} flexDirection="column" height="100%">
+                      <Box
+                        display="flex"
+                        p={2}
+                        flexDirection="column"
+                        height="100%"
+                      >
                         <Box style={{ display: 'inline-block' }}>
                           <Tooltip
                             placement="top"
@@ -1589,23 +1600,23 @@ const Canvas: React.FC<CanvasProps> = ({
                           </Tooltip>
                         </Box>
                         {/* <Box alignSelf="center" mt="auto">
-                    <FormControlLabel
-                      label="Enable editing in sidebar"
-                      labelPlacement="end"
-                      control={
-                        <Switch
-                          defaultChecked
-                          onChange={({ target: { checked } }) => {
-                            updateStory({
-                              id: currentStory ? currentStory.id : '',
-                              isPublic: checked,
-                            });
-                          }}
-                        />
-                      }
-                    />
-                  </Box> */}
-                      </Flex>
+                          <FormControlLabel
+                            label="Enable editing in sidebar"
+                            labelPlacement="end"
+                            control={
+                              <Switch
+                                defaultChecked
+                                onChange={({ target: { checked } }) => {
+                                  updateStory({
+                                    id: currentStory ? currentStory.id : '',
+                                    isPublic: checked,
+                                  });
+                                }}
+                              />
+                            }
+                          />
+                        </Box> */}
+                      </Box>
                     );
                   case 'images':
                     return (
@@ -1624,11 +1635,11 @@ const Canvas: React.FC<CanvasProps> = ({
               })()}
             </Box>
           </RightDrawer>
-        </Flex>
+        </Box>
         <Box>
           <Box
             height={progressHeight}
-            bg={color(theme.palette.primary.light)
+            bgcolor={color(theme.palette.primary.light)
               .alpha(0.5)
               .toString()}
           >
@@ -1680,8 +1691,8 @@ const Canvas: React.FC<CanvasProps> = ({
             </CanvasContext.Provider>
           </Paper>
         </Box>
-      </Flex>
-    </Flex>
+      </Box>
+    </Box>
   );
 };
 

@@ -3,7 +3,6 @@ import { convertToRaw } from 'draft-js';
 import { EditorProps } from 'models';
 import React from 'react';
 import { useDrag } from 'react-dnd-cjs';
-import { Box } from 'rebass';
 import { dividingBorder } from 'styles';
 import { createDropText } from 'utils';
 
@@ -22,17 +21,17 @@ const TextBlock: React.FC<TextBlockProps> = ({ onDragEnd, ...editorProps }) => {
   });
 
   return (
-    <Box
+    <div
       ref={dragRef}
-      p={10}
       style={{
         border: dividingBorder,
         display: 'inline-block',
         cursor: 'grab',
+        padding: 10,
       }}
     >
       <Editor {...editorProps} />
-    </Box>
+    </div>
   );
 };
 

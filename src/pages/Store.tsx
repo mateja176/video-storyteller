@@ -1,12 +1,14 @@
 /* eslint-disable camelcase */
 
 import {
+  Box,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
   Typography,
+  useMediaQuery,
   useTheme,
 } from '@material-ui/core';
 import { startCase } from 'lodash';
@@ -14,7 +16,6 @@ import { Maybe } from 'models';
 import React, { FC, useEffect, useRef, useState } from 'react';
 import { CreditCard, IceCream } from 'react-kawaii';
 import { useSelector } from 'react-redux';
-import { Box, Flex } from 'rebass';
 import { selectDictionary } from 'store';
 import { v4 } from 'uuid';
 
@@ -125,11 +126,18 @@ const Store: FC<StoreProps> = () => {
 
   const theme = useTheme();
 
+  const lgUp = useMediaQuery(theme.breakpoints.up('lg'));
+
   return (
     <Box>
       {order ? (
         <div style={{ display: 'grid', justifyItems: 'center' }}>
-          <Flex mb={4} flexDirection="column" style={{ textAlign: 'center' }}>
+          <Box
+            display="flex"
+            mb={4}
+            flexDirection="column"
+            style={{ textAlign: 'center' }}
+          >
             <Typography variant="h2">{dict.purchased}</Typography>
             <Typography
               variant="h2"
@@ -137,19 +145,19 @@ const Store: FC<StoreProps> = () => {
             >
               {order.purchase_units[0].description}
             </Typography>
-          </Flex>
+          </Box>
           <CreditCard mood="happy" color={theme.colors.success.light} />
         </div>
       ) : (
         <Box mx={3}>
-          <Flex flexDirection={['column', 'row']} mb={4}>
+          <Box display="flex" flexDirection={['column', 'row']} mb={4}>
             <Box mr={[0, 4]} alignSelf={['center', 'flex-start']} mb={[3, 0]}>
               <IceCream />
             </Box>
             <ItemsTable items={[product]} />
-          </Flex>
+          </Box>
           <div style={{ display: 'grid', justifyItems: 'center' }}>
-            <Box width={['100%', '100%', '50%']} ref={paypalRef} />
+            <div ref={paypalRef} style={{ width: lgUp ? '50%' : '100%' }} />
           </div>
         </Box>
       )}

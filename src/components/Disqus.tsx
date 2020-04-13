@@ -1,8 +1,8 @@
+import { Box } from '@material-ui/core';
 import { CommentCount, DiscussionEmbed } from 'disqus-react';
 import { startCase } from 'lodash';
 import React, { ComponentProps } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { Box } from 'rebass';
 import { env } from 'services';
 import { useHref } from 'utils/hooks';
 

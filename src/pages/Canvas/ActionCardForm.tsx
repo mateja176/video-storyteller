@@ -1,6 +1,7 @@
 /* eslint-disable indent */
 
 import {
+  Box,
   ClickAwayListener,
   InputAdornment,
   TextField,
@@ -11,7 +12,6 @@ import { css, keyframes } from 'emotion';
 import { Form, Formik } from 'formik';
 import { equals } from 'ramda';
 import React from 'react';
-import { Flex } from 'rebass';
 import { ImageBlockState, WithDropResult } from 'utils';
 import { ICanvasContext } from './CanvasContext';
 import { Action, initialTransformState, TransformState } from './store';
@@ -150,7 +150,7 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
               }
             }}
           >
-            <Flex flexDirection="column" px={2} flex={1}>
+            <Box display="flex" flexDirection="column" px={2} flex={1}>
               <Form
                 style={{
                   flexGrow: 1,
@@ -175,7 +175,7 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
                   helperText={errors.duration}
                 />
                 {isUpdateResizeAction(action) && (
-                  <Flex>
+                  <Box display="flex">
                     <TextField
                       name="width"
                       label="Width"
@@ -201,7 +201,7 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
                         ),
                       }}
                     />
-                  </Flex>
+                  </Box>
                 )}
                 {(isScaleAction(action) || isSetTransformAction(action)) && (
                   <TextField
@@ -250,7 +250,7 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
                   />
                 )}
                 {isUpdateMoveAction(action) && (
-                  <Flex>
+                  <Box display="flex">
                     <TextField
                       {...textFieldProps}
                       type="number"
@@ -276,10 +276,10 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
                         endAdornment: px,
                       }}
                     />
-                  </Flex>
+                  </Box>
                 )}
                 {(isPositionAction(action) || isSetTransformAction(action)) && (
-                  <Flex>
+                  <Box display="flex">
                     <TextField
                       {...textFieldProps}
                       type="number"
@@ -305,10 +305,10 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
                         endAdornment: px,
                       }}
                     />
-                  </Flex>
+                  </Box>
                 )}
                 {isAuthor && (
-                  <Flex mt="auto">
+                  <Box display="flex" mt="auto">
                     <Button
                       className={css`
                         animation: ${saveDisabled
@@ -331,10 +331,10 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
                     >
                       Cancel
                     </Button>
-                  </Flex>
+                  </Box>
                 )}
               </Form>
-            </Flex>
+            </Box>
           </ClickAwayListener>
         );
       }}

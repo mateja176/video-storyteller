@@ -1,11 +1,16 @@
-import { CssBaseline, Divider, Drawer, makeStyles } from '@material-ui/core';
+import {
+  Box,
+  CssBaseline,
+  Divider,
+  Drawer,
+  makeStyles,
+} from '@material-ui/core';
 import { ChevronLeft, Close } from '@material-ui/icons';
 import { IconButton, Tooltip, Visible } from 'components';
 import { parse } from 'qs';
 import React, { FC, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { Box, Flex } from 'rebass';
 import { createSetTheatricalMode, selectTheatricalMode } from 'store';
 import { createToolbarStyles } from 'styles';
 import { useActions } from 'utils';
@@ -100,7 +105,8 @@ const Layout: FC<LayoutProps> = ({
       </Drawer>
       {breadcrumbsOpen && isSignedIn && (
         <>
-          <Flex
+          <Box
+            display="flex"
             alignItems="center"
             mx={3}
             my={2}
@@ -117,7 +123,7 @@ const Layout: FC<LayoutProps> = ({
                 </IconButton>
               </Tooltip>
             </Visible>
-          </Flex>
+          </Box>
           <Divider />
         </>
       )}

@@ -1,4 +1,4 @@
-import { TextField, Typography, useTheme } from '@material-ui/core';
+import { Box, TextField, Typography, useTheme } from '@material-ui/core';
 import { ArrowUpward } from '@material-ui/icons';
 import { Button, IconButton, Tooltip } from 'components';
 import { name } from 'faker';
@@ -7,13 +7,12 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import {
   AutoSizer,
+  IndexRange,
   InfiniteLoader,
   List,
   ListRowRenderer,
   WindowScroller,
-  IndexRange,
 } from 'react-virtualized';
-import { Box } from 'rebass';
 import { selectDictionary } from 'store';
 import { dividingBorder } from 'styles';
 import { cache } from 'utils';
@@ -227,7 +226,7 @@ const ListPage: React.FC<ListPageProps> = () => {
       </form>
       <br />
       <br />
-      <Box ref={listContainer}>
+      <div ref={listContainer}>
         <InfiniteLoader
           minimumBatchSize={pageSize}
           rowCount={rowCount}
@@ -260,7 +259,7 @@ const ListPage: React.FC<ListPageProps> = () => {
             </WindowScroller>
           )}
         </InfiniteLoader>
-      </Box>
+      </div>
     </div>
   );
 };

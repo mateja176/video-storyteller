@@ -1,8 +1,7 @@
-import { Typography } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import { startCase } from 'lodash';
 import { StorageFile } from 'models';
 import React from 'react';
-import { Box, Flex } from 'rebass';
 import { CreateSetAudio } from './store';
 
 export type AudioElement = HTMLAudioElement | null;
@@ -49,11 +48,11 @@ const AudioBlock: React.FC<AudioBlockProps> = ({
       }}
       style={{ cursor: 'pointer' }}
     >
-      <Flex mb={1} justifyContent="center">
+      <Box display="flex" mb={1} justifyContent="center">
         <Typography variant="h6" color={isActive ? 'secondary' : 'inherit'}>
           {startCase(name.split('.')[0])}
         </Typography>
-      </Flex>
+      </Box>
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <audio ref={audioRef} controls id={id}>
         <source src={src} />

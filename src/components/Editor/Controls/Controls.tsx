@@ -1,6 +1,6 @@
+import { Box } from '@material-ui/core';
 import { EditorState } from 'draft-js';
 import React from 'react';
-import { Flex } from 'rebass';
 import { BlockTypeControls, InlineStylesControls } from '.';
 import { BlockTypeControlsProps } from './BlockType';
 import { InlineStylesControlsProps } from './InlineStyles';
@@ -16,13 +16,13 @@ const Controls: React.FC<ControlsProps> = ({
   toggleBlockType,
   toggleInlineStyle,
 }) => (
-  <Flex alignItems="center" height="100%">
+  <Box display="flex" alignItems="center" height="100%">
     <BlockTypeControls editorState={editorState} onToggle={toggleBlockType} />
     <InlineStylesControls
       editorState={editorState}
       onToggle={toggleInlineStyle}
     />
-  </Flex>
+  </Box>
 );
 
 export default Controls;

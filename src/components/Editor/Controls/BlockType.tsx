@@ -1,17 +1,17 @@
 import {
+  Box,
+  ClickAwayListener,
   ListItem,
   ListItemIcon,
   ListItemText,
   ListSubheader,
   Menu,
   MenuItem,
-  ClickAwayListener,
 } from '@material-ui/core';
 import { TextFormat } from '@material-ui/icons';
 import { DraftBlockType, EditorState } from 'draft-js';
 import { find } from 'ramda';
 import React from 'react';
-import { Box } from 'rebass';
 
 interface BlockTypeOption {
   label: string;

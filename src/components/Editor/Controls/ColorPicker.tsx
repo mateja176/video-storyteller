@@ -1,4 +1,5 @@
 import {
+  Box,
   ClickAwayListener,
   ListItem,
   ListItemIcon,
@@ -8,7 +9,6 @@ import {
 import { DraftStyleMap } from 'draft-js';
 import React from 'react';
 import { GithubPicker } from 'react-color';
-import { Box } from 'rebass';
 
 export const colors = [
   '#b80000',
@@ -71,7 +71,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
             <Box
               width={circleWidth}
               height={circleWidth}
-              bg={color}
+              bgcolor={color}
               style={{ border: '1px solid #eee', borderRadius: '50%' }}
             />
           </ListItemIcon>

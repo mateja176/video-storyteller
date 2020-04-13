@@ -1,8 +1,7 @@
-import { Paper } from '@material-ui/core';
+import { Box, Paper } from '@material-ui/core';
 // @ts-ignore
 import preval from 'babel-plugin-preval/macro';
 import React from 'react';
-import { Flex } from 'rebass';
 
 const version = preval`
 const fs = require('fs');
@@ -16,9 +15,9 @@ export interface FooterProps {}
 
 const Footer: React.FC<FooterProps> = () => (
   <Paper style={{ display: 'none' }}>
-    <Flex my={2} mx={3} justifyContent="flex-end">
+    <Box display="flex" my={2} mx={3} justifyContent="flex-end">
       Version: {version}
-    </Flex>
+    </Box>
   </Paper>
 );
 

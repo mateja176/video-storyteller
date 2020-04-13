@@ -2,6 +2,7 @@
 
 import {
   Badge,
+  Box,
   Card,
   Divider,
   List,
@@ -46,7 +47,6 @@ import { equals, findLastIndex, init, insert, last, nth, update } from 'ramda';
 import React from 'react';
 import GridLayout from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
-import { Box, Flex } from 'rebass';
 import { createDevTools } from 'redux-devtools';
 import { analytics } from 'services';
 import { createListItemIconStyle, listItemStyle } from 'styles';
@@ -509,7 +509,7 @@ const StoryMonitor = ({
   //   .find(id => skippedActionIds.includes(id));
 
   return (
-    <Flex height="100%">
+    <Box display="flex" height="100%">
       <List
         className={workspaceClassName.storyControls}
         style={{ width: miniDrawerWidth }}
@@ -660,12 +660,15 @@ const StoryMonitor = ({
         </Popover>
       </List>
       <Divider orientation="vertical" />
-      <Flex
-        className={workspaceClassName.actionsTimeline}
+      <div
         ref={timelineRef}
-        style={{ overflowX: 'auto' }}
-        width="100%"
-        height="100%"
+        className={workspaceClassName.actionsTimeline}
+        style={{
+          display: 'flex',
+          width: '100%',
+          height: '100%',
+          overflowX: 'auto',
+        }}
       >
         <GridLayout
           isRearrangeable={isAuthor}
@@ -782,7 +785,7 @@ const StoryMonitor = ({
               : theme.palette.primary.dark;
 
             return (
-              <Flex key={id} height="100%">
+              <Box display="flex" key={id} height="100%">
                 <Card
                   className={workspaceClassName.actionCard}
                   style={{
@@ -848,7 +851,7 @@ const StoryMonitor = ({
                   }}
                 >
                   {isAuthor && (
-                    <Flex>
+                    <Box display="flex">
                       {/* <ButtonGroup variant="text">
                         <Button>{id}</Button>
                         <Button>{actionTypeIcon[action.type]}</Button>
@@ -945,9 +948,10 @@ const StoryMonitor = ({
                         />
                       </Box>
                     )} */}
-                    </Flex>
+                    </Box>
                   )}
-                  <Flex
+                  <Box
+                    display="flex"
                     flexDirection="column"
                     flex={1}
                     style={{
@@ -1110,7 +1114,7 @@ const StoryMonitor = ({
                         />
                       )}
                     </Box>
-                  </Flex>
+                  </Box>
                 </Card>
                 <Box
                   style={{ minWidth: 10, maxWidth: 10, position: 'relative' }}
@@ -1124,12 +1128,12 @@ const StoryMonitor = ({
                     </Tooltip>
                   )}
                 </Box>
-              </Flex>
+              </Box>
             );
           })}
         </GridLayout>
-      </Flex>
-    </Flex>
+      </div>
+    </Box>
   );
 };
 

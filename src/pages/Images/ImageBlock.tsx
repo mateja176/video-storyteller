@@ -1,6 +1,6 @@
+import { Box } from '@material-ui/core';
 import React from 'react';
 import { useDrag } from 'react-dnd-cjs';
-import { Box, Flex } from 'rebass';
 import { createDropImage, DropImagePayload } from 'utils';
 
 export interface ImageBlockProps
@@ -29,7 +29,7 @@ const ImageBlock: React.FC<ImageBlockProps> = ({
   });
 
   return (
-    <Flex mb={mb} flexDirection="column" alignItems="center">
+    <Box display="flex" mb={mb} flexDirection="column" alignItems="center">
       <img
         title={`${name} ${width}x${height}`}
         alt={name}
@@ -39,7 +39,7 @@ const ImageBlock: React.FC<ImageBlockProps> = ({
         width={thumbnailWidth}
         height={thumbnailHeight}
       />
-    </Flex>
+    </Box>
   );
 };
 

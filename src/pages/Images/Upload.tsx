@@ -1,6 +1,7 @@
 /* eslint-disable indent */
 
 import {
+  Box,
   Divider,
   List,
   Tooltip,
@@ -12,7 +13,7 @@ import { Button, IconButton, Spinner } from 'components';
 import React, { CSSProperties, FC, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { connect, useSelector } from 'react-redux';
-import { Box, Flex } from 'rebass';
+import { analytics } from 'services';
 import {
   createAddImage,
   CreateAddImage,
@@ -30,7 +31,6 @@ import {
   selectImagesWithIds,
   State,
 } from 'store';
-import { analytics } from 'services';
 
 const useStyles = createUseStyles({
   '@keyframes flicker': {
@@ -131,7 +131,7 @@ const Upload: FC<UploadProps> = ({
   return (
     <Box>
       <Typography variant="h2">Upload Images</Typography>
-      <Flex mt={3}>
+      <Box display="flex" mt={3}>
         <Button
           variant="contained"
           color="primary"
@@ -149,7 +149,7 @@ const Upload: FC<UploadProps> = ({
             <Button onClick={addImages}>Add more</Button>
           </Box>
         )}
-      </Flex>
+      </Box>
       <br />
       <Divider />
       {/* TODO replace with cards */}
@@ -167,7 +167,7 @@ const Upload: FC<UploadProps> = ({
                   key={name}
                   style={{ display: 'inline-block', textAlign: 'center' }}
                 >
-                  <Flex alignItems="center" ml={3} mb={2}>
+                  <Box display="flex" alignItems="center" ml={3} mb={2}>
                     <Tooltip
                       title={
                         appropriate
@@ -207,7 +207,7 @@ const Upload: FC<UploadProps> = ({
                           );
                       }
                     })()}
-                  </Flex>
+                  </Box>
                   <ImageComponent
                     dataUrl={dataUrl}
                     name={name}

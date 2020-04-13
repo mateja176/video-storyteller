@@ -1,6 +1,7 @@
 /* eslint-disable indent */
 
 import {
+  Box,
   List,
   ListItem,
   ListItemIcon,
@@ -15,7 +16,6 @@ import { add } from 'ramda';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
-import { Box, Flex } from 'rebass';
 import { analytics } from 'services';
 import {
   createSetCurrentStoryId,
@@ -76,7 +76,7 @@ const Dashboard: React.FC<DashboardProps> = ({ history }) => {
           <i color={theme.palette.primary.main}>Create story</i>
         </Link>
       </Box>
-      <Flex my={2} flexDirection="column">
+      <Box display="flex" my={2} flexDirection="column">
         {(() => {
           switch (fetchStoriesStatus) {
             case 'in progress':
@@ -152,7 +152,7 @@ const Dashboard: React.FC<DashboardProps> = ({ history }) => {
             }
           }
         })()}
-      </Flex>
+      </Box>
     </Box>
   );
 };

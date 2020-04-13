@@ -1,7 +1,6 @@
-import { useTheme } from '@material-ui/core';
-import React from 'react';
-import { Box } from 'rebass';
+import { Box, useTheme } from '@material-ui/core';
 import { Tooltip } from 'components';
+import React from 'react';
 
 export const progressHeight = 5;
 
@@ -68,7 +67,7 @@ const Progress: React.FC<ProgressProps> = ({
     >
       <Box
         height={progressHeight}
-        bg={theme.palette.primary.light}
+        bgcolor={theme.palette.primary.light}
         style={{
           position: 'relative',
         }}
@@ -76,7 +75,7 @@ const Progress: React.FC<ProgressProps> = ({
         <Box
           height="100%"
           width={`${percentage}%`}
-          bg={theme.palette.primary.dark}
+          bgcolor={theme.palette.primary.dark}
           style={{
             position: 'absolute',
             top: 0,

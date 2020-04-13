@@ -1,4 +1,4 @@
-import { Typography } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import { Button } from 'components';
 import React from 'react';
 import { RouteComponentProps } from 'react-router';
@@ -8,7 +8,6 @@ import {
   injectStripe,
   ReactStripeElements,
 } from 'react-stripe-elements';
-import { Box } from 'rebass';
 import { useHref } from 'utils';
 
 export interface CheckoutFormProps

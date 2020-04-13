@@ -2,6 +2,7 @@
 /* eslint-disable react/jsx-curly-newline */
 
 import {
+  Box,
   CircularProgress,
   ExpansionPanel,
   ExpansionPanelDetails,
@@ -15,7 +16,6 @@ import { LibraryImage } from 'models';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { AutoSizer, IndexRange, InfiniteLoader, List } from 'react-virtualized';
-import { Box, Flex } from 'rebass';
 import {
   createFetchFiles,
   createFetchImageLibraryToken,
@@ -123,7 +123,8 @@ const Images: React.FC<ImagesProps> = ({
   );
 
   return (
-    <Flex
+    <Box
+      display="flex"
       flexDirection="column"
       height="100%"
       width={storageImageWidth}
@@ -132,14 +133,14 @@ const Images: React.FC<ImagesProps> = ({
       onMouseLeave={onMouseLeave}
     >
       {!storageFilesLoading && uploadedImages.length === 0 && (
-        <Flex justifyContent="center" my={2}>
+        <Box display="flex" justifyContent="center" my={2}>
           <Link
             to={urlJoin(absoluteRootPaths.images, secondaryPaths.upload)}
             style={{ fontStyle: 'italic' }}
           >
             Upload your first images
           </Link>
-        </Flex>
+        </Box>
       )}
       {(storageFilesLoading || uploadedImages.length) && (
         <Loader isLoading={storageFilesLoading}>
@@ -215,7 +216,7 @@ const Images: React.FC<ImagesProps> = ({
                         <Box key={key} style={style}>
                           {!libraryImage ? null : libraryImage === 'loading' ? (
                             <Box
-                              bg="#eee"
+                              bgcolor="#eee"
                               height={storageImageWidthMinusScroll}
                             />
                           ) : isLibraryImagesRequestParams(libraryImage) ? (
@@ -248,7 +249,7 @@ const Images: React.FC<ImagesProps> = ({
           </InfiniteLoader>
         )}
       </Box>
-    </Flex>
+    </Box>
   );
 };
 

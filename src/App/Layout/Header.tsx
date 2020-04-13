@@ -2,6 +2,7 @@
 
 import {
   AppBar,
+  Box,
   makeStyles,
   Toolbar,
   Typography,
@@ -21,7 +22,6 @@ import { IconButton, Tooltip } from 'components';
 import { appName, CreateSimpleAction } from 'models';
 import React, { FC } from 'react';
 import { connect, useSelector } from 'react-redux';
-import { Flex } from 'rebass';
 import {
   createSetLang,
   createSignout,
@@ -106,19 +106,19 @@ const Header: FC<HeaderProps> = ({
             <Menu />
           </IconButton>
         </Tooltip>
-        <Flex className={expand} alignItems="center">
+        <Box display="flex" className={expand} alignItems="center">
           <Typography variant="h6" color="inherit">
             {isNotSmallScreen ? appName : ''}
           </Typography>
           {/* {isNotSmallScreen && isSignedIn && (
-            <Flex alignItems="center">
+            <Box display="flex" alignItems="center">
               <Box ml={2} mr={2} fontSize="2.5em">
                 |
               </Box>
               <Breadcrumbs />
-            </Flex>
+            </Box>
           )} */}
-        </Flex>
+        </Box>
         <div
           onClick={toggleActionsOpen}
           onKeyDown={toggleActionsOpen}
