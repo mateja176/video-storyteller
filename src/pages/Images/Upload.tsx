@@ -4,14 +4,15 @@ import {
   Box,
   Divider,
   List,
+  makeStyles,
   Tooltip,
   Typography,
   useTheme,
 } from '@material-ui/core';
 import { AddToPhotos, CheckCircleOutline, Close } from '@material-ui/icons';
+import clsx from 'clsx';
 import { Button, IconButton, Spinner } from 'components';
 import React, { CSSProperties, FC, useState } from 'react';
-import { createUseStyles } from 'react-jss';
 import { connect, useSelector } from 'react-redux';
 import { analytics } from 'services';
 import {
@@ -32,7 +33,7 @@ import {
   State,
 } from 'store';
 
-const useStyles = createUseStyles({
+const useStyles = makeStyles({
   '@keyframes flicker': {
     from: {
       opacity: 1,
@@ -41,12 +42,16 @@ const useStyles = createUseStyles({
       opacity: 0.7,
     },
   },
-  uploadButton: {
-    animation: ({ uploadDisabled }: { uploadDisabled: boolean }) =>
-      uploadDisabled
-        ? 'none'
-        : '$flicker 1000ms infinite alternate ease-in-out',
+  flicker: {
+    animationName: '$flicker',
+    animationDuration: '1000ms',
+    animationIterationCount: 'infinite',
+    animationDirection: 'alternate',
+    animationTimingFunction: 'ease-in-out',
   },
+  withAnimation: ({ disabled }: { disabled: boolean }) => ({
+    animationPlayState: disabled ? 'paused' : 'running',
+  }),
 });
 
 export interface ImageProps
@@ -105,9 +110,9 @@ const Upload: FC<UploadProps> = ({
 
   const areAllImagesAppropriate = useSelector(selectAreAllImagesAppropriate);
 
-  const uploadDisabled = !images.length || !areAllImagesAppropriate;
+  const disabled = !images.length || !areAllImagesAppropriate;
 
-  const classes = useStyles({ uploadDisabled });
+  const classes = useStyles({ disabled });
 
   const uploadInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -135,9 +140,9 @@ const Upload: FC<UploadProps> = ({
         <Button
           variant="contained"
           color="primary"
-          disabled={uploadDisabled}
+          disabled={disabled}
           isLoading={uploading || imagesBeingVerified}
-          className={classes.uploadButton}
+          className={clsx(classes.withAnimation, classes.flicker)}
           onClick={() => {
             upload();
           }}
