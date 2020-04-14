@@ -4,7 +4,6 @@ import {
   Box,
   Divider,
   List,
-  makeStyles,
   Tooltip,
   Typography,
   useTheme,
@@ -12,6 +11,7 @@ import {
 import { AddToPhotos, CheckCircleOutline, Close } from '@material-ui/icons';
 import clsx from 'clsx';
 import { Button, IconButton, Spinner } from 'components';
+import { useFlicker } from 'hooks';
 import React, { CSSProperties, FC, useState } from 'react';
 import { connect, useSelector } from 'react-redux';
 import { analytics } from 'services';
@@ -32,27 +32,6 @@ import {
   selectImagesWithIds,
   State,
 } from 'store';
-
-const useStyles = makeStyles({
-  '@keyframes flicker': {
-    from: {
-      opacity: 1,
-    },
-    to: {
-      opacity: 0.7,
-    },
-  },
-  flicker: {
-    animationName: '$flicker',
-    animationDuration: '1000ms',
-    animationIterationCount: 'infinite',
-    animationDirection: 'alternate',
-    animationTimingFunction: 'ease-in-out',
-  },
-  withAnimation: ({ disabled }: { disabled: boolean }) => ({
-    animationPlayState: disabled ? 'paused' : 'running',
-  }),
-});
 
 export interface ImageProps
   extends React.DetailedHTMLProps<
@@ -112,7 +91,7 @@ const Upload: FC<UploadProps> = ({
 
   const disabled = !images.length || !areAllImagesAppropriate;
 
-  const classes = useStyles({ disabled });
+  const flickerClasses = useFlicker({ disabled });
 
   const uploadInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -142,7 +121,7 @@ const Upload: FC<UploadProps> = ({
           color="primary"
           disabled={disabled}
           isLoading={uploading || imagesBeingVerified}
-          className={clsx(classes.withAnimation, classes.flicker)}
+          className={clsx(Object.values(flickerClasses))}
           onClick={() => {
             upload();
           }}

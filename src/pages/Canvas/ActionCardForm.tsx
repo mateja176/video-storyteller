@@ -6,10 +6,11 @@ import {
   InputAdornment,
   TextField,
 } from '@material-ui/core';
+import clsx from 'clsx';
 import { Button } from 'components';
 import { convertFromRaw } from 'draft-js';
-import { css, keyframes } from 'emotion';
 import { Form, Formik } from 'formik';
+import { useFlicker } from 'hooks';
 import { equals } from 'ramda';
 import React from 'react';
 import { ImageBlockState, WithDropResult } from 'utils';
@@ -27,15 +28,6 @@ import {
   isUpdateRenameImageAction,
   isUpdateResizeAction,
 } from './utils';
-
-const flicker = keyframes`
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0.7;
-  }
-`;
 
 const constantTextFieldProps = {
   margin: 'dense',
@@ -111,6 +103,8 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
   };
 
   const px = <InputAdornment position="end">px</InputAdornment>;
+
+  const flickerClasses = useFlicker({ disabled: false });
 
   return (
     <Formik
@@ -310,12 +304,7 @@ const ActionCardForm: React.FC<ActionCardFormProps> = ({
                 {isAuthor && (
                   <Box display="flex" mt="auto">
                     <Button
-                      className={css`
-                        animation: ${saveDisabled
-                          ? 'none'
-                          : `${flicker} 1000ms infinite alternate
-                        ease-in-out`};
-                      `}
+                      className={clsx(Object.values(flickerClasses))}
                       size="small"
                       type="submit"
                       disabled={saveDisabled}
