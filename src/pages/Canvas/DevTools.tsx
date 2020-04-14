@@ -677,7 +677,6 @@ const StoryMonitor = ({
         }}
       >
         <GridLayout
-          isRearrangeable={isAuthor}
           isDraggable={isAuthor}
           style={{ height: '100%', width: '100%' }}
           isResizable={false}

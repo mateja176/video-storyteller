@@ -62,7 +62,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ stripe }) => {
   );
 };
 
-const CheckoutFormElement = injectStripe(CheckoutForm);
+const CheckoutFormElement = injectStripe<RouteComponentProps>(CheckoutForm);
 
 export default (props: RouteComponentProps) => (
   <Elements>
