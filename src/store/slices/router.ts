@@ -7,7 +7,9 @@ const initialState = {
 
 export type RouterState = typeof initialState;
 
-export const createTogglePageFound = createAction('router/pageNotFound/toggle');
+export const createTogglePageFound = createAction(
+  'router/pageNotFound/toggle',
+)();
 export type CreateTogglePageFound = typeof createTogglePageFound;
 export type TogglePageFoundAction = ReturnType<CreateTogglePageFound>;
 

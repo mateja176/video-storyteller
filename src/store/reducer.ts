@@ -59,7 +59,7 @@ export type Reducer = typeof reducer;
 export type State = ReturnType<Reducer>;
 
 export const resetType = 'RESET';
-export const createReset = createAction(resetType);
+export const createReset = createAction(resetType)();
 export type CreateReset = typeof createReset;
 export type ResetAction = ReturnType<CreateReset>;
 
@@ -71,7 +71,7 @@ const reducerWithReset: Reducer = (state, action) =>
 export default reducerWithReset;
 
 export const testType = 'TEST';
-export const createTest = createAction(testType);
+export const createTest = createAction(testType)();
 export type CreateTest = typeof createTest;
 export type TestAction = ReturnType<CreateTest>;
 

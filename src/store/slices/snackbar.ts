@@ -25,8 +25,8 @@ const initialState: SnackbarState = {
 
 export const createSetSnackbar = createAction(
   'snackbar/set',
-  action => (payload: SnackbarConfig) => action(payload),
-);
+  (payload: SnackbarConfig) => payload,
+)();
 export type CreateSetSnackbar = typeof createSetSnackbar;
 export type SetSnackbarAction = ReturnType<CreateSetSnackbar>;
 
@@ -37,11 +37,11 @@ export const createSetSuccessSnackbar = (
   snackbarConfig: SimpleSnackbarConfig,
 ) => createSetSnackbar({ ...snackbarConfig, variant: 'success' });
 
-export const createCloseSnackbar = createAction('snackbar/close');
+export const createCloseSnackbar = createAction('snackbar/close')();
 export type CreateCloseSnackbarAction = typeof createCloseSnackbar;
 export type CloseSnackbarAction = ReturnType<CreateCloseSnackbarAction>;
 
-export const createResetSnackbar = createAction('snackbar/reset');
+export const createResetSnackbar = createAction('snackbar/reset')();
 export type CreateResetSnackbar = typeof createResetSnackbar;
 export type ResetSnackbarAction = ReturnType<CreateResetSnackbar>;
 

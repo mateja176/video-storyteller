@@ -1,7 +1,7 @@
 import { PanZoom } from 'panzoom';
+import { Tuple } from 'ts-toolbelt';
 import { createAction } from 'typesafe-actions';
 import { createReducer } from 'utils';
-import { Tuple } from 'ts-toolbelt';
 
 export type ClientCoords = Pick<React.MouseEvent, 'clientX' | 'clientY'>;
 export type Transform = ReturnType<PanZoom['getTransform']>;
@@ -22,29 +22,29 @@ export const initialTransformState: TransformState = {
 export const setTransformType = 'transform/set';
 export const createSetTransform = createAction(
   setTransformType,
-  action => (payload: Transform) => action(payload),
-);
+  (payload: Transform) => payload,
+)();
 export type SetTransformAction = ReturnType<typeof createSetTransform>;
 
 export const scaleSetType = 'transform/scale/set';
 export const createSetScale = createAction(
   scaleSetType,
-  action => (payload: Zoom) => action(payload),
-);
+  (payload: Zoom) => payload,
+)();
 export type SetScaleAction = ReturnType<typeof createSetScale>;
 
 export const setZoomType = 'transform/zoom/set';
 export const createSetZoom = createAction(
   setZoomType,
-  action => (payload: ZoomAndPosition) => action(payload),
-);
+  (payload: ZoomAndPosition) => payload,
+)();
 export type SetZoomAction = ReturnType<typeof createSetZoom>;
 
 export const positionSetType = 'transform/position/set';
 export const createSetPosition = createAction(
   positionSetType,
-  action => (payload: Pick<Transform, 'x' | 'y'>) => action(payload),
-);
+  (payload: Pick<Transform, 'x' | 'y'>) => payload,
+)();
 export type SetPositionAction = ReturnType<typeof createSetPosition>;
 
 export type ScaleAction = SetScaleAction | SetZoomAction;

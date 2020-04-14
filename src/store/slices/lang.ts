@@ -109,8 +109,8 @@ const initialState: LangState = {
 
 export const createSetLang = createAction(
   'lang/set',
-  action => (payload: Lang) => action(payload),
-);
+  (payload: Lang) => payload,
+)();
 export type CreateSetLang = typeof createSetLang;
 export type SetLangAction = ReturnType<CreateSetLang>;
 

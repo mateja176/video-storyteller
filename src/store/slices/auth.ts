@@ -33,7 +33,7 @@ export type SigninSuccess = ReturnType<CreateSignin['success']>;
 export type SigninFailure = ReturnType<CreateSignin['failure']>;
 
 export const signoutType = 'auth/signout';
-export const createSignout = createAction(signoutType);
+export const createSignout = createAction(signoutType)();
 export type CreateSignout = typeof createSignout;
 export type SignoutAction = ReturnType<CreateSignout>;
 
@@ -48,17 +48,16 @@ export type FetchAuthStateAction = ActionType<CreateFetchAuthState>;
 export const authStateChangeType = 'auth/state/change';
 export const createAuthStateChange = createAction(
   authStateChangeType,
-  action => (user: FirebaseUser) =>
-    action(user ? (user.toJSON() as User) : null),
-);
+  (user: FirebaseUser) => (user ? (user.toJSON() as User) : null),
+)();
 export type CreateAuthStateChange = typeof createAuthStateChange;
 export type AuthStateChangeAction = ReturnType<CreateAuthStateChange>;
 
 export const setUserType = 'auth/set';
 export const createSetUser = createAction(
   setUserType,
-  action => (payload: User) => action(payload),
-);
+  (payload: User) => payload,
+)();
 export type CreateSetUser = typeof createSetUser;
 export type SetUserAction = ReturnType<CreateSetUser>;
 
@@ -84,8 +83,8 @@ export const user: Reducer<User, SetUserAction> = (
 export const setAuthStatusType = 'auth/status';
 export const createSetAuthStatus = createAction(
   setAuthStatusType,
-  action => (payload: ExtendedLoadingStatus) => action(payload),
-);
+  (payload: ExtendedLoadingStatus) => payload,
+)();
 export type CreateSetAuthStatus = typeof createSetAuthStatus;
 export type SetAuthStatusAction = ReturnType<CreateSetAuthStatus>;
 

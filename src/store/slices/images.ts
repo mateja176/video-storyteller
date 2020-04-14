@@ -2,8 +2,8 @@ import { ExtendedLoadingStatus, LoadingStatus } from 'models';
 import { pick } from 'ramda';
 import { Reducer } from 'redux';
 import { createAction, getType } from 'typesafe-actions';
-import { v4 } from 'uuid';
 import { objectMap } from 'utils';
+import { v4 } from 'uuid';
 
 export interface Image {
   dataUrl: string;
@@ -27,47 +27,44 @@ export type ImagesWithId = ImageWithId[];
 
 export const initialImages: ImagesState = { ids: [], entities: {} };
 
-export const createAddImage = createAction(
-  'images/add',
-  action => (image: Image) => action({ ...image, id: v4() }),
-);
+export const createAddImage = createAction('images/add', (image: Image) => ({
+  ...image,
+  id: v4(),
+}))();
 export type CreateAddImage = typeof createAddImage;
 export type AddImageAction = ReturnType<CreateAddImage>;
 
 export const uploadType = 'images/upload';
-export const createUpload = createAction(uploadType);
+export const createUpload = createAction(uploadType)();
 export type CreateUpload = typeof createUpload;
 export type UploadAction = ReturnType<CreateUpload>;
 
 export const createUpdateProgress = createAction(
   'images/updateProgress',
-  action => (payload: {
-    id: ImageWithId['id'];
-    uploadStatus: Image['uploadStatus'];
-  }) => action(payload),
-);
+  (payload: { id: ImageWithId['id']; uploadStatus: Image['uploadStatus'] }) =>
+    payload,
+)();
 export type CreateUpdateProgress = typeof createUpdateProgress;
 export type UpdateProgressAction = ReturnType<CreateUpdateProgress>;
 
 export const createSetImages = createAction(
   'images/set',
-  action => (payload: Image[]) => action(payload),
-);
+  (payload: Image[]) => payload,
+)();
 export type CreateSetImages = typeof createSetImages;
 export type SetImagesAction = ReturnType<CreateSetImages>;
 
 export const createRemoveImage = createAction(
   'images/remove',
-  action => (payload: ImageWithId['id']) => action(payload),
-);
+  (payload: ImageWithId['id']) => payload,
+)();
 export type CreateRemoveImage = typeof createRemoveImage;
 export type RemoveImageAction = ReturnType<CreateRemoveImage>;
 
 export const createUpdateOneImage = createAction(
   'images/updateOne',
-  action => (payload: Partial<Image> & Pick<ImageWithId, 'id'>) =>
-    action(payload),
-);
+  (payload: Partial<Image> & Pick<ImageWithId, 'id'>) => payload,
+)();
 export type CreateUpdateOneImage = typeof createUpdateOneImage;
 export type UpdateOneImageAction = ReturnType<CreateUpdateOneImage>;
 
@@ -127,7 +124,7 @@ export const images: Reducer<ImagesState, ImagesAction> = (
     }
     case getType(createRemoveImage): {
       const { payload } = action;
-      const newIds = ids.filter(id => id !== payload);
+      const newIds = ids.filter((id) => id !== payload);
       return {
         ids: newIds,
         entities: pick(newIds, entities),

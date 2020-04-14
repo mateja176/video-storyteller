@@ -11,8 +11,8 @@ import { FilterActionByType, SimpleAction } from 'models';
  * type GetCountAction = ReturnType<CreateGetCount>;
  *
  * const setCountType = 'count/set';
- * const createSetCount = createAction(setCountType, action => (payload: number) =>
- *   action(payload),
+ * const createSetCount = createAction(setCountType, (payload: number) =>
+ *   (payload),
  * );
  * type CreateSetCount = typeof createSetCount;
  * type SetCountAction = ReturnType<CreateSetCount>;

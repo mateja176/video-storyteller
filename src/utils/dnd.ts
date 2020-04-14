@@ -18,8 +18,8 @@ export interface DropTextPayload extends WithRawEditorState {}
 
 export const createDropText = createAction(
   draggable.text,
-  action => (payload: DropTextPayload) => action(payload),
-);
+  (payload: DropTextPayload) => payload,
+)();
 export type CreateDropText = typeof createDropText;
 export type DropTextAction = ReturnType<CreateDropText>;
 
@@ -27,8 +27,8 @@ export type DropImagePayload = Omit<CustomMetadata, 'id'> & WithDownloadUrl;
 
 export const createDropImage = createAction(
   draggable.image,
-  action => (payload: DropImagePayload) => action(payload),
-);
+  (payload: DropImagePayload) => payload,
+)();
 export type CreateDropImage = typeof createDropImage;
 export type DropImageAction = ReturnType<CreateDropImage>;
 

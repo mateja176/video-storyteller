@@ -33,41 +33,40 @@ export type CudActionType = CudActionTypes[number];
 
 export const createCreateAction = createAction(
   cudActionType.create,
-  action => (payload: BlockState) => action(payload),
-);
+  (payload: BlockState) => payload,
+)();
 export type CreateAction = ReturnType<typeof createCreateAction>;
 
 export const createUpdateMove = createAction(
   cudActionType['update/move'],
-  action => (payload: {
-    payload: Pick<BlockState['payload'], 'id' | 'left' | 'top'>;
-  }) => action(payload),
-);
+  (payload: { payload: Pick<BlockState['payload'], 'id' | 'left' | 'top'> }) =>
+    payload,
+)();
 export type UpdateMoveAction = ReturnType<typeof createUpdateMove>;
 
 export const createUpdateResize = createAction(
   cudActionType['update/resize'],
-  action => (payload: {
+  (payload: {
     payload: Pick<
       BlockState['payload'],
       'id' | 'left' | 'top' | 'width' | 'height'
     >;
-  }) => action(payload),
-);
+  }) => payload,
+)();
 export type UpdateResizeAction = ReturnType<typeof createUpdateResize>;
 
 export const createUpdateEditText = createAction(
   cudActionType['update/editText'],
-  action => (
-    payload: Required<Partial<TextBlockState['payload']>, 'id' | 'block'>,
-  ) => action({ payload }),
-);
+  (payload: Required<Partial<TextBlockState['payload']>, 'id' | 'block'>) => ({
+    payload,
+  }),
+)();
 export type UpdateEditTextAction = ReturnType<typeof createUpdateEditText>;
 
 export const createUpdateRenameImage = createAction(
   cudActionType['update/renameImage'],
-  action => (payload: ImageBlockState) => action(payload),
-);
+  (payload: ImageBlockState) => payload,
+)();
 export type UpdateRenameImageAction = ReturnType<
   typeof createUpdateRenameImage
 >;
@@ -80,8 +79,8 @@ export type UpdateAction =
 
 export const createDeleteAction = createAction(
   cudActionType.delete,
-  action => (payload: { payload: WithId }) => action(payload),
-);
+  (payload: { payload: WithId }) => payload,
+)();
 export type DeleteAction = ReturnType<typeof createDeleteAction>;
 
 export type CudAction = CreateAction | UpdateAction | DeleteAction;

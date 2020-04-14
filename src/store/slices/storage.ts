@@ -18,8 +18,8 @@ export const initialStorageState: StorageState = {
 
 export const createFile = createAction(
   'storage/file/add',
-  action => (payload: StorageFile) => action(payload),
-);
+  (payload: StorageFile) => payload,
+)();
 export type CreateAddFile = typeof createFile;
 export type AddFileAction = ReturnType<CreateAddFile>;
 
@@ -42,7 +42,7 @@ export type StorageReducerAction = AddFileAction | FetchFilesRequestAction;
 
 export const storage = createReducer(initialStorageState)<StorageReducerAction>(
   {
-    'storage/file/fetch/request': state => ({ ...state, filesLoading: true }),
+    'storage/file/fetch/request': (state) => ({ ...state, filesLoading: true }),
     'storage/file/add': (state, { payload }) => {
       const [type] = payload.contentType.split('/');
       const key: keyof StorageState = type === 'audio' ? 'audio' : 'images';

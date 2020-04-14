@@ -5,13 +5,13 @@ import { createAction } from 'typesafe-actions';
 export const setTypeType = 'theme/palette/type/set';
 export const createSetType = createAction(
   setTypeType,
-  action => (payload: PaletteType) => action(payload),
-);
+  (payload: PaletteType) => payload,
+)();
 export type CreateSetType = typeof createSetType;
 export type SetTypeAction = ReturnType<CreateSetType>;
 
 export const toggleTypeType = 'theme/palette/type/toggle';
-export const createToggleType = createAction(toggleTypeType);
+export const createToggleType = createAction(toggleTypeType)();
 export type CreateToggleType = typeof createToggleType;
 export type ToggleTypeAction = ReturnType<CreateToggleType>;
 

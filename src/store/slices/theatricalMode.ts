@@ -7,12 +7,14 @@ export const initialTheatricalModeState: TheatricalMode = false;
 
 export const createSetTheatricalMode = createAction(
   'theatricalMode/set',
-  action => (payload: TheatricalMode) => action(payload),
-);
+  (payload: TheatricalMode) => payload,
+)();
 export type CreateSetTheatricalMode = typeof createSetTheatricalMode;
 export type SetTheatricalModeAction = ReturnType<CreateSetTheatricalMode>;
 
-export const createToggleTheatricalMode = createAction('theatricalMode/toggle');
+export const createToggleTheatricalMode = createAction(
+  'theatricalMode/toggle',
+)();
 export type CreateToggleTheatricalMode = typeof createToggleTheatricalMode;
 export type ToggleTheatricalModeAction = ReturnType<CreateToggleTheatricalMode>;
 
@@ -24,5 +26,5 @@ export const theatricalMode = createReducer(initialTheatricalModeState)<
   TheatricalModeAction
 >({
   'theatricalMode/set': (_, { payload }) => payload,
-  'theatricalMode/toggle': state => !state,
+  'theatricalMode/toggle': (state) => !state,
 });

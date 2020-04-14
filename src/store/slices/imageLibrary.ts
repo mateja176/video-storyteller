@@ -67,7 +67,7 @@ export type FetchLibraryImagesFailure = ReturnType<
 >;
 export type FetchLibraryImagesAction = ActionType<CreateFetchLibraryImages>;
 
-export const createResetImageLibrary = createAction('imageLibrary/reset');
+export const createResetImageLibrary = createAction('imageLibrary/reset')();
 export type CreateResetImageLibrary = typeof createResetImageLibrary;
 export type ResetImageLibraryAction = ReturnType<CreateResetImageLibrary>;
 
@@ -79,12 +79,15 @@ export type ImageLibraryAction =
 export const imageLibrary = createReducer(initialImageLibraryState)<
   ImageLibraryAction
 >({
-  'imageLibrary/token/fetch/request': state => ({ ...state, token: 'loading' }),
+  'imageLibrary/token/fetch/request': (state) => ({
+    ...state,
+    token: 'loading',
+  }),
   'imageLibrary/token/fetch/success': (state, { payload }) => ({
     ...state,
     ...payload,
   }),
-  'imageLibrary/token/fetch/failure': state => ({
+  'imageLibrary/token/fetch/failure': (state) => ({
     ...state,
     token: initialImageLibraryState.token,
   }),
@@ -126,7 +129,7 @@ export const imageLibrary = createReducer(initialImageLibraryState)<
       state.images,
     ),
   }),
-  'imageLibrary/reset': state => ({
+  'imageLibrary/reset': (state) => ({
     ...state,
     images: initialImageLibraryState.images,
     total: initialImageLibraryState.total,

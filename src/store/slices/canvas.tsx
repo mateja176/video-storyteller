@@ -30,8 +30,8 @@ export const initialCanvasState: CanvasState = {
 export const setDurationsType = 'canvas/durations/set';
 export const createSetDurations = createAction(
   setDurationsType,
-  action => (payload: CanvasState['durations']) => action(payload),
-);
+  (payload: CanvasState['durations']) => payload,
+)();
 export type CreateSetDurations = typeof createSetDurations;
 export type SetDurationsAction = ReturnType<CreateSetDurations>;
 
@@ -81,24 +81,24 @@ export type SubscribeToStoriesFailure = ReturnType<
 export const addStoryType = 'canvas/story/add';
 export const createAddStory = createAction(
   addStoryType,
-  action => (payload: StoryWithId) => action(payload),
-);
+  (payload: StoryWithId) => payload,
+)();
 export type CreateAddStory = typeof createAddStory;
 export type AddStoryAction = ReturnType<CreateAddStory>;
 
 export const setOneType = 'canvas/stories/SetOne';
 export const createSetOne = createAction(
   setOneType,
-  action => (payload: StoryWithId) => action(payload),
-);
+  (payload: StoryWithId) => payload,
+)();
 export type CreateSetOne = typeof createSetOne;
 export type SetOneAction = ReturnType<CreateSetOne>;
 
 export const setDeleteStoryType = 'canvas/stories/deleteOne';
 export const createDeleteStory = createAction(
   setDeleteStoryType,
-  action => (payload: Pick<StoryWithId, 'id'>) => action(payload),
-);
+  (payload: Pick<StoryWithId, 'id'>) => payload,
+)();
 export type CreateDeleteStory = typeof createDeleteStory;
 export type DeleteStoryAction = ReturnType<CreateDeleteStory>;
 
@@ -133,15 +133,15 @@ export type FetchStoriesAction = ActionType<typeof createFetchStories>;
 export const setCurrentStoryIdType = 'canvas/currentStoryId/set';
 export const createSetCurrentStoryId = createAction(
   setCurrentStoryIdType,
-  action => (payload: Pick<CanvasState, 'currentStoryId'>) => action(payload),
-);
+  (payload: Pick<CanvasState, 'currentStoryId'>) => payload,
+)();
 export type CreateSetCurrentStoryId = typeof createSetCurrentStoryId;
 export type SetCurrentStoryIdAction = ReturnType<CreateSetCurrentStoryId>;
 
 export const createSetStoriesCount = createAction(
   'canvas/stories/count',
-  action => (payload: CanvasState['storiesCount']) => action(payload),
-);
+  (payload: CanvasState['storiesCount']) => payload,
+)();
 export type CreateSetStoriesCount = typeof createSetStoriesCount;
 export type SetStoriesCountAction = ReturnType<CreateSetStoriesCount>;
 
@@ -159,15 +159,15 @@ export type CanvasAction =
   | SetStoriesCountAction;
 
 export const canvas = createReducer(initialCanvasState)<CanvasAction>({
-  'canvas/stories/subscribe/request': state => ({
+  'canvas/stories/subscribe/request': (state) => ({
     ...state,
     fetchStoriesStatus: 'in progress',
   }),
-  'canvas/stories/subscribe/success': state => ({
+  'canvas/stories/subscribe/success': (state) => ({
     ...state,
     fetchStoriesStatus: 'completed',
   }),
-  'canvas/stories/subscribe/failure': state => ({
+  'canvas/stories/subscribe/failure': (state) => ({
     ...state,
     fetchStoriesStatus: 'failed',
   }),
@@ -184,20 +184,20 @@ export const canvas = createReducer(initialCanvasState)<CanvasAction>({
   'canvas/stories/SetOne': (state, { payload }) => ({
     ...state,
     stories: update(
-      state.stories.findIndex(story => story.id === payload.id),
+      state.stories.findIndex((story) => story.id === payload.id),
       payload,
       state.stories,
     ),
   }),
   'canvas/stories/deleteOne': (state, { payload: { id } }) => ({
     ...state,
-    stories: state.stories.filter(story => story.id !== id),
+    stories: state.stories.filter((story) => story.id !== id),
   }),
   'canvas/currentStoryId/set': (state, { payload: { currentStoryId } }) => ({
     ...state,
     currentStoryId,
   }),
-  'canvas/stories/fetchOne/request': state => ({
+  'canvas/stories/fetchOne/request': (state) => ({
     ...state,
     fetchStoryStatus: 'in progress',
   }),
@@ -206,15 +206,15 @@ export const canvas = createReducer(initialCanvasState)<CanvasAction>({
     fetchStoryStatus: 'completed',
     stories: state.stories.concat(story),
   }),
-  'canvas/stories/fetchOne/failure': state => ({
+  'canvas/stories/fetchOne/failure': (state) => ({
     ...state,
     fetchStoryStatus: 'failed',
   }),
-  'canvas/fetchStories/request': state => ({
+  'canvas/fetchStories/request': (state) => ({
     ...state,
     fetchStoriesStatus: 'in progress',
   }),
-  'canvas/fetchStories/failure': state => ({
+  'canvas/fetchStories/failure': (state) => ({
     ...state,
     fetchStoriesStatus: 'failed',
   }),
@@ -233,27 +233,27 @@ export const canvas = createReducer(initialCanvasState)<CanvasAction>({
     ...state,
     durations: payload,
   }),
-  'canvas/saveStory/request': state => ({
+  'canvas/saveStory/request': (state) => ({
     ...state,
     saveStoryStatus: 'in progress',
   }),
-  'canvas/saveStory/success': state => ({
+  'canvas/saveStory/success': (state) => ({
     ...state,
     saveStoryStatus: 'completed',
   }),
-  'canvas/saveStory/failure': state => ({
+  'canvas/saveStory/failure': (state) => ({
     ...state,
     saveStoryStatus: 'failed',
   }),
-  'canvas/stories/updateOne/request': state => ({
+  'canvas/stories/updateOne/request': (state) => ({
     ...state,
     saveStoryStatus: 'in progress',
   }),
-  'canvas/stories/updateOne/success': state => ({
+  'canvas/stories/updateOne/success': (state) => ({
     ...state,
     saveStoryStatus: 'completed',
   }),
-  'canvas/stories/updateOne/failure': state => ({
+  'canvas/stories/updateOne/failure': (state) => ({
     ...state,
     saveStoryStatus: 'failed',
   }),

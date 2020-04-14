@@ -75,7 +75,7 @@
     "reselect": "^4.0.0",
     "rxfire": "^3.5.1",
     "rxjs": "^6.4.0",
-    "typesafe-actions": "^4.4.2",
+    "typesafe-actions": "^5.1.0",
     "url-join": "^4.0.0",
     "uuid": "^7.0.3",
     "yup": "^0.28.3"

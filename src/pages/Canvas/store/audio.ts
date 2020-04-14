@@ -13,8 +13,8 @@ export const initialAudioState: AudioState = {
 
 export const createSetAudio = createAction(
   'audio/set',
-  action => (payload: AudioState) => action(payload),
-);
+  (payload: AudioState) => payload,
+)();
 export type CreateSetAudio = typeof createSetAudio;
 export type SetAudioAction = ReturnType<CreateSetAudio>;
 
