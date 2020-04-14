@@ -36,7 +36,7 @@
     "disqus-react": "^1.0.6",
     "draft-js": "^0.11.3",
     "firebase": "^7.3.0",
-    "formik": "^1.5.2",
+    "formik": "^2.1.4",
     "history": "^4.10.1",
     "lodash": "^4.17.11",
     "logrocket": "^1.0.1",
