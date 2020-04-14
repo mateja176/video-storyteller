@@ -100,7 +100,7 @@ export const miniDrawerWidth = 55;
 
 const initialHoveredCardId: number = -1;
 
-const initialPlayTimeout = -1;
+const initialPlayTimeout = null;
 
 const initialTimeoutStart = 0;
 
@@ -255,7 +255,9 @@ const StoryMonitor = ({
     editableActions.length,
   );
 
-  const [playTimeout, setPlayTimeout] = React.useState(-1);
+  const [playTimeout, setPlayTimeout] = React.useState<NodeJS.Timeout | null>(
+    initialPlayTimeout,
+  );
   const [timeoutStart, setTimeoutStart] = React.useState(0);
 
   const canPlay = isCurrentActionIdActive && nextActiveAction;
@@ -522,7 +524,9 @@ const StoryMonitor = ({
 
               setIsPlaying(false);
 
-              clearTimeout(playTimeout);
+              if (playTimeout) {
+                clearTimeout(playTimeout);
+              }
 
               analytics.logEvent({ type: 'pause' });
             }}
@@ -564,7 +568,9 @@ const StoryMonitor = ({
 
             setElapsedTime(initialElapsedTime);
 
-            clearTimeout(playTimeout);
+            if (playTimeout) {
+              clearTimeout(playTimeout);
+            }
 
             setPlayTimeout(initialPlayTimeout);
 
@@ -964,7 +970,7 @@ const StoryMonitor = ({
                       isAuthor={isAuthor}
                       action={action}
                       initialValues={initialValues}
-                      handleSubmit={({
+                      onSubmit={({
                         duration: newDuration,
                         left,
                         top,

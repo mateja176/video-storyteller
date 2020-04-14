@@ -27,7 +27,10 @@ const Progress: React.FC<ProgressProps> = ({
     setPercentage(elapsedPercentage);
   }, [elapsedPercentage]);
 
-  const [intervalState, setIntervalState] = React.useState(0);
+  const [
+    intervalState,
+    setIntervalState,
+  ] = React.useState<NodeJS.Timeout | null>(null);
 
   const durationPerOnePercentage = duration / 100;
 
@@ -43,8 +46,10 @@ const Progress: React.FC<ProgressProps> = ({
   }, [durationPerOnePercentage, intervalState, percentage, stopped, paused]);
 
   const clear = React.useCallback(() => {
-    clearInterval(intervalState);
-    setIntervalState(0);
+    if (intervalState) {
+      clearInterval(intervalState);
+      setIntervalState(null);
+    }
   }, [intervalState]);
 
   React.useEffect(() => {

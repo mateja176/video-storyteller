@@ -61,7 +61,7 @@ const Snackbar: FC<SnackbarProps> = ({ open, closeSnackbar, queue }) => {
     },
   ] = queue;
 
-  const [timeOut, setTimeOut] = React.useState(0);
+  const [timeOut, setTimeOut] = React.useState<NodeJS.Timeout | null>(null);
   const [timestamp, setTimestamp] = React.useState(0);
   const [difference, setDifference] = React.useState(0);
 
@@ -81,7 +81,9 @@ const Snackbar: FC<SnackbarProps> = ({ open, closeSnackbar, queue }) => {
     <MaterialSnackbar
       open={open}
       onMouseEnter={() => {
-        clearTimeout(timeOut);
+        if (timeOut) {
+          clearTimeout(timeOut);
+        }
 
         const newDifference = Date.now() - timestamp;
         setDifference(newDifference);
