@@ -1,6 +1,7 @@
 import LogRocket from 'logrocket';
 import { Module } from 'models';
 import { applyMiddleware, createStore, Middleware } from 'redux';
+import { composeWithDevTools } from 'redux-devtools-extension';
 import { createEpicMiddleware } from 'redux-observable';
 import thunk from 'redux-thunk';
 import { epic, epicDependencies, EpicDependencies } from './epic';
@@ -20,7 +21,10 @@ const devMiddleware = middleware;
 
 export default () => {
   if (process.env.NODE_ENV === 'development') {
-    const store = createStore(reducer, applyMiddleware(...devMiddleware));
+    const store = createStore(
+      reducer,
+      composeWithDevTools(applyMiddleware(...devMiddleware)),
+    );
 
     epicMiddleware.run(epic);
 
@@ -33,7 +37,9 @@ export default () => {
   } else {
     const store = createStore(
       reducer,
-      applyMiddleware(...middleware.concat(LogRocket.reduxMiddleware())),
+      composeWithDevTools(
+        applyMiddleware(...middleware.concat(LogRocket.reduxMiddleware())),
+      ),
     );
 
     epicMiddleware.run(epic);
