@@ -175,7 +175,7 @@ const StoryMonitor = ({
 
   const elapsed = elapsedTime > initialElapsedTime ? elapsedTime : 0;
 
-  const stagedActions = stagedActionIds.map(id => ({
+  const stagedActions = stagedActionIds.map((id) => ({
     ...actionsById[id],
     id,
   }));
@@ -194,7 +194,7 @@ const StoryMonitor = ({
   const lastEditableActionId = lastEditableAction ? lastEditableAction.id : -1;
 
   const activeActions = editableActions.filter(
-    action => !skippedActionIds.includes(action.id),
+    (action) => !skippedActionIds.includes(action.id),
   );
   const isCurrentActionIdActive = !skippedActionIds.includes(currentActionId);
   const nextActiveAction = editableActions
@@ -407,7 +407,7 @@ const StoryMonitor = ({
     actionIds
       .slice()
       .reverse()
-      .forEach(actionId => {
+      .forEach((actionId) => {
         dispatch(ActionCreators.toggleAction(actionId));
       });
   };
@@ -415,7 +415,7 @@ const StoryMonitor = ({
     id: Parameters<typeof ActionCreators.toggleAction>[0],
   ) => {
     const otherSkippedActionIds = skippedActionIds.filter(
-      skippedActionId => skippedActionId !== id,
+      (skippedActionId) => skippedActionId !== id,
     );
     toggleActions(otherSkippedActionIds);
     if (!skippedActionIds.includes(id)) {
@@ -433,17 +433,17 @@ const StoryMonitor = ({
   };
   const deleteActions = (actionsToDelete: typeof stagedActionIds) => {
     const indexesToDelete = actionsToDelete.map(
-      id => stagedActionIds.indexOf(id) - 1,
+      (id) => stagedActionIds.indexOf(id) - 1,
     );
     setDurations(durations.filter((_, i) => !indexesToDelete.includes(i)));
 
     const otherSkippedActionIds = skippedActionIds.filter(
-      skippedAction => !actionsToDelete.includes(skippedAction),
+      (skippedAction) => !actionsToDelete.includes(skippedAction),
     );
     toggleActions(otherSkippedActionIds);
 
     const activeActionIdsToDelete = actionsToDelete.filter(
-      actionIdToDelete => !skippedActionIds.includes(actionIdToDelete),
+      (actionIdToDelete) => !skippedActionIds.includes(actionIdToDelete),
     );
     toggleActions(activeActionIdsToDelete);
     dispatch(ActionCreators.sweep());
@@ -477,7 +477,7 @@ const StoryMonitor = ({
     if (reset && currentStory) {
       deleteAll();
 
-      currentStory.actions.forEach(action => {
+      currentStory.actions.forEach((action) => {
         store.dispatch(action);
       });
       setDurations(currentStory.durations);
@@ -670,7 +670,6 @@ const StoryMonitor = ({
         ref={timelineRef}
         className={workspaceClassName.actionsTimeline}
         style={{
-          display: 'flex',
           width: '100%',
           height: '100%',
           overflowX: 'auto',
@@ -678,7 +677,7 @@ const StoryMonitor = ({
       >
         <GridLayout
           isDraggable={isAuthor}
-          style={{ height: '100%', width: '100%' }}
+          style={{ height: '100%' }}
           isResizable={false}
           width={10 + (cardWidth + 10) * editableActions.length}
           rowHeight={cardWidth}
@@ -747,7 +746,9 @@ const StoryMonitor = ({
 
             const isCud = isCudAction(action);
 
-            const setDeleteHoveredWithCheck: typeof setDeleteHovered = newDeleteHovered => {
+            const setDeleteHoveredWithCheck: typeof setDeleteHovered = (
+              newDeleteHovered,
+            ) => {
               if (action.type === cudActionType.create) {
                 setDeleteHovered(newDeleteHovered);
               }
@@ -884,7 +885,7 @@ const StoryMonitor = ({
                         </ListItem>
                         <ListItem
                           {...listItemProps}
-                          onClick={e => {
+                          onClick={(e) => {
                             e.stopPropagation();
 
                             toggleAction(isActive)(isLastJumpedToAction)(
@@ -900,18 +901,18 @@ const StoryMonitor = ({
                         </ListItem>
                         <ListItem
                           {...listItemProps}
-                          onClick={e => {
+                          onClick={(e) => {
                             e.stopPropagation();
 
                             if (isCreateAction(action)) {
                               const actionsToDelete = editableActions
                                 .filter(
-                                  actionById =>
+                                  (actionById) =>
                                     isCudActionById(actionById) &&
                                     actionById.action.payload.payload.id ===
                                       hoveredActionId,
                                 )
-                                .map(actionById => actionById.id);
+                                .map((actionById) => actionById.id);
 
                               deleteActions(actionsToDelete);
                             } else {
