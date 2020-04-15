@@ -24,7 +24,6 @@ import {
   selectFetchStoriesStatus,
   selectStories,
   selectUid,
-  subscribeToStories,
 } from 'store';
 import urlJoin from 'url-join';
 import { absoluteRootPaths, useActions } from 'utils';
@@ -32,9 +31,8 @@ import { absoluteRootPaths, useActions } from 'utils';
 export interface DashboardProps extends RouteComponentProps {}
 
 const Dashboard: React.FC<DashboardProps> = ({ history }) => {
-  const { setCurrentStoryId, requestSubscribeToStories } = useActions({
+  const { setCurrentStoryId } = useActions({
     setCurrentStoryId: createSetCurrentStoryId,
-    requestSubscribeToStories: subscribeToStories.request,
   });
 
   const fetchStoriesStatus = useSelector(selectFetchStoriesStatus);
@@ -42,12 +40,6 @@ const Dashboard: React.FC<DashboardProps> = ({ history }) => {
   const stories = useSelector(selectStories);
 
   const areThereNoStories = useSelector(selectAreThereNoStories);
-
-  React.useEffect(() => {
-    if (fetchStoriesStatus === 'not started') {
-      requestSubscribeToStories();
-    }
-  }, [requestSubscribeToStories, fetchStoriesStatus, stories.length]);
 
   React.useEffect(() => {
     if (areThereNoStories) {

@@ -188,9 +188,11 @@ const listItemIconStyle: React.CSSProperties = {
   marginRight: 10,
 };
 
-const RightDrawer: React.FC<Pick<React.CSSProperties, 'height' | 'width'> & {
-  open: boolean;
-}> = ({ open, height, width = storageImageWidth, children }) => (
+const RightDrawer: React.FC<
+  Pick<React.CSSProperties, 'height' | 'width'> & {
+    open: boolean;
+  }
+> = ({ open, height, width = storageImageWidth, children }) => (
   <Paper
     style={{
       position: 'absolute',
@@ -454,7 +456,7 @@ const Canvas: React.FC<CanvasProps> = ({
         minZoom: 0.1,
         enableTextSelection: true,
         zoomDoubleClickSpeed: 1,
-        onDoubleClick: e => {
+        onDoubleClick: (e) => {
           e.preventDefault();
           return false;
         },
@@ -512,9 +514,11 @@ const Canvas: React.FC<CanvasProps> = ({
   const [rightDrawerOccupant, setRightDrawerOccupant] = React.useState<
     'initial' | 'none' | 'images' | 'text blocks' | 'audio'
   >('initial');
-  const rightDrawerHeightExpression = `100vh - ${2 + // * 2px less presumably because of the paper's shadow
+  const rightDrawerHeightExpression = `100vh - ${
+    2 + // * 2px less presumably because of the paper's shadow
     (theatricalMode ? 0 : headerAndControlsHeight) +
-    (actionsTimelineOpen ? actionsTimelineHeight : 0)}px`;
+    (actionsTimelineOpen ? actionsTimelineHeight : 0)
+  }px`;
 
   React.useEffect(() => {
     if (theatricalMode) {
@@ -621,10 +625,7 @@ const Canvas: React.FC<CanvasProps> = ({
       window.history.replaceState(
         {},
         '',
-        window.location.pathname
-          .split('/')
-          .slice(0, -1)
-          .join('/'),
+        window.location.pathname.split('/').slice(0, -1).join('/'),
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -955,7 +956,7 @@ const Canvas: React.FC<CanvasProps> = ({
                           display: 'flex',
                           padding: 0,
                         }}
-                        onMouseDown={e => {
+                        onMouseDown={(e) => {
                           e.preventDefault();
                         }}
                       >
@@ -965,7 +966,7 @@ const Canvas: React.FC<CanvasProps> = ({
                         />
                         <FontFamilyPicker
                           selected={
-                            (inlineStyleTypes.find(type =>
+                            (inlineStyleTypes.find((type) =>
                               fontFamilies.includes(type as FontFamily),
                             ) || fontFamilies[0]) as FontFamily
                           }
@@ -973,7 +974,7 @@ const Canvas: React.FC<CanvasProps> = ({
                         />
                         <FontSizePicker
                           selected={
-                            (inlineStyleTypes.find(type =>
+                            (inlineStyleTypes.find((type) =>
                               fontSizes.includes(type as FontSize),
                             ) || 'initial') as FontSize
                           }
@@ -981,7 +982,7 @@ const Canvas: React.FC<CanvasProps> = ({
                         />
                         <ColorPicker
                           color={getCurrentColor(focusedEditorState) as Color}
-                          onSelect={newColor => {
+                          onSelect={(newColor) => {
                             setFocusedEditorState(
                               RichUtils.toggleInlineStyle(
                                 focusedEditorState,
@@ -1050,14 +1051,13 @@ const Canvas: React.FC<CanvasProps> = ({
                         {!storyLoading && (
                           <OptionWithPopover
                             title="Click to enter new story name"
-                            initiallyOpen={!currentStory}
                             disabled={false}
                             Icon={NoteAdd}
                             initialValue=""
                             text="New story"
                             submitText="Create"
                             placeholder="New story"
-                            onSubmit={value => {
+                            onSubmit={(value) => {
                               const newStoryId = v4();
 
                               const newStory: StoryWithId = {
@@ -1089,7 +1089,7 @@ const Canvas: React.FC<CanvasProps> = ({
                             placeholder="Duplicate's name"
                             text="Duplicate"
                             submitText="Duplicate"
-                            onSubmit={value => {
+                            onSubmit={(value) => {
                               const newStoryState: StoryWithId = {
                                 ...storyMonitorState,
                                 id: v4(),
@@ -1116,7 +1116,7 @@ const Canvas: React.FC<CanvasProps> = ({
                               placeholder="Story name"
                               submitText="Rename"
                               text="Rename"
-                              onSubmit={value => {
+                              onSubmit={(value) => {
                                 updateStory({
                                   id: pathStoryId,
                                   name: value,
@@ -1397,7 +1397,7 @@ const Canvas: React.FC<CanvasProps> = ({
                   : createReferencePointStyle(theme.palette.primary.main)
               }
             >
-              {blockStates.map(blockState => {
+              {blockStates.map((blockState) => {
                 const {
                   payload: { id, top, left, width, height },
                 } = blockState;
@@ -1639,9 +1639,7 @@ const Canvas: React.FC<CanvasProps> = ({
         <Box>
           <Box
             height={progressHeight}
-            bgcolor={color(theme.palette.primary.light)
-              .alpha(0.5)
-              .toString()}
+            bgcolor={color(theme.palette.primary.light).alpha(0.5).toString()}
           >
             {audioElement && (
               <Progress
@@ -1678,7 +1676,7 @@ const Canvas: React.FC<CanvasProps> = ({
                 setTotalElapsedTime,
                 durations,
                 setDurations,
-                getBlockType: blockId => {
+                getBlockType: (blockId) => {
                   const block = blockStates.find(
                     ({ payload: { id } }) => id === blockId,
                   );

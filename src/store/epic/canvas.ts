@@ -1,25 +1,31 @@
 /* eslint-disable indent */
 
 import 'firebase/firestore';
+import { storiesCollection } from 'models';
 import { StoryWithId } from 'pages/Canvas/CanvasContext';
 import { identity } from 'ramda';
 import { Epic, ofType } from 'redux-observable';
 import { collectionChanges, collectionData, docData } from 'rxfire/firestore';
-import { defer, empty, from, of } from 'rxjs';
+import { empty, from, of } from 'rxjs';
 import {
   catchError,
   exhaustMap,
+  filter,
   first,
   map,
   mergeMap,
   switchMap,
-  tap,
   withLatestFrom,
 } from 'rxjs/operators';
-import { analytics, firebase } from 'services';
+import { createFetchAuthState, CreateFetchAuthState } from 'store/slices';
 import { ActionType, getType } from 'typesafe-actions';
+import { v4 } from 'uuid';
 import { Action, State } from '../reducer';
-import { selectFetchStoriesStatus, selectUid } from '../selectors';
+import {
+  selectFetchStoriesStatus,
+  selectStoriesCount,
+  selectUid,
+} from '../selectors';
 import {
   AddStoryAction,
   createAddStory,
@@ -30,6 +36,7 @@ import {
   createFetchStory,
   createSaveStory,
   CreateSaveStory,
+  createSetCurrentStoryId,
   createSetOne,
   createSetStoriesCount,
   CreateUpdateStory,
@@ -39,6 +46,7 @@ import {
   fetchStoriesType,
   FetchStoryAction,
   fetchStoryType,
+  SetCurrentStoryIdAction,
   SetOneAction,
   SetStoriesCountAction,
   subscribeToStories,
@@ -46,55 +54,28 @@ import {
   SubscribeToStoriesRequest,
 } from '../slices/canvas';
 import { createSetErrorSnackbar, SetSnackbarAction } from '../slices/snackbar';
-import { selectState, takeUntilSignedOut } from './operators';
+import {
+  selectState,
+  setStory,
+  SetStoryConfig,
+  takeUntilSignedOut,
+} from './operators';
 
 type SADAction = SetOneAction | AddStoryAction | DeleteStoryAction;
 
-const storiesCollection = firebase.firestore().collection('stories');
-
-const createSetStory = <
-  AsyncActionCreator extends CreateSaveStory | CreateUpdateStory
->({
+const createSetStory = ({
   setOptions,
   asyncActionCreator,
-}: {
-  setOptions?: firebase.firestore.SetOptions;
-  asyncActionCreator: AsyncActionCreator;
-}): Epic<
+}: SetStoryConfig): Epic<
   Action,
   ActionType<CreateSaveStory | CreateUpdateStory> | SetSnackbarAction,
   State
-> => action$ =>
+> => (action$) =>
   action$.pipe(
-    ofType<Action, ReturnType<AsyncActionCreator['request']>>(
+    ofType<Action, ReturnType<SetStoryConfig['asyncActionCreator']['request']>>(
       getType(asyncActionCreator.request),
     ),
-    switchMap(({ payload: storyState }) =>
-      defer(() =>
-        storiesCollection.doc(storyState.id).set(storyState, setOptions),
-      ).pipe(
-        map(() => asyncActionCreator.success()),
-        tap(() => {
-          if (storyState.name) {
-            analytics.logEvent({
-              type: 'createStory',
-              payload: { id: storyState.id, name: storyState.name },
-            });
-          } else {
-            analytics.logEvent({
-              type: 'saveStory',
-              payload: { id: storyState.id },
-            });
-          }
-        }),
-        catchError((error: Error) =>
-          from([
-            asyncActionCreator.failure(),
-            createSetErrorSnackbar({ message: error.message }),
-          ]),
-        ),
-      ),
-    ),
+    setStory({ setOptions, asyncActionCreator }),
   );
 
 export const saveStory = createSetStory({
@@ -112,7 +93,7 @@ export const fetchStory: Epic<
   Action,
   FetchStoryAction | SetSnackbarAction,
   State
-> = action$ =>
+> = (action$) =>
   action$.pipe(
     ofType<Action, ReturnType<CreateFetchStory['request']>>(
       fetchStoryType['canvas/stories/fetchOne/request'],
@@ -141,12 +122,12 @@ export const fetchStories: Epic<
       fetchStoriesType['canvas/fetchStories/request'],
     ),
     selectState(selectUid)(state$),
-    switchMap(uid =>
+    switchMap((uid) =>
       collectionData<StoryWithId>(
         storiesCollection.where('authorId', '==', uid),
       ).pipe(
         first(),
-        map(stories => ({ stories })),
+        map((stories) => ({ stories })),
         map(createFetchStories.success),
         catchError(({ message }: Error) =>
           from([
@@ -156,6 +137,16 @@ export const fetchStories: Epic<
         ),
       ),
     ),
+  );
+
+const subscribeAfterSignin: Epic<Action, SubscribeToStoriesRequest, State> = (
+  action$,
+) =>
+  action$.pipe(
+    ofType<Action, ReturnType<CreateFetchAuthState['success']>>(
+      getType(createFetchAuthState.success),
+    ),
+    map(() => subscribeToStories.request()),
   );
 
 export const subscribeToStoriesEpic: Epic<
@@ -170,11 +161,11 @@ export const subscribeToStoriesEpic: Epic<
       getType(subscribeToStories.request),
     ),
     selectState(selectUid)(state$),
-    switchMap(uid =>
+    switchMap((uid) =>
       collectionChanges(storiesCollection.where('authorId', '==', uid)).pipe(
         takeUntilSignedOut(state$),
         mergeMap(identity),
-        mergeMap(documentChange => {
+        mergeMap((documentChange) => {
           const documentData = documentChange.doc.data() as StoryWithId;
 
           const newAction$ = (() => {
@@ -212,24 +203,58 @@ export const subscribeToStoriesEpic: Epic<
 
 // * collectionChanges does not emit if there are no docs
 // * hence there's no way of knowing if the connection was established or not
+// * additionally fetches stories count to determine whether the first story ought to be created
 const storiesCount: Epic<Action, SetStoriesCountAction, State> = (
   action$,
   state$,
 ) =>
   action$.pipe(
-    ofType<Action, SubscribeToStoriesRequest>(
-      getType(subscribeToStories.request),
+    ofType<Action, ReturnType<CreateFetchAuthState['success']>>(
+      getType(createFetchAuthState.success),
     ),
     selectState(selectUid)(state$),
-    exhaustMap(uid =>
+    exhaustMap((uid) =>
       from(storiesCollection.where('authorId', '==', uid).get()).pipe(
         map(({ size }) => size),
         map(createSetStoriesCount),
-        catchError(error => {
+        catchError((error) => {
           console.log(error); // eslint-disable-line no-console
           return empty();
         }),
       ),
+    ),
+  );
+
+const createFirstStory: Epic<Action, Action, State> = (action$, state$) =>
+  action$.pipe(
+    ofType<Action, SetStoriesCountAction>(getType(createSetStoriesCount)),
+    filter(({ payload }) => payload === 0),
+    selectState(selectUid)(state$),
+    map((uid) =>
+      createSaveStory.request({
+        id: v4(),
+        name: 'My First Story',
+        actions: [],
+        durations: [],
+        isPublic: false,
+        authorId: uid,
+        audioId: '',
+        audioSrc: '',
+      }),
+    ),
+    setStory({ asyncActionCreator: createSaveStory }),
+  );
+
+const setCurrentStory: Epic<Action, SetCurrentStoryIdAction, State> = (
+  action$,
+  state$,
+) =>
+  action$.pipe(
+    ofType<Action, AddStoryAction>(getType(createAddStory)),
+    withLatestFrom(state$.pipe(map(selectStoriesCount))),
+    filter(([, count]) => count === 0),
+    map(([{ payload: { id } }]) =>
+      createSetCurrentStoryId({ currentStoryId: id }),
     ),
   );
 
@@ -238,6 +263,9 @@ export default [
   updateStory,
   fetchStory,
   fetchStories,
+  subscribeAfterSignin,
   subscribeToStoriesEpic,
   storiesCount,
+  createFirstStory,
+  setCurrentStory,
 ];

@@ -4,6 +4,7 @@ export * from './app';
 export * from './auth';
 export * from './canvas';
 export * from './components';
+export * from './firebase';
 export * from './iconFinder';
 export * from './infiniteLoader';
 export * from './models';
