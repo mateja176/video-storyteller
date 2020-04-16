@@ -1005,7 +1005,7 @@ const Canvas: React.FC<CanvasProps> = ({
                             <ListItemText>Cancel</ListItemText>
                           </ListItem>
                         </Tooltip>
-                        {focusedEditorId !== draggable.text && (
+                        {/* {focusedEditorId !== draggable.text && (
                           <ListItem
                             button
                             style={{ width: 'auto' }}
@@ -1027,7 +1027,7 @@ const Canvas: React.FC<CanvasProps> = ({
                             </ListItemIcon>
                             <ListItemText>Save</ListItemText>
                           </ListItem>
-                        )}
+                        )} */}
                       </List>
                     </>
                   );
