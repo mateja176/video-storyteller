@@ -1009,7 +1009,7 @@ const Canvas: React.FC<CanvasProps> = ({
                           <ListItem
                             button
                             style={{ width: 'auto' }}
-                            onClick={() =>
+                            onClick={() => {
                               updateEditText({
                                 id: focusedEditorId,
                                 block: {
@@ -1017,8 +1017,10 @@ const Canvas: React.FC<CanvasProps> = ({
                                     focusedEditorState.getCurrentContent(),
                                   ),
                                 },
-                              })
-                            } // eslint-disable-line react/jsx-curly-newline
+                              });
+
+                              setFocusedEditorId('');
+                            }}
                           >
                             <ListItemIcon style={listItemIconStyle}>
                               <Save />
