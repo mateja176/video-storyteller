@@ -1,6 +1,6 @@
 /* eslint-disable indent */
 
-import firebase from 'firebase';
+import firebase from 'firebase/app';
 import { FilterActionByType, SimpleAction, storiesCollection } from 'models';
 import { Selector } from 'react-redux';
 import { ofType as actionOfType, StateObservable } from 'redux-observable';
