@@ -1,9 +1,10 @@
+/* eslint-disable camelcase */
+
 import 'firebase/storage';
-import { KnowledgeGraph } from 'models';
+import { kgsearch_v1 } from 'googleapis';
 import { Epic, ofType } from 'redux-observable';
 import { putString } from 'rxfire/storage';
 import { from, of } from 'rxjs';
-import { ajax, AjaxResponse } from 'rxjs/ajax';
 import {
   catchError,
   delay,
@@ -15,7 +16,7 @@ import {
   tap,
   withLatestFrom,
 } from 'rxjs/operators';
-import { analytics, env, firebase } from 'services';
+import { analytics, firebase, env } from 'services';
 import { getType } from 'typesafe-actions';
 import urlJoin from 'url-join';
 import { Action, State } from '../reducer';
@@ -124,13 +125,12 @@ export const verifyImage: Epic<
         switchMap((net) => net.classify(image)),
         map(([{ className }]) => className),
         mergeMap((className) => {
-          return ajax(
-            `https://kgsearch.googleapis.com/v1/entities:search?query=${className.replace(
-              / /g,
-              '+',
-            )}&key=${env.googleApiKey}&limit=1`,
-          ).pipe(
-            map<AjaxResponse, KnowledgeGraph>(({ response }) => response),
+          const kg = new kgsearch_v1.Kgsearch({
+            auth: env.googleApiKey,
+          });
+          const query = className.replace(/ /g, '+');
+          const result$ = from(kg.entities.search({ limit: 1, query })).pipe(
+            map(({ data }) => data),
             tap(console.log), // eslint-disable-line no-console
             map(
               ({
@@ -152,6 +152,7 @@ export const verifyImage: Epic<
               of(createSetErrorSnackbar({ message })),
             ),
           );
+          return result$;
         }),
       );
     }),
