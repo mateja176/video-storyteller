@@ -7,6 +7,7 @@ export * from './components';
 export * from './firebase';
 export * from './iconFinder';
 export * from './infiniteLoader';
+export * from './knowledgeGraph';
 export * from './models';
 export * from './storage';
 export * from './store';

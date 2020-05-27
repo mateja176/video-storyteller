@@ -1,5 +1,5 @@
 import 'firebase/storage';
-import { KnowledgeGraph } from 'models/knowledgeGraph';
+import { KnowledgeGraph } from 'models';
 import { Epic, ofType } from 'redux-observable';
 import { putString } from 'rxfire/storage';
 import { from, of } from 'rxjs';
@@ -44,7 +44,7 @@ const upload: Epic<Action, UpdateProgressAction | SetSnackbarAction, State> = (
     ofType(getType(createUpload)),
     selectState(selectImageEntities)(state$),
     map(Object.entries),
-    tap(images => {
+    tap((images) => {
       analytics.logEvent({
         type: 'uploadImages',
         payload: {
@@ -52,7 +52,7 @@ const upload: Epic<Action, UpdateProgressAction | SetSnackbarAction, State> = (
         },
       });
     }),
-    mergeMap(entities => entities),
+    mergeMap((entities) => entities),
     withLatestFrom(state$.pipe(map(selectUid))),
     mergeMap(([[id, { name, dataUrl }], uid]) => {
       const img = new Image();
@@ -60,7 +60,7 @@ const upload: Epic<Action, UpdateProgressAction | SetSnackbarAction, State> = (
       img.src = dataUrl; // eslint-disable-line
 
       const imgPromise = new Promise<{ width: number; height: number }>(
-        resolve =>
+        (resolve) =>
           img.addEventListener('load', () =>
             resolve({ width: img.width, height: img.height }),
           ),
@@ -95,7 +95,7 @@ const upload: Epic<Action, UpdateProgressAction | SetSnackbarAction, State> = (
     }),
   );
 
-const removeUploadedImage: Epic<Action, RemoveImageAction> = action$ =>
+const removeUploadedImage: Epic<Action, RemoveImageAction> = (action$) =>
   action$.pipe(
     ofType<Action, UpdateProgressAction>(getType(createUpdateProgress)),
     map(({ payload }) => payload),
@@ -113,7 +113,7 @@ export const verifyImage: Epic<
   action$.pipe(
     ofType<Action, AddImageAction>(getType(createAddImage)),
     map(({ payload }) => payload),
-    mergeMap(img => {
+    mergeMap((img) => {
       const { dataUrl } = img;
 
       const image = new Image();
@@ -121,10 +121,10 @@ export const verifyImage: Epic<
       image.src = dataUrl; // eslint-disable-line
 
       return mobilenet$.pipe(
-        switchMap(net => net.classify(image)),
+        switchMap((net) => net.classify(image)),
         map(([{ className }]) => className),
-        mergeMap(className =>
-          ajax(
+        mergeMap((className) => {
+          return ajax(
             `https://kgsearch.googleapis.com/v1/entities:search?query=${className.replace(
               / /g,
               '+',
@@ -141,7 +141,7 @@ export const verifyImage: Epic<
                 ],
               }) => description,
             ),
-            map(description =>
+            map((description) =>
               createUpdateOneImage({
                 ...img,
                 verificationStatus:
@@ -151,8 +151,8 @@ export const verifyImage: Epic<
             catchError(({ message }: Error) =>
               of(createSetErrorSnackbar({ message })),
             ),
-          ),
-        ),
+          );
+        }),
       );
     }),
   );
