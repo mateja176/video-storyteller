@@ -10,6 +10,7 @@
     "@typescript-eslint/no-unused-vars-experimental": "warn",
     "no-nested-ternary": "off",
     "arrow-parens": "off",
+    "arrow-body-style": "off",
     "object-curly-newline": "off",
     "operator-linebreak": "off",
     "linebreak-style": "off",
