@@ -1,7 +1,6 @@
 /* eslint-disable camelcase */
 
 import 'firebase/storage';
-import { kgsearch_v1 } from 'googleapis';
 import { Epic, ofType } from 'redux-observable';
 import { putString } from 'rxfire/storage';
 import { from, of } from 'rxjs';
@@ -12,29 +11,23 @@ import {
   last,
   map,
   mergeMap,
-  switchMap,
   tap,
   withLatestFrom,
 } from 'rxjs/operators';
-import { analytics, firebase, env } from 'services';
+import { analytics, firebase } from 'services';
 import { getType } from 'typesafe-actions';
 import urlJoin from 'url-join';
 import { Action, State } from '../reducer';
 import { selectImageEntities, selectUid } from '../selectors';
 import {
-  AddImageAction,
-  createAddImage,
   createRemoveImage,
   createSetErrorSnackbar,
-  createUpdateOneImage,
   createUpdateProgress,
   createUpload,
   RemoveImageAction,
   SetSnackbarAction,
-  UpdateOneImageAction,
   UpdateProgressAction,
 } from '../slices';
-import { EpicDependencies } from './dependencies';
 import { selectState } from './operators';
 
 const upload: Epic<Action, UpdateProgressAction | SetSnackbarAction, State> = (
@@ -105,57 +98,57 @@ const removeUploadedImage: Epic<Action, RemoveImageAction> = (action$) =>
     mergeMap(({ id }) => of(createRemoveImage(id))),
   );
 
-export const verifyImage: Epic<
-  Action,
-  UpdateOneImageAction | SetSnackbarAction,
-  State,
-  EpicDependencies
-> = (action$, _, { mobilenet$ }) =>
-  action$.pipe(
-    ofType<Action, AddImageAction>(getType(createAddImage)),
-    map(({ payload }) => payload),
-    mergeMap((img) => {
-      const { dataUrl } = img;
+// export const verifyImage: Epic<
+//   Action,
+//   UpdateOneImageAction | SetSnackbarAction,
+//   State,
+//   EpicDependencies
+// > = (action$, _, { mobilenet$ }) =>
+//   action$.pipe(
+//     ofType<Action, AddImageAction>(getType(createAddImage)),
+//     map(({ payload }) => payload),
+//     mergeMap((img) => {
+//       const { dataUrl } = img;
 
-      const image = new Image();
+//       const image = new Image();
 
-      image.src = dataUrl; // eslint-disable-line
+//       image.src = dataUrl; // eslint-disable-line
 
-      return mobilenet$.pipe(
-        switchMap((net) => net.classify(image)),
-        map(([{ className }]) => className),
-        mergeMap((className) => {
-          const kg = new kgsearch_v1.Kgsearch({
-            auth: env.googleApiKey,
-          });
-          const query = className.replace(/ /g, '+');
-          const result$ = from(kg.entities.search({ limit: 1, query })).pipe(
-            map(({ data }) => data),
-            tap(console.log), // eslint-disable-line no-console
-            map(
-              ({
-                itemListElement: [
-                  {
-                    result: { description },
-                  },
-                ],
-              }) => description,
-            ),
-            map((description) =>
-              createUpdateOneImage({
-                ...img,
-                verificationStatus:
-                  description === 'Dog breed' ? 'completed' : 'failed',
-              }),
-            ),
-            catchError(({ message }: Error) =>
-              of(createSetErrorSnackbar({ message })),
-            ),
-          );
-          return result$;
-        }),
-      );
-    }),
-  );
+//       return mobilenet$.pipe(
+//         switchMap((net) => net.classify(image)),
+//         map(([{ className }]) => className),
+//         mergeMap((className) => {
+//           const kg = new kgsearch_v1.Kgsearch({
+//             auth: env.googleApiKey,
+//           });
+//           const query = className.replace(/ /g, '+');
+//           const result$ = from(kg.entities.search({ limit: 1, query })).pipe(
+//             map(({ data }) => data),
+//             tap(console.log), // eslint-disable-line no-console
+//             map(
+//               ({
+//                 itemListElement: [
+//                   {
+//                     result: { description },
+//                   },
+//                 ],
+//               }) => description,
+//             ),
+//             map((description) =>
+//               createUpdateOneImage({
+//                 ...img,
+//                 verificationStatus:
+//                   description === 'Dog breed' ? 'completed' : 'failed',
+//               }),
+//             ),
+//             catchError(({ message }: Error) =>
+//               of(createSetErrorSnackbar({ message })),
+//             ),
+//           );
+//           return result$;
+//         }),
+//       );
+//     }),
+//   );
 
 export default [upload, removeUploadedImage];
