@@ -153,7 +153,7 @@
     "react-dnd-html5-backend-cjs": "^9.5.1",
     "react-dnd-touch-backend-cjs": "^9.5.1",
     "react-scripts": "^3.2.0",
-    "semantic-release": "^17.0.4",
+    "semantic-release": "^19.0.3",
     "surge": "^0.21.3",
     "ts-node": "^8.5.0",
     "ts-toolbelt": "^6.4.2",
